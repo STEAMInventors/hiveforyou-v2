@@ -1,0 +1,14 @@
+---
+description: Database and Supabase migration conventions
+globs: supabase/**/*
+alwaysApply: false
+---
+
+# Database
+
+- Canonical concepts: see `brain/architecture/canonical-model.md` — implement tables incrementally per milestone.
+- Migrations are forward-only, reviewable, and aligned with provenance (claims ↔ evidence chips).
+- Questions, answers, and user intent are **first-class versioned** data.
+- Production cases may emit **Domain Learning Candidates**; they do not silently mutate pack knowledge.
+
+See `brain/architecture/provenance.md`, ADR-002, ADR-005.

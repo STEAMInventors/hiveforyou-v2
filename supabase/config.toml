@@ -1,0 +1,12 @@
+project_id = "hiveforyou"
+
+[api]
+enabled = true
+schemas = ["public", "graphql_public", "hive"]
+extra_search_path = ["public", "extensions"]
+
+[db]
+major_version = 15
+
+[storage]
+enabled = true

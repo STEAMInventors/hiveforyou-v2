@@ -1,0 +1,14 @@
+---
+description: Testing conventions
+globs: tests/**/*,**/*.{test,spec}.{ts,tsx}
+alwaysApply: false
+---
+
+# Testing
+
+- Test **validation logic** and deterministic behavior heavily; treat model proposals as fixtures to validate.
+- Domain pack rules deserve targeted tests before certification.
+- Prefer small fixtures; large raw corpora belong outside repo (see `.cursorignore`).
+- Run package-level tests before marking work complete.
+
+See `brain/decisions/ADR-003-model-proposes-code-validates.md`.

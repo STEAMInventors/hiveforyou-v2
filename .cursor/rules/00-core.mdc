@@ -1,0 +1,31 @@
+---
+description: HiveForYou V2 core agent workflow and foundational laws
+alwaysApply: true
+---
+
+# HiveForYou V2 — Core
+
+## Before coding
+
+1. Read `brain/INDEX.md`.
+2. Read `brain/status/CURRENT.md`.
+3. Read `brain/status/NEXT.md`.
+4. Read only task-specific brain documents routed by INDEX.
+
+Never recursively read `brain/`. Never implement work beyond `NEXT.md` without explicit authorization. Do not redesign architecture while implementing a scoped task.
+
+## Foundational laws
+
+- **Model proposes. Pack defines. Code validates. Professional decides.**
+- **No chip → no claim.** **No validated claim → no factual representation.**
+- Domain-specific knowledge belongs in **Domain Packs**, not Hive Core.
+- Customer and Pro use the same validated canonical truth.
+- **Persist intelligence** rather than unnecessarily regenerating it.
+- User intent guides emphasis; it does not alter source truth.
+- Do not create a second truth layer outside the canonical model.
+
+## Before completion
+
+- Run relevant tests.
+- Report files changed, tests run, and scope deviations.
+- Update `brain/status/CURRENT.md` when implementation state materially changes.

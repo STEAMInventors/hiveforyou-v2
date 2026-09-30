@@ -1,0 +1,217 @@
+import {
+  CANONICAL_STUDY_PROPOSAL_SCHEMA_V3,
+  type CanonicalStudyProposal,
+} from "@hiveforyou/shared/case-intelligence/3";
+import type { CanonicalStudyContext } from "@hiveforyou/shared/canonical-study";
+
+import type { CanonicalStudyPromptInputs } from "../prompts/compose-canonical-study-inputs";
+import { OpenAICanonicalStudyEngineV3 } from "./openai-engine-v3";
+
+export type CanonicalStudyEngineV3Runtime = {
+  composed: CanonicalStudyPromptInputs;
+  sourceDocumentBytes?: Map<string, Uint8Array>;
+};
+
+export interface CanonicalStudyEngineV3 {
+  study(
+    context: CanonicalStudyContext,
+    runtime?: CanonicalStudyEngineV3Runtime,
+  ): Promise<CanonicalStudyProposal>;
+}
+
+export class UnconfiguredProductionStudyEngineV3 implements CanonicalStudyEngineV3 {
+  async study(): Promise<CanonicalStudyProposal> {
+    throw new Error("ENGINE_UNAVAILABLE");
+  }
+}
+
+/** Deterministic /3 fixture for tests and explicit dev configuration. */
+export class FixtureCanonicalStudyEngineV3 implements CanonicalStudyEngineV3 {
+  constructor(
+    private readonly options: {
+      includeChiplessClaim?: boolean;
+      invalidSourceDocument?: boolean;
+    } = {},
+  ) {}
+
+  async study(context: CanonicalStudyContext): Promise<CanonicalStudyProposal> {
+    const firstDoc = context.sourceDocuments[0];
+    const docId =
+      firstDoc?.discoveryDocumentId ?? firstDoc?.stagedDocumentId ?? "missing-doc";
+    const logical = context.logicalDocuments[0];
+    const strictLogical = context.logicalDocuments.length > 0;
+
+    const entityStudent = "fixture-v3-entity-student";
+    const entityDistrict = "fixture-v3-entity-district";
+    const claimServices = "fixture-v3-claim-services";
+    const claimRelation = "fixture-v3-claim-relation";
+    const claimChipless = "fixture-v3-claim-chipless";
+
+    const evidenceRef =
+      strictLogical && logical
+        ? {
+            id: "fixture-v3-evidence-1",
+            logicalDocumentId: logical.id,
+            sourceDocumentId: this.options.invalidSourceDocument
+              ? "unknown-source-id"
+              : logical.sourceDocumentId,
+            sourceType: "document" as const,
+            snippet: "FIXTURE v3 snippet",
+            page: logical.pageStart,
+          }
+        : {
+            id: "fixture-v3-evidence-1",
+            sourceDocumentId: this.options.invalidSourceDocument ? "unknown-source-id" : docId,
+            sourceType: "document" as const,
+            snippet: "FIXTURE v3 snippet",
+            page: 1,
+          };
+
+    const claims: CanonicalStudyProposal["claims"] = [
+      {
+        id: claimServices,
+        subjectEntityId: entityStudent,
+        construct: "weekly_specialized_instruction_minutes",
+        value: { kind: "quantity", amount: 300 },
+        unit: "minutes",
+        role: "current",
+        evidenceRefs: [evidenceRef],
+      },
+      {
+        id: claimRelation,
+        subjectEntityId: entityStudent,
+        construct: "enrolled_with",
+        value: { kind: "entity_ref", entityId: entityDistrict },
+        role: "observed",
+        evidenceRefs: [evidenceRef],
+      },
+    ];
+
+    if (this.options.includeChiplessClaim) {
+      claims.push({
+        id: claimChipless,
+        subjectEntityId: entityStudent,
+        construct: "unsupported_fact",
+        value: { kind: "text", text: "No chip" },
+        role: "unknown",
+        evidenceRefs: [],
+      });
+    }
+
+    return {
+      schemaVersion: CANONICAL_STUDY_PROPOSAL_SCHEMA_V3,
+      domainId: context.domainId,
+      entities: [
+        {
+          id: entityStudent,
+          entityType: "student",
+          label: "FIXTURE Student",
+          evidenceRefs: [evidenceRef],
+        },
+        {
+          id: entityDistrict,
+          entityType: "school_district",
+          label: "FIXTURE District",
+          evidenceRefs: [evidenceRef],
+        },
+      ],
+      claims,
+      conflicts: [
+        {
+          id: "fixture-v3-conflict-1",
+          claimIds: [claimServices, claimRelation],
+          kind: "other",
+        },
+      ],
+      missingInformation: [
+        {
+          id: "fixture-v3-missing-1",
+          description: "FIXTURE: prior evaluation report not in supplied set",
+          proposalLineage: {
+            proposalItemId: "fixture-v3-missing-1",
+            studyRunId: context.studyRunId,
+          },
+        },
+      ],
+      modelMetadata: {
+        providerId: "fixture-canonical-study-engine-v3",
+        modelId: "fixture-v3",
+        proposalMode: "fixture",
+      },
+      proposedAt: new Date().toISOString(),
+    };
+  }
+}
+
+export type StudyEngineV3Mode = "fixture" | "openai" | "unconfigured";
+
+export type CanonicalStudyEngineV3Env = {
+  engine?: string;
+  openaiApiKey?: string;
+  model?: string;
+  reasoningEffort?: string;
+  maxOutputTokens?: number;
+};
+
+function normalizeEngineEnv(
+  input: string | CanonicalStudyEngineV3Env | undefined,
+): CanonicalStudyEngineV3Env {
+  if (typeof input === "string" || input === undefined) {
+    return { engine: input };
+  }
+  return input;
+}
+
+export function createCanonicalStudyEngineV3FromEnv(
+  input: string | CanonicalStudyEngineV3Env | undefined,
+): {
+  engine: CanonicalStudyEngineV3;
+  mode: StudyEngineV3Mode;
+  providerId: string;
+  modelId?: string;
+} {
+  const env = normalizeEngineEnv(input);
+  const normalized = env.engine?.trim().toLowerCase();
+
+  if (normalized === "fixture") {
+    return {
+      engine: new FixtureCanonicalStudyEngineV3(),
+      mode: "fixture",
+      providerId: "fixture-canonical-study-engine-v3",
+      modelId: "fixture-v3",
+    };
+  }
+
+  if (normalized === "openai") {
+    const apiKey = env.openaiApiKey?.trim();
+    const model = env.model?.trim() || "gpt-5.6-sol";
+    const reasoningEffort = env.reasoningEffort?.trim() || "medium";
+    const maxOutputTokens = env.maxOutputTokens;
+    if (!apiKey) {
+      return {
+        engine: new UnconfiguredProductionStudyEngineV3(),
+        mode: "openai",
+        providerId: "openai-canonical-study-engine-v3",
+        modelId: model,
+      };
+    }
+    return {
+      engine: new OpenAICanonicalStudyEngineV3({
+        apiKey,
+        model,
+        reasoningEffort,
+        maxOutputTokens,
+      }),
+      mode: "openai",
+      providerId: "openai-canonical-study-engine-v3",
+      modelId: model,
+    };
+  }
+
+  return {
+    engine: new UnconfiguredProductionStudyEngineV3(),
+    mode: "unconfigured",
+    providerId: "unconfigured",
+  };
+}
+

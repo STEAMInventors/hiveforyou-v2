@@ -1,0 +1,14 @@
+---
+description: Next.js frontend conventions
+globs: apps/web/**/*.{ts,tsx,css}
+alwaysApply: false
+---
+
+# Frontend
+
+- UI renders **validated** canonical intelligence; do not invent facts client-side.
+- Customer vs Pro is **authorization/presentation**, not a separate truth or automatic re-analysis.
+- Use shared contracts from `packages/shared` / `brain/contracts/` for API shapes.
+- Interactive representations (map, timeline, provenance drill-down) consume persisted intelligence — not ad-hoc model calls on navigation.
+
+See `brain/product/v2-experience.md`, `brain/architecture/frontend-backend-contract.md`.

@@ -1,0 +1,27 @@
+{
+  "name": "@hiveforyou/core",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./study": "./src/study/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "lint": "node -e \"process.exit(0)\"",
+    "test": "vitest run",
+    "study:l001-v3": "tsx --env-file=../../.env scripts/openai-l001-canonical-study-v3.mjs"
+  },
+  "dependencies": {
+    "@hiveforyou/canonical": "workspace:*",
+    "@hiveforyou/domain-packs": "workspace:*",
+    "@hiveforyou/shared": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  }
+}
