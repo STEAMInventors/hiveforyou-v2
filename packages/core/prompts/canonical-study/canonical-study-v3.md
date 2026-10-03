@@ -52,7 +52,9 @@ Documentary evidence only (`sourceType: document`).
 
 When logical documents are supplied, every evidence ref must include `logicalDocumentId` from the manifest.
 
-Cite `sourceDocumentId`, page within logical bounds when using pages, and/or span/snippet locators from what you can defend in the attached files.
+When an extraction locator catalog is supplied, **prefer `extractionId` (e.g. `line:3`)** on the cited physical page. Otherwise cite `sourceDocumentId`, page within logical bounds, and/or defensible span/snippet locators from the attached files and catalog text.
+
+When domain recognition vocabulary is supplied, use it to interpret abbreviations and surface forms in the attached documents. Map readings to stable `termId` values when helpful in claim text or snippets. Vocabulary rows are **not** constructs, legal definitions, or established facts. For terms marked `contextRequired`, expand an abbreviation only when surrounding document text supports the domain meaning; otherwise quote the surface form as written.
 
 Customer objective, Q&A, and analysis intent guide **emphasis only**—never evidence.
 
@@ -70,6 +72,6 @@ Optional `evidenceRefs` explain why the gap is inferred; when present they must 
 
 Return only JSON conforming to `canonical-study-proposal/3`.
 
-The user message supplies Engine 1 discovery, structure map, logical-document manifest, source metadata, attached files, study run id, and Q&A snapshot (context only).
+The user message supplies Engine 1 discovery, structure map, logical-document manifest, optional domain recognition vocabulary, source metadata, attached files, study run id, and Q&A snapshot (context only).
 
 Do not assume content from prior cases.

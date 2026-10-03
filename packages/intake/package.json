@@ -3,11 +3,23 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./server-extraction": "./src/server-extraction.ts"
+  },
   "scripts": {
-    "typecheck": "node -e \"process.exit(0)\"",
-    "lint": "node -e \"process.exit(0)\""
+    "typecheck": "tsc --noEmit",
+    "lint": "node -e \"process.exit(0)\"",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@hiveforyou/domain-pack": "workspace:*",
+    "@hiveforyou/shared": "workspace:*",
+    "pdfjs-dist": "^5.6.205"
   },
   "devDependencies": {
-    "typescript": "^5.7.2"
+    "@types/node": "^22.10.2",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
   }
 }

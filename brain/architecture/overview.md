@@ -23,7 +23,7 @@ Upload / intake
 | Audit | [event-log.md](event-log.md) |
 | API boundary | [frontend-backend-contract.md](frontend-backend-contract.md) |
 
-Domain-specific behavior: **Domain Packs** (`brain/domains/`). Not in core.
+Domain-specific behavior: **Domain Packs** (`domain-packs/`, described in `brain/domains/`). Not in core. One registry (`domain-packs/registry`) loads them.
 
 **Raw evidence lives in private object storage. Metadata and immutable execution records live in Postgres.**
 

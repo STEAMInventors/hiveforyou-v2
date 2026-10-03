@@ -10,6 +10,14 @@ const sql = readFileSync(
   ),
   "utf8",
 );
+const caseMapSql = readFileSync(
+  join(process.cwd(), "../../supabase/migrations/20261002150000_case_projections_case_map.sql"),
+  "utf8",
+);
+const caseViewSql = readFileSync(
+  join(process.cwd(), "../../supabase/migrations/20261002200000_case_projections_case_view.sql"),
+  "utf8",
+);
 
 describe("engine2 study artifacts + projections migration", () => {
   it("creates append-only study_artifacts and case_projections with RLS", () => {
@@ -20,5 +28,13 @@ describe("engine2 study artifacts + projections migration", () => {
     }
     expect(sql).toContain("unique (case_id, intelligence_version, projection_kind)");
     expect(sql).toContain("references hive.study_runs (id)");
+  });
+
+  it("allows case_map projection kind", () => {
+    expect(caseMapSql).toContain("'case_map'");
+  });
+
+  it("allows case_view projection kind", () => {
+    expect(caseViewSql).toContain("'case_view'");
   });
 });

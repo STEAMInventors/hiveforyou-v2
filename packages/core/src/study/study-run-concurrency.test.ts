@@ -145,6 +145,33 @@ describe("study run concurrency (postgres-like idempotency)", () => {
     expect(b.reusedExistingRun).toBe(true);
   });
 
+  it("waits for a RUNNING run instead of invoking the engine again without shared in-flight", async () => {
+    const runRepo = new InMemoryStudyRunRepository();
+    let releaseEngine!: () => void;
+    const engineGate = new Promise<void>((resolve) => {
+      releaseEngine = resolve;
+    });
+    let engineCalls = 0;
+    const deps = createDeps(runRepo, new Map());
+    deps.engine = {
+      study: async (ctx) => {
+        engineCalls += 1;
+        await engineGate;
+        return new FixtureCanonicalStudyEngine().study(ctx);
+      },
+    };
+    const req = baseRequest();
+    const first = runCanonicalStudy(req, deps);
+    await new Promise((resolve) => setTimeout(resolve, 30));
+    const secondPromise = runCanonicalStudy(req, { ...deps, inFlight: new Map() });
+    releaseEngine();
+    const [firstOutcome, second] = await Promise.all([first, secondPromise]);
+    expect(engineCalls).toBe(1);
+    expect(second.reusedExistingRun).toBe(true);
+    expect(second.run.studyRunId).toBe(firstOutcome.run.studyRunId);
+    expect(second.run.status).toBe("SUCCEEDED");
+  });
+
   it("persists one intelligence version when concurrent requests race without shared in-flight", async () => {
     const runRepo = new InMemoryStudyRunRepository();
     const intel = new InMemoryCaseIntelligenceRepository();

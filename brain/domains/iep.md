@@ -1,7 +1,7 @@
 # Domain — IEP (Individualized Education Program)
 
-**STATUS: NOT YET IMPLEMENTED**
+**STATUS: SCAFFOLD — NOT CERTIFIED**
 
-Special education planning and compliance evidence (IEP documents, evaluations, progress, meetings). Domain Pack will define concepts, expected documents, and validation — not Hive Core.
+Special education planning and compliance evidence (IEP documents, evaluations, progress, meetings).
 
-No V2 pack rules defined in foundation.
+Pack code: `domain-packs/iep`. Discover document types, audience roles, and evidence requirements live there. Hive Core loads them through the registry. The pack is not certified.

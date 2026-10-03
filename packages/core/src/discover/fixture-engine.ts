@@ -1,4 +1,6 @@
-import { IEP_DISCOVER_PACK } from "@hiveforyou/domain-packs";
+import { requireDiscoverPack } from "@hiveforyou/domain-packs";
+
+const IEP_DISCOVER_PACK = requireDiscoverPack("iep");
 import type { HiveDiscoverProposalV1 } from "@hiveforyou/shared/discover";
 import { HIVE_DISCOVER_PROPOSAL_SCHEMA } from "@hiveforyou/shared/discover";
 

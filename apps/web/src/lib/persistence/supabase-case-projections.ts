@@ -5,7 +5,7 @@ import type {
   CaseProjectionKind,
   CaseProjectionRepository,
 } from "@hiveforyou/core";
-import type { CustomerView, ProView } from "@hiveforyou/shared/projections";
+import type { CaseMap, CaseViewV2, CustomerView, ProView } from "@hiveforyou/shared/projections";
 
 import type { HiveGateway, HiveRow } from "./hive-gateway";
 
@@ -28,7 +28,7 @@ export class SupabaseCaseProjectionRepository implements CaseProjectionRepositor
     intelligenceVersion: number;
     projectionKind: CaseProjectionKind;
     schemaVersion: string;
-    projection: CustomerView | ProView;
+    projection: CustomerView | ProView | CaseMap | CaseViewV2;
   }): Promise<void> {
     const existing = await this.getByVersionAndKind(
       record.caseId,
@@ -36,6 +36,7 @@ export class SupabaseCaseProjectionRepository implements CaseProjectionRepositor
       record.projectionKind,
     );
     if (existing) {
+      // Projections are insert-only in Supabase (reject_mutation trigger on update/delete).
       return;
     }
     await this.gateway.insert(
@@ -57,7 +58,7 @@ export class SupabaseCaseProjectionRepository implements CaseProjectionRepositor
     caseId: string,
     intelligenceVersion: number,
     projectionKind: CaseProjectionKind,
-  ): Promise<CustomerView | ProView | null> {
+  ): Promise<CustomerView | ProView | CaseMap | CaseViewV2 | null> {
     const rows = await this.gateway.selectWhere(
       "case_projections",
       {
@@ -72,7 +73,7 @@ export class SupabaseCaseProjectionRepository implements CaseProjectionRepositor
     if (!row) {
       return null;
     }
-    return row.projection_json as CustomerView | ProView;
+    return row.projection_json as CustomerView | ProView | CaseMap | CaseViewV2;
   }
 
   async getLatestVersion(caseId: string): Promise<number | null> {
@@ -110,7 +111,7 @@ export async function loadLatestStructureMapForCase(
 
 export function mapProjectionRowKind(row: HiveRow): CaseProjectionKind {
   const kind = text(row, "projection_kind");
-  if (kind !== "customer" && kind !== "pro") {
+  if (kind !== "customer" && kind !== "pro" && kind !== "case_map" && kind !== "case_view") {
     throw new Error("Unknown projection kind.");
   }
   return kind;

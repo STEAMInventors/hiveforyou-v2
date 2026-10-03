@@ -24,9 +24,9 @@ First customer screen: document intake **before Engine 1**. The UI must not impl
 
 ### Visual language
 
-- **Colors:** CSS tokens in `apps/web/src/app/globals.css` — deep navy (`--hive-color-navy`), sage/teal accent (`--hive-color-sage`), restrained blue (`--hive-color-blue*`), light page background, white surfaces, subtle borders, strong primary text, muted secondary text.
-- **Typography:** Source Serif 4 (headlines/brand), DM Sans (UI/body), JetBrains Mono (format hints only), loaded via `next/font/google` in the app layout.
-- **Layout:** Minimal header (brand, Help, account placeholder), centered hero, dominant dashed dropzone, restrained privacy callout, minimal footer with placeholder legal links.
+- **Authoritative brand:** [HiveForYou-brand-guide.md](../HiveForYou-brand-guide.md) — logos in `apps/web/public/brand/`, HiveForYou CSS v1 (`apps/web/src/styles/`), Outfit (brand wordmark) + DM Sans (UI) + Source Serif 4 (quotes) via `next/font` in `layout.tsx`.
+- **Legacy upload shell:** Tailwind `hive.*` tokens (`--hive-color-*` in `globals.css`) remain on some discover/upload routes until migrated to `--hfy-*`.
+- **Layout:** Minimal header (SVG logo from brand guide), centered hero, dominant dashed dropzone, restrained privacy callout, minimal footer with placeholder legal links.
 
 ### Copy (canonical)
 

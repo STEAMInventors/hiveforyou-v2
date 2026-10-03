@@ -12,6 +12,48 @@ const config: Config = {
 
       colors: {
 
+        hz: {
+
+          background: "#ffffff",
+
+          "on-background": "#000000",
+
+          primary: "#FF5E3A",
+
+          "on-primary": "#ffffff",
+
+          "primary-container": "#ff8a65",
+
+          "on-primary-container": "#752305",
+
+          secondary: "#556500",
+
+          "secondary-container": "#d6ed7a",
+
+          "on-secondary-container": "#5a6c00",
+
+          tertiary: "#326578",
+
+          "tertiary-container": "#80b1c7",
+
+          surface: "#ffffff",
+
+          "surface-variant": "#f4f4f4",
+
+          "surface-container-low": "#f9f3e8",
+
+          "surface-container-lowest": "#ffffff",
+
+          "on-surface": "#000000",
+
+          "on-surface-variant": "#555555",
+
+          outline: "#89726b",
+
+          "outline-variant": "#ddc0b8",
+
+        },
+
         hive: {
 
           navy: "var(--hive-color-navy)",
@@ -52,6 +94,9 @@ const config: Config = {
 
       fontFamily: {
 
+        hz: ["var(--font-outfit)", "Segoe UI", "sans-serif"],
+        brand: ["var(--font-outfit)", "Segoe UI", "sans-serif"],
+
         serif: ["var(--font-source-serif)", "Georgia", "serif"],
 
         sans: ["var(--font-dm-sans)", "Segoe UI", "sans-serif"],
@@ -88,7 +133,27 @@ const config: Config = {
 
         "hive-section": "var(--hive-space-section)",
 
+        "hz-container": "4rem",
+
+        "hz-section": "7.5rem",
+
+        "hz-card": "2.5rem",
+
         18: "4.5rem",
+
+      },
+
+      fontSize: {
+
+        "hz-display": ["4rem", { lineHeight: "1.1", letterSpacing: "-0.04em", fontWeight: "800" }],
+
+        "hz-headline-lg": ["2.5rem", { lineHeight: "1.2", letterSpacing: "-0.02em", fontWeight: "700" }],
+
+        "hz-headline-md": ["1.5rem", { lineHeight: "1.3", letterSpacing: "-0.01em", fontWeight: "600" }],
+
+        "hz-body-lg": ["1.125rem", { lineHeight: "1.6", fontWeight: "400" }],
+
+        "hz-label-caps": ["0.75rem", { lineHeight: "1", letterSpacing: "0.1em", fontWeight: "700" }],
 
       },
 

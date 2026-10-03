@@ -18,12 +18,15 @@ export type ServerEnv = {
   HIVE_CANONICAL_STUDY_MODEL?: string;
   HIVE_CANONICAL_STUDY_REASONING_EFFORT?: string;
   HIVE_CANONICAL_STUDY_MAX_OUTPUT_TOKENS?: number;
+  HIVE_STORY_WRITER_ENGINE?: string;
+  HIVE_STORY_WRITER_MODEL?: string;
   HIVE_DISCOVER_ENGINE?: string;
   HIVE_DISCOVER_MODEL?: string;
   HIVE_DISCOVER_REASONING_EFFORT?: string;
   HIVE_OPENAI_MODEL?: string;
   HIVE_OPENAI_MAX_OUTPUT_TOKENS?: number;
   OPENAI_API_KEY?: string;
+  JEV_API_KEY?: string;
 };
 
 function envValuePresent(source: Record<string, string | undefined>, key: string): boolean {
@@ -40,6 +43,7 @@ export function readServerEnvPresence(
   storageBucketPresent: boolean;
   discoverPromptVersionPresent: boolean;
   discoverPromptVersionIsLatest: boolean;
+  jevApiKeyPresent: boolean;
 } {
   return {
     supabaseUrlPresent: envValuePresent(source, "NEXT_PUBLIC_SUPABASE_URL"),
@@ -49,6 +53,7 @@ export function readServerEnvPresence(
     discoverPromptVersionPresent: envValuePresent(source, "HIVE_DISCOVER_PROMPT_VERSION"),
     discoverPromptVersionIsLatest:
       source.HIVE_DISCOVER_PROMPT_VERSION?.trim().toLowerCase() === "latest",
+    jevApiKeyPresent: envValuePresent(source, "JEV_API_KEY"),
   };
 }
 
@@ -76,6 +81,8 @@ export function readServerEnv(
     HIVE_CANONICAL_STUDY_MAX_OUTPUT_TOKENS: parseOptionalPositiveInt(
       source.HIVE_CANONICAL_STUDY_MAX_OUTPUT_TOKENS ?? source.HIVE_OPENAI_MAX_OUTPUT_TOKENS,
     ),
+    HIVE_STORY_WRITER_ENGINE: source.HIVE_STORY_WRITER_ENGINE?.trim() || undefined,
+    HIVE_STORY_WRITER_MODEL: source.HIVE_STORY_WRITER_MODEL?.trim() || undefined,
     HIVE_DISCOVER_ENGINE: source.HIVE_DISCOVER_ENGINE?.trim() || undefined,
     HIVE_DISCOVER_MODEL: source.HIVE_DISCOVER_MODEL?.trim() || undefined,
     HIVE_DISCOVER_REASONING_EFFORT:
@@ -83,7 +90,19 @@ export function readServerEnv(
     HIVE_OPENAI_MODEL: source.HIVE_OPENAI_MODEL?.trim() || undefined,
     HIVE_OPENAI_MAX_OUTPUT_TOKENS: parseOptionalPositiveInt(source.HIVE_OPENAI_MAX_OUTPUT_TOKENS),
     OPENAI_API_KEY: source.OPENAI_API_KEY?.trim() || undefined,
+    JEV_API_KEY: source.JEV_API_KEY?.trim() || undefined,
   };
+}
+
+/** Server-side Jev credentials. Never send the key to the browser. */
+export function readJevClassifierConfig(
+  source: Record<string, string | undefined> = process.env,
+): { apiKey: string } | null {
+  const apiKey = source.JEV_API_KEY?.trim() ?? "";
+  if (!apiKey) {
+    return null;
+  }
+  return { apiKey };
 }
 
 function parseOptionalPositiveInt(value: string | undefined): number | undefined {

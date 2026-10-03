@@ -12,7 +12,7 @@ export async function waitForTerminalStudyRun(
   idempotencyKey: string,
   options?: { timeoutMs?: number; pollMs?: number },
 ): Promise<CanonicalStudyRun | null> {
-  const timeoutMs = options?.timeoutMs ?? 120_000;
+  const timeoutMs = options?.timeoutMs ?? 600_000;
   const pollMs = options?.pollMs ?? 150;
   const started = Date.now();
   while (Date.now() - started < timeoutMs) {

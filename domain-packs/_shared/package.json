@@ -1,0 +1,25 @@
+{
+  "name": "@hiveforyou/domain-pack-shared",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    "./rulebook/schema": "./rulebook/schema.ts",
+    "./rulebook/validate": "./rulebook/validate.ts",
+    "./rulebook/load": "./rulebook/load.ts",
+    "./rulebook/pack-context": "./rulebook/pack-context.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@hiveforyou/domain-pack": "workspace:*",
+    "@hiveforyou/domain-pack-iep": "workspace:*",
+    "@hiveforyou/domain-pack-medicaid": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  }
+}

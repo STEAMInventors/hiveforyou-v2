@@ -10,6 +10,13 @@ import type { StudySourceDocumentRef } from "./source-document";
 export type StartCanonicalStudyRequest = {
   caseId: string;
   sourceDocuments: StudySourceDocumentRef[];
+  /** Intake Evidence Workspace run that produced pack execution and logical documents. */
+  intakeRunId?: string;
+  /**
+   * Server-only fingerprint of intake evidence + pack execution for idempotency.
+   * Clients must not set this field.
+   */
+  intakeStudyMaterialFingerprint?: string;
   /** Persisted Engine 1 discover run when adaptive discovery completed. */
   discoveryRunId?: string;
   engine1Result: DocumentDiscoveryResult;

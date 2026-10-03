@@ -26,6 +26,8 @@ const VERSION_FILES: Record<string, { version: string; fileName: string }> = {
   "canonical-study-v2": { version: "v2", fileName: "canonical-study-v2.md" },
   v3: { version: "v3", fileName: "canonical-study-v3.md" },
   "canonical-study-v3": { version: "v3", fileName: "canonical-study-v3.md" },
+  v4: { version: "v4", fileName: "canonical-study-v4.md" },
+  "canonical-study-v4": { version: "v4", fileName: "canonical-study-v4.md" },
 };
 
 function promptDirectories(): string[] {

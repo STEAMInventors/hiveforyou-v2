@@ -185,6 +185,41 @@ describe("persistSourceDocument", () => {
     ).rejects.toThrow(/storage down/);
     expect(insert).not.toHaveBeenCalled();
   });
+
+  it("returns the winning document when a concurrent staged insert conflicts", async () => {
+    const storage = new InMemorySourceDocumentStorage();
+    const documents = new InMemorySourceDocumentRepository();
+    const winner = sampleRecord();
+    let lookups = 0;
+    documents.findByClientStagedId = async () => {
+      lookups += 1;
+      return lookups === 1 ? null : winner;
+    };
+    documents.insert = async () => {
+      throw new Error(
+        'duplicate key value violates unique constraint "source_documents_case_id_client_staged_id_key"',
+      );
+    };
+
+    const saved = await persistSourceDocument(
+      {
+        storage,
+        documents,
+        bucket: "case-documents",
+        createId: () => "55555555-5555-4555-8555-555555555555",
+      },
+      {
+        userId: USER_A,
+        caseId: CASE_A,
+        originalFilename: "iep.pdf",
+        bytes: new Uint8Array([1, 2, 3, 4]),
+        clientStagedId: "staged-1",
+      },
+    );
+
+    expect(saved.id).toBe(winner.id);
+    expect(storage.removed).toHaveLength(1);
+  });
 });
 
 describe("ownership", () => {

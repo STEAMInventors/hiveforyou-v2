@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
 
-import {
-  BANKRUPTCY_DISCOVER_PACK,
-  IEP_DISCOVER_PACK,
-  MEDICAID_DISCOVER_PACK,
-} from "@hiveforyou/domain-packs";
+import { requireDiscoverPack } from "@hiveforyou/domain-packs";
+
+const BANKRUPTCY_DISCOVER_PACK = requireDiscoverPack("bankruptcy");
+const IEP_DISCOVER_PACK = requireDiscoverPack("iep");
+const MEDICAID_DISCOVER_PACK = requireDiscoverPack("medicaid");
 import type { CustomerDiscoveryAnswer } from "@hiveforyou/shared/discover";
 import { HIVE_DISCOVER_PROPOSAL_SCHEMA_V2 } from "@hiveforyou/shared/discover";
 
@@ -259,7 +259,7 @@ describe("Adaptive Engine 1 V2", () => {
     });
   });
 
-  it("pure IEP collection completes with pack-driven missing evidence", async () => {
+  it("pure IEP collection does not invent pack missing-document expectations", async () => {
     const { start, deps, sourceIds } = await runAdaptiveDiscoverFlow(["src-only"]);
     const objectiveQuestion = start.discoveryQuestions![0]!;
     const afterObjective = await runDiscover(
@@ -271,10 +271,8 @@ describe("Adaptive Engine 1 V2", () => {
       },
       deps,
     );
-    expect(afterObjective.run.status).toBe("NEEDS_EVIDENCE_INPUT");
-    expect(afterObjective.structureMap?.completeness.expectations.some((e) => e.state === "MISSING")).toBe(
-      true,
-    );
+    expect(afterObjective.run.status).toBe("READY_FOR_STUDY");
+    expect(afterObjective.structureMap?.completeness.expectations ?? []).toEqual([]);
   });
 
   it("IEP + Bankruptcy uses one objective per domain and does not duplicate inventory rows", async () => {
@@ -315,7 +313,7 @@ describe("Adaptive Engine 1 V2", () => {
       .filter((section) => section.domainId === "iep")
       .flatMap((section) => section.missingDocuments.map((item) => item.expectedDocumentType));
     expect(afterObjective.documentDiscovery?.missingDocuments ?? []).toEqual([]);
-    expect(missingTypes.filter((type) => type === "Prior Written Notice")).toHaveLength(1);
+    expect(missingTypes).toEqual([]);
   });
 
   it("IEP + Bankruptcy + Medicaid keeps domains isolated in structure map groups", async () => {

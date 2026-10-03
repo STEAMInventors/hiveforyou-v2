@@ -96,6 +96,29 @@ function readTransport(value: unknown, path: string): ClaimValueTransport {
   };
 }
 
+const ACTIVE_TRANSPORT_SLOTS_BY_KIND: Record<ClaimValueKind, readonly TransportSlot[]> = {
+  quantity: ["numberValue", "unit"],
+  text: ["textValue"],
+  code: ["codeValue"],
+  boolean: ["booleanValue"],
+  entity_ref: ["entityId"],
+  date: ["dateValue"],
+  period: ["periodStart", "periodEnd"],
+  unknown: [],
+};
+
+/** OpenAI strict schema requires every slot; models often fill inactive ones — discard before validation. */
+function scrubInactiveTransportSlots(transport: ClaimValueTransport): ClaimValueTransport {
+  const active = new Set<string>(ACTIVE_TRANSPORT_SLOTS_BY_KIND[transport.kind]);
+  const scrubbed = { ...transport };
+  for (const slot of TRANSPORT_SLOTS) {
+    if (!active.has(slot)) {
+      scrubbed[slot] = null;
+    }
+  }
+  return scrubbed;
+}
+
 function assertNullSlots(
   transport: ClaimValueTransport,
   allowed: readonly TransportSlot[],
@@ -166,7 +189,7 @@ export function normalizeOpenAIClaimValue(
   options: NormalizeOpenAIClaimValueOptions = {},
 ): NormalizedOpenAIClaimValue {
   const path = options.path ?? "value";
-  const transport = readTransport(value, path);
+  const transport = scrubInactiveTransportSlots(readTransport(value, path));
   const claimUnit = options.claimUnit;
 
   switch (transport.kind) {

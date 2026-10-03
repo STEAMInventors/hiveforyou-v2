@@ -26,6 +26,7 @@ Operational memory for HiveForYou V2 agents. **Do not read all of `brain/` recur
 - [vision.md](product/vision.md)
 - [principles.md](product/principles.md)
 - [v2-experience.md](product/v2-experience.md)
+- [HiveForYou-brand-guide.md](HiveForYou-brand-guide.md) — logos, typography, Pro lockup
 - [monetization.md](product/monetization.md)
 
 ## Architecture

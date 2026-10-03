@@ -154,7 +154,8 @@ export async function defaultOpenAICreateResponse(input: {
   return response.json();
 }
 
-function extractOutputText(payload: unknown): string | null {
+/** Reads JSON/text from a Responses API payload (top-level or nested output). */
+export function extractOpenAIResponseOutputText(payload: unknown): string | null {
   if (typeof payload !== "object" || payload === null) {
     return null;
   }
@@ -308,7 +309,7 @@ export class OpenAIDiscoverEngine implements DiscoverEngine {
       body,
     });
 
-    const outputText = extractOutputText(responsePayload);
+    const outputText = extractOpenAIResponseOutputText(responsePayload);
     if (!outputText) {
       throw new Error("MALFORMED_PROPOSAL");
     }

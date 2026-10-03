@@ -26,7 +26,13 @@ import type {
 
 } from "./types";
 
-import { CLAIM_ROLES, CANONICAL_STUDY_PROPOSAL_SCHEMA_V3, CASE_INTELLIGENCE_SCHEMA_V3 } from "./types";
+import {
+  CLAIM_ROLES,
+  CANONICAL_STUDY_PROPOSAL_SCHEMA_V3,
+  CANONICAL_STUDY_PROPOSAL_SCHEMA_V5,
+  CASE_INTELLIGENCE_SCHEMA_V3,
+} from "./types";
+import { emptyVoiceProposal } from "../../projections/voice";
 
 import { validateCanonicalCaseSnapshot, validateCanonicalStudyProposal } from "./validate";
 
@@ -1285,6 +1291,16 @@ describe("case-intelligence/3 contracts", () => {
   });
 
 
+
+  it("accepts canonical-study-proposal/5 with nullable voiceProposal tokens", () => {
+    const proposal = {
+      ...validProposal(),
+      schemaVersion: CANONICAL_STUDY_PROPOSAL_SCHEMA_V5,
+      voiceProposal: emptyVoiceProposal(),
+    };
+    const parsed = validateCanonicalStudyProposal(JSON.parse(JSON.stringify(proposal)));
+    expect(parsed.ok).toBe(true);
+  });
 
   it("accepts a canonical-study-proposal/3 document", () => {
 

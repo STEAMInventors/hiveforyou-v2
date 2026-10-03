@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 
-import { IEP_AUDIENCE_ROLES } from "@hiveforyou/domain-packs";
+import { requireDiscoverPack } from "@hiveforyou/domain-packs";
+
+const IEP_AUDIENCE_ROLES = requireDiscoverPack("iep").audienceRoles ?? [];
 
 import { loadDiscoverPrompt } from "../prompts/load-discover-prompt";
 import { composeDiscoverPromptInputs } from "./compose-discover-prompt-inputs";

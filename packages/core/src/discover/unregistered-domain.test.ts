@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 
-import { IEP_DISCOVER_PACK } from "@hiveforyou/domain-packs";
+import { requireDiscoverPack } from "@hiveforyou/domain-packs";
+
+const IEP_DISCOVER_PACK = requireDiscoverPack("iep");
 import { HIVE_DISCOVER_RESOLUTION_SCHEMA } from "@hiveforyou/shared/discover";
 
 import { buildStructureMap } from "./build-structure-map";

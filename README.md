@@ -12,7 +12,8 @@ HiveForYou is a domain-agnostic evidence-to-case-intelligence platform. Users up
 | `packages/core` | Hive core / engines (future) |
 | `packages/intake` | Upload & intake (future) |
 | `packages/canonical` | Canonical model & persistence (future) |
-| `packages/domain-packs` | Domain-specific packs (future) |
+| `packages/domain-pack` | Generic Domain Pack contracts and registry runtime |
+| `domain-packs/` | Domain knowledge (IEP, Medicaid, Bankruptcy) and the one pack registry |
 | `packages/shared` | Shared contracts & types |
 | `brain/` | Operational memory for agents — start at [`brain/INDEX.md`](brain/INDEX.md) |
 | `supabase/migrations` | Postgres migrations (future) |

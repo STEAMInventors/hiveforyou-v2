@@ -1,8 +1,10 @@
 import {
   CASE_INTELLIGENCE_V3_JSON_SCHEMA,
   CANONICAL_STUDY_PROPOSAL_V3_JSON_SCHEMA,
+  CANONICAL_STUDY_PROPOSAL_V5_JSON_SCHEMA,
   type JsonSchema,
 } from "./json-schema";
+import { CANONICAL_STUDY_PROPOSAL_SCHEMA_V5 } from "./types";
 import type { CanonicalCaseSnapshot, CanonicalStudyProposal } from "./types";
 
 export type ContractViolation = {
@@ -18,7 +20,15 @@ export function validateCanonicalStudyProposal(
   input: unknown,
 ): ContractValidationResult<CanonicalStudyProposal> {
   const errors: ContractViolation[] = [];
-  validateAgainstSchema(input, CANONICAL_STUDY_PROPOSAL_V3_JSON_SCHEMA, "$", errors);
+  const schemaVersion =
+    input && typeof input === "object"
+      ? (input as { schemaVersion?: string }).schemaVersion
+      : undefined;
+  const proposalSchema =
+    schemaVersion === CANONICAL_STUDY_PROPOSAL_SCHEMA_V5
+      ? CANONICAL_STUDY_PROPOSAL_V5_JSON_SCHEMA
+      : CANONICAL_STUDY_PROPOSAL_V3_JSON_SCHEMA;
+  validateAgainstSchema(input, proposalSchema, "$", errors);
   if (errors.length > 0) {
     return { ok: false, errors };
   }

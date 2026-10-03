@@ -1,0 +1,660 @@
+import type { DomainPackVocabularyTerm } from "@hiveforyou/domain-pack";
+
+/**
+ * IEP domain-pack vocabulary.
+ *
+ * Purpose: recognition and normalization only. Helps the model expand
+ * abbreviations and map surface forms in documents to a stable termId.
+ * Not legal definitions, not constructs, not findings.
+ *
+ * - termId: stable snake_case id; safe to reuse as a construct part.
+ * - abbreviations: exact short forms seen in documents.
+ * - aliases: other full-text forms that mean the same thing.
+ * - contextRequired: abbreviation has common non-IEP meanings; expand only
+ *   when surrounding text supports it, otherwise leave unexpanded.
+ * - jurisdiction: set only for state-specific terms (US state code).
+ * - regulation: 34 CFR citation where the term is defined or governed.
+ */
+export const IEP_VOCABULARY: readonly DomainPackVocabularyTerm[] = [
+  // ── Plan and its parts ────────────────────────────────────────────
+  {
+    termId: "iep",
+    label: "Individualized Education Program",
+    category: "plan",
+    abbreviations: ["IEP"],
+    aliases: ["individualized education plan"],
+    regulation: "34 CFR 300.320",
+  },
+  {
+    termId: "plaafp",
+    label: "Present levels of academic achievement and functional performance",
+    category: "plan",
+    abbreviations: ["PLAAFP", "PLAAFPs", "PLEP", "PLOP", "PLP"],
+    aliases: ["present levels", "present levels of performance"],
+    regulation: "34 CFR 300.320(a)(1)",
+  },
+  {
+    termId: "annual_goal",
+    label: "Annual goal",
+    category: "plan",
+    aliases: ["measurable annual goal", "IEP goal"],
+    regulation: "34 CFR 300.320(a)(2)",
+  },
+  {
+    termId: "short_term_objective",
+    label: "Short-term objective",
+    category: "plan",
+    abbreviations: ["STO", "STOs"],
+    aliases: ["benchmark", "short-term objectives"],
+  },
+  {
+    termId: "progress_report",
+    label: "Progress report",
+    category: "plan",
+    aliases: ["IEP progress report", "report of progress"],
+    regulation: "34 CFR 300.320(a)(3)",
+  },
+  {
+    termId: "accommodation",
+    label: "Accommodation",
+    category: "plan",
+    aliases: ["accommodations", "testing accommodations"],
+  },
+  {
+    termId: "modification",
+    label: "Modification",
+    category: "plan",
+    aliases: ["modifications", "modified curriculum"],
+  },
+  {
+    termId: "supplementary_aids_and_services",
+    label: "Supplementary aids and services",
+    category: "plan",
+    aliases: ["supplementary aids"],
+    regulation: "34 CFR 300.42",
+  },
+  {
+    termId: "transition_plan",
+    label: "Postsecondary transition plan",
+    category: "plan",
+    aliases: ["transition plan", "transition services"],
+    regulation: "34 CFR 300.43",
+  },
+  {
+    termId: "iep_amendment",
+    label: "IEP amendment",
+    category: "plan",
+    aliases: ["amendment", "amended IEP", "amendment without a meeting"],
+    regulation: "34 CFR 300.324(a)(4)",
+  },
+  {
+    termId: "draft_iep",
+    label: "Draft IEP",
+    category: "plan",
+    aliases: ["proposed IEP", "draft"],
+  },
+
+  // ── Services ──────────────────────────────────────────────────────
+  {
+    termId: "special_education",
+    label: "Special education",
+    category: "service",
+    abbreviations: ["SPED", "SpEd", "SE"],
+    contextRequired: true,
+    regulation: "34 CFR 300.39",
+  },
+  {
+    termId: "specially_designed_instruction",
+    label: "Specially designed instruction",
+    category: "service",
+    abbreviations: ["SDI"],
+    regulation: "34 CFR 300.39(b)(3)",
+  },
+  {
+    termId: "related_services",
+    label: "Related services",
+    category: "service",
+    regulation: "34 CFR 300.34",
+  },
+  {
+    termId: "speech_language_therapy",
+    label: "Speech-language therapy",
+    category: "service",
+    abbreviations: ["SLT", "ST"],
+    aliases: [
+      "speech therapy",
+      "speech-language services",
+      "speech and language services",
+      "speech",
+    ],
+    contextRequired: true,
+  },
+  {
+    termId: "occupational_therapy",
+    label: "Occupational therapy",
+    category: "service",
+    abbreviations: ["OT"],
+    contextRequired: true,
+  },
+  {
+    termId: "physical_therapy",
+    label: "Physical therapy",
+    category: "service",
+    abbreviations: ["PT"],
+    contextRequired: true,
+  },
+  {
+    termId: "counseling_services",
+    label: "Counseling services",
+    category: "service",
+    aliases: ["counseling", "school counseling"],
+  },
+  {
+    termId: "assistive_technology",
+    label: "Assistive technology",
+    category: "service",
+    abbreviations: ["AT"],
+    aliases: ["assistive technology device", "assistive technology service"],
+    contextRequired: true,
+    regulation: "34 CFR 300.5; 300.6",
+  },
+  {
+    termId: "extended_school_year",
+    label: "Extended school year services",
+    category: "service",
+    abbreviations: ["ESY"],
+    aliases: ["summer services"],
+    regulation: "34 CFR 300.106",
+  },
+  {
+    termId: "paraprofessional_support",
+    label: "Paraprofessional support",
+    category: "service",
+    aliases: ["para", "paraprofessional", "aide", "1:1 aide", "instructional aide"],
+  },
+  {
+    termId: "transportation",
+    label: "Special transportation",
+    category: "service",
+    aliases: ["transportation", "special transportation"],
+  },
+
+  // ── Service delivery terms (feed quantity/unit parsing) ───────────
+  {
+    termId: "service_frequency",
+    label: "Frequency",
+    category: "service_delivery",
+    aliases: ["frequency", "times per week", "sessions per week"],
+  },
+  {
+    termId: "service_session_length",
+    label: "Session length",
+    category: "service_delivery",
+    aliases: ["minutes per session", "session length"],
+  },
+  {
+    termId: "service_duration",
+    label: "Duration of service",
+    category: "service_delivery",
+    aliases: ["duration", "projected duration", "service dates"],
+    regulation: "34 CFR 300.320(a)(7)",
+  },
+  {
+    termId: "service_location",
+    label: "Location of service",
+    category: "service_delivery",
+    aliases: ["location", "setting"],
+  },
+  {
+    termId: "push_in",
+    label: "Push-in service",
+    category: "service_delivery",
+    aliases: ["push in", "push-in", "in-class support"],
+  },
+  {
+    termId: "pull_out",
+    label: "Pull-out service",
+    category: "service_delivery",
+    aliases: ["pull out", "pull-out", "resource room"],
+  },
+  {
+    termId: "consult_service",
+    label: "Consultation service",
+    category: "service_delivery",
+    aliases: ["consult", "consultation", "indirect service"],
+  },
+
+  // ── Placement ─────────────────────────────────────────────────────
+  {
+    termId: "least_restrictive_environment",
+    label: "Least restrictive environment",
+    category: "placement",
+    abbreviations: ["LRE"],
+    regulation: "34 CFR 300.114",
+  },
+  {
+    termId: "general_education",
+    label: "General education",
+    category: "placement",
+    abbreviations: ["GE", "Gen Ed", "GenEd"],
+    aliases: ["general education classroom", "regular education", "reg ed"],
+    contextRequired: true,
+  },
+  {
+    termId: "inclusion",
+    label: "Inclusion",
+    category: "placement",
+    aliases: ["co-teach", "co-taught", "inclusion class", "ICT", "integrated co-teaching"],
+  },
+  {
+    termId: "self_contained",
+    label: "Self-contained classroom",
+    category: "placement",
+    aliases: ["self-contained", "special class", "life skills"],
+  },
+
+  // ── Evaluation ────────────────────────────────────────────────────
+  {
+    termId: "initial_evaluation",
+    label: "Initial evaluation",
+    category: "evaluation",
+    regulation: "34 CFR 300.301",
+  },
+  {
+    termId: "reevaluation",
+    label: "Reevaluation",
+    category: "evaluation",
+    aliases: ["triennial", "tri", "three-year reevaluation"],
+    regulation: "34 CFR 300.303",
+  },
+  {
+    termId: "reed",
+    label: "Review of existing evaluation data",
+    category: "evaluation",
+    abbreviations: ["REED"],
+    regulation: "34 CFR 300.305",
+  },
+  {
+    termId: "iee",
+    label: "Independent educational evaluation",
+    category: "evaluation",
+    abbreviations: ["IEE"],
+    regulation: "34 CFR 300.502",
+  },
+  {
+    termId: "fie",
+    label: "Full and individual evaluation",
+    category: "evaluation",
+    abbreviations: ["FIE", "FIIE"],
+    aliases: ["full individual evaluation", "full and individual initial evaluation"],
+    jurisdiction: "TX",
+  },
+  {
+    termId: "fba",
+    label: "Functional behavioral assessment",
+    category: "evaluation",
+    abbreviations: ["FBA"],
+  },
+  {
+    termId: "psychoeducational_evaluation",
+    label: "Psychoeducational evaluation",
+    category: "evaluation",
+    aliases: ["psych-ed", "psychoeducational report", "psych eval"],
+  },
+
+  // ── Behavior ──────────────────────────────────────────────────────
+  {
+    termId: "bip",
+    label: "Behavior intervention plan",
+    category: "behavior",
+    abbreviations: ["BIP"],
+    aliases: ["behavior plan", "behavioral intervention plan"],
+  },
+  {
+    termId: "pbis",
+    label: "Positive behavioral interventions and supports",
+    category: "behavior",
+    abbreviations: ["PBIS"],
+    regulation: "34 CFR 300.324(a)(2)(i)",
+  },
+  {
+    termId: "mdr",
+    label: "Manifestation determination review",
+    category: "behavior",
+    abbreviations: ["MDR"],
+    aliases: ["manifestation determination"],
+    regulation: "34 CFR 300.530(e)",
+  },
+
+  // ── Progress measurement (pair with measure/task/administration) ──
+  {
+    termId: "wcpm",
+    label: "Words correct per minute",
+    category: "progress_measure",
+    abbreviations: ["WCPM", "CWPM"],
+    aliases: ["words correct per minute", "correct words per minute"],
+  },
+  {
+    termId: "oral_reading_fluency",
+    label: "Oral reading fluency",
+    category: "progress_measure",
+    abbreviations: ["ORF"],
+  },
+  {
+    termId: "curriculum_based_measurement",
+    label: "Curriculum-based measurement",
+    category: "progress_measure",
+    abbreviations: ["CBM"],
+    aliases: ["curriculum-based measure", "probe"],
+  },
+  {
+    termId: "percent_accuracy",
+    label: "Percent accuracy",
+    category: "progress_measure",
+    aliases: ["% accuracy", "accuracy", "percent correct"],
+  },
+  {
+    termId: "trials_criterion",
+    label: "Trials criterion",
+    category: "progress_measure",
+    aliases: ["out of trials", "x/y trials", "opportunities"],
+  },
+  {
+    termId: "baseline",
+    label: "Baseline",
+    category: "progress_measure",
+    aliases: ["baseline data", "current baseline"],
+  },
+  {
+    termId: "data_collection_method",
+    label: "Data collection method",
+    category: "progress_measure",
+    aliases: ["method of measurement", "evaluation method", "how progress will be measured"],
+  },
+
+  // ── Eligibility categories (IDEA) ─────────────────────────────────
+  {
+    termId: "eligibility_autism",
+    label: "Autism",
+    category: "eligibility",
+    abbreviations: ["AU", "AUT"],
+    contextRequired: true,
+    regulation: "34 CFR 300.8(c)(1)",
+  },
+  {
+    termId: "eligibility_deaf_blindness",
+    label: "Deaf-blindness",
+    category: "eligibility",
+    abbreviations: ["DB"],
+    contextRequired: true,
+    regulation: "34 CFR 300.8(c)(2)",
+  },
+  {
+    termId: "eligibility_deafness",
+    label: "Deafness",
+    category: "eligibility",
+    regulation: "34 CFR 300.8(c)(3)",
+  },
+  {
+    termId: "eligibility_emotional_disturbance",
+    label: "Emotional disturbance",
+    category: "eligibility",
+    abbreviations: ["ED", "EBD"],
+    aliases: ["emotional disability", "emotional/behavioral disorder"],
+    contextRequired: true,
+    regulation: "34 CFR 300.8(c)(4)",
+  },
+  {
+    termId: "eligibility_hearing_impairment",
+    label: "Hearing impairment",
+    category: "eligibility",
+    abbreviations: ["HI"],
+    aliases: ["auditory impairment"],
+    contextRequired: true,
+    regulation: "34 CFR 300.8(c)(5)",
+  },
+  {
+    termId: "eligibility_intellectual_disability",
+    label: "Intellectual disability",
+    category: "eligibility",
+    abbreviations: ["ID"],
+    contextRequired: true,
+    regulation: "34 CFR 300.8(c)(6)",
+  },
+  {
+    termId: "eligibility_multiple_disabilities",
+    label: "Multiple disabilities",
+    category: "eligibility",
+    abbreviations: ["MD"],
+    contextRequired: true,
+    regulation: "34 CFR 300.8(c)(7)",
+  },
+  {
+    termId: "eligibility_orthopedic_impairment",
+    label: "Orthopedic impairment",
+    category: "eligibility",
+    abbreviations: ["OI"],
+    contextRequired: true,
+    regulation: "34 CFR 300.8(c)(8)",
+  },
+  {
+    termId: "eligibility_other_health_impairment",
+    label: "Other health impairment",
+    category: "eligibility",
+    abbreviations: ["OHI"],
+    regulation: "34 CFR 300.8(c)(9)",
+  },
+  {
+    termId: "eligibility_specific_learning_disability",
+    label: "Specific learning disability",
+    category: "eligibility",
+    abbreviations: ["SLD", "LD"],
+    aliases: ["learning disability"],
+    regulation: "34 CFR 300.8(c)(10)",
+  },
+  {
+    termId: "eligibility_speech_language_impairment",
+    label: "Speech or language impairment",
+    category: "eligibility",
+    abbreviations: ["SI", "SLI", "S/L"],
+    contextRequired: true,
+    regulation: "34 CFR 300.8(c)(11)",
+  },
+  {
+    termId: "eligibility_traumatic_brain_injury",
+    label: "Traumatic brain injury",
+    category: "eligibility",
+    abbreviations: ["TBI"],
+    regulation: "34 CFR 300.8(c)(12)",
+  },
+  {
+    termId: "eligibility_visual_impairment",
+    label: "Visual impairment including blindness",
+    category: "eligibility",
+    abbreviations: ["VI"],
+    contextRequired: true,
+    regulation: "34 CFR 300.8(c)(13)",
+  },
+  {
+    termId: "eligibility_developmental_delay",
+    label: "Developmental delay",
+    category: "eligibility",
+    abbreviations: ["DD"],
+    contextRequired: true,
+    regulation: "34 CFR 300.8(b)",
+  },
+
+  // ── Meetings and team ─────────────────────────────────────────────
+  {
+    termId: "iep_team",
+    label: "IEP team",
+    category: "meeting",
+    aliases: ["IEP committee", "team"],
+    regulation: "34 CFR 300.321",
+  },
+  {
+    termId: "ard_committee",
+    label: "Admission, review, and dismissal committee",
+    category: "meeting",
+    abbreviations: ["ARD", "ARDC"],
+    aliases: ["ARD meeting", "ARD committee"],
+    jurisdiction: "TX",
+  },
+  {
+    termId: "annual_review",
+    label: "Annual review",
+    category: "meeting",
+    aliases: ["annual IEP meeting", "annual ARD"],
+    regulation: "34 CFR 300.324(b)",
+  },
+  {
+    termId: "parent_participation",
+    label: "Parent participation",
+    category: "meeting",
+    aliases: ["parent input", "parent concerns"],
+    regulation: "34 CFR 300.322",
+  },
+
+  // ── Staff roles (document actors, not audience roles) ─────────────
+  {
+    termId: "case_manager",
+    label: "Case manager",
+    category: "staff_role",
+    aliases: ["case carrier", "IEP manager"],
+  },
+  {
+    termId: "slp",
+    label: "Speech-language pathologist",
+    category: "staff_role",
+    abbreviations: ["SLP", "SLP-A", "SLPA"],
+    aliases: ["speech pathologist", "speech therapist"],
+  },
+  {
+    termId: "school_psychologist",
+    label: "School psychologist",
+    category: "staff_role",
+    aliases: ["school psych"],
+  },
+  {
+    termId: "lssp",
+    label: "Licensed specialist in school psychology",
+    category: "staff_role",
+    abbreviations: ["LSSP"],
+    jurisdiction: "TX",
+  },
+  {
+    termId: "educational_diagnostician",
+    label: "Educational diagnostician",
+    category: "staff_role",
+    aliases: ["diagnostician", "educational diag"],
+  },
+  {
+    termId: "bcba",
+    label: "Board Certified Behavior Analyst",
+    category: "staff_role",
+    abbreviations: ["BCBA"],
+  },
+  {
+    termId: "lea_representative",
+    label: "Local education agency representative",
+    category: "staff_role",
+    abbreviations: ["LEA rep", "LEA"],
+    aliases: ["district representative", "administrator"],
+    regulation: "34 CFR 300.321(a)(4)",
+  },
+
+  // ── Procedural notices and rights ─────────────────────────────────
+  {
+    termId: "fape",
+    label: "Free appropriate public education",
+    category: "procedure",
+    abbreviations: ["FAPE"],
+    regulation: "34 CFR 300.17",
+  },
+  {
+    termId: "prior_written_notice",
+    label: "Prior written notice",
+    category: "procedure",
+    abbreviations: ["PWN"],
+    aliases: ["notice of action"],
+    regulation: "34 CFR 300.503",
+  },
+  {
+    termId: "procedural_safeguards_notice",
+    label: "Procedural safeguards notice",
+    category: "procedure",
+    aliases: ["notice of procedural safeguards", "parent rights", "procedural safeguards"],
+    regulation: "34 CFR 300.504",
+  },
+  {
+    termId: "parental_consent",
+    label: "Parental consent",
+    category: "procedure",
+    aliases: ["consent", "consent for evaluation", "consent for services"],
+    regulation: "34 CFR 300.300",
+  },
+  {
+    termId: "transfer_of_rights",
+    label: "Transfer of rights at age of majority",
+    category: "procedure",
+    aliases: ["age of majority"],
+    regulation: "34 CFR 300.520",
+  },
+  {
+    termId: "state_complaint",
+    label: "State complaint",
+    category: "procedure",
+    regulation: "34 CFR 300.153",
+  },
+  {
+    termId: "mediation",
+    label: "Mediation",
+    category: "procedure",
+    regulation: "34 CFR 300.506",
+  },
+  {
+    termId: "due_process_complaint",
+    label: "Due process complaint",
+    category: "procedure",
+    aliases: ["due process", "due process hearing request"],
+    regulation: "34 CFR 300.507",
+  },
+  {
+    termId: "resolution_meeting",
+    label: "Resolution meeting",
+    category: "procedure",
+    aliases: ["resolution session"],
+    regulation: "34 CFR 300.510",
+  },
+  {
+    termId: "stay_put",
+    label: "Stay put",
+    category: "procedure",
+    aliases: ["stay-put", "pendency"],
+    regulation: "34 CFR 300.518",
+  },
+
+  // ── Adjacent frameworks (recognize, keep distinct from IDEA) ──────
+  {
+    termId: "idea",
+    label: "Individuals with Disabilities Education Act",
+    category: "framework",
+    abbreviations: ["IDEA", "IDEIA"],
+  },
+  {
+    termId: "section_504_plan",
+    label: "Section 504 plan",
+    category: "framework",
+    abbreviations: ["504"],
+    aliases: ["504 plan", "Section 504"],
+    contextRequired: true,
+    regulation: "34 CFR 104",
+  },
+  {
+    termId: "mtss",
+    label: "Multi-tiered system of supports",
+    category: "framework",
+    abbreviations: ["MTSS", "RTI", "RtI"],
+    aliases: ["response to intervention"],
+  },
+] as const;

@@ -2,21 +2,33 @@ import {
   CANONICAL_STUDY_PROPOSAL_SCHEMA_V3,
   type CanonicalStudyProposal,
 } from "@hiveforyou/shared/case-intelligence/3";
+import {
+  CANONICAL_STUDY_PROPOSAL_SCHEMA_V4,
+  type CanonicalStudyProposalV4,
+} from "@hiveforyou/shared/case-intelligence/4";
 import type { CanonicalStudyContext } from "@hiveforyou/shared/canonical-study";
 
+import type { RecognitionVocabularyPromptRow } from "@hiveforyou/domain-packs";
+
+import type { ExtractionLocatorCatalog } from "../provenance/serialize-extraction-locator-catalog";
 import type { CanonicalStudyPromptInputs } from "../prompts/compose-canonical-study-inputs";
 import { OpenAICanonicalStudyEngineV3 } from "./openai-engine-v3";
+import { OpenAICanonicalStudyEngineV4 } from "./openai-engine-v4";
 
 export type CanonicalStudyEngineV3Runtime = {
   composed: CanonicalStudyPromptInputs;
   sourceDocumentBytes?: Map<string, Uint8Array>;
+  extractionLocatorCatalog?: ExtractionLocatorCatalog | null;
+  recognitionVocabulary?: RecognitionVocabularyPromptRow[] | null;
 };
+
+export type CanonicalStudyEngineProposal = CanonicalStudyProposal | CanonicalStudyProposalV4;
 
 export interface CanonicalStudyEngineV3 {
   study(
     context: CanonicalStudyContext,
     runtime?: CanonicalStudyEngineV3Runtime,
-  ): Promise<CanonicalStudyProposal>;
+  ): Promise<CanonicalStudyEngineProposal>;
 }
 
 export class UnconfiguredProductionStudyEngineV3 implements CanonicalStudyEngineV3 {
@@ -162,8 +174,69 @@ function normalizeEngineEnv(
   return input;
 }
 
+/** Fixture engine for canonical-study-proposal/4. */
+export class FixtureCanonicalStudyEngineV4 implements CanonicalStudyEngineV3 {
+  async study(context: CanonicalStudyContext): Promise<CanonicalStudyProposalV4> {
+    const firstDoc = context.sourceDocuments[0];
+    const docId =
+      firstDoc?.discoveryDocumentId ?? firstDoc?.stagedDocumentId ?? "missing-doc";
+    const logical = context.logicalDocuments[0];
+    const evidenceRef = {
+      id: "fixture-v4-evidence-1",
+      sourceDocumentId: logical?.sourceDocumentId ?? docId,
+      logicalDocumentId: logical?.id,
+      sourceType: "document" as const,
+      quote: "FIXTURE v4 quote",
+      page: logical?.pageStart ?? 1,
+    };
+    const entityStudent = "fixture-v4-entity-student";
+    const claimServices = "fixture-v4-claim-services";
+    return {
+      schemaVersion: CANONICAL_STUDY_PROPOSAL_SCHEMA_V4,
+      domainId: context.domainId,
+      entities: [
+        {
+          id: entityStudent,
+          entityType: "student",
+          label: "FIXTURE Student",
+          aliases: [],
+          evidenceRefs: [evidenceRef],
+        },
+      ],
+      claims: [
+        {
+          id: claimServices,
+          subjectEntityId: entityStudent,
+          construct: {
+            measure: "weekly_specialized_instruction_minutes",
+            task: null,
+            administration: null,
+          },
+          value: { kind: "quantity", numberValue: 300, unit: "minutes" },
+          unit: "minutes",
+          modality: "required",
+          evidenceRefs: [evidenceRef],
+        },
+      ],
+      conflicts: [],
+      missingInformation: [],
+      modelMetadata: {
+        providerId: "fixture-canonical-study-engine-v4",
+        modelId: "fixture-v4",
+        proposalMode: "fixture",
+      },
+      proposedAt: new Date().toISOString(),
+    };
+  }
+}
+
+export type CreateCanonicalStudyEngineOptions = {
+  promptVersion?: "v3" | "v4";
+};
+
 export function createCanonicalStudyEngineV3FromEnv(
   input: string | CanonicalStudyEngineV3Env | undefined,
+  options?: CreateCanonicalStudyEngineOptions,
 ): {
   engine: CanonicalStudyEngineV3;
   mode: StudyEngineV3Mode;
@@ -172,8 +245,17 @@ export function createCanonicalStudyEngineV3FromEnv(
 } {
   const env = normalizeEngineEnv(input);
   const normalized = env.engine?.trim().toLowerCase();
+  const promptVersion = options?.promptVersion ?? "v3";
 
   if (normalized === "fixture") {
+    if (promptVersion === "v4") {
+      return {
+        engine: new FixtureCanonicalStudyEngineV4(),
+        mode: "fixture",
+        providerId: "fixture-canonical-study-engine-v4",
+        modelId: "fixture-v4",
+      };
+    }
     return {
       engine: new FixtureCanonicalStudyEngineV3(),
       mode: "fixture",
@@ -191,7 +273,23 @@ export function createCanonicalStudyEngineV3FromEnv(
       return {
         engine: new UnconfiguredProductionStudyEngineV3(),
         mode: "openai",
-        providerId: "openai-canonical-study-engine-v3",
+        providerId:
+          promptVersion === "v4"
+            ? "openai-canonical-study-engine-v4"
+            : "openai-canonical-study-engine-v3",
+        modelId: model,
+      };
+    }
+    if (promptVersion === "v4") {
+      return {
+        engine: new OpenAICanonicalStudyEngineV4({
+          apiKey,
+          model,
+          reasoningEffort,
+          maxOutputTokens,
+        }),
+        mode: "openai",
+        providerId: "openai-canonical-study-engine-v4",
         modelId: model,
       };
     }

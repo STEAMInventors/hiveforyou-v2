@@ -10,9 +10,15 @@
     "lint": "pnpm -r lint",
     "validate": "pnpm typecheck",
     "build": "pnpm --filter @hiveforyou/web build",
-    "test": "pnpm -r --if-present test"
+    "test": "pnpm -r --if-present test",
+    "rulebook:audit": "tsx scripts/rulebook-audit.ts",
+    "rulebook:scaffold": "tsx scripts/rulebook-scaffold.ts",
+    "rulebook:report": "tsx scripts/rulebook-report.ts"
   },
   "devDependencies": {
+    "@hiveforyou/domain-pack": "workspace:*",
+    "@hiveforyou/domain-packs": "workspace:*",
+    "tsx": "^4.19.2",
     "typescript": "^5.7.2"
   }
 }

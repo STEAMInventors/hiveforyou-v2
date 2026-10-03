@@ -385,6 +385,7 @@ function runToRow(run: CanonicalStudyRun, userId: string): HiveRow {
     error_message_safe: run.errorMessage ?? null,
     validation_result_json: run.validationResult ?? null,
     case_intelligence_version: run.caseIntelligenceVersion ?? null,
+    intake_run_id: run.intakeRunId ?? null,
     created_at: run.startedAt,
     updated_at: new Date().toISOString(),
   });
@@ -394,6 +395,7 @@ function mapRun(row: HiveRow): CanonicalStudyRun {
   return {
     studyRunId: text(row, "id"),
     caseId: text(row, "case_id"),
+    intakeRunId: nullableText(row, "intake_run_id") ?? undefined,
     idempotencyKey: text(row, "idempotency_key"),
     studyContextId: text(row, "study_context_id"),
     domainId: text(row, "domain_id"),

@@ -1,0 +1,103 @@
+﻿/* Legacy artifact CSS — Intake Evidence Workspace (.intake-docs)
+ * Migrate to hiveforyou.css (.hfy-*) then delete this file.
+ * Loaded after Tailwind via styles/legacy/index.css
+ */
+
+/* Intake documents workspace (artifact HTML) */
+.intake-docs a {
+  color: #3c4043;
+}
+.intake-docs a:hover {
+  color: #0d0d0d;
+}
+.intake-docs button:focus-visible,
+.intake-docs a:focus-visible {
+  outline: 2px solid #0d0d0d;
+  outline-offset: 2px;
+}
+.intake-docs .ring {
+  position: relative;
+  transition: box-shadow 0.25s ease;
+}
+.intake-docs .ring::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: conic-gradient(from 200deg, #4285f4, #ea4335, #fbbc05, #34a853, #4285f4);
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  pointer-events: none;
+}
+.intake-docs .ring:hover::before,
+.intake-docs .ring:focus-within::before {
+  opacity: 0.85;
+}
+.intake-docs .ring:hover {
+  box-shadow:
+    -10px 10px 30px rgba(66, 133, 244, 0.1),
+    10px 10px 30px rgba(52, 168, 83, 0.08) !important;
+}
+.intake-docs .frow {
+  transition: background 0.15s ease;
+}
+.intake-docs .frow:hover {
+  background: #f8f9fa !important;
+}
+.intake-docs .frow .rm {
+  opacity: 0.55;
+  transition:
+    opacity 0.15s ease,
+    background 0.15s ease,
+    color 0.15s ease;
+}
+.intake-docs .frow:hover .rm {
+  opacity: 1;
+}
+.intake-docs .rm:hover {
+  background: #fce8e6 !important;
+  color: #c5221f !important;
+}
+.intake-docs .undo:hover {
+  background: #e8f0fe !important;
+  color: #1a56c4 !important;
+}
+.intake-docs .chg:hover {
+  background: #e8f0fe !important;
+  border-color: #4285f4 !important;
+  color: #1a56c4 !important;
+}
+.intake-docs .ghost:hover {
+  background: #f1f3f4 !important;
+}
+.intake-docs .go:hover {
+  background: #2b2b2b !important;
+}
+.intake-docs .go {
+  transition: background 0.2s ease;
+}
+@media (prefers-reduced-motion: reduce) {
+  .intake-docs .ring,
+  .intake-docs .ring::before,
+  .intake-docs .frow,
+  .intake-docs .frow .rm,
+  .intake-docs .go {
+    transition: none;
+  }
+}
+@media (max-width: 640px) {
+  .intake-docs .frow,
+  .intake-docs [aria-label="Uploaded documents"] > div:first-child {
+    grid-template-columns: minmax(0, 1fr) auto !important;
+  }
+  .intake-docs .frow > div:nth-child(2),
+  .intake-docs [aria-label="Uploaded documents"] > div:first-child > span:nth-child(2) {
+    display: none !important;
+  }
+}

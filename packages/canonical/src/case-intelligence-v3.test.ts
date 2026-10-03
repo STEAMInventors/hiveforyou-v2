@@ -72,4 +72,55 @@ describe("buildCanonicalCaseSnapshot", () => {
     expect(snapshot.unresolved.some((item) => item.kind === "missing_information")).toBe(true);
     expect(snapshot.sourceDocuments).toHaveLength(1);
   });
+
+  it("emits no changes when two claims share the same normalized value", () => {
+    const context = {
+      caseId: "case-1",
+      studyRunId: "run-1",
+      domainId: "special_education",
+      domainPackId: "pack",
+      domainPackVersion: "1",
+      sourceDocuments: [],
+    } as CanonicalStudyContext;
+
+    const validation: CanonicalStudyValidationResultV3 = {
+      status: "SUCCEEDED",
+      accepted: {
+        entities: [{ id: "e1", entityType: "person", label: "Student", evidenceRefs: [] }],
+        claims: [
+          {
+            id: "c1",
+            subjectEntityId: "e1",
+            construct: "service_minutes",
+            value: { kind: "quantity", amount: 45 },
+            unit: "minutes",
+            role: "planned",
+            occurredOn: "2023-10-01",
+            evidenceRefs: [],
+          },
+          {
+            id: "c2",
+            subjectEntityId: "e1",
+            construct: "service_minutes",
+            value: { kind: "quantity", amount: 45 },
+            unit: "minutes",
+            role: "planned",
+            occurredOn: "2026-10-01",
+            evidenceRefs: [],
+          },
+        ],
+        conflicts: [],
+        missingInformation: [],
+      },
+      rejected: [],
+      warnings: [],
+      unresolved: [],
+      validationErrors: [],
+      provenanceErrors: [],
+      integrityErrors: [],
+    };
+
+    const snapshot = buildCanonicalCaseSnapshot(context, validation, 1);
+    expect(snapshot.changes).toHaveLength(0);
+  });
 });

@@ -13,7 +13,10 @@
     "./domain-learning": "./src/domain-learning/index.ts",
     "./case-customer-context": "./src/case-customer-context/index.ts",
     "./projections": "./src/projections/index.ts",
-    "./case-intelligence/3": "./src/case-intelligence/3/index.ts"
+    "./case-intelligence/3": "./src/case-intelligence/3/index.ts",
+    "./case-intelligence/4": "./src/case-intelligence/4/index.ts",
+    "./intake": "./src/intake/index.ts",
+    "./pack-study": "./src/pack-study/index.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",

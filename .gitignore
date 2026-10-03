@@ -36,3 +36,5 @@ corpus/
 
 artifacts/
 model-output/
+
+domain-packs/**/rulebook/.audit/

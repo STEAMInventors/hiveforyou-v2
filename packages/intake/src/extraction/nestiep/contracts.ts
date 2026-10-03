@@ -1,0 +1,12 @@
+export type {
+  NestIepBoundingBox as BoundingBox,
+  NestIepExtractionMethod as ExtractionMethod,
+  NestIepPageQualityDecision as PageQualityDecision,
+  NestIepPageQualityMetrics as PageQualityMetrics,
+  NestIepRecoveredBlock as RecoveredBlock,
+  NestIepRecoveredLine as RecoveredLine,
+  NestIepRecoveredPage as RecoveredPage,
+  NestIepSourceIssue as SourceIssue,
+  NestIepSourceIssueCode as SourceIssueCode,
+  NestIepSupportedFileKind as SupportedFileKind,
+} from "@hiveforyou/shared/intake";

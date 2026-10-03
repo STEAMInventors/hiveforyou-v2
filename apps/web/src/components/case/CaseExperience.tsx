@@ -231,6 +231,7 @@ export function CaseExperience() {
         {evidenceClaimId && evidenceRefs.length ? (
           <EvidenceDrawer
             claimStatement={evidenceClaim?.statement}
+            studyRunId={bundle.canonicalSnapshot?.studyRunId}
             evidence={evidenceRefs}
             onClose={() => setEvidenceClaimId(null)}
           />

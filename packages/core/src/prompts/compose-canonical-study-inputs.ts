@@ -1,5 +1,6 @@
 import { CANONICAL_STUDY_PROPOSAL_SCHEMA } from "@hiveforyou/shared/canonical-study";
 import { CANONICAL_STUDY_PROPOSAL_SCHEMA_V3 } from "@hiveforyou/shared/case-intelligence/3";
+import { CANONICAL_STUDY_PROPOSAL_SCHEMA_V4 } from "@hiveforyou/shared/case-intelligence/4";
 
 import type { CanonicalStudyContext } from "@hiveforyou/shared/canonical-study";
 
@@ -27,7 +28,10 @@ export type CanonicalStudyPromptInputs = {
 
   customerContext?: CanonicalStudyContext["customerContext"];
 
-  outputSchema: typeof CANONICAL_STUDY_PROPOSAL_SCHEMA | typeof CANONICAL_STUDY_PROPOSAL_SCHEMA_V3;
+  outputSchema:
+    | typeof CANONICAL_STUDY_PROPOSAL_SCHEMA
+    | typeof CANONICAL_STUDY_PROPOSAL_SCHEMA_V3
+    | typeof CANONICAL_STUDY_PROPOSAL_SCHEMA_V4;
 
 };
 
@@ -92,9 +96,11 @@ export function composeCanonicalStudyPromptInputs(
     customerContext: context.customerContext,
 
     outputSchema:
-      prompt.version === "v3"
-        ? CANONICAL_STUDY_PROPOSAL_SCHEMA_V3
-        : CANONICAL_STUDY_PROPOSAL_SCHEMA,
+      prompt.version === "v4"
+        ? CANONICAL_STUDY_PROPOSAL_SCHEMA_V4
+        : prompt.version === "v3"
+          ? CANONICAL_STUDY_PROPOSAL_SCHEMA_V3
+          : CANONICAL_STUDY_PROPOSAL_SCHEMA,
 
   };
 

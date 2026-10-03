@@ -16,6 +16,8 @@ export type StudyRunErrorCode =
 export type CanonicalStudyRun = {
   studyRunId: string;
   caseId: string;
+  /** Set when study was started from an Intake Evidence Workspace run. */
+  intakeRunId?: string;
   idempotencyKey: string;
   studyContextId: string;
   domainId: string;

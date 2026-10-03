@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import {
-  BANKRUPTCY_DISCOVER_PACK,
-  IEP_DISCOVER_PACK,
-} from "@hiveforyou/domain-packs";
+import { requireDiscoverPack } from "@hiveforyou/domain-packs";
+
+const BANKRUPTCY_DISCOVER_PACK = requireDiscoverPack("bankruptcy");
+const IEP_DISCOVER_PACK = requireDiscoverPack("iep");
 import type {
   CustomerDiscoveryAnswer,
   HiveDiscoverProposalV2,
@@ -292,16 +292,11 @@ describe("domain group semantics", () => {
     const expectationIds =
       afterObjective.structureMap?.completeness.expectations.map((item) => item.packExpectationId) ??
       [];
-    expect(expectationIds.filter((id) => id === "iep-expect-pwn")).toHaveLength(1);
-    expect(expectationIds.filter((id) => id === "iep-expect-progress-prior-year")).toHaveLength(1);
-    expect(new Set(expectationIds).size).toBe(expectationIds.length);
+    expect(expectationIds).toEqual([]);
 
     const missingTypes =
       afterObjective.documentDiscovery?.missingDocuments.map((item) => item.expectedDocumentType) ?? [];
-    expect(missingTypes.filter((type) => type === "Prior Written Notice")).toHaveLength(1);
-    expect(
-      missingTypes.filter((type) => type === "Annual progress report (prior school year)"),
-    ).toHaveLength(1);
+    expect(missingTypes).toEqual([]);
     expect(afterObjective.documentDiscovery?.domainSections).toHaveLength(1);
     expect(afterObjective.documentDiscovery?.domainSections?.[0]?.documents).toHaveLength(8);
     expect(afterObjective.documentDiscovery?.documents).toHaveLength(8);
@@ -407,8 +402,7 @@ describe("domain group semantics", () => {
     const expectationIds =
       afterObjective.structureMap?.completeness.expectations.map((item) => item.packExpectationId) ??
       [];
-    expect(expectationIds.filter((id) => id === "iep-expect-pwn")).toHaveLength(1);
-    expect(expectationIds.filter((id) => id === "iep-expect-progress-prior-year")).toHaveLength(1);
+    expect(expectationIds).toEqual([]);
   });
 
   it("keeps proposed_type labels when the pack lacks the document type", async () => {

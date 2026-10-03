@@ -65,6 +65,13 @@ describe("loadCanonicalStudyPrompt", () => {
     expect(loadCanonicalStudyPrompt("v1").sha256).toBe(loaded.sha256);
   });
 
+  it("loads canonical-study-v4 methodology prompt", () => {
+    const loaded = loadCanonicalStudyPrompt("canonical-study-v4");
+    expect(loaded.version).toBe("v4");
+    expect(loaded.content).toContain("canonical-study-proposal/3");
+    expect(loaded.content).toContain("Runtime JSON contract");
+  });
+
   it("loads canonical-study-v3 methodology prompt", () => {
     const loaded = loadCanonicalStudyPrompt("canonical-study-v3");
     expect(loaded.version).toBe("v3");

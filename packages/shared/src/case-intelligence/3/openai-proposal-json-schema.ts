@@ -3,7 +3,12 @@
  * ClaimValue is a flat nullable object here. Normalization restores the canonical union.
  */
 
-import { CANONICAL_STUDY_PROPOSAL_SCHEMA_V3, CLAIM_ROLES, CONFLICT_KINDS } from "./types";
+import {
+  CANONICAL_STUDY_PROPOSAL_SCHEMA_V3,
+  CANONICAL_STUDY_PROPOSAL_SCHEMA_V5,
+  CLAIM_ROLES,
+  CONFLICT_KINDS,
+} from "./types";
 
 const nullableString = { type: ["string", "null"] as const };
 const nullableNumber = { type: ["number", "null"] as const };
@@ -221,6 +226,33 @@ const modelMetadataItem = {
   required: ["providerId", "modelId", "proposalMode"],
 } as const;
 
+const voiceProposalTokenItem = {
+  type: "object",
+  additionalProperties: false,
+  properties: {
+    value: nullableString,
+    from: { type: ["string", "null"], enum: ["user_text", "document", null] },
+    evidenceRefs: {
+      type: ["array", "null"],
+      items: evidenceReferenceItem,
+    },
+  },
+  required: ["value", "from", "evidenceRefs"],
+} as const;
+
+const voiceProposalItem = {
+  type: "object",
+  additionalProperties: false,
+  properties: {
+    subject: voiceProposalTokenItem,
+    eventNoun: voiceProposalTokenItem,
+    helperNoun: voiceProposalTokenItem,
+    otherPartyNoun: voiceProposalTokenItem,
+    subjectName: voiceProposalTokenItem,
+  },
+  required: ["subject", "eventNoun", "helperNoun", "otherPartyNoun", "subjectName"],
+} as const;
+
 export const CANONICAL_STUDY_PROPOSAL_V3_OPENAI_JSON_SCHEMA = {
   type: "object",
   additionalProperties: false,
@@ -244,6 +276,36 @@ export const CANONICAL_STUDY_PROPOSAL_V3_OPENAI_JSON_SCHEMA = {
     "claims",
     "conflicts",
     "missingInformation",
+    "modelMetadata",
+    "proposedAt",
+  ],
+} as const;
+
+export const CANONICAL_STUDY_PROPOSAL_V5_OPENAI_JSON_SCHEMA = {
+  type: "object",
+  additionalProperties: false,
+  properties: {
+    schemaVersion: {
+      type: "string",
+      enum: [CANONICAL_STUDY_PROPOSAL_SCHEMA_V5],
+    },
+    domainId: { type: "string" },
+    entities: { type: "array", items: entityItem },
+    claims: { type: "array", items: claimItem },
+    conflicts: { type: "array", items: conflictItem },
+    missingInformation: { type: "array", items: missingInformationItem },
+    voiceProposal: voiceProposalItem,
+    modelMetadata: modelMetadataItem,
+    proposedAt: { type: "string" },
+  },
+  required: [
+    "schemaVersion",
+    "domainId",
+    "entities",
+    "claims",
+    "conflicts",
+    "missingInformation",
+    "voiceProposal",
     "modelMetadata",
     "proposedAt",
   ],

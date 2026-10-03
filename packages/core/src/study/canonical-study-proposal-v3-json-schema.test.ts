@@ -307,6 +307,15 @@ describe("OpenAI ClaimValue transport normalization", () => {
       value: { kind: "date", value: "2024-05-01" },
       unit: undefined,
     });
+    expect(
+      normalizeOpenAIClaimValue(
+        emptyTransport("date", { dateValue: "2024-05-01", unit: "minutes" }),
+        { claimUnit: "minutes" },
+      ),
+    ).toEqual({
+      value: { kind: "date", value: "2024-05-01" },
+      unit: "minutes",
+    });
     expect(normalizeOpenAIClaimValue(emptyTransport("period"))).toEqual({
       value: { kind: "period" },
       unit: undefined,
@@ -360,25 +369,47 @@ describe("OpenAI ClaimValue transport normalization", () => {
   it("rejects impossible kind and value combinations before canonical validation", () => {
     expectRejected(emptyTransport("quantity"));
     expectRejected(emptyTransport("quantity", { numberValue: Number.NaN }));
-    expectRejected(emptyTransport("quantity", { numberValue: 1, textValue: "nope" }));
+    expect(
+      normalizeOpenAIClaimValue(emptyTransport("quantity", { numberValue: 1, textValue: "nope" })),
+    ).toEqual({ value: { kind: "quantity", amount: 1 }, unit: undefined });
     expectRejected(emptyTransport("quantity", { numberValue: 1, unit: "mg" }), {
       claimUnit: "sessions",
     });
     expectRejected(emptyTransport("text"));
     expectRejected(emptyTransport("text", { textValue: "   " }));
-    expectRejected(emptyTransport("text", { textValue: "annual", codeValue: "F84.0" }));
+    expect(normalizeOpenAIClaimValue(emptyTransport("text", { textValue: "annual", codeValue: "F84.0" }))).toEqual({
+      value: { kind: "text", text: "annual" },
+      unit: undefined,
+    });
     expectRejected(emptyTransport("code"));
-    expectRejected(emptyTransport("code", { codeValue: "F84.0", textValue: "annual" }));
+    expect(normalizeOpenAIClaimValue(emptyTransport("code", { codeValue: "F84.0", textValue: "annual" }))).toEqual({
+      value: { kind: "code", code: "F84.0" },
+      unit: undefined,
+    });
     expectRejected(emptyTransport("boolean"));
-    expectRejected(emptyTransport("boolean", { booleanValue: false, numberValue: 1 }));
+    expect(
+      normalizeOpenAIClaimValue(emptyTransport("boolean", { booleanValue: false, numberValue: 1 })),
+    ).toEqual({ value: { kind: "boolean", value: false }, unit: undefined });
     expectRejected(emptyTransport("entity_ref"));
     expectRejected(emptyTransport("entity_ref", { entityId: " " }));
     expectRejected(emptyTransport("date"));
     expectRejected(emptyTransport("period", { periodStart: "" }));
-    expectRejected(emptyTransport("period", { numberValue: 1 }));
-    expectRejected(emptyTransport("unknown", { textValue: "maybe" }));
-    expectRejected(emptyTransport("unknown", { unit: "mg" }));
-    expectRejected(emptyTransport("text", { textValue: "annual", unit: "mg" }));
+    expect(normalizeOpenAIClaimValue(emptyTransport("period", { numberValue: 1 }))).toEqual({
+      value: { kind: "period" },
+      unit: undefined,
+    });
+    expect(normalizeOpenAIClaimValue(emptyTransport("unknown", { textValue: "maybe" }))).toEqual({
+      value: { kind: "unknown" },
+      unit: undefined,
+    });
+    expect(normalizeOpenAIClaimValue(emptyTransport("unknown", { unit: "mg" }))).toEqual({
+      value: { kind: "unknown" },
+      unit: undefined,
+    });
+    expect(normalizeOpenAIClaimValue(emptyTransport("text", { textValue: "annual", unit: "mg" }))).toEqual({
+      value: { kind: "text", text: "annual" },
+      unit: undefined,
+    });
     expectRejected(emptyTransport("other"));
     expectRejected({ kind: "quantity", amount: 1 });
     expectRejected(null);

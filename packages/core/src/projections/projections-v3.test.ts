@@ -68,5 +68,8 @@ describe("v3 projections", () => {
     expect(built.customerView.sections.length).toBeGreaterThan(0);
     expect(built.proView.claims[0]?.statement).toContain("service minutes");
     expect(built.proView.claims[0]?.isFactual).toBe(true);
+    expect(built.caseMap.schemaVersion).toBe("case-map/1");
+    expect(built.caseView.schemaVersion).toBe("case-view/2");
+    expect(built.caseView.story.length).toBeGreaterThan(0);
   });
 });

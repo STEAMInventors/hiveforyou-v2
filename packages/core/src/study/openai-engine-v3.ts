@@ -4,6 +4,7 @@ import {
   type CanonicalStudyProposal,
 } from "@hiveforyou/shared/case-intelligence/3";
 import type { CanonicalStudyContext } from "@hiveforyou/shared/canonical-study";
+import { readStatedWorkPurpose } from "@hiveforyou/shared/canonical-study";
 
 import type { CanonicalStudyPromptInputs } from "../prompts/compose-canonical-study-inputs";
 import {
@@ -14,9 +15,13 @@ import {
   CanonicalStudyEngineUnavailableError,
   MalformedCanonicalStudyProposalError,
 } from "./study-engine-errors";
+import type { RecognitionVocabularyPromptRow } from "@hiveforyou/domain-packs";
+
+import type { ExtractionLocatorCatalog } from "../provenance/serialize-extraction-locator-catalog";
 import { serializeEngine2StructureContext } from "./serialize-engine2-structure-context";
 import type { CanonicalStudyEngineV3Runtime } from "./engine-v3";
 import { normalizeOpenAIClaimValue } from "./normalize-openai-claim-value-v3";
+import { engine2RuntimeProposalBindingLines } from "./engine2-proposal-binding";
 
 export type OpenAICanonicalStudyEngineV3Options = {
   apiKey: string;
@@ -167,10 +172,26 @@ function parseProposal(text: string, context: CanonicalStudyContext, modelId: st
   return normalizeProposal(parsed as CanonicalStudyProposal, context, modelId);
 }
 
-function buildUserMessage(
+/** Engine 2 user-message text (excludes attached file payloads). */
+export function buildCanonicalStudyUserMessage(
   composed: CanonicalStudyPromptInputs,
   context: CanonicalStudyContext,
+  options?: {
+    extractionLocatorCatalog?: ExtractionLocatorCatalog | null;
+    recognitionVocabulary?: RecognitionVocabularyPromptRow[] | null;
+  },
 ): string {
+  const extractionLocatorCatalog = options?.extractionLocatorCatalog;
+  const recognitionVocabulary = options?.recognitionVocabulary;
+  const statedWorkPurpose = readStatedWorkPurpose(composed.answerSnapshot.userContext);
+  const statedPurposeBlock = statedWorkPurpose
+    ? [
+        "Stated work purpose (user intent — emphasis only, not evidence):",
+        statedWorkPurpose,
+        "",
+      ]
+    : [];
+
   const objectiveBlock = composed.customerContext?.objective
     ? [
         "Customer objective (CUSTOMER_ASSERTION — context only, not evidence):",
@@ -178,6 +199,24 @@ function buildUserMessage(
         "",
       ]
     : [];
+
+  const domainPackBlock = [
+    "Domain pack (JSON — naming vocabulary and routing context, not evidence):",
+    JSON.stringify(
+      {
+        domainId: context.domainId,
+        domainLabel: context.domainLabel,
+        domainPackId: context.domainPackId,
+        domainPackVersion: context.domainPackVersion,
+        recognitionVocabularySupplied: Boolean(
+          recognitionVocabulary && recognitionVocabulary.length > 0,
+        ),
+      },
+      null,
+      2,
+    ),
+    "",
+  ];
 
   const logicalManifest = context.logicalDocuments.length
     ? [
@@ -203,15 +242,40 @@ function buildUserMessage(
 
   const structureContext = serializeEngine2StructureContext(context);
 
+  const bindingLines =
+    composed.prompt.version === "v4"
+      ? []
+      : engine2RuntimeProposalBindingLines(composed.prompt.version);
+  const returnSchema =
+    composed.prompt.version === "v4"
+      ? "canonical-study-proposal/4"
+      : `canonical-study-proposal/3 for domainId=${context.domainId}`;
+
   return [
     `Domain workstream: ${context.domainId}`,
     `Study run id (use in proposalLineage.studyRunId): ${context.studyRunId}`,
     "",
+    ...statedPurposeBlock,
     ...objectiveBlock,
+    ...domainPackBlock,
     "Engine 1 discovery + Structure Map (JSON — context for study, not a semantic allowlist):",
     JSON.stringify(structureContext, null, 2),
     "",
     ...logicalManifest,
+    ...(extractionLocatorCatalog
+      ? [
+          "Persisted extraction locators (JSON — prefer extractionId on evidence refs when citing text):",
+          JSON.stringify(extractionLocatorCatalog, null, 2),
+          "",
+        ]
+      : []),
+    ...(recognitionVocabulary && recognitionVocabulary.length > 0
+      ? [
+          "Domain recognition vocabulary (JSON — abbreviation expansion and surface-form normalization only; not constructs or established facts):",
+          JSON.stringify(recognitionVocabulary, null, 2),
+          "",
+        ]
+      : []),
     "Source document metadata (JSON):",
     JSON.stringify(composed.evidenceReferences, null, 2),
     "",
@@ -220,7 +284,8 @@ function buildUserMessage(
     "",
     "Attached files are the in-scope source documents for this workstream.",
     "",
-    `Return canonical-study-proposal/3 for domainId=${context.domainId}.`,
+    ...bindingLines,
+    `Return ${returnSchema}.`,
   ].join("\n");
 }
 
@@ -272,7 +337,10 @@ export class OpenAICanonicalStudyEngineV3 {
       }
     }
 
-    const userText = buildUserMessage(runtime.composed, context);
+    const userText = buildCanonicalStudyUserMessage(runtime.composed, context, {
+      extractionLocatorCatalog: runtime.extractionLocatorCatalog,
+      recognitionVocabulary: runtime.recognitionVocabulary,
+    });
     const body: Record<string, unknown> = {
       model: this.options.model,
       reasoning: { effort: this.options.reasoningEffort },

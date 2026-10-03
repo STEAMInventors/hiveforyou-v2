@@ -4,5 +4,7 @@ export * from "./proposal";
 export * from "./run";
 export * from "./source-document";
 export * from "./start-request";
+export * from "./intake-study";
+export * from "./work-purpose";
 export * from "./validation";
 export { CANONICAL_STUDY_PROPOSAL_V2_JSON_SCHEMA } from "./json-schema";

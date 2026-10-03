@@ -4,8 +4,10 @@ import {
   UNRESOLVED_ITEM_KINDS,
   UNRESOLVED_SOURCES,
   CANONICAL_STUDY_PROPOSAL_SCHEMA_V3,
+  CANONICAL_STUDY_PROPOSAL_SCHEMA_V5,
   CASE_INTELLIGENCE_SCHEMA_V3,
 } from "./types";
+import { voiceProposalSchema } from "./voice-proposal-json-schema";
 
 /** Subset of JSON Schema used to validate case-intelligence/3 documents. */
 export type JsonSchema = {
@@ -274,6 +276,33 @@ export const CANONICAL_STUDY_PROPOSAL_V3_JSON_SCHEMA: JsonSchema = {
     "claims",
     "conflicts",
     "missingInformation",
+    "modelMetadata",
+    "proposedAt",
+  ],
+};
+
+export const CANONICAL_STUDY_PROPOSAL_V5_JSON_SCHEMA: JsonSchema = {
+  type: "object",
+  additionalProperties: false,
+  properties: {
+    schemaVersion: stringLiteral(CANONICAL_STUDY_PROPOSAL_SCHEMA_V5),
+    domainId: nonEmptyString,
+    entities: { type: "array", items: proposedEntitySchema },
+    claims: { type: "array", items: proposedClaimSchema },
+    conflicts: { type: "array", items: proposedConflictSchema },
+    missingInformation: { type: "array", items: proposedMissingInformationSchema },
+    voiceProposal: voiceProposalSchema,
+    modelMetadata: modelMetadataSchema,
+    proposedAt: nonEmptyString,
+  },
+  required: [
+    "schemaVersion",
+    "domainId",
+    "entities",
+    "claims",
+    "conflicts",
+    "missingInformation",
+    "voiceProposal",
     "modelMetadata",
     "proposedAt",
   ],

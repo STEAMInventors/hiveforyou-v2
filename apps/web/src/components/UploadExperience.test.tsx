@@ -1,11 +1,13 @@
-import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import { HIVE_INTAKE_RUN_STORAGE_KEY } from "@/lib/intake/intake-client";
 import { StagedDocumentsProvider } from "@/lib/intake/staged-documents-context";
+import type { IntakeEvidenceWorkspaceView } from "@hiveforyou/shared/intake";
 
 import { UploadExperience } from "./UploadExperience";
 
-const mockPush = vi.fn();
+const mockReplace = vi.fn();
 
 function mockMatchMedia(reducedMotion = false) {
   window.matchMedia = vi.fn().mockImplementation((query: string) => ({
@@ -18,16 +20,21 @@ function mockMatchMedia(reducedMotion = false) {
 
 vi.mock("next/navigation", () => ({
   useRouter: () => ({
-    push: mockPush,
+    replace: mockReplace,
+    push: vi.fn(),
   }),
 }));
 
+vi.mock("@hiveforyou/domain-packs", () => ({
+  listDomainPacksByCapability: () => [{ id: "iep", name: "Special Education / IEP" }],
+}));
+
 vi.mock("@/lib/documents/commit-client", () => ({
-  commitStagedDocuments: vi.fn(async (docs: { id: string }[]) => ({
+  commitStagedDocuments: vi.fn(async (docs: { id: string; file: File }[]) => ({
     caseId: "00000000-0000-4000-8000-000000000001",
     documents: docs.map((doc) => ({
       stagedDocumentId: doc.id,
-      sourceDocumentId: doc.id,
+      sourceDocumentId: `src-${doc.file.name}`,
     })),
   })),
 }));
@@ -37,8 +44,23 @@ vi.mock("@/lib/document-discovery/run-discover-client", () => ({
   continueDiscoverForStagedDocuments: vi.fn(),
 }));
 
+vi.mock("@/lib/intake/intake-client", async () => {
+  const actual = await vi.importActual<typeof import("@/lib/intake/intake-client")>(
+    "@/lib/intake/intake-client",
+  );
+  return {
+    ...actual,
+    startIntakeRun: vi.fn(async () => {
+      window.sessionStorage.setItem("hive-intake-run-id", "run-1");
+      return { intakeRunId: "run-1", status: "RUNNING" as const };
+    }),
+    fetchIntakeRun: vi.fn(),
+  };
+});
+
 import { commitStagedDocuments } from "@/lib/documents/commit-client";
 import { runDiscoverForStagedDocuments } from "@/lib/document-discovery/run-discover-client";
+import { fetchIntakeRun, startIntakeRun } from "@/lib/intake/intake-client";
 
 function renderUploadExperience() {
   return render(
@@ -48,184 +70,132 @@ function renderUploadExperience() {
   );
 }
 
-function selectFilesViaDropzone(filenames: { name: string; size?: number }[]) {
-  const files = filenames.map(
-    ({ name, size = 1024 }) =>
-      new File(["x".repeat(size)], name, {
-        type: name.endsWith(".pdf") ? "application/pdf" : "text/plain",
-      }),
-  );
-
-  const input = document.querySelector(
-    'input[type="file"]:not([id*="Add"])',
-  ) as HTMLInputElement;
-
-  if (!input) {
-    const inputs = document.querySelectorAll('input[type="file"]');
-    fireEvent.change(inputs[0] as HTMLInputElement, { target: { files } });
-  } else {
-    fireEvent.change(input, { target: { files } });
-  }
-
-  return files;
+function terminalView(
+  overrides: Partial<IntakeEvidenceWorkspaceView> = {},
+): IntakeEvidenceWorkspaceView {
+  return {
+    intakeRunId: "run-1",
+    caseId: "00000000-0000-4000-8000-000000000001",
+    status: "SUCCEEDED",
+    workspaceReady: true,
+    sourceFiles: [],
+    studyPath: "DOMAIN_PACK",
+    purpose: {
+      rawIntent: "Preparing for an IEP meeting",
+      explicitDomainId: "iep",
+      resolvedDomainId: "iep",
+      resolutionSource: "EXPLICIT",
+      displayPurpose: "Preparing for an IEP meeting",
+      domainName: "Special Education / IEP",
+    },
+    understoodEvidence: [],
+    thingsThatWouldHelp: [],
+    documents: [
+      {
+        sourceDocumentId: "src-report.pdf",
+        processingStatus: "CLASSIFIED",
+        label: "Special education document",
+        filename: "report.pdf",
+        sizeBytes: 1024,
+      },
+    ],
+    ...overrides,
+  };
 }
 
-function selectMoreFiles(filenames: string[]) {
-  const files = filenames.map(
-    (name) => new File(["y"], name, { type: "application/pdf" }),
-  );
-  const label = screen.getByText("Add more documents").closest("label");
-  expect(label).not.toBeNull();
-  const input = label!.querySelector('input[type="file"]') as HTMLInputElement;
-  fireEvent.change(input, { target: { files } });
-  return files;
+function submitComposerFlow(container: HTMLElement) {
+  fireEvent.change(screen.getByTestId("hive-composer-intent"), {
+    target: { value: "Preparing for an IEP meeting" },
+  });
+  fireEvent.click(screen.getByTestId("hive-composer-domain-iep"));
+  const file = new File(["x".repeat(1024)], "report.pdf", { type: "application/pdf" });
+  const input = container.querySelector('input[type="file"]') as HTMLInputElement;
+  fireEvent.change(input, { target: { files: [file] } });
+  fireEvent.click(screen.getByTestId("hive-composer-submit"));
 }
 
 describe("UploadExperience", () => {
   beforeEach(() => {
     mockMatchMedia(false);
-    vi.mocked(commitStagedDocuments).mockImplementation(async (docs: { id: string }[]) => ({
-      caseId: "00000000-0000-4000-8000-000000000001",
-      documents: docs.map((doc) => ({
-        stagedDocumentId: doc.id,
-        sourceDocumentId: doc.id,
-      })),
-    }));
+    window.sessionStorage.clear();
+    mockReplace.mockReset();
     vi.mocked(runDiscoverForStagedDocuments).mockReset();
+    vi.mocked(startIntakeRun).mockClear();
+    vi.mocked(commitStagedDocuments).mockClear();
+    vi.mocked(fetchIntakeRun).mockReset();
+    vi.mocked(fetchIntakeRun).mockResolvedValue({
+      intakeRunId: "run-1",
+      caseId: "00000000-0000-4000-8000-000000000001",
+      status: "RUNNING",
+      workspaceReady: false,
+      sourceFiles: [],
+      studyPath: "GENERIC_STUDY",
+      purpose: {
+        rawIntent: "Preparing for an IEP meeting",
+        explicitDomainId: "iep",
+        resolvedDomainId: null,
+        resolutionSource: null,
+        displayPurpose: "Preparing for an IEP meeting",
+        domainName: null,
+      },
+      understoodEvidence: [],
+      thingsThatWouldHelp: [],
+      documents: [
+        {
+          sourceDocumentId: "src-report.pdf",
+          processingStatus: "EXTRACTING",
+          label: null,
+          filename: "report.pdf",
+          sizeBytes: 1024,
+        },
+      ],
+    });
   });
 
-  afterEach(() => {
-    vi.useRealTimers();
-  });
-
-  it("transitions from Empty Upload to Documents Added when files are selected", () => {
+  it("shows the home composer before intake starts", () => {
     renderUploadExperience();
-
-    expect(
-      screen.getByText("Turn your documents into something you can understand."),
-    ).toBeInTheDocument();
-
-    selectFilesViaDropzone([{ name: "report.pdf" }]);
-
-    expect(screen.getByText("Your documents are ready.")).toBeInTheDocument();
-    expect(screen.queryByTestId("document-dropzone")).not.toBeInTheDocument();
+    expect(screen.getByTestId("hive-home-composer")).toBeInTheDocument();
+    expect(screen.getByTestId("hive-composer-intent")).toBeInTheDocument();
   });
 
-  it("shows actual filenames and formatted sizes", () => {
-    renderUploadExperience();
+  it("starts intake with composer purpose after Continue", async () => {
+    const { container } = renderUploadExperience();
+    submitComposerFlow(container);
 
-    selectFilesViaDropzone([{ name: "my_notes.pdf", size: 2048 }]);
-
-    expect(screen.getByText("my_notes.pdf")).toBeInTheDocument();
-    expect(screen.getByText(/2 KB · PDF/)).toBeInTheDocument();
-    expect(screen.getByText("1 document selected")).toBeInTheDocument();
-  });
-
-  it("updates collection and count when a file is removed", () => {
-    renderUploadExperience();
-
-    selectFilesViaDropzone([
-      { name: "a.pdf" },
-      { name: "b.pdf" },
-    ]);
-
-    expect(screen.getByText("2 documents selected")).toBeInTheDocument();
-
-    fireEvent.click(screen.getByRole("button", { name: "Remove a.pdf" }));
-
-    expect(screen.queryByText("a.pdf")).not.toBeInTheDocument();
-    expect(screen.getByText("b.pdf")).toBeInTheDocument();
-    expect(screen.getByText("1 document selected")).toBeInTheDocument();
-  });
-
-  it("returns to Empty Upload when the last file is removed", () => {
-    renderUploadExperience();
-
-    selectFilesViaDropzone([{ name: "only.pdf" }]);
-    fireEvent.click(screen.getByRole("button", { name: "Remove only.pdf" }));
-
-    expect(screen.getByTestId("document-dropzone")).toBeInTheDocument();
-    expect(
-      screen.getByText("Turn your documents into something you can understand."),
-    ).toBeInTheDocument();
-  });
-
-  it("appends documents via Add more documents", () => {
-    renderUploadExperience();
-
-    selectFilesViaDropzone([{ name: "first.pdf" }]);
-    selectMoreFiles(["second.pdf"]);
-
-    expect(screen.getByText("first.pdf")).toBeInTheDocument();
-    expect(screen.getByText("second.pdf")).toBeInTheDocument();
-    expect(screen.getByText("2 documents selected")).toBeInTheDocument();
-  });
-
-  it("retains multiple files from an initial multi-select", () => {
-    renderUploadExperience();
-
-    selectFilesViaDropzone([
-      { name: "one.pdf" },
-      { name: "two.pdf" },
-      { name: "three.pdf" },
-    ]);
-
-    const list = screen.getByRole("list", { name: "Selected documents" });
-    expect(within(list).getByText("one.pdf")).toBeInTheDocument();
-    expect(within(list).getByText("two.pdf")).toBeInTheDocument();
-    expect(within(list).getByText("three.pdf")).toBeInTheDocument();
-    expect(screen.getByText("3 documents selected")).toBeInTheDocument();
-  });
-
-  it("starts in-place discovery modal when Understand my documents is clicked", async () => {
-    mockPush.mockClear();
-    renderUploadExperience();
-
-    selectFilesViaDropzone([{ name: "iep.pdf" }]);
-    fireEvent.click(screen.getByTestId("understand-documents-cta"));
-
-    expect(mockPush).not.toHaveBeenCalled();
-    expect(screen.getByTestId("discovery-workflow-modal")).toBeInTheDocument();
-    expect(screen.getByTestId("staged-documents-compact-list")).toBeInTheDocument();
-  });
-
-  it("shows the workflow modal immediately on Process before persist and discover resolve", async () => {
-    vi.useFakeTimers();
-    mockPush.mockClear();
-
-    let resolveCommit!: (value: Awaited<ReturnType<typeof commitStagedDocuments>>) => void;
-    vi.mocked(commitStagedDocuments).mockReturnValue(
-      new Promise((resolve) => {
-        resolveCommit = resolve;
-      }),
+    expect(screen.getByTestId("hive-home-composer")).toBeInTheDocument();
+    expect(screen.getByTestId("intake-processing-modal")).toBeInTheDocument();
+    expect(screen.getByTestId("intake-processing-panel")).toBeInTheDocument();
+    expect(screen.getByTestId("intake-heading")).toHaveTextContent("Hiving");
+    expect(screen.getByTestId("intake-processing-stage-current")).toHaveTextContent(
+      "Reading your documents",
     );
-    vi.mocked(runDiscoverForStagedDocuments).mockReturnValue(new Promise(() => {}));
 
-    renderUploadExperience();
-    selectFilesViaDropzone([{ name: "iep.pdf" }]);
+    await waitFor(() => {
+      expect(commitStagedDocuments).toHaveBeenCalledOnce();
+    });
 
-    fireEvent.click(screen.getByTestId("understand-documents-cta"));
-
-    expect(screen.getByTestId("discovery-workflow-modal")).toBeInTheDocument();
-    expect(screen.getByTestId("discovery-processing-panel")).toBeInTheDocument();
+    expect(startIntakeRun).toHaveBeenCalledWith(
+      "00000000-0000-4000-8000-000000000001",
+      ["src-report.pdf"],
+      {
+        rawIntent: "Preparing for an IEP meeting",
+        explicitDomainId: "iep",
+      },
+    );
     expect(runDiscoverForStagedDocuments).not.toHaveBeenCalled();
+  });
 
-    await act(async () => {
-      await vi.advanceTimersByTimeAsync(8000);
+  it("navigates to the evidence workspace when intake finishes with persisted artifacts", async () => {
+    vi.mocked(fetchIntakeRun).mockResolvedValue(terminalView());
+    const { container } = renderUploadExperience();
+    submitComposerFlow(container);
+
+    await waitFor(() => {
+      expect(screen.getByTestId("intake-heading")).toHaveTextContent("Your hive is ready");
     });
-
-    expect(screen.getByTestId("discovery-workflow-modal")).toBeInTheDocument();
-    expect(screen.queryByText("Your documents are organized.")).not.toBeInTheDocument();
-
-    await act(async () => {
-      resolveCommit({
-        caseId: "00000000-0000-4000-8000-000000000001",
-        documents: [{ stagedDocumentId: "x", sourceDocumentId: "x" }],
-      });
-      await Promise.resolve();
-      await Promise.resolve();
-    });
-
-    vi.useRealTimers();
+    fireEvent.click(screen.getByTestId("intake-open-hive"));
+    expect(mockReplace).toHaveBeenCalledWith("/intake/run-1");
+    expect(window.sessionStorage.getItem(HIVE_INTAKE_RUN_STORAGE_KEY)).toBeNull();
+    expect(runDiscoverForStagedDocuments).not.toHaveBeenCalled();
   });
 });

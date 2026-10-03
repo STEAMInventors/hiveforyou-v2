@@ -141,15 +141,15 @@ describe("DocumentDiscoveryExperience", () => {
 
     expect(screen.getByTestId("discovery-workflow-modal")).toBeInTheDocument();
 
-    expect(screen.getByTestId("processing-stage-indicator")).toHaveTextContent(
+    expect(screen.getByTestId("processing-stage-indicator")).toHaveTextContent("Hiving");
 
+    expect(screen.getByTestId("hive-building-stage-current")).toHaveTextContent(
       PROCESSING_STAGE_LABELS[0],
-
     );
 
     expect(screen.getByTestId("discovery-processing-panel")).toBeInTheDocument();
 
-    expect(screen.getByTestId("hive-hex-animation")).toBeInTheDocument();
+    expect(screen.getByTestId("hive-flying-honeycomb")).toBeInTheDocument();
 
   });
 

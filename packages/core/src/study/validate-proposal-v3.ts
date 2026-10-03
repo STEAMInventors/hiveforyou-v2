@@ -2,6 +2,7 @@ import type { CanonicalStudyContext } from "@hiveforyou/shared/canonical-study";
 import type { ValidationIssue } from "@hiveforyou/shared/canonical-study";
 import {
   CANONICAL_STUDY_PROPOSAL_SCHEMA_V3,
+  CANONICAL_STUDY_PROPOSAL_SCHEMA_V5,
   validateCanonicalStudyProposal as validateProposalContract,
   type CanonicalStudyProposal,
   type ClaimValue,
@@ -13,6 +14,7 @@ import {
   documentIdsInContext,
   validateDocumentEvidenceRefs,
 } from "./validate-document-evidence";
+import { sanitizeVoiceProposal } from "./sanitize-voice-proposal";
 
 function issue(
   partial: Omit<ValidationIssue, "severity"> & { severity?: ValidationIssue["severity"] },
@@ -176,7 +178,10 @@ export function validateCanonicalStudyProposalV3(
   }
 
   const proposal = contract.value;
-  if (proposal.schemaVersion !== CANONICAL_STUDY_PROPOSAL_SCHEMA_V3) {
+  if (
+    proposal.schemaVersion !== CANONICAL_STUDY_PROPOSAL_SCHEMA_V3 &&
+    proposal.schemaVersion !== CANONICAL_STUDY_PROPOSAL_SCHEMA_V5
+  ) {
     validationErrors.push(
       issue({
         code: "SCHEMA_VERSION_MISMATCH",
@@ -193,6 +198,8 @@ export function validateCanonicalStudyProposalV3(
       unresolved,
     });
   }
+
+  proposal.voiceProposal = sanitizeVoiceProposal(context, proposal.voiceProposal ?? null);
 
   if (proposal.domainId !== context.domainId) {
     validationErrors.push(

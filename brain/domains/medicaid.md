@@ -1,7 +1,7 @@
 # Domain — Medicaid
 
-**STATUS: NOT YET IMPLEMENTED**
+**STATUS: MANIFEST ONLY**
 
-Medicaid eligibility, benefits, transfers, and related financial/medical evidence. Domain Pack will own predicates and interpretation rules.
+Medicaid eligibility, benefits, transfers, and related financial/medical evidence.
 
-No V2 pack rules defined in foundation.
+Pack code: `domain-packs/medicaid`. The manifest is registered. No document rules are defined.

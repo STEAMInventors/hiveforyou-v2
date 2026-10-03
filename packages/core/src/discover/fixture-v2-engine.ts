@@ -1,12 +1,8 @@
-import {
+import { requireDiscoverPack } from "@hiveforyou/domain-packs";
 
-  BANKRUPTCY_DISCOVER_PACK,
-
-  IEP_DISCOVER_PACK,
-
-  MEDICAID_DISCOVER_PACK,
-
-} from "@hiveforyou/domain-packs";
+const BANKRUPTCY_DISCOVER_PACK = requireDiscoverPack("bankruptcy");
+const IEP_DISCOVER_PACK = requireDiscoverPack("iep");
+const MEDICAID_DISCOVER_PACK = requireDiscoverPack("medicaid");
 
 import type { HiveDiscoverProposalV2 } from "@hiveforyou/shared/discover";
 

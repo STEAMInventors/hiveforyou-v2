@@ -1,4 +1,5 @@
 import type { StudySourceDocumentRef } from "../../canonical-study/source-document";
+import type { VoiceProposal } from "../../projections/voice";
 
 import type { CanonicalStudyValidationResultV3 } from "./validation-result";
 
@@ -15,6 +16,8 @@ import type { CanonicalStudyValidationResultV3 } from "./validation-result";
 
 
 export const CANONICAL_STUDY_PROPOSAL_SCHEMA_V3 = "canonical-study-proposal/3" as const;
+
+export const CANONICAL_STUDY_PROPOSAL_SCHEMA_V5 = "canonical-study-proposal/5" as const;
 
 
 
@@ -272,7 +275,9 @@ export type ProposedMissingInformation = {
 
 export type CanonicalStudyProposal = {
 
-  schemaVersion: typeof CANONICAL_STUDY_PROPOSAL_SCHEMA_V3;
+  schemaVersion:
+    | typeof CANONICAL_STUDY_PROPOSAL_SCHEMA_V3
+    | typeof CANONICAL_STUDY_PROPOSAL_SCHEMA_V5;
 
   domainId: string;
 
@@ -283,6 +288,9 @@ export type CanonicalStudyProposal = {
   conflicts: ProposedConflict[];
 
   missingInformation: ProposedMissingInformation[];
+
+  /** Model-proposed client voice tokens (not canonical facts). Required on /5 proposals. */
+  voiceProposal?: VoiceProposal | null;
 
   modelMetadata: {
 

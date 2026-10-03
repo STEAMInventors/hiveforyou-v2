@@ -9,6 +9,12 @@ import type {
 } from "@hiveforyou/shared/case-intelligence/3";
 import { CASE_INTELLIGENCE_SCHEMA_V3 } from "@hiveforyou/shared/case-intelligence/3";
 import type { CanonicalStudyValidationResultV3 } from "@hiveforyou/shared/case-intelligence/3/validation-result";
+import {
+  claimValuesEqual,
+  IEP_DOMAIN_VIEW,
+  isConstructIgnoredForChange,
+  type DomainPackViewConfigV2,
+} from "@hiveforyou/shared/projections";
 
 function toValidatedClaim(
   claim: ProposedClaim,
@@ -60,9 +66,23 @@ function buildEvents(claims: ValidatedClaim[]): CanonicalEvent[] {
   }));
 }
 
-function buildChanges(claims: ValidatedClaim[]): CanonicalCaseSnapshot["changes"] {
+function packViewConfigForDomain(domainId: string): DomainPackViewConfigV2 | null {
+  if (domainId.includes("special_education") || domainId.includes("iep")) {
+    return IEP_DOMAIN_VIEW;
+  }
+  return null;
+}
+
+function buildChanges(
+  claims: ValidatedClaim[],
+  domainId: string,
+): CanonicalCaseSnapshot["changes"] {
+  const changeRules = packViewConfigForDomain(domainId)?.changeRules ?? [];
   const bySubjectConstruct = new Map<string, ValidatedClaim[]>();
   for (const claim of claims) {
+    if (isConstructIgnoredForChange(claim.construct, changeRules)) {
+      continue;
+    }
     const key = `${claim.subjectEntityId}\0${claim.construct}`;
     const bucket = bySubjectConstruct.get(key) ?? [];
     bucket.push(claim);
@@ -79,9 +99,19 @@ function buildChanges(claims: ValidatedClaim[]): CanonicalCaseSnapshot["changes"
       const bKey = b.occurredOn ?? b.effectivePeriod?.start ?? b.id;
       return aKey.localeCompare(bKey);
     });
-    for (let index = 1; index < ordered.length; index += 1) {
-      const fromClaim = ordered[index - 1]!;
-      const toClaim = ordered[index]!;
+    const deduped: ValidatedClaim[] = [];
+    for (const claim of ordered) {
+      const prev = deduped[deduped.length - 1];
+      if (!prev || !claimValuesEqual(prev.value, prev.unit, claim.value, claim.unit)) {
+        deduped.push(claim);
+      }
+    }
+    if (deduped.length < 2) {
+      continue;
+    }
+    for (let index = 1; index < deduped.length; index += 1) {
+      const fromClaim = deduped[index - 1]!;
+      const toClaim = deduped[index]!;
       changes.push({
         id: `change-${fromClaim.id}-${toClaim.id}`,
         subjectEntityId: fromClaim.subjectEntityId,
@@ -167,7 +197,7 @@ export function buildCanonicalCaseSnapshot(
     claims: validatedClaims,
     events: buildEvents(validatedClaims),
     conflicts,
-    changes: buildChanges(validatedClaims),
+    changes: buildChanges(validatedClaims, context.domainId),
     unresolved: buildUnresolved(validation, conflicts),
     sourceDocuments: structuredClone(context.sourceDocuments),
     validationResult: validation,

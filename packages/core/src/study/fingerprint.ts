@@ -17,6 +17,8 @@ export type IdempotencyInput = {
   domainPackVersion: string;
   documentFingerprint: string;
   answerFingerprint: string;
+  intakeRunId?: string | null;
+  intakeStudyMaterialFingerprint?: string | null;
   engine: StudyEngineFingerprint;
 };
 

@@ -23,6 +23,12 @@ export {
   buildCaseProvenanceBundleV3,
   buildCaseProvenanceBundleV3 as buildCaseProvenanceBundle,
 } from "./projections/build-case-provenance-bundle-v3";
+export * from "./provenance";
 export { persistCaseProjectionsV3 as persistCaseProjections } from "./projections/build-and-persist-projections-v3";
 export * from "./projections/project-customer-view-v3";
 export * from "./projections/project-pro-view-v3";
+export * from "./projections/project-case-map-v3";
+export * from "./projections/project-case-view-v1";
+export * from "./projections/project-case-view-v2-minimal";
+export * from "./projections/build-rulebook-document-explainers";
+export { l001LikeCanonicalSnapshot } from "./projections/fixtures/l001-like-canonical-snapshot";

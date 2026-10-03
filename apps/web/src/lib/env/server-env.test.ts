@@ -3,7 +3,12 @@ import { join, relative } from "node:path";
 
 import { describe, expect, it } from "vitest";
 
-import { publicSupabaseConfig, readServerEnv, readServerEnvPresence } from "./server-env";
+import {
+  publicSupabaseConfig,
+  readJevClassifierConfig,
+  readServerEnv,
+  readServerEnvPresence,
+} from "./server-env";
 
 const REQUIRED = {
   NEXT_PUBLIC_SUPABASE_URL: "https://example.supabase.co",
@@ -39,6 +44,7 @@ describe("server environment", () => {
       anonKey: "anon-key",
     });
     expect(JSON.stringify(publicSupabaseConfig(env))).not.toContain("service-role-key");
+    expect(JSON.stringify(publicSupabaseConfig(env))).not.toContain("jv_live_test");
   });
 
   it("reports configuration presence as booleans and omits environment values", () => {
@@ -49,6 +55,7 @@ describe("server environment", () => {
       storageBucketPresent: false,
       discoverPromptVersionPresent: false,
       discoverPromptVersionIsLatest: false,
+      jevApiKeyPresent: false,
     });
     const presence = readServerEnvPresence({
       ...REQUIRED,
@@ -61,6 +68,7 @@ describe("server environment", () => {
       storageBucketPresent: true,
       discoverPromptVersionPresent: true,
       discoverPromptVersionIsLatest: true,
+      jevApiKeyPresent: false,
     });
     expect(Object.values(presence).every((value) => typeof value === "boolean")).toBe(true);
     const serialized = JSON.stringify(presence);
@@ -107,5 +115,34 @@ describe("server environment", () => {
     expect(browser).not.toContain("HIVE_DEV_AUTH");
     const admin = readFileSync(join(root, "lib/supabase/admin.ts"), "utf8");
     expect(admin).toContain('import "server-only"');
+  });
+
+  it("keeps the Jev key server-side and requires only JEV_API_KEY for Intake", () => {
+    const env = readServerEnv({
+      ...REQUIRED,
+      JEV_API_KEY: "jv_live_test",
+    });
+    expect(env.JEV_API_KEY).toBe("jv_live_test");
+    expect(JSON.stringify(publicSupabaseConfig(env))).not.toContain("jv_live_test");
+    expect(readJevClassifierConfig({ JEV_API_KEY: "jv_live_test" })).toEqual({
+      apiKey: "jv_live_test",
+    });
+    expect(readJevClassifierConfig({})).toBeNull();
+    expect(readJevClassifierConfig({ JEV_API_KEY: "  " })).toBeNull();
+
+    const root = join(process.cwd(), "src");
+    const allowed = new Set([
+      "lib/env/server-env.ts",
+      "lib/intake/intake-service-server.ts",
+    ]);
+    const offenders = walk(root).filter((file) => {
+      const source = readFileSync(file, "utf8");
+      if (!source.includes("JEV_API_KEY")) {
+        return false;
+      }
+      const rel = relative(root, file).replaceAll("\\", "/");
+      return !allowed.has(rel) && !rel.endsWith(".test.ts");
+    });
+    expect(offenders).toEqual([]);
   });
 });

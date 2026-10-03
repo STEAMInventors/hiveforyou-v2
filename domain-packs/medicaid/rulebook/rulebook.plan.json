@@ -1,0 +1,26 @@
+{
+  "domain": "medicaid",
+  "generatedAt": "2026-10-02T18:53:40.649Z",
+  "model": "local",
+  "status": "model-failed",
+  "summary": {
+    "document-guide": 1,
+    "notice-guide": 0,
+    "glossary-only": 0,
+    "none": 0
+  },
+  "decisions": [
+    {
+      "docType": "Notice of Action",
+      "kind": "document-guide",
+      "reason": "signal-only fallback",
+      "proposedSections": [],
+      "termsNeeded": [],
+      "existing": true,
+      "overridden": false
+    }
+  ],
+  "errors": [
+    "fetch failed"
+  ]
+}

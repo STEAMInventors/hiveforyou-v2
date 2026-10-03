@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 
-import { BANKRUPTCY_DISCOVER_PACK, IEP_DISCOVER_PACK } from "@hiveforyou/domain-packs";
+import { requireDiscoverPack } from "@hiveforyou/domain-packs";
+
+const BANKRUPTCY_DISCOVER_PACK = requireDiscoverPack("bankruptcy");
+const IEP_DISCOVER_PACK = requireDiscoverPack("iep");
 import type { CaseCustomerContextSnapshot } from "@hiveforyou/shared/case-customer-context";
 import type { DocumentDiscoveryResult } from "@hiveforyou/shared/discovery";
 

@@ -5,6 +5,16 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
+    "./rulebook-explainers": "./src/projections/build-rulebook-document-explainers.ts",
+    "./pro-view-model": "./src/views/pro/buildProViewModel.ts",
+    "./pro-view-model/types": "./src/views/pro/proViewModel.types.ts",
+    "./pro-rank-views": "./src/views/pro/rankViews.ts",
+    "./pro-validate-sql": "./src/views/pro/validateSql.ts",
+    "./pro-export-tables": "./src/views/pro/buildProExportTables.ts",
+    "./pro-export-prompt": "./src/views/pro/exportPrompt.ts",
+    "./discover/openai-engine": "./src/discover/openai-engine.ts",
+    "./pack-study-from-projection": "./src/study/narrative/build-pack-study-from-projection.ts",
+    "./case-view-plan": "./src/projections/project-case-view-v2-plan.ts",
     "./study": "./src/study/index.ts"
   },
   "scripts": {
@@ -15,6 +25,8 @@
   },
   "dependencies": {
     "@hiveforyou/canonical": "workspace:*",
+    "@hiveforyou/domain-pack": "workspace:*",
+    "@hiveforyou/domain-pack-shared": "workspace:*",
     "@hiveforyou/domain-packs": "workspace:*",
     "@hiveforyou/shared": "workspace:*"
   },

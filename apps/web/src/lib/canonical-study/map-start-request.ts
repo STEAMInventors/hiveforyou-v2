@@ -12,6 +12,13 @@ export function rememberClientCaseId(caseId: string): void {
   window.sessionStorage.setItem(CLIENT_CASE_ID_KEY, caseId);
 }
 
+export function clearClientCaseId(): void {
+  if (typeof window === "undefined") {
+    return;
+  }
+  window.sessionStorage.removeItem(CLIENT_CASE_ID_KEY);
+}
+
 export function getOrCreateClientCaseId(): string {
   if (typeof window === "undefined") {
     return "case-ssr-placeholder";

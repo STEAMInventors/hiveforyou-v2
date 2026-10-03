@@ -37,13 +37,20 @@ export function buildIdempotencyKeyFromRequest(
   resolvedPack: ResolvedDomainPack,
   engine: StudyEngineFingerprint,
 ): string {
+  const intakeMaterial =
+    request.intakeRunId && request.intakeStudyMaterialFingerprint
+      ? request.intakeStudyMaterialFingerprint
+      : null;
+
   return computeStudyIdempotencyKey({
     caseId: request.caseId,
     domainId: resolvedPack.domainId,
     domainPackId: resolvedPack.domainPackId,
     domainPackVersion: resolvedPack.domainPackVersion,
-    documentFingerprint: fingerprintSourceDocuments(request),
+    documentFingerprint: intakeMaterial ?? fingerprintSourceDocuments(request),
     answerFingerprint: fingerprintAnswerSnapshot(request),
+    intakeRunId: request.intakeRunId ?? null,
+    intakeStudyMaterialFingerprint: intakeMaterial,
     engine,
   });
 }
@@ -85,6 +92,7 @@ export function freezeCanonicalStudyContext(
     studyRunId,
     idempotencyKey,
     createdAt: new Date().toISOString(),
+    intakeRunId: request.intakeRunId,
     discoveryRunId: request.discoveryRunId,
     domainLabel: request.engine1Result.domainLabel,
     domainId: resolvedPack.domainId,

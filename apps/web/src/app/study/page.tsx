@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
+import { HiveTransitionModal } from "@/components/hive/HiveTransitionModal";
 import { HiveFooter } from "@/components/HiveFooter";
 import { HiveHeader } from "@/components/HiveHeader";
 import {
@@ -64,13 +65,7 @@ export default function StudyPage() {
   }, [ready, documents.length, studyInput, router]);
 
   if (!ready || !studyInput) {
-    return (
-      <div className="flex flex-1 items-center justify-center px-6 py-16">
-        <p className="font-sans text-sm text-hive-text-muted" role="status">
-          Preparing your case…
-        </p>
-      </div>
-    );
+    return <HiveTransitionModal phase="study" headingTestId="study-stage-label" />;
   }
 
   return (

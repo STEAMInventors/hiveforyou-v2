@@ -1,7 +1,7 @@
 # Domain — Bankruptcy
 
-**STATUS: NOT YET IMPLEMENTED**
+**STATUS: MANIFEST ONLY**
 
-Bankruptcy schedules, creditors, assets, and court filings. Domain Pack will define schedules, identities, and conflict rules.
+Bankruptcy schedules, creditors, assets, and court filings.
 
-No V2 pack rules defined in foundation.
+Pack code: `domain-packs/bankruptcy`. The manifest is registered. No document rules are defined.

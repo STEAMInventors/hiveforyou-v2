@@ -1,140 +1,69 @@
+/**
+ * Global CSS entry — HiveForYou web app
+ *
+ * Load order:
+ * 1. External fonts (legacy artifacts still reference Geist / IBM Plex Mono)
+ * 2. HiveForYou design system v1 (single hiveforyou.css — tokens, dark theme, base, components, utilities)
+ * 3. Tailwind (utilities for layout; hive/hz theme in tailwind.config.ts)
+ * 4. Legacy Stitch artifacts — see src/styles/legacy/README.md (imported from layout.tsx after this file)
+ */
+
+@import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap");
+
+@import "../styles/hiveforyou.css";
+
+/* Legacy Tailwind hive.* theme — keep in sync with styles/legacy/upload-tokens.css (not @imported: separate chunks break @layer base) */
+:root {
+  --hive-color-navy: #0f2838;
+  --hive-color-navy-muted: #1a2f4a;
+  --hive-color-sage: #77a38d;
+  --hive-color-sage-muted: #6a9380;
+  --hive-color-blue: #4a6b8c;
+  --hive-color-blue-muted: #3b82f6;
+  --hive-color-soft-sky: #e2edf4;
+  --hive-color-upload-icon-bg: #e8f0ec;
+  --hive-color-page: #f5f7f9;
+  --hive-color-surface: #ffffff;
+  --hive-color-border: #e2e6eb;
+  --hive-color-border-strong: #c8d1dc;
+  --hive-color-text: #111827;
+  --hive-color-text-muted: #6b7280;
+  --hive-color-text-inverse: #ffffff;
+  --hive-color-error: #b54a4a;
+  --hive-radius-sm: 0.375rem;
+  --hive-radius-md: 0.5rem;
+  --hive-radius-lg: 0.75rem;
+  --hive-radius-xl: 1rem;
+  --hive-radius-2xl: 1rem;
+  --hive-shadow-sm: 0 1px 2px rgb(15 40 56 / 0.05);
+  --hive-shadow-md: 0 4px 6px rgb(15 40 56 / 0.07);
+  --hive-shadow-lg: 0 10px 15px rgb(15 40 56 / 0.08);
+  --hive-shadow-focus: 0 0 0 2px var(--hive-color-surface), 0 0 0 4px rgb(119 163 141 / 0.45);
+  --hive-space-section: 4.5rem;
+  --hive-max-content: 72rem;
+  --hive-max-upload: 56rem;
+}
+
 @tailwind base;
-
 @tailwind components;
-
 @tailwind utilities;
 
-
-
-:root {
-
-  /* Stitch-approved palette — Empty Upload */
-
-  --hive-color-navy: #0f2838;
-
-  --hive-color-navy-muted: #1a2f4a;
-
-  --hive-color-sage: #77a38d;
-
-  --hive-color-sage-muted: #6a9380;
-
-  --hive-color-blue: #4a6b8c;
-
-  --hive-color-blue-muted: #3b82f6;
-
-  --hive-color-soft-sky: #e2edf4;
-
-  --hive-color-upload-icon-bg: #e8f0ec;
-
-
-
-  --hive-color-page: #f5f7f9;
-
-  --hive-color-surface: #ffffff;
-
-  --hive-color-border: #e2e6eb;
-
-  --hive-color-border-strong: #c8d1dc;
-
-
-
-  --hive-color-text: #111827;
-
-  --hive-color-text-muted: #6b7280;
-
-  --hive-color-text-inverse: #ffffff;
-
-  --hive-color-error: #b54a4a;
-
-
-
-  --hive-radius-sm: 0.375rem;
-
-  --hive-radius-md: 0.5rem;
-
-  --hive-radius-lg: 0.75rem;
-
-  --hive-radius-xl: 1rem;
-
-  --hive-radius-2xl: 1rem;
-
-
-
-  --hive-shadow-sm: 0 1px 2px rgb(15 40 56 / 0.05);
-
-  --hive-shadow-md: 0 4px 6px rgb(15 40 56 / 0.07);
-
-  --hive-shadow-lg: 0 10px 15px rgb(15 40 56 / 0.08);
-
-  --hive-shadow-focus: 0 0 0 2px var(--hive-color-surface),
-
-    0 0 0 4px rgb(119 163 141 / 0.45);
-
-
-
-  --hive-space-section: 4.5rem;
-
-  --hive-max-content: 72rem;
-
-  --hive-max-upload: 56rem;
-
-}
-
-
-
 @layer base {
-
   html {
-
     @apply antialiased;
-
   }
-
-
 
   body {
-
     @apply bg-hive-page font-sans text-hive-text;
-
   }
-
-
 
   ::selection {
-
     background-color: rgb(119 163 141 / 0.2);
-
     color: var(--hive-color-navy);
-
   }
-
-
 
   :focus-visible {
-
     @apply outline-none ring-2 ring-hive-blue-muted ring-offset-2 ring-offset-hive-page;
-
   }
-
 }
-
-
-
-@media (prefers-reduced-motion: reduce) {
-
-  *,
-
-  *::before,
-
-  *::after {
-
-    animation-duration: 0.01ms !important;
-
-    animation-iteration-count: 1 !important;
-
-    transition-duration: 0.01ms !important;
-
-  }
-
-}
-

@@ -1,5 +1,7 @@
 import type { HiveDiscoverProposalV1 } from "@hiveforyou/shared/discover";
-import { IEP_DISCOVER_PACK } from "@hiveforyou/domain-packs";
+import { requireDiscoverPack } from "@hiveforyou/domain-packs";
+
+const IEP_DISCOVER_PACK = requireDiscoverPack("iep");
 
 /** Deterministic relationship template keyed by catalog ids (fixture only). */
 export function buildFixtureRelationships(

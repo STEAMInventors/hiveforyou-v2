@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import {
   extractOpenAIResponseErrorFields,
+  extractOpenAIResponseOutputText,
   formatOpenAIResponseFailedErrorMessage,
   OpenAIDiscoverEngine,
 } from "./openai-engine";
@@ -133,5 +134,19 @@ describe("OpenAI Responses API error diagnostics", () => {
     );
 
     expect(errorSpy).not.toHaveBeenCalled();
+  });
+});
+
+describe("extractOpenAIResponseOutputText", () => {
+  it("reads nested output_text when top-level output_text is absent", () => {
+    const text = extractOpenAIResponseOutputText({
+      output: [
+        {
+          type: "message",
+          content: [{ type: "output_text", text: '{"paragraphs":[]}' }],
+        },
+      ],
+    });
+    expect(text).toBe('{"paragraphs":[]}');
   });
 });

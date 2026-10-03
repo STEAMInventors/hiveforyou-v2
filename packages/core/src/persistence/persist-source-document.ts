@@ -82,7 +82,22 @@ export async function persistSourceDocument(
     await deps.documents.insert(record);
   } catch (error) {
     await deps.storage.remove(uploaded);
+    if (input.clientStagedId && isUniqueConflict(error)) {
+      const existing = await deps.documents.findByClientStagedId(
+        userId,
+        input.caseId,
+        input.clientStagedId,
+      );
+      if (existing) {
+        return existing;
+      }
+    }
     throw error;
   }
   return record;
+}
+
+function isUniqueConflict(error: unknown): boolean {
+  const message = error instanceof Error ? error.message : String(error);
+  return /duplicate|unique|23505/i.test(message);
 }

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
+import { HiveTransitionModal } from "@/components/hive/HiveTransitionModal";
 import { HiveFooter } from "@/components/HiveFooter";
 import { HiveHeader } from "@/components/HiveHeader";
 import { QuestionsExperience } from "@/components/questions/QuestionsExperience";
@@ -24,13 +25,7 @@ export default function QuestionsPage() {
   }, [ready, documents.length, router]);
 
   if (!ready || documents.length === 0) {
-    return (
-      <div className="flex flex-1 items-center justify-center px-6 py-16">
-        <p className="font-sans text-sm text-hive-text-muted" role="status">
-          Loading your collection…
-        </p>
-      </div>
-    );
+    return <HiveTransitionModal phase="discover" />;
   }
 
   return (

@@ -1,13 +1,13 @@
-import type { CustomerView, ProView } from "@hiveforyou/shared/projections";
+import type { CaseMap, CaseViewV2, CustomerView, ProView } from "@hiveforyou/shared/projections";
 
-export type CaseProjectionKind = "customer" | "pro";
+export type CaseProjectionKind = "customer" | "pro" | "case_map" | "case_view";
 
 export type CaseProjectionRecord = {
   caseId: string;
   intelligenceVersion: number;
   projectionKind: CaseProjectionKind;
   schemaVersion: string;
-  projection: CustomerView | ProView;
+  projection: CustomerView | ProView | CaseMap | CaseViewV2;
 };
 
 export interface CaseProjectionRepository {
@@ -16,7 +16,7 @@ export interface CaseProjectionRepository {
     caseId: string,
     intelligenceVersion: number,
     projectionKind: CaseProjectionKind,
-  ): Promise<CustomerView | ProView | null>;
+  ): Promise<CustomerView | ProView | CaseMap | CaseViewV2 | null>;
 }
 
 export class InMemoryCaseProjectionRepository implements CaseProjectionRepository {
@@ -30,7 +30,7 @@ export class InMemoryCaseProjectionRepository implements CaseProjectionRepositor
         row.projectionKind === record.projectionKind,
     );
     if (existing) {
-      throw new Error("CASE_PROJECTION_EXISTS");
+      return;
     }
     this.rows.push(structuredClone(record));
   }
@@ -39,7 +39,7 @@ export class InMemoryCaseProjectionRepository implements CaseProjectionRepositor
     caseId: string,
     intelligenceVersion: number,
     projectionKind: CaseProjectionKind,
-  ): Promise<CustomerView | ProView | null> {
+  ): Promise<CustomerView | ProView | CaseMap | CaseViewV2 | null> {
     const row = this.rows.find(
       (item) =>
         item.caseId === caseId &&

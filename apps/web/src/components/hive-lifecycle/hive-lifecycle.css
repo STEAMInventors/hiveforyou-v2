@@ -1,0 +1,81 @@
+.hive-lifecycle.overlay{position:fixed;inset:0;background:rgba(32,33,36,.38);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:20px;z-index:50;animation:fade .25s ease both}
+.hive-lifecycle .card{width:100%;max-width:500px;background:#fff;border-radius:28px;padding:24px 26px 22px;box-shadow:0 24px 64px rgba(0,0,0,.18);display:flex;flex-direction:column;gap:16px;animation:rise .4s cubic-bezier(.2,.8,.2,1) both}
+.hive-lifecycle .btn{font-size:15px;font-weight:500;padding:11px 20px;min-height:44px;border-radius:999px;border:1px solid #DADCE0;background:#fff;color:#3C4043;cursor:pointer}
+.hive-lifecycle .btn:hover{background:#F1F3F4}
+.hive-lifecycle .btn.dark{background:#0D0D0D;color:#fff;border-color:#0D0D0D;font-weight:600}
+.hive-lifecycle .btn.dark:hover{background:#2B2B2B}
+.hive-lifecycle button{font-family:inherit}
+.hive-lifecycle button:focus-visible{outline:2px solid #0D0D0D;outline-offset:2px}
+
+@keyframes fade{from{opacity:0}}
+@keyframes rise{from{opacity:0;transform:translateY(16px) scale(.97)}}
+
+/* life-cycle rail: 4 stages across both modals */
+.hive-lifecycle .rail{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.hive-lifecycle .rail div{display:flex;flex-direction:column;gap:6px}
+.hive-lifecycle .rail i{height:4px;border-radius:999px;background:#F1F3F4;position:relative;overflow:hidden}
+.hive-lifecycle .rail i b{position:absolute;inset:0;width:0;border-radius:999px;transition:width .6s ease}
+.hive-lifecycle .rail span{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:#9AA0A6}
+.hive-lifecycle .rail .now span,.hive-lifecycle .rail .past span{color:#3C4043}
+.hive-lifecycle .rail .later span{color:#C4C7C5}
+
+.hive-lifecycle h2{margin:0;font-size:22px;font-weight:600;letter-spacing:-.02em;text-align:center}
+.hive-lifecycle .sub{margin:4px 0 0;font-size:14px;color:#5F6368;text-align:center}
+.hive-lifecycle ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.hive-lifecycle li{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border-radius:16px;border:1px solid #F1F3F4;transition:background .3s,border-color .3s}
+.hive-lifecycle li.now{background:#F8FAFF;border-color:#D2E3FC}
+.hive-lifecycle li .ic{width:24px;height:24px;flex:none;display:flex;align-items:center;justify-content:center;margin-top:1px}
+.hive-lifecycle li .tx b{display:block;font-size:15px;font-weight:600}
+.hive-lifecycle li .tx small{display:block;font-size:13.5px;color:#5F6368}
+.hive-lifecycle li .tx em{font-style:normal;font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:#9AA0A6}
+.hive-lifecycle li.later .tx b{color:#9AA0A6}
+@keyframes spin{to{transform:rotate(360deg)}}
+.hive-lifecycle .spin{animation:spin .9s linear infinite}
+.hive-lifecycle .actions{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
+
+.hive-lifecycle .doc{opacity:0}
+.hive-lifecycle .p-trigger .doc,.hive-lifecycle .p-formation .doc,.hive-lifecycle .done1 .doc{animation:docIn 1.1s cubic-bezier(.3,.8,.3,1) both}
+@keyframes docIn{0%{opacity:0;transform:translate(-110px,var(--dy))}35%{opacity:1}75%{opacity:1;transform:translate(0px,calc(var(--dy) * .3)) scale(.8)}100%{opacity:0;transform:translate(0,0) scale(.2)}}
+.hive-lifecycle .doc{transform-box:fill-box;transform-origin:center}
+.hive-lifecycle .spark{opacity:0}
+.hive-lifecycle .p-trigger .spark{animation:burst 1.1s ease-out both}
+@keyframes burst{0%{opacity:0;transform:none}15%{opacity:1}100%{opacity:0;transform:translate(var(--px),var(--py))}}
+.hive-lifecycle .core{transform-box:fill-box;transform-origin:center;opacity:0}
+.hive-lifecycle .p-trigger .core{animation:coreIn .5s .9s cubic-bezier(.2,.8,.2,1) both,throb 1s 1.4s ease-in-out infinite}
+.hive-lifecycle .p-formation .core,.hive-lifecycle .done1 .core{opacity:1}
+@keyframes coreIn{from{opacity:0;transform:scale(.3)}to{opacity:1;transform:none}}
+@keyframes throb{50%{transform:scale(1.12)}}
+.hive-lifecycle .wheal{transform-box:fill-box;transform-origin:center bottom;opacity:0}
+.hive-lifecycle .wheal .tint{opacity:0;transition:opacity .6s ease}
+.hive-lifecycle .p-formation .wheal,.hive-lifecycle .done1 .wheal{animation:swell .7s cubic-bezier(.2,.9,.3,1.2) both}
+.hive-lifecycle .done1 .wheal .tint{opacity:.28}
+@keyframes swell{0%{opacity:0;transform:scaleY(.12) scaleX(.9)}60%{opacity:1;transform:scaleY(1.15) scaleX(1.05)}100%{opacity:1;transform:none}}
+.hive-lifecycle .p-formation .wheal .tint{opacity:.18}
+
+.hive-lifecycle .mig{transform-box:fill-box;transform-origin:center}
+.hive-lifecycle .p-migration .mig{animation:wander 3.6s var(--d) ease-in-out both}
+@keyframes wander{
+  0%{opacity:0;transform:translate(var(--ax),var(--ay)) scale(.6)}
+  12%{opacity:1;transform:translate(var(--ax),var(--ay)) scale(var(--sa))}
+  42%{opacity:.85;transform:translate(var(--bx),var(--by)) scale(var(--sb))}
+  55%{opacity:0;transform:translate(var(--bx),var(--by)) scale(.4)}
+  68%{opacity:0;transform:translate(var(--ex),var(--ey)) scale(.4)}
+  82%,100%{opacity:1;transform:translate(var(--ex),var(--ey)) scale(1)}}
+.hive-lifecycle .p-resolution .mig,.hive-lifecycle .done2 .mig{animation:settle .9s calc(var(--d) * 1.2) cubic-bezier(.2,.9,.3,1.1) both}
+@keyframes settle{from{opacity:1;transform:translate(var(--ex),var(--ey))}to{opacity:1;transform:none}}
+.hive-lifecycle .mig polygon{transition:fill .6s ease,fill-opacity .6s ease,stroke .6s ease}
+.hive-lifecycle .done2 .mig polygon[class^="c"]{fill-opacity:1;stroke:#fff}
+.hive-lifecycle .comb{transform-box:fill-box;transform-origin:center;transition:transform 1s cubic-bezier(.2,.8,.2,1)}
+.hive-lifecycle .done2 .comb{transform:rotate(-14deg) scale(1.04)}
+.hive-lifecycle .link{stroke:#9AA0A6;stroke-width:1.2;stroke-dasharray:3 3;opacity:0}
+.hive-lifecycle .p-migration .link{animation:linkIn .8s ease both}
+@keyframes linkIn{from{opacity:0}to{opacity:.8}}
+.hive-lifecycle .p-resolution .link,.hive-lifecycle .done2 .link{opacity:0;transition:opacity .5s}
+.hive-lifecycle .seal{opacity:0;transform-box:fill-box;transform-origin:center}
+.hive-lifecycle .done2 .seal{animation:sealIn .5s .9s cubic-bezier(.2,.9,.3,1.3) both}
+@keyframes sealIn{from{opacity:0;transform:scale(.3)}to{opacity:1;transform:none}}
+
+@media (prefers-reduced-motion:reduce){
+  .hive-lifecycle,
+  .hive-lifecycle *{animation-duration:.01ms!important;animation-delay:0s!important;transition:none!important}
+}

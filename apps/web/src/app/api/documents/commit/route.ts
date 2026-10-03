@@ -13,7 +13,11 @@ import {
   SupabaseSourceDocumentRepository,
   SupabaseSourceDocumentStorage,
 } from "@/lib/persistence/supabase-repositories";
+import { mapWithConcurrency } from "@hiveforyou/intake";
 import { createServerSupabaseClient, getAuthenticatedUserId } from "@/lib/supabase/server";
+
+/** Parallel Supabase uploads; cap concurrency to limit memory spikes on large batches. */
+const COMMIT_UPLOAD_CONCURRENCY = 3;
 
 const SUPABASE_ERROR_KEYS = ["code", "message", "details", "hint"] as const;
 
@@ -201,7 +205,6 @@ export async function POST(request: Request) {
         sessionUserId,
       );
 
-      const saved: Array<{ stagedDocumentId: string; sourceDocumentId: string }> = [];
       for (let index = 0; index < files.length; index += 1) {
         const file = files[index];
         const stagedDocumentId = stagedIds[index];
@@ -212,26 +215,34 @@ export async function POST(request: Request) {
             { status: 400 },
           );
         }
-        const record = await persistSourceDocument(
-          {
-            storage,
-            documents,
-            bucket: env.HIVE_STORAGE_BUCKET,
-          },
-          {
-            userId: sessionUserId,
-            caseId: caseRecord.id,
-            originalFilename: file.name,
-            mimeType: file.type || undefined,
-            bytes: new Uint8Array(await file.arrayBuffer()),
-            clientStagedId: stagedDocumentId,
-          },
-        );
-        saved.push({
-          stagedDocumentId,
-          sourceDocumentId: record.id,
-        });
       }
+
+      const saved = await mapWithConcurrency(
+        files,
+        COMMIT_UPLOAD_CONCURRENCY,
+        async (file, index) => {
+          const stagedDocumentId = stagedIds[index]!;
+          const record = await persistSourceDocument(
+            {
+              storage,
+              documents,
+              bucket: env.HIVE_STORAGE_BUCKET,
+            },
+            {
+              userId: sessionUserId,
+              caseId: caseRecord.id,
+              originalFilename: (file as File).name,
+              mimeType: (file as File).type || undefined,
+              bytes: new Uint8Array(await (file as File).arrayBuffer()),
+              clientStagedId: stagedDocumentId,
+            },
+          );
+          return {
+            stagedDocumentId,
+            sourceDocumentId: record.id,
+          };
+        },
+      );
 
       return NextResponse.json({
         caseId: caseRecord.id,

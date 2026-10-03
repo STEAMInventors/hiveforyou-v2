@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 
 import { DocumentDiscoveryExperience } from "@/components/document-structure/DocumentDiscoveryExperience";
+import { HiveTransitionModal } from "@/components/hive/HiveTransitionModal";
 import { useStagedDocuments } from "@/lib/intake/staged-documents-context";
 import { useRouter } from "next/navigation";
 
@@ -22,13 +23,7 @@ export default function ProcessingPage() {
   }, [ready, documents.length, router]);
 
   if (!ready || documents.length === 0) {
-    return (
-      <div className="flex flex-1 items-center justify-center px-6 py-16">
-        <p className="font-sans text-sm text-hive-text-muted" role="status">
-          Loading your collection…
-        </p>
-      </div>
-    );
+    return <HiveTransitionModal phase="discover" />;
   }
 
   return <DocumentDiscoveryExperience stagedDocuments={documents} />;

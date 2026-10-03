@@ -6,14 +6,17 @@ import type { StartCanonicalStudyRequest } from "@hiveforyou/shared/canonical-st
 
 import {
   FixtureCanonicalStudyEngine,
+  FixtureCanonicalStudyEngineV4,
   UnconfiguredProductionStudyEngine,
   type CanonicalStudyEngine,
 } from "./engine";
 import { InMemoryStudyRunEventRepository } from "./event-repository";
+import { InMemoryCaseProjectionRepository } from "../persistence/case-projection-repository";
 import {
   InMemoryStudyContextRepository,
   InMemoryStudyRunRepository,
 } from "./repositories";
+import { InMemoryStudyArtifactRepository } from "./study-artifact-repository";
 import { loadCanonicalStudyPrompt } from "../prompts/load-canonical-study-prompt";
 import { runCanonicalStudy, type StudyServiceDeps } from "./run-canonical-study";
 
@@ -182,6 +185,44 @@ describe("runCanonicalStudy", () => {
     expect(a.run.studyRunId).toBe(b.run.studyRunId);
   });
 
+  it("retries projection persist from artifact without calling the engine again", async () => {
+    class CaseViewBlockedProjectionRepo extends InMemoryCaseProjectionRepository {
+      blockCaseView = true;
+
+      async save(record: Parameters<InMemoryCaseProjectionRepository["save"]>[0]): Promise<void> {
+        if (this.blockCaseView && record.projectionKind === "case_view") {
+          throw new Error("case_projections_kind_check violation");
+        }
+        await super.save(record);
+      }
+    }
+
+    const engine = new FixtureCanonicalStudyEngine();
+    let calls = 0;
+    const wrapped: CanonicalStudyEngine = {
+      study: async (ctx) => {
+        calls += 1;
+        return engine.study(ctx);
+      },
+    };
+    const projectionRepo = new CaseViewBlockedProjectionRepo();
+    const deps: StudyServiceDeps = {
+      ...createDeps(wrapped),
+      projectionRepo,
+      studyArtifactRepo: new InMemoryStudyArtifactRepository(),
+      sessionUserId: "user-test",
+    };
+    const req = baseRequest();
+    const failed = await runCanonicalStudy(req, deps);
+    expect(failed.run.status).toBe("FAILED");
+    expect(calls).toBe(1);
+
+    projectionRepo.blockCaseView = false;
+    const retried = await runCanonicalStudy(req, deps);
+    expect(retried.run.status).toBe("SUCCEEDED");
+    expect(calls).toBe(1);
+  });
+
   it("valid proposal succeeds", async () => {
     const outcome = await runCanonicalStudy(
       baseRequest(),
@@ -189,6 +230,16 @@ describe("runCanonicalStudy", () => {
     );
     expect(outcome.run.status).toBe("SUCCEEDED");
     expect(outcome.run.caseIntelligenceVersion).toBe(1);
+  });
+
+  it("accepts canonical-study-v4 prompt with v4 fixture engine", async () => {
+    const prompt = loadCanonicalStudyPrompt("canonical-study-v4");
+    const outcome = await runCanonicalStudy(
+      baseRequest(),
+      createDeps(new FixtureCanonicalStudyEngineV4(), "fixture", undefined, prompt),
+    );
+    expect(outcome.run.status).toBe("SUCCEEDED");
+    expect(outcome.run.promptVersion).toBe("v4");
   });
 
   it("persistence failure prevents SUCCEEDED status", async () => {

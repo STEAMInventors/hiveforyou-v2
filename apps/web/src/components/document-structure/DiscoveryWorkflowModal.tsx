@@ -2,7 +2,7 @@
 
 import { DiscoveryCustomerInputContent } from "@/components/document-structure/DiscoveryCustomerInputContent";
 import { DiscoveryObjectiveIntakeContent } from "@/components/document-structure/DiscoveryObjectiveIntakeContent";
-import { DiscoveryProcessingPanel } from "@/components/document-structure/DiscoveryProcessingPanel";
+import { HiveBuildingModal } from "@/components/hive/HiveBuildingModal";
 import type { StagedDocument } from "@/lib/staged-documents";
 import type { SharingAudienceRoleOption } from "@hiveforyou/domain-packs";
 import type { CaseCustomerContextIntake } from "@hiveforyou/shared/case-customer-context";
@@ -33,8 +33,8 @@ export function DiscoveryWorkflowModal({
   open,
   view,
   activeStageIndex,
-  stagedDocuments,
-  domainHint = null,
+  stagedDocuments: _stagedDocuments,
+  domainHint: _domainHint = null,
   processingError = null,
   onProcessingRetry,
   inputMode,
@@ -55,25 +55,39 @@ export function DiscoveryWorkflowModal({
     return null;
   }
 
+  if (view === "processing") {
+    return (
+      <div data-testid="discovery-workflow-modal">
+        <HiveBuildingModal
+          phase="discover"
+          activeStepIndex={activeStageIndex}
+          finished={false}
+          errorMessage={processingError}
+          animationKey="discover-processing"
+          overlayTestId="discovery-processing-overlay"
+          panelTestId="discovery-processing-panel"
+          headingTestId="processing-stage-indicator"
+          primaryAction={
+            processingError && onProcessingRetry
+              ? { label: "Try again", onClick: onProcessingRetry }
+              : undefined
+          }
+        />
+      </div>
+    );
+  }
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center px-4 py-6 sm:py-8"
       data-testid="discovery-workflow-modal"
     >
-      <div
-        className="absolute inset-0 bg-hive-navy/35 backdrop-blur-[3px]"
-        aria-hidden
-      />
+      <div className="absolute inset-0 bg-hive-navy/35 backdrop-blur-[3px]" aria-hidden />
       <div
         role="dialog"
         aria-modal="true"
-        aria-busy={view === "processing"}
         aria-label={
-          view === "customer-input"
-            ? inputMode === "objective"
-              ? "Discovery objective"
-              : "Discovery clarification"
-            : "Organizing your documents"
+          inputMode === "objective" ? "Discovery objective" : "Discovery clarification"
         }
         className="relative z-10 w-full min-w-0 max-w-[min(100%,680px)] rounded-hive-2xl border border-hive-border bg-hive-surface px-5 py-6 shadow-hive-lg sm:min-w-[560px] sm:px-7 sm:py-7"
       >
@@ -95,16 +109,7 @@ export function DiscoveryWorkflowModal({
               onSubmit={onCustomerSubmit}
             />
           )
-        ) : (
-          <DiscoveryProcessingPanel
-            compact
-            activeStageIndex={activeStageIndex}
-            stagedDocuments={stagedDocuments}
-            domainHint={domainHint}
-            errorMessage={processingError}
-            onRetry={onProcessingRetry}
-          />
-        )}
+        ) : null}
       </div>
     </div>
   );

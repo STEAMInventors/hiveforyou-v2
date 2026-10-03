@@ -1,0 +1,36 @@
+﻿/* Reference copy — Tailwind hive.* theme variables (tailwind.config.ts).
+ * Active copy is inlined in app/globals.css (do not @import this file; Next compiles
+ * each imported CSS file separately and @layer base must stay with @tailwind in globals).
+ * @layer base for html/body: app/globals.css only.
+ */
+
+:root {
+  --hive-color-navy: #0f2838;
+  --hive-color-navy-muted: #1a2f4a;
+  --hive-color-sage: #77a38d;
+  --hive-color-sage-muted: #6a9380;
+  --hive-color-blue: #4a6b8c;
+  --hive-color-blue-muted: #3b82f6;
+  --hive-color-soft-sky: #e2edf4;
+  --hive-color-upload-icon-bg: #e8f0ec;
+  --hive-color-page: #f5f7f9;
+  --hive-color-surface: #ffffff;
+  --hive-color-border: #e2e6eb;
+  --hive-color-border-strong: #c8d1dc;
+  --hive-color-text: #111827;
+  --hive-color-text-muted: #6b7280;
+  --hive-color-text-inverse: #ffffff;
+  --hive-color-error: #b54a4a;
+  --hive-radius-sm: 0.375rem;
+  --hive-radius-md: 0.5rem;
+  --hive-radius-lg: 0.75rem;
+  --hive-radius-xl: 1rem;
+  --hive-radius-2xl: 1rem;
+  --hive-shadow-sm: 0 1px 2px rgb(15 40 56 / 0.05);
+  --hive-shadow-md: 0 4px 6px rgb(15 40 56 / 0.07);
+  --hive-shadow-lg: 0 10px 15px rgb(15 40 56 / 0.08);
+  --hive-shadow-focus: 0 0 0 2px var(--hive-color-surface), 0 0 0 4px rgb(119 163 141 / 0.45);
+  --hive-space-section: 4.5rem;
+  --hive-max-content: 72rem;
+  --hive-max-upload: 56rem;
+}

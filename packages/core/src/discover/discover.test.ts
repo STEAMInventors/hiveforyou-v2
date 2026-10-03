@@ -5,10 +5,9 @@ import { fileURLToPath } from "node:url";
 
 import { describe, expect, it } from "vitest";
 
-import {
-  IEP_DISCOVER_PACK,
-  IEP_L001_CORPUS_DOCUMENT_TYPES,
-} from "@hiveforyou/domain-packs";
+import { requireDiscoverPack } from "@hiveforyou/domain-packs";
+
+const IEP_DISCOVER_PACK = requireDiscoverPack("iep");
 import type { HiveDiscoverProposalV1, HiveDiscoverRun } from "@hiveforyou/shared/discover";
 import { HIVE_DISCOVER_PROPOSAL_SCHEMA } from "@hiveforyou/shared/discover";
 
@@ -195,12 +194,9 @@ describe("Engine 1 discover adapter", () => {
     expect(artifactRepo.artifacts[0]?.discoveryResultJson).toBeTruthy();
   });
 
-  it("accepts every IEP L001 corpus document type in validated proposals", () => {
-    for (const documentType of IEP_L001_CORPUS_DOCUMENT_TYPES) {
-      const catalogEntry = IEP_DISCOVER_PACK.catalog.find(
-        (entry) => entry.documentType === documentType,
-      );
-      expect(catalogEntry, `catalog entry for ${documentType}`).toBeDefined();
+  it("accepts every registered IEP catalog document type in validated proposals", () => {
+    for (const catalogEntry of IEP_DISCOVER_PACK.catalog) {
+      const documentType = catalogEntry.documentType;
 
       const validation = validateDiscoveryProposal(
         baseProposal({
@@ -210,9 +206,9 @@ describe("Engine 1 discover adapter", () => {
               sourceDocumentId: "src-1",
               pageStart: 1,
               documentType,
-              title: catalogEntry!.title,
-              familyRole: catalogEntry!.familyRole,
-              groupId: catalogEntry!.groupId,
+              title: catalogEntry.title,
+              familyRole: catalogEntry.familyRole,
+              groupId: catalogEntry.groupId,
               recognitionStatus: "recognized",
             },
           ],

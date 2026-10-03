@@ -1,0 +1,20 @@
+{
+  "name": "@hiveforyou/domain-pack-medicaid",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    ".": "./pack.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "lint": "node -e \"process.exit(0)\""
+  },
+  "dependencies": {
+    "@hiveforyou/domain-pack": "workspace:*",
+    "@hiveforyou/domain-pack-shared": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.2"
+  }
+}

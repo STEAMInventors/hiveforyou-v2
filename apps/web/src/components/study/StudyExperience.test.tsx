@@ -109,9 +109,9 @@ describe("StudyExperience UI", () => {
 
   it("shows human stages only while running", async () => {
     render(<StudyExperience startRequest={minimalRequest()} />);
-    expect(screen.getByText("Studying your case")).toBeInTheDocument();
-    expect(screen.getByTestId("study-stage-label")).toHaveTextContent(
-      /Preparing your case|Studying the documents together/,
+    expect(screen.getByTestId("study-stage-label")).toHaveTextContent("Hiving");
+    expect(screen.getByTestId("hive-building-stage-current")).toHaveTextContent(
+      /Reading your documents together|Connecting facts across files/,
     );
     await waitFor(
       () => {
