@@ -89,6 +89,8 @@ export const UNRESOLVED_SOURCES = [
 
   "engine1_completeness",
 
+  "extraction",
+
   "model_proposal",
 
   "validation",
@@ -487,6 +489,9 @@ export type CanonicalCaseSnapshot = {
   }>;
 
   unresolved: UnresolvedItem[];
+
+  /** Deterministic unreadable-page coverage from normalized extractions (no model). */
+  extractionReadiness?: import("../../intake/extraction-readiness").ExtractionReadiness;
 
   /** Frozen study inputs for provenance resolution in projections and UI. */
   sourceDocuments: StudySourceDocumentRef[];

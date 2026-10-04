@@ -11,6 +11,7 @@ import type { CanonicalStudyContext } from "@hiveforyou/shared/canonical-study";
 import type { RecognitionVocabularyPromptRow } from "@hiveforyou/domain-packs";
 
 import type { ExtractionLocatorCatalog } from "../provenance/serialize-extraction-locator-catalog";
+import type { ExtractionReadiness } from "@hiveforyou/shared/intake/extraction-readiness";
 import type { CanonicalStudyPromptInputs } from "../prompts/compose-canonical-study-inputs";
 import { OpenAICanonicalStudyEngineV3 } from "./openai-engine-v3";
 import { OpenAICanonicalStudyEngineV4 } from "./openai-engine-v4";
@@ -19,6 +20,7 @@ export type CanonicalStudyEngineV3Runtime = {
   composed: CanonicalStudyPromptInputs;
   sourceDocumentBytes?: Map<string, Uint8Array>;
   extractionLocatorCatalog?: ExtractionLocatorCatalog | null;
+  extractionReadiness?: ExtractionReadiness | null;
   recognitionVocabulary?: RecognitionVocabularyPromptRow[] | null;
 };
 

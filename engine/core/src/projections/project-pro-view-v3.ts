@@ -54,13 +54,35 @@ function mapConflict(conflict: CanonicalCaseSnapshot["conflicts"][number]): Prop
   };
 }
 
-function mapMissing(item: CanonicalCaseSnapshot["unresolved"][number]): ProposedMissingness | null {
+function mapMissing(
+  item: CanonicalCaseSnapshot["unresolved"][number],
+  intelligence: CanonicalCaseSnapshot,
+): ProposedMissingness | null {
   if (item.kind !== "missing_information") {
     return null;
   }
+  let description = item.description ?? "Missing information";
+  if (item.source === "extraction" && intelligence.extractionReadiness) {
+    for (const doc of intelligence.extractionReadiness.documents) {
+      const range = doc.unreadableRanges.find((row) => row.id === item.id);
+      if (range) {
+        description = `${description} Pro: ${doc.filename} upload pages ${range.sourcePageStart}${range.sourcePageEnd !== range.sourcePageStart ? `–${range.sourcePageEnd}` : ""}; reason codes ${range.reasonCodes.join(", ")}${
+          range.logicalDocuments.length
+            ? `; logical ${range.logicalDocuments
+                .map(
+                  (logical) =>
+                    `${logical.logicalDocumentId} pages ${logical.pageStart}${logical.pageEnd !== logical.pageStart ? `–${logical.pageEnd}` : ""}`,
+                )
+                .join("; ")}`
+            : ""
+        }.`;
+        break;
+      }
+    }
+  }
   return {
     id: item.id,
-    description: item.description ?? "Missing information",
+    description,
     subjectEntityId: item.subjectEntityId,
     evidenceRefs: item.evidenceRefs,
   };
@@ -85,7 +107,7 @@ export function projectProViewV3(intelligence: CanonicalCaseSnapshot): ProView {
     events: intelligence.events.map(mapEvent),
     conflicts: intelligence.conflicts.map(mapConflict),
     missingness: intelligence.unresolved
-      .map(mapMissing)
+      .map((item) => mapMissing(item, intelligence))
       .filter((item): item is ProposedMissingness => item != null),
   };
 }

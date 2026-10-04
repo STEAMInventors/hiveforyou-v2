@@ -64,6 +64,10 @@ import type { StructureMap } from "@hiveforyou/shared/discover";
 import type { NormalizedDocumentExtraction } from "@hiveforyou/shared/intake";
 
 import { buildExtractionLocatorCatalog } from "../provenance/serialize-extraction-locator-catalog";
+import { buildExtractionReadiness } from "./build-extraction-readiness";
+import { enrichValidationWithExtractionReadiness } from "./apply-extraction-readiness";
+import type { ExtractionReadiness } from "@hiveforyou/shared/intake/extraction-readiness";
+import type { CanonicalCaseSnapshot } from "@hiveforyou/shared/case-intelligence/3";
 
 /** OpenAI intake studies can exceed two minutes; duplicate POSTs must wait, not restart. */
 const STUDY_IN_PROGRESS_WAIT_MS = 600_000;
@@ -168,13 +172,16 @@ async function completeValidatedStudyAfterProposal(input: {
   run: CanonicalStudyRun;
   studyRunId: string;
   learningPrep?: StudyLearningPrepResult;
+  extractionReadiness?: ExtractionReadiness | null;
 }): Promise<CanonicalStudyOutcome> {
-  const { request, deps, context, validation, proposal, learningPrep } = input;
+  const { request, deps, context, validation, proposal, learningPrep, extractionReadiness } = input;
   let { run, studyRunId } = input;
 
   const previousVersion = await deps.intelligenceRepo.getLatestVersion(request.caseId);
   const nextVersion = (previousVersion ?? 0) + 1;
-  const snapshot = buildCanonicalCaseSnapshot(context, validation, nextVersion);
+  const snapshot = buildCanonicalCaseSnapshot(context, validation, nextVersion, {
+    ...(extractionReadiness ? { extractionReadiness } : {}),
+  });
 
   if (deps.projectionRepo) {
     try {
@@ -735,12 +742,15 @@ async function executeStudy(
   }
 
   let extractionLocatorCatalog = null;
+  let extractionReadiness: ExtractionReadiness | null = null;
   if (deps.loadNormalizedExtractionsForStudy) {
     try {
       const extractions = await deps.loadNormalizedExtractionsForStudy(context);
       extractionLocatorCatalog = buildExtractionLocatorCatalog({ context, extractionsBySourceId: extractions });
+      extractionReadiness = buildExtractionReadiness({ context, extractionsBySourceId: extractions });
     } catch {
       extractionLocatorCatalog = null;
+      extractionReadiness = null;
     }
   }
 
@@ -754,6 +764,7 @@ async function executeStudy(
       composed,
       sourceDocumentBytes,
       extractionLocatorCatalog,
+      extractionReadiness,
       recognitionVocabulary:
         recognitionVocabulary.length > 0 ? recognitionVocabulary : null,
     });
@@ -817,6 +828,7 @@ async function executeStudy(
   let validation: CanonicalStudyValidationResultV3;
   try {
     validation = validateStudyProposal(context, proposal, deps.prompt?.version);
+    validation = enrichValidationWithExtractionReadiness(validation, extractionReadiness, context);
   } catch (error) {
     if (error instanceof MalformedCanonicalStudyProposalError) {
       validation = {
@@ -912,5 +924,6 @@ async function executeStudy(
     run,
     studyRunId,
     learningPrep,
+    extractionReadiness,
   });
 }

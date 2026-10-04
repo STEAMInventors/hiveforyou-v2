@@ -178,6 +178,7 @@ export function buildCanonicalStudyUserMessage(
   context: CanonicalStudyContext,
   options?: {
     extractionLocatorCatalog?: ExtractionLocatorCatalog | null;
+    extractionReadiness?: import("@hiveforyou/shared/intake/extraction-readiness").ExtractionReadiness | null;
     recognitionVocabulary?: RecognitionVocabularyPromptRow[] | null;
   },
 ): string {
@@ -269,6 +270,13 @@ export function buildCanonicalStudyUserMessage(
           "",
         ]
       : []),
+    ...(options?.extractionReadiness
+      ? [
+          "Unreadable pages (deterministic — do not claim something is absent from a document that has unreadable pages; say it may be on those pages instead):",
+          JSON.stringify(options.extractionReadiness, null, 2),
+          "",
+        ]
+      : []),
     ...(recognitionVocabulary && recognitionVocabulary.length > 0
       ? [
           "Domain recognition vocabulary (JSON — abbreviation expansion and surface-form normalization only; not constructs or established facts):",
@@ -339,6 +347,7 @@ export class OpenAICanonicalStudyEngineV3 {
 
     const userText = buildCanonicalStudyUserMessage(runtime.composed, context, {
       extractionLocatorCatalog: runtime.extractionLocatorCatalog,
+      extractionReadiness: runtime.extractionReadiness,
       recognitionVocabulary: runtime.recognitionVocabulary,
     });
     const body: Record<string, unknown> = {

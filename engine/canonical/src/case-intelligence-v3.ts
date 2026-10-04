@@ -146,10 +146,11 @@ function buildUnresolved(
   const items: UnresolvedItem[] = [];
 
   for (const gap of validation.accepted.missingInformation) {
+    const fromExtraction = gap.id.startsWith("extr-readiness-");
     items.push({
       id: gap.id,
       kind: "missing_information",
-      source: "model_proposal",
+      source: fromExtraction ? "extraction" : "model_proposal",
       description: gap.description,
       subjectEntityId: gap.subjectEntityId,
       relatedConstruct: gap.relatedConstruct,
@@ -176,6 +177,9 @@ export function buildCanonicalCaseSnapshot(
   context: CanonicalStudyContext,
   validation: CanonicalStudyValidationResultV3,
   version: number,
+  options?: {
+    extractionReadiness?: CanonicalCaseSnapshot["extractionReadiness"];
+  },
 ): CanonicalCaseSnapshot {
   const validatedClaims = validation.accepted.claims.map((claim) =>
     toValidatedClaim(claim, context.domainId, context.studyRunId),
@@ -199,6 +203,9 @@ export function buildCanonicalCaseSnapshot(
     conflicts,
     changes: buildChanges(validatedClaims, context.domainId),
     unresolved: buildUnresolved(validation, conflicts),
+    ...(options?.extractionReadiness
+      ? { extractionReadiness: options.extractionReadiness }
+      : {}),
     sourceDocuments: structuredClone(context.sourceDocuments),
     validationResult: validation,
   };

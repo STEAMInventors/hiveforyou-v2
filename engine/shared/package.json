@@ -17,6 +17,7 @@
     "./case-intelligence/3/validation-result": "./src/case-intelligence/3/validation-result.ts",
     "./case-intelligence/4": "./src/case-intelligence/4/index.ts",
     "./intake": "./src/intake/index.ts",
+    "./intake/extraction-readiness": "./src/intake/extraction-readiness.ts",
     "./pack-study": "./src/pack-study/index.ts"
   },
   "scripts": {
