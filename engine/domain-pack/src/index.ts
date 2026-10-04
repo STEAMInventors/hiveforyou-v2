@@ -19,9 +19,9 @@ export type {
   NarrativeChapter,
   NarrativeCondition,
   NarrativeTemplate,
+  StoryPackConfig,
 } from "./types";
 export { validateNarrativeBlock, validateNarrativeTemplate } from "./validate-narrative-block";
-export type { RecognitionVocabularyPromptRow } from "./serialize-recognition-vocabulary";
 export { DOMAIN_PACK_CAPABILITIES } from "./types";
 export {
   domainPackRecordId,

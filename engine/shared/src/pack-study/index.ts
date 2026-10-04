@@ -1,7 +1,15 @@
 export type {
   Study,
+  StudyAnchorComparison,
+  StudyAnchorRef,
+  StudyAnchors,
   StudyFact,
   StudyGoalRow,
+  StudyMeasureSeries,
+  StudyRankedSignal,
+  StudyRecordGap,
   StudyReevalMeasureClause,
+  StudyRowState,
   StudySeriesAfterPrior,
+  StudySlotComparison,
 } from "./types";
