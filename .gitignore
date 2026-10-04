@@ -43,3 +43,5 @@ baseline-*.txt
 after-move-*.txt
 
 typecheck.txt
+
+_tmp-*
