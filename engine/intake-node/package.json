@@ -1,0 +1,25 @@
+{
+  "name": "@hiveforyou/intake-node",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./canvas-rasterize": "./src/canvas-rasterize.ts",
+    "./guten-ocr": "./src/guten-ocr.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "lint": "node -e \"process.exit(0)\"",
+    "test": "node -e \"process.exit(0)\""
+  },
+  "dependencies": {
+    "@hiveforyou/intake": "workspace:*",
+    "@gutenye/ocr-node": "^1.4.8",
+    "@napi-rs/canvas": "^0.1.80"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "typescript": "^5.7.2"
+  }
+}

@@ -2,6 +2,7 @@ packages:
   - "app"
   - "engine/core"
   - "engine/intake"
+  - "engine/intake-node"
   - "engine/canonical"
   - "engine/shared"
   - "engine/domain-pack"

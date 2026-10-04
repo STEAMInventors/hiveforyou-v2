@@ -124,7 +124,9 @@ async function buildIntakeExecutionDeps(userId: string): Promise<{
       extractDocument(input, {
         recover: (recoverInput) => recoverNormalizedDocument(recoverInput),
         resolvePageRasterizer: async () => {
-          const { createCanvasPageRasterizer } = await import("./canvas-rasterize.server");
+          const { createCanvasPageRasterizer } = await import(
+            "@hiveforyou/intake-node/canvas-rasterize"
+          );
           return createCanvasPageRasterizer();
         },
       }),

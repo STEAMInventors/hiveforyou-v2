@@ -45,3 +45,6 @@ after-move-*.txt
 typecheck.txt
 
 _tmp-*
+
+after-tests.txt
+after-typecheck.txt

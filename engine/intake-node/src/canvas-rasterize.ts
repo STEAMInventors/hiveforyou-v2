@@ -1,8 +1,6 @@
-import "server-only";
-
 import { createCanvas } from "@napi-rs/canvas";
 
-import type { PageRasterizer, PdfPageProxy } from "@hiveforyou/intake/server-extraction";
+import type { PageRasterizer, PdfPageProxy } from "@hiveforyou/intake/nestiep-rasterize-types";
 
 interface MutableCanvas {
   width: number;
@@ -11,7 +9,7 @@ interface MutableCanvas {
   toBuffer: (mime: "image/png") => Buffer;
 }
 
-/** Server-only PDF page rasterizer for NestIEP OCR fallback (native addon stays out of `@hiveforyou/intake`). */
+/** PDF page rasterizer for NestIEP OCR fallback (native addons live in this package, not `@hiveforyou/intake`). */
 export function createCanvasPageRasterizer(): PageRasterizer {
   return {
     async rasterizePdfPage(page: PdfPageProxy) {

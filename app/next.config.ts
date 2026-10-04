@@ -23,6 +23,7 @@ const nextConfig: NextConfig = {
     "@hiveforyou/domain-pack",
     "@hiveforyou/domain-packs",
     "@hiveforyou/intake",
+    "@hiveforyou/intake-node",
   ],
   outputFileTracingIncludes: {
     "/api/study/run": ["../../engine/core/prompts/**/*"],

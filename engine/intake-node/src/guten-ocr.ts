@@ -1,6 +1,4 @@
-import "server-only";
-
-import type { OcrEngine } from "@hiveforyou/intake/server-extraction";
+import type { OcrEngine } from "@hiveforyou/intake/nestiep-ocr-engine";
 
 type BoundingBox = { x: number; y: number; width: number; height: number };
 
@@ -34,7 +32,7 @@ function frameToBox(frame: GutenTextLine["frame"]): BoundingBox | undefined {
   return { x: frame.left, y: frame.top, width: frame.width, height: frame.height };
 }
 
-/** Optional NestIEP PaddleOCR adapter; only loaded on the Next server when configured. */
+/** Optional NestIEP PaddleOCR adapter via dynamic ONNX models path. */
 export async function createGutenOcrEngine(modelDir?: string): Promise<OcrEngine> {
   let loaded: GutenOcrModule;
   try {
@@ -58,7 +56,7 @@ export async function createGutenOcrEngine(modelDir?: string): Promise<OcrEngine
 
   return {
     adapterId: "guten-paddleocr-onnx",
-    async recognizePage(image) {
+    async recognizePage(image, _context) {
       const raw = await instance.detect({
         data: image.bytes,
         width: image.width,

@@ -23,9 +23,6 @@ importers:
 
   app:
     dependencies:
-      '@gutenye/ocr-node':
-        specifier: ^1.4.8
-        version: 1.4.9
       '@hiveforyou/canonical':
         specifier: workspace:*
         version: link:../engine/canonical
@@ -41,6 +38,9 @@ importers:
       '@hiveforyou/intake':
         specifier: workspace:*
         version: link:../engine/intake
+      '@hiveforyou/intake-node':
+        specifier: workspace:*
+        version: link:../engine/intake-node
       '@hiveforyou/shared':
         specifier: workspace:*
         version: link:../engine/shared
@@ -291,6 +291,25 @@ importers:
       vitest:
         specifier: ^2.1.8
         version: 2.1.9(@types/node@22.20.4)(jsdom@25.0.1)(terser@5.51.2)
+
+  engine/intake-node:
+    dependencies:
+      '@gutenye/ocr-node':
+        specifier: ^1.4.8
+        version: 1.4.9
+      '@hiveforyou/intake':
+        specifier: workspace:*
+        version: link:../intake
+      '@napi-rs/canvas':
+        specifier: ^0.1.80
+        version: 0.1.100
+    devDependencies:
+      '@types/node':
+        specifier: ^22.10.2
+        version: 22.20.4
+      typescript:
+        specifier: ^5.7.2
+        version: 5.9.3
 
   engine/shared:
     devDependencies:

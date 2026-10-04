@@ -5,7 +5,9 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
-    "./server-extraction": "./src/server-extraction.ts"
+    "./server-extraction": "./src/server-extraction.ts",
+    "./nestiep-rasterize-types": "./src/extraction/nestiep/rasterize-types.ts",
+    "./nestiep-ocr-engine": "./src/extraction/nestiep/ocrEngine.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
