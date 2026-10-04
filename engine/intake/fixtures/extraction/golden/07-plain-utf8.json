@@ -1,0 +1,18 @@
+{
+  "caseId": "07-plain-utf8",
+  "fixtureFile": "07-plain-utf8.txt",
+  "mimeType": "text/plain; charset=utf-8",
+  "extractionStatus": "SUCCEEDED",
+  "errorCode": null,
+  "extractorVersion": "nestiep-extractor/4",
+  "unreadablePageRanges": [],
+  "pages": [
+    {
+      "pageNumber": 1,
+      "extractionMethod": "NATIVE",
+      "issueCodes": [],
+      "canonicalText": "UTF-8 fixture line.\nSynthetic fixture document for automated extraction regression testing only. No real student names, identifiers, or protected health information are present. Repeat marker: ALPHA-BRAVO-CHARLIE-DELTA-ECHO-FOXTROT.\nCurly quotes: “synthetic” — em dash."
+    }
+  ],
+  "canonicalText": "UTF-8 fixture line.\nSynthetic fixture document for automated extraction regression testing only. No real student names, identifiers, or protected health information are present. Repeat marker: ALPHA-BRAVO-CHARLIE-DELTA-ECHO-FOXTROT.\nCurly quotes: “synthetic” — em dash."
+}

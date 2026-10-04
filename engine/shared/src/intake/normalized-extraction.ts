@@ -2,6 +2,9 @@
 
 export const NORMALIZED_EXTRACTION_SCHEMA_VERSION = "nestiep-recovered-document/1";
 
+/** Bump when extraction output semantics change (cache invalidation + study provenance). */
+export const NESTIEP_EXTRACTOR_VERSION = "nestiep-extractor/4";
+
 export const NESTIEP_EXTRACTION_METHODS = ["NATIVE", "OCR"] as const;
 export type NestIepExtractionMethod = (typeof NESTIEP_EXTRACTION_METHODS)[number];
 
@@ -10,6 +13,7 @@ export const NESTIEP_SOURCE_ISSUE_CODES = [
   "LOW_TEXT_RECOVERY",
   "OCR_REQUIRED",
   "OCR_FAILED",
+  "OCR_UNAVAILABLE",
   "POSSIBLE_SCANNING_ARTIFACT",
   "CORRUPTED_PAGE",
   "UNREADABLE_DOCUMENT",
@@ -64,7 +68,8 @@ export type NestIepPageQualityMetrics = {
   readonly duplicateTextRatio: number;
   readonly textItemCount: number;
   readonly estimatedCoverage: number;
-  readonly imageOperatorCount: number;
+  /** Null when the operator list was skipped (P1 fast path). */
+  readonly imageOperatorCount: number | null;
 };
 
 export type NestIepPageQualityDecision = {
@@ -90,16 +95,24 @@ export type NormalizedDocumentExtractionStatistics = {
   readonly pageCount: number;
   readonly nativePageCount: number;
   readonly ocrPageCount: number;
+  readonly operatorListSkippedPages?: number;
+};
+
+export type UnreadablePageRange = {
+  readonly start: number;
+  readonly end: number;
 };
 
 /** Full persisted extraction artifact for one source document + content hash. */
 export type NormalizedDocumentExtraction = {
   readonly schemaVersion: typeof NORMALIZED_EXTRACTION_SCHEMA_VERSION;
+  readonly extractorVersion: string;
   readonly sourceDocumentId: string;
   readonly sourceHash: string;
   readonly mimeType: string;
   readonly detectedKind: NestIepSupportedFileKind | "unknown";
   readonly statistics: NormalizedDocumentExtractionStatistics;
   readonly sourceIssues: readonly NestIepSourceIssue[];
+  readonly unreadablePageRanges?: readonly UnreadablePageRange[];
   readonly pages: readonly NestIepRecoveredPage[];
 };

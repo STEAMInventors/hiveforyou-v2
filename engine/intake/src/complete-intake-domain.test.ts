@@ -72,6 +72,7 @@ describe("completeIntakeDomainPack", () => {
           schemaVersion: NORMALIZED_EXTRACTION_SCHEMA_VERSION,
           normalizedExtraction: {
             schemaVersion: NORMALIZED_EXTRACTION_SCHEMA_VERSION,
+            extractorVersion: "nestiep-extractor/2",
             sourceDocumentId: "doc-1",
             sourceHash: "hash",
             mimeType: "application/pdf",
@@ -117,6 +118,7 @@ describe("completeIntakeDomainPack", () => {
           schemaVersion: NORMALIZED_EXTRACTION_SCHEMA_VERSION,
           normalizedExtraction: {
             schemaVersion: NORMALIZED_EXTRACTION_SCHEMA_VERSION,
+            extractorVersion: "nestiep-extractor/2",
             sourceDocumentId: "doc-1",
             sourceHash: "hash",
             mimeType: "application/pdf",

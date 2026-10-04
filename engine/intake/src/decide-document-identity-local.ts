@@ -3,6 +3,15 @@ import {
   type DocumentIdentityType,
 } from "@hiveforyou/shared/intake";
 
+import { hasEnoughIdentityText } from "./sample";
+
+/** Native text was recovered, but there is not enough of it to name a document type. */
+export const TEXT_TOO_SHORT_ERROR_CODE = "TEXT_TOO_SHORT";
+
+export function textTooShortToClassify(sample: string): boolean {
+  return !hasEnoughIdentityText(sample);
+}
+
 import type { JevIdentityDecision } from "./jev-client";
 
 export type LocalDocumentClassifierInput = {

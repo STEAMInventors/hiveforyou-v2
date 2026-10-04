@@ -47,7 +47,7 @@ export const INTAKE_RUN_STATUSES = [
 
 export type IntakeRunStatus = (typeof INTAKE_RUN_STATUSES)[number];
 
-export const EXTRACTION_STATUSES = ["SUCCEEDED", "NEEDS_OCR", "FAILED"] as const;
+export const EXTRACTION_STATUSES = ["SUCCEEDED", "PARTIAL", "NEEDS_OCR", "FAILED"] as const;
 
 export type ExtractionStatus = (typeof EXTRACTION_STATUSES)[number];
 

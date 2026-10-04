@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 
 import {
   NORMALIZED_EXTRACTION_SCHEMA_VERSION,
+  NESTIEP_EXTRACTOR_VERSION,
   toIntakeCustomerView,
   type IntakeCustomerViewDocumentInput,
 } from "@hiveforyou/shared/intake";
@@ -48,6 +49,7 @@ function customerViewDocuments(
 function minimalNormalized(documentId: string, sourceHash: string) {
   return {
     schemaVersion: NORMALIZED_EXTRACTION_SCHEMA_VERSION,
+    extractorVersion: NESTIEP_EXTRACTOR_VERSION,
     sourceDocumentId: documentId,
     sourceHash,
     mimeType: "application/pdf",
@@ -252,6 +254,56 @@ describe("intake job", () => {
     expect(decide).not.toHaveBeenCalled();
     expect(identities.rows[0]?.processingStatus).toBe("NEEDS_OCR");
     expect(identities.rows[0]?.proposedType).toBeNull();
+    expect(run.status).toBe("NEEDS_REVIEW");
+  });
+
+  it("classifies short valid text as too short without dropping the document", async () => {
+    const decide = vi.fn();
+    const short = "Signed: J. Doe";
+    const { deps, identities } = harness({
+      documents: [
+        {
+          sourceDocumentId: "doc-short",
+          mimeType: "application/pdf",
+          sha256: "hash-short",
+          bytes: new Uint8Array([1]),
+        },
+      ],
+      extract: async (input) => {
+        const normalized = minimalNormalized(input.documentId, input.sourceHash);
+        const result: DocumentExtractionResult = {
+          documentId: input.documentId,
+          extractionStatus: "SUCCEEDED",
+          text: short,
+          pages: [{ pageNumber: 1, text: short, extractionMethod: "NATIVE", boundingBoxes: null }],
+          extractionMethod: "NATIVE",
+          sourceHash: input.sourceHash,
+          errorCode: null,
+          normalizedExtraction: {
+            ...normalized,
+            pages: [
+              {
+                ...normalized.pages[0]!,
+                canonicalText: short,
+              },
+            ],
+          },
+        };
+        return result;
+      },
+      decide,
+    });
+    const opened = await openIntakeRun(deps, {
+      userId,
+      caseId,
+      sourceDocumentIds: ["doc-short"],
+    });
+    const run = await opened.begin();
+    expect(decide).not.toHaveBeenCalled();
+    expect(identities.rows[0]?.processingStatus).toBe("NEEDS_REVIEW");
+    expect(identities.rows[0]?.proposedType).toBe("other");
+    expect(identities.rows[0]?.errorCode).toBe("TEXT_TOO_SHORT");
+    expect(identities.rows[0]?.analysisDisposition).not.toBe("DISCARDED");
     expect(run.status).toBe("NEEDS_REVIEW");
   });
 

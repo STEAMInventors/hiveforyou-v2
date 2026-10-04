@@ -42,6 +42,7 @@ Operational memory for HiveForYou V2 agents. **Do not read all of `brain/` recur
 - [intelligence-flywheel.md](architecture/intelligence-flywheel.md)
 - [event-log.md](architecture/event-log.md)
 - [frontend-backend-contract.md](architecture/frontend-backend-contract.md)
+- [document-text-extraction.md](architecture/document-text-extraction.md) — full intake PDF/image/plain-text extraction code reference
 
 ## Domains
 

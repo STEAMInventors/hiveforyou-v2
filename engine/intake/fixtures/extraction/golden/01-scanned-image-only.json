@@ -1,0 +1,27 @@
+{
+  "caseId": "01-scanned-image-only",
+  "fixtureFile": "01-scanned-image-only.pdf",
+  "mimeType": "application/pdf",
+  "extractionStatus": "NEEDS_OCR",
+  "errorCode": null,
+  "extractorVersion": "nestiep-extractor/4",
+  "unreadablePageRanges": [
+    {
+      "start": 1,
+      "end": 1
+    }
+  ],
+  "pages": [
+    {
+      "pageNumber": 1,
+      "extractionMethod": "NATIVE",
+      "issueCodes": [
+        "EMPTY_PAGE",
+        "OCR_REQUIRED",
+        "OCR_UNAVAILABLE"
+      ],
+      "canonicalText": ""
+    }
+  ],
+  "canonicalText": ""
+}

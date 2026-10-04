@@ -1,13 +1,15 @@
 import {
   NORMALIZED_EXTRACTION_SCHEMA_VERSION,
+  NESTIEP_EXTRACTOR_VERSION,
   type NormalizedDocumentExtraction,
   type NestIepSourceIssue,
 } from "@hiveforyou/shared/intake";
 
+import { decodePlainTextBytes, isPlainTextMime } from "../mime";
+import { compressPageRanges, unreadablePageNumbers } from "../page-recovery-summary";
 import { buildRecoveredPage } from "./buildRecoveredPage";
 import { detectFileType, suppliedMimeAgrees } from "./detectFileType";
-import type { RecoveredPage } from "./contracts";
-import type { SupportedFileKind } from "./contracts";
+import type { RecoveredPage, SupportedFileKind } from "./contracts";
 import type { RecoveryContext } from "./recovery-context";
 import type { OcrEngine } from "./ocrEngine";
 import type { QualityThresholds } from "./qualityGate";
@@ -27,9 +29,15 @@ export type RecoverDocumentInput = {
   readonly resolvePageRasterizer?: () => Promise<PageRasterizer>;
 };
 
+type RecoverableKind = Extract<SupportedFileKind, "pdf" | "jpeg" | "png">;
+
+function isRecoverableKind(kind: SupportedFileKind | "unknown"): kind is RecoverableKind {
+  return kind === "pdf" || kind === "jpeg" || kind === "png";
+}
+
 async function recoverSourcePages(
   bytes: Uint8Array,
-  kind: Extract<SupportedFileKind, "pdf" | "jpeg" | "png">,
+  kind: RecoverableKind,
   context: RecoveryContext,
 ): Promise<RecoveredPage[]> {
   if (kind === "pdf") {
@@ -50,8 +58,13 @@ export function buildNormalizedDocumentExtraction(input: {
 }): NormalizedDocumentExtraction {
   const nativePageCount = input.pages.filter((page) => page.extractionMethod === "NATIVE").length;
   const ocrPageCount = input.pages.filter((page) => page.extractionMethod === "OCR").length;
+  const operatorListSkippedPages = input.pages.filter(
+    (page) => page.qualityDecision?.metrics.imageOperatorCount === null,
+  ).length;
+  const unreadable = unreadablePageNumbers(input.pages);
   return {
     schemaVersion: NORMALIZED_EXTRACTION_SCHEMA_VERSION,
+    extractorVersion: NESTIEP_EXTRACTOR_VERSION,
     sourceDocumentId: input.sourceDocumentId,
     sourceHash: input.sourceHash,
     mimeType: input.mimeType,
@@ -60,8 +73,12 @@ export function buildNormalizedDocumentExtraction(input: {
       pageCount: input.pages.length,
       nativePageCount,
       ocrPageCount,
+      ...(operatorListSkippedPages > 0 ? { operatorListSkippedPages } : {}),
     },
     sourceIssues: input.documentIssues,
+    ...(unreadable.length > 0
+      ? { unreadablePageRanges: compressPageRanges(unreadable) }
+      : {}),
     pages: input.pages,
   };
 }
@@ -73,8 +90,8 @@ export async function recoverNormalizedDocument(
   const runId = input.runId ?? input.sourceDocumentId;
   const stepId = input.stepId ?? "intake-extract";
 
-  if (suppliedMime === "text/plain") {
-    const decoded = new TextDecoder("utf-8", { fatal: false }).decode(input.bytes);
+  if (isPlainTextMime(input.mimeType)) {
+    const decoded = decodePlainTextBytes(input.bytes);
     const page = buildRecoveredPage({
       runId,
       sourceDocumentId: input.sourceDocumentId,
@@ -85,7 +102,7 @@ export async function recoverNormalizedDocument(
     return buildNormalizedDocumentExtraction({
       sourceDocumentId: input.sourceDocumentId,
       sourceHash: input.sourceHash,
-      mimeType: "text/plain",
+      mimeType: isPlainTextMime(input.mimeType) ? suppliedMime.split(";")[0]!.trim().toLowerCase() : "text/plain",
       detectedKind: "plain-text",
       documentIssues: [],
       pages: [page],
@@ -128,6 +145,21 @@ export async function recoverNormalizedDocument(
       ? {}
       : { resolvePageRasterizer: input.resolvePageRasterizer }),
   };
+
+  if (!isRecoverableKind(detected.kind)) {
+    documentIssues.push({
+      code: "UNSUPPORTED_FILE",
+      message: "Detected file kind is not recoverable.",
+    });
+    return buildNormalizedDocumentExtraction({
+      sourceDocumentId: input.sourceDocumentId,
+      sourceHash: input.sourceHash,
+      mimeType: detected.mimeType,
+      detectedKind: detected.kind,
+      documentIssues,
+      pages: [],
+    });
+  }
 
   const pages = await recoverSourcePages(input.bytes, detected.kind, context);
   return buildNormalizedDocumentExtraction({

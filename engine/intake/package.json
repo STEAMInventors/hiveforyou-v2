@@ -10,9 +10,11 @@
     "./nestiep-ocr-engine": "./src/extraction/nestiep/ocrEngine.ts"
   },
   "scripts": {
-    "typecheck": "tsc --noEmit",
+    "typecheck": "node scripts/typecheck-baseline.mjs",
     "lint": "node -e \"process.exit(0)\"",
-    "test": "vitest run"
+    "test": "vitest run",
+    "fixtures:extraction": "node fixtures/extraction/generate-fixtures.mjs",
+    "fixtures:extraction:goldens": "node fixtures/extraction/generate-fixtures.mjs && node fixtures/extraction/record-goldens.mjs"
   },
   "dependencies": {
     "@hiveforyou/domain-pack": "workspace:*",
@@ -21,6 +23,8 @@
   },
   "devDependencies": {
     "@types/node": "^22.10.2",
+    "pdf-lib": "^1.17.1",
+    "pdfkit": "^0.20.2",
     "typescript": "^5.7.2",
     "vitest": "^2.1.8"
   }

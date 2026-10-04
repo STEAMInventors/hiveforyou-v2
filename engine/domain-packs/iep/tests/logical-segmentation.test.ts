@@ -1,7 +1,10 @@
 import { describe, expect, it } from "vitest";
 
 import type { NormalizedDocumentExtraction } from "@hiveforyou/shared/intake";
-import { NORMALIZED_EXTRACTION_SCHEMA_VERSION } from "@hiveforyou/shared/intake";
+import {
+  NORMALIZED_EXTRACTION_SCHEMA_VERSION,
+  NESTIEP_EXTRACTOR_VERSION,
+} from "@hiveforyou/shared/intake";
 
 import { iepScanDocumentFromNormalized } from "../adapters/from-normalized-extraction";
 import { classifyIepDocumentLocally } from "../document-interpreter/classify-local";
@@ -32,6 +35,7 @@ function pdfDoc(id: string, pages: string[], extras?: Partial<IepScanDocument>):
 function normalizedFromPages(sourceDocumentId: string, pages: string[]): NormalizedDocumentExtraction {
   return {
     schemaVersion: NORMALIZED_EXTRACTION_SCHEMA_VERSION,
+    extractorVersion: NESTIEP_EXTRACTOR_VERSION,
     sourceDocumentId,
     sourceHash: "fixture-hash",
     mimeType: "application/pdf",

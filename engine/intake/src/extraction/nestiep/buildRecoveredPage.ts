@@ -55,7 +55,10 @@ export function buildRecoveredPage(input: {
   const canonicalText = pieces.join("\n");
   const blocks = buildBlocks(lines);
   const sourceIssues = [...(input.sourceIssues ?? [])];
-  if (canonicalText.trim().length === 0) {
+  if (
+    canonicalText.trim().length === 0 &&
+    !sourceIssues.some((issue) => issue.code === "EMPTY_PAGE")
+  ) {
     sourceIssues.push({
       code: "EMPTY_PAGE",
       message: "No recoverable text on page.",

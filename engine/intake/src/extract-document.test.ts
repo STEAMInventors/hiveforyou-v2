@@ -51,6 +51,101 @@ describe("extractDocument", () => {
     expect(result.extractionMethod).toBe(NATIVE_EXTRACTION_METHOD);
   });
 
+  it("returns SUCCEEDED when native text is valid but too short to classify", () => {
+    const normalized = mockNormalized([
+      mockPage({ pageNumber: 1, canonicalText: "Signed: J. Doe" }),
+    ]);
+    const result = assessExtraction({
+      documentId: "doc-1",
+      sourceHash: "hash-1",
+      extractionMethod: NATIVE_EXTRACTION_METHOD,
+      pages: [{ pageNumber: 1, text: "Signed: J. Doe" }],
+      normalizedExtraction: normalized,
+    });
+    expect(result.extractionStatus).toBe("SUCCEEDED");
+  });
+
+  it("returns PARTIAL only for image-without-text or corrupted pages", () => {
+    const normalized = mockNormalized([
+      mockPage({ pageNumber: 1, canonicalText: enough.repeat(2) }),
+      mockPage({
+        pageNumber: 2,
+        canonicalText: "",
+        qualityDecision: {
+          useOcr: true,
+          reasons: ["empty-native-text-with-images"],
+          metrics: {
+            characterCount: 0,
+            meaningfulCharacterCount: 0,
+            printableRatio: 0,
+            garbageRatio: 0,
+            duplicateTextRatio: 0,
+            textItemCount: 0,
+            estimatedCoverage: 0,
+            imageOperatorCount: 1,
+          },
+        },
+      }),
+      mockPage({
+        pageNumber: 3,
+        canonicalText: "",
+        sourceIssues: [{ code: "CORRUPTED_PAGE", message: "broken", pageNumber: 3 }],
+      }),
+    ]);
+    const result = assessExtraction({
+      documentId: "doc-1",
+      sourceHash: "hash-1",
+      extractionMethod: NATIVE_EXTRACTION_METHOD,
+      pages: [
+        { pageNumber: 1, text: enough.repeat(2) },
+        { pageNumber: 2, text: "" },
+        { pageNumber: 3, text: "" },
+      ],
+      normalizedExtraction: normalized,
+    });
+    expect(result.extractionStatus).toBe("PARTIAL");
+    expect(result.normalizedExtraction?.unreadablePageRanges).toEqual([
+      { start: 2, end: 3 },
+    ]);
+  });
+
+  it("keeps a blank page readable so the document stays SUCCEEDED", () => {
+    const normalized = mockNormalized([
+      mockPage({ pageNumber: 1, canonicalText: enough.repeat(2) }),
+      mockPage({
+        pageNumber: 2,
+        canonicalText: "",
+        sourceIssues: [{ code: "EMPTY_PAGE", message: "blank", pageNumber: 2 }],
+        qualityDecision: {
+          useOcr: false,
+          reasons: ["empty-page-no-images"],
+          metrics: {
+            characterCount: 0,
+            meaningfulCharacterCount: 0,
+            printableRatio: 0,
+            garbageRatio: 0,
+            duplicateTextRatio: 0,
+            textItemCount: 0,
+            estimatedCoverage: 0,
+            imageOperatorCount: 0,
+          },
+        },
+      }),
+    ]);
+    const result = assessExtraction({
+      documentId: "doc-1",
+      sourceHash: "hash-1",
+      extractionMethod: NATIVE_EXTRACTION_METHOD,
+      pages: [
+        { pageNumber: 1, text: enough.repeat(2) },
+        { pageNumber: 2, text: "" },
+      ],
+      normalizedExtraction: normalized,
+    });
+    expect(result.extractionStatus).toBe("SUCCEEDED");
+    expect(result.normalizedExtraction?.unreadablePageRanges).toBeUndefined();
+  });
+
   it("keeps page boundaries when native text is sufficient", async () => {
     const normalized = mockNormalized([
       mockPage({ pageNumber: 1, canonicalText: enough }),

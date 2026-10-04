@@ -3,8 +3,11 @@ import { randomUUID } from "node:crypto";
 import {
   IDENTITY_REVIEW_CONFIDENCE,
   INTAKE_CLASSIFIER,
+  INTAKE_IDENTITY_CONFIG_ID,
   isTerminalIntakeDocumentStatus,
 } from "@hiveforyou/shared/intake";
+
+import { TEXT_TOO_SHORT_ERROR_CODE, textTooShortToClassify } from "./decide-document-identity-local";
 
 import { assessExtraction, extractDocument, PLAIN_TEXT_METHOD } from "./extract-document";
 import {
@@ -19,10 +22,14 @@ import type {
   IntakeRunRepository,
 } from "./repositories";
 import { rollupIntakeRunStatus } from "./run-status";
-import { hasEnoughIdentityText, identityTextSample, joinPageText } from "./sample";
-import { NORMALIZED_EXTRACTION_SCHEMA_VERSION } from "@hiveforyou/shared/intake";
+import { identityTextSample, joinPageText } from "./sample";
+import {
+  NORMALIZED_EXTRACTION_SCHEMA_VERSION,
+  NESTIEP_EXTRACTOR_VERSION,
+} from "@hiveforyou/shared/intake";
 
 import { finalizeIntakeRunPack } from "./finalize-intake-pack";
+import { elapsedMs, logStageTiming } from "./stage-timing";
 import type { JevDomainDecision } from "./jev-domain-client";
 import type {
   DocumentExtractionRecord,
@@ -153,6 +160,7 @@ async function processDocument(
     return;
   }
 
+  const extractStart = performance.now();
   const { extraction, normalizedAlreadyStored } = await resolveDocumentExtraction(
     deps,
     identity,
@@ -160,6 +168,18 @@ async function processDocument(
     run,
     extract,
   );
+  const stats = extraction.normalizedExtraction?.statistics;
+  logStageTiming({
+    stage: "extract",
+    intakeRunId: run.id,
+    sourceDocumentId: identity.sourceDocumentId,
+    pageCount: stats?.pageCount ?? extraction.pages.length,
+    nativePageCount: stats?.nativePageCount ?? null,
+    ocrPageCount: stats?.ocrPageCount ?? null,
+    operatorListSkippedPages: stats?.operatorListSkippedPages ?? null,
+    extractionStatus: extraction.extractionStatus,
+    ms: elapsedMs(extractStart),
+  });
 
   if (extraction.normalizedExtraction && !normalizedAlreadyStored) {
     if (!deps.normalizedExtractions) {
@@ -223,9 +243,9 @@ async function processDocument(
   }
 
   if (
-    extraction.extractionStatus !== "SUCCEEDED" ||
-    extraction.pages.length === 0 ||
-    !hasEnoughIdentityText(pageText)
+    (extraction.extractionStatus !== "SUCCEEDED" &&
+      extraction.extractionStatus !== "PARTIAL") ||
+    extraction.pages.length === 0
   ) {
     identity.processingStatus = "NEEDS_OCR";
     identity.proposedType = null;
@@ -236,6 +256,21 @@ async function processDocument(
     identity.classifiedAt = null;
     identity.errorCode = null;
     identity.updatedAt = now();
+    await persistIdentity(deps, identity);
+    return;
+  }
+
+  if (textTooShortToClassify(pageText)) {
+    const classifiedAt = now();
+    identity.proposedType = "other";
+    identity.confidence = 0;
+    identity.proposedBy = INTAKE_CLASSIFIER;
+    identity.returnedModel = null;
+    identity.classifierVersion = INTAKE_IDENTITY_CONFIG_ID;
+    identity.classifiedAt = classifiedAt;
+    identity.errorCode = TEXT_TOO_SHORT_ERROR_CODE;
+    identity.processingStatus = "NEEDS_REVIEW";
+    identity.updatedAt = classifiedAt;
     await persistIdentity(deps, identity);
     return;
   }
@@ -290,7 +325,8 @@ async function resolveDocumentExtraction(
     if (
       cached &&
       cached.schemaVersion === NORMALIZED_EXTRACTION_SCHEMA_VERSION &&
-      cached.normalizedExtraction.schemaVersion === NORMALIZED_EXTRACTION_SCHEMA_VERSION
+      cached.normalizedExtraction.schemaVersion === NORMALIZED_EXTRACTION_SCHEMA_VERSION &&
+      cached.normalizedExtraction.extractorVersion === NESTIEP_EXTRACTOR_VERSION
     ) {
       const normalized = cached.normalizedExtraction;
       const pages = normalizedToExtractionPages(normalized);

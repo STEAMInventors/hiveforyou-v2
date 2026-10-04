@@ -3,11 +3,15 @@ import { describe, expect, it } from "vitest";
 import { executeIepIntakePack } from "../execute-intake";
 import { selectCurrentAndPriorIep } from "../document-interpreter/temporal-resolution";
 import type { NormalizedDocumentExtraction } from "@hiveforyou/shared/intake";
-import { NORMALIZED_EXTRACTION_SCHEMA_VERSION } from "@hiveforyou/shared/intake";
+import {
+  NORMALIZED_EXTRACTION_SCHEMA_VERSION,
+  NESTIEP_EXTRACTOR_VERSION,
+} from "@hiveforyou/shared/intake";
 
 function normalized(text: string, id: string): NormalizedDocumentExtraction {
   return {
     schemaVersion: NORMALIZED_EXTRACTION_SCHEMA_VERSION,
+    extractorVersion: NESTIEP_EXTRACTOR_VERSION,
     sourceDocumentId: id,
     sourceHash: "hash",
     mimeType: "application/pdf",

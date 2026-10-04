@@ -1,0 +1,19 @@
+{
+  "caseId": "11-word-space-gap",
+  "fixtureFile": "11-word-space-gap.pdf",
+  "mimeType": "application/pdf",
+  "comment": "Score and 85 are separated by a word-sized gap and stay two tokens.",
+  "extractionStatus": "SUCCEEDED",
+  "errorCode": null,
+  "extractorVersion": "nestiep-extractor/4",
+  "unreadablePageRanges": [],
+  "pages": [
+    {
+      "pageNumber": 1,
+      "extractionMethod": "NATIVE",
+      "issueCodes": [],
+      "canonicalText": "Score 85\nSynthetic fixture document for automated extraction regression testing only. No real student names,\nidentifiers, or protected health information are present. Repeat marker:\nALPHA-BRAVO-CHARLIE-DELTA-ECHO-FOXTROT."
+    }
+  ],
+  "canonicalText": "Score 85\nSynthetic fixture document for automated extraction regression testing only. No real student names,\nidentifiers, or protected health information are present. Repeat marker:\nALPHA-BRAVO-CHARLIE-DELTA-ECHO-FOXTROT."
+}

@@ -4,15 +4,17 @@ import {
   normalizedToExtractionPages,
   primaryExtractionMethod,
 } from "./extraction/map-normalized-to-intake";
+import { baseMime } from "./extraction/mime";
 import { PdfOpenError } from "./extraction/nestiep/pdf-open-error";
 import {
   recoverNormalizedDocument,
   type RecoverDocumentInput,
 } from "./extraction/nestiep/recover-document";
+import { isPageUnreadable } from "./extraction/page-recovery-summary";
 import type { OcrEngine } from "./extraction/nestiep/ocrEngine";
 import { PLAIN_TEXT_METHOD } from "./extraction/methods";
 import type { DocumentExtractionResult, ExtractionPage } from "./types";
-import { hasEnoughIdentityText, joinPageText, normalizePageText } from "./sample";
+import { joinPageText, normalizePageText } from "./sample";
 
 export {
   NATIVE_EXTRACTION_METHOD,
@@ -20,16 +22,6 @@ export {
   PLAIN_TEXT_METHOD,
   PDF_NATIVE_METHOD,
 } from "./extraction/methods";
-
-const IMAGE_OR_WORD_MIME = new Set([
-  "image/png",
-  "image/jpeg",
-  "image/jpg",
-  "image/tiff",
-  "image/tif",
-  "application/msword",
-  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-]);
 
 export type ExtractDocumentInput = {
   documentId: string;
@@ -40,6 +32,10 @@ export type ExtractDocumentInput = {
 };
 
 export type PdfPageReader = (bytes: Uint8Array) => Promise<ExtractionPage[]>;
+
+function hasPartialUnreadablePages(normalized: NormalizedDocumentExtraction): boolean {
+  return normalized.pages.some((page) => isPageUnreadable(page));
+}
 
 export function assessExtraction(input: {
   documentId: string;
@@ -57,13 +53,24 @@ export function assessExtraction(input: {
   }));
   const text = joinPageText(pages);
 
-  const hasOcrFailure = input.normalizedExtraction.pages.some((page) =>
-    page.sourceIssues.some((issue) => issue.code === "OCR_FAILED"),
-  );
-  const needsOcr =
-    pages.length === 0 ||
-    !hasEnoughIdentityText(text) ||
-    (hasOcrFailure && !hasEnoughIdentityText(text));
+  if (
+    input.normalizedExtraction.detectedKind === "unknown" ||
+    input.normalizedExtraction.sourceIssues.some((issue) => issue.code === "UNSUPPORTED_FILE")
+  ) {
+    return {
+      documentId: input.documentId,
+      extractionStatus: "FAILED",
+      text,
+      pages,
+      extractionMethod: input.extractionMethod,
+      sourceHash: input.sourceHash,
+      errorCode: "UNSUPPORTED_FILE",
+      normalizedExtraction: input.normalizedExtraction,
+    };
+  }
+
+  const hasRecoverableText = text.trim().length > 0;
+  const needsOcr = pages.length === 0 || !hasRecoverableText;
 
   if (needsOcr) {
     return {
@@ -77,6 +84,20 @@ export function assessExtraction(input: {
       normalizedExtraction: input.normalizedExtraction,
     };
   }
+
+  if (hasPartialUnreadablePages(input.normalizedExtraction)) {
+    return {
+      documentId: input.documentId,
+      extractionStatus: "PARTIAL",
+      text,
+      pages,
+      extractionMethod: input.extractionMethod,
+      sourceHash: input.sourceHash,
+      errorCode: null,
+      normalizedExtraction: input.normalizedExtraction,
+    };
+  }
+
   return {
     documentId: input.documentId,
     extractionStatus: "SUCCEEDED",
@@ -134,7 +155,7 @@ function logExtractionFailure(input: {
     errorName,
     errorMessage,
     stack,
-    mimeType: input.mimeType?.trim().toLowerCase() ?? null,
+    mimeType: baseMime(input.mimeType) || null,
     byteLength: input.byteLength,
   });
 }
@@ -148,29 +169,7 @@ export async function extractDocument(
     resolvePageRasterizer?: () => Promise<import("./extraction/nestiep/rasterize-types").PageRasterizer>;
   },
 ): Promise<DocumentExtractionResult> {
-  const mime = input.mimeType?.trim().toLowerCase() ?? "";
   const recover = deps?.recover ?? recoverNormalizedDocument;
-
-  if (IMAGE_OR_WORD_MIME.has(mime) && mime !== "image/png" && mime !== "image/jpeg" && mime !== "image/jpg") {
-    const empty = await recover({
-      sourceDocumentId: input.documentId,
-      sourceHash: input.sourceHash,
-      bytes: input.bytes,
-      mimeType: input.mimeType,
-      runId: input.runId,
-      ocrEngine: undefined,
-      ...(deps?.resolvePageRasterizer === undefined
-        ? {}
-        : { resolvePageRasterizer: deps.resolvePageRasterizer }),
-    });
-    return assessExtraction({
-      documentId: input.documentId,
-      sourceHash: input.sourceHash,
-      extractionMethod: null,
-      pages: [],
-      normalizedExtraction: empty,
-    });
-  }
 
   const ocrEngine =
     deps?.ocrEngine === null
@@ -190,16 +189,6 @@ export async function extractDocument(
         ? {}
         : { resolvePageRasterizer: deps.resolvePageRasterizer }),
     });
-
-    if (normalized.detectedKind === "unknown" && mime !== "text/plain") {
-      return assessExtraction({
-        documentId: input.documentId,
-        sourceHash: input.sourceHash,
-        extractionMethod: null,
-        pages: [],
-        normalizedExtraction: normalized,
-      });
-    }
 
     const pages = normalizedToExtractionPages(normalized);
     const extractionMethod =

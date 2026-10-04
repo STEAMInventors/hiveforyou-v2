@@ -1,7 +1,15 @@
 import { loadPdfJsWithOps } from "../pdfjs-worker";
 import type { RecoveredPage, SourceIssue } from "./contracts";
 import { buildRecoveredPage } from "./buildRecoveredPage";
-import { decideNativeVsOcr, computePageQualityMetrics, type QualityThresholds } from "./qualityGate";
+import {
+  canSkipOperatorList,
+  computePageQualityMetrics,
+  countMeaningfulCharacters,
+  decideNativeVsOcr,
+  isGarbageOcrReasons,
+  type QualityThresholds,
+} from "./qualityGate";
+import { joinPdfNativeItems, type PdfNativeTextItem } from "./pdf-text-items";
 import type { PageRasterizer } from "./rasterize-types";
 import type { OcrEngine } from "./ocrEngine";
 import { PdfOpenError } from "./pdf-open-error";
@@ -36,17 +44,61 @@ type PdfPageProxy = {
   cleanup(): Promise<void>;
 };
 
+export type PdfPageQualityEvaluation = {
+  readonly decision: ReturnType<typeof decideNativeVsOcr>;
+  readonly operatorListSkipped: boolean;
+};
+
+/** Runs full and fast operator-list paths; used by tests (P1). */
+export async function evaluatePdfPageQuality(
+  page: PdfPageProxy,
+  ops: PdfOps,
+  thresholds?: QualityThresholds,
+): Promise<{ full: PdfPageQualityEvaluation; fast: PdfPageQualityEvaluation }> {
+  const nativeItems = await extractNativeItems(page);
+  const full = await qualityDecisionForPage(page, ops, nativeItems, thresholds, false);
+  const fast = await qualityDecisionForPage(page, ops, nativeItems, thresholds, true);
+  return { full, fast };
+}
+
+export async function recoverPdfDocumentPages(
+  document: PdfDocumentProxy,
+  ops: PdfOps,
+  context: PdfRecoveryContext,
+): Promise<RecoveredPage[]> {
+  const pages: RecoveredPage[] = [];
+  for (let pageNumber = 1; pageNumber <= document.numPages; pageNumber += 1) {
+    try {
+      pages.push(await recoverOnePdfPage(document, pageNumber, ops, context));
+    } catch {
+      pages.push(
+        buildRecoveredPage({
+          runId: context.runId,
+          sourceDocumentId: context.sourceDocumentId,
+          pageNumber,
+          extractionMethod: "NATIVE",
+          items: [],
+          sourceIssues: [
+            {
+              code: "CORRUPTED_PAGE",
+              message: "Page text could not be recovered.",
+              pageNumber,
+            },
+          ],
+        }),
+      );
+    }
+  }
+  return pages;
+}
+
 export async function recoverPdfPages(
   bytes: Uint8Array,
   context: PdfRecoveryContext,
 ): Promise<RecoveredPage[]> {
   const loaded = await loadPdf(bytes);
   try {
-    const pages: RecoveredPage[] = [];
-    for (let pageNumber = 1; pageNumber <= loaded.document.numPages; pageNumber += 1) {
-      pages.push(await recoverOnePdfPage(loaded.document, pageNumber, loaded.ops, context));
-    }
-    return pages;
+    return await recoverPdfDocumentPages(loaded.document, loaded.ops, context);
   } finally {
     try {
       await loaded.document.destroy();
@@ -105,6 +157,50 @@ type PdfOps = {
   paintInlineImageXObject: number;
 };
 
+async function qualityDecisionForPage(
+  page: PdfPageProxy,
+  ops: PdfOps,
+  nativeItems: PdfNativeTextItem[],
+  thresholds: QualityThresholds | undefined,
+  allowOperatorSkip: boolean,
+): Promise<PdfPageQualityEvaluation> {
+  const rawText = nativeItems.map((item) => item.text).join(" ");
+  const coverage = estimateCoverage(nativeItems, page);
+  const textOnlyMetrics = computePageQualityMetrics({
+    rawText,
+    textItemCount: nativeItems.length,
+    estimatedCoverage: coverage,
+    imageOperatorCount: 0,
+  });
+  const t = thresholds;
+  let operatorListSkipped = false;
+  let imageOperatorCount = 0;
+  if (allowOperatorSkip && canSkipOperatorList(textOnlyMetrics.meaningfulCharacterCount, t)) {
+    operatorListSkipped = true;
+    imageOperatorCount = 0;
+  } else {
+    imageOperatorCount = await countImageOperators(page, ops);
+  }
+  const gateImageCount = operatorListSkipped ? 0 : imageOperatorCount;
+  const gateMetrics = computePageQualityMetrics({
+    rawText,
+    textItemCount: nativeItems.length,
+    estimatedCoverage: coverage,
+    imageOperatorCount: gateImageCount,
+  });
+  const decision = decideNativeVsOcr(gateMetrics, t);
+  const decisionWithSkipFlag = operatorListSkipped
+    ? {
+        ...decision,
+        metrics: { ...decision.metrics, imageOperatorCount: null },
+      }
+    : decision;
+  return {
+    decision: decisionWithSkipFlag,
+    operatorListSkipped,
+  };
+}
+
 async function recoverOnePdfPage(
   document: PdfDocumentProxy,
   pageNumber: number,
@@ -114,16 +210,14 @@ async function recoverOnePdfPage(
   const page = await document.getPage(pageNumber);
   try {
     const nativeItems = await extractNativeItems(page);
-    const rawText = nativeItems.map((item) => item.text).join(" ");
-    const imageOperatorCount = await countImageOperators(page, ops);
-    const coverage = estimateCoverage(nativeItems, page);
-    const metrics = computePageQualityMetrics({
-      rawText,
-      textItemCount: nativeItems.length,
-      estimatedCoverage: coverage,
-      imageOperatorCount,
-    });
-    const decision = decideNativeVsOcr(metrics, context.qualityThresholds);
+    const quality = await qualityDecisionForPage(
+      page,
+      ops,
+      nativeItems,
+      context.qualityThresholds,
+      true,
+    );
+    const decision = quality.decision;
     const issues: SourceIssue[] = [];
 
     if (decision.reasons.includes("empty-page-no-images")) {
@@ -154,8 +248,50 @@ async function recoverOnePdfPage(
       pageNumber,
     });
 
-    const ocrPage = await ocrPdfPage(page, pageNumber, context, issues);
-    return { ...ocrPage, qualityDecision: decision };
+    const nativeMeaningful = countMeaningfulCharacters(
+      nativeItems.map((item) => item.text).join(" "),
+    );
+    const ocrPage = await ocrPdfPage(page, pageNumber, context, [...issues]);
+    const ocrMeaningful = countMeaningfulCharacters(ocrPage.canonicalText);
+
+    if (ocrPage.canonicalText.trim().length === 0 || ocrMeaningful <= nativeMeaningful) {
+      if (isGarbageOcrReasons(decision.reasons)) {
+        issues.push({
+          code: "UNREADABLE_DOCUMENT",
+          message: "Native text failed quality checks and OCR did not recover readable text.",
+          pageNumber,
+        });
+        return {
+          ...buildRecoveredPage({
+            runId: context.runId,
+            sourceDocumentId: context.sourceDocumentId,
+            pageNumber,
+            extractionMethod: "NATIVE",
+            items: [],
+            sourceIssues: issues,
+          }),
+          qualityDecision: decision,
+        };
+      }
+      issues.push({
+        code: "OCR_UNAVAILABLE",
+        message: "OCR was required but did not improve text; native extraction retained.",
+        pageNumber,
+      });
+      return {
+        ...buildRecoveredPage({
+          runId: context.runId,
+          sourceDocumentId: context.sourceDocumentId,
+          pageNumber,
+          extractionMethod: "NATIVE",
+          items: nativeItems,
+          sourceIssues: issues,
+        }),
+        qualityDecision: decision,
+      };
+    }
+
+    return { ...ocrPage, qualityDecision: decision, sourceIssues: issues };
   } finally {
     try {
       await page.cleanup();
@@ -165,12 +301,9 @@ async function recoverOnePdfPage(
   }
 }
 
-async function extractNativeItems(
-  page: PdfPageProxy,
-): Promise<{ text: string; boundingBox?: { x: number; y: number; width: number; height: number } }[]> {
+async function extractNativeItems(page: PdfPageProxy): Promise<PdfNativeTextItem[]> {
   const content = await page.getTextContent();
-  const items: { text: string; boundingBox?: { x: number; y: number; width: number; height: number } }[] =
-    [];
+  const raw: PdfNativeTextItem[] = [];
   for (const item of content.items) {
     if (!item || typeof item !== "object" || !("str" in item) || typeof item.str !== "string") {
       continue;
@@ -181,9 +314,11 @@ async function extractNativeItems(
     const transform = "transform" in item && Array.isArray(item.transform) ? item.transform : undefined;
     const width = "width" in item && typeof item.width === "number" ? item.width : 0;
     const height = "height" in item && typeof item.height === "number" ? item.height : 0;
+    const hasEOL = "hasEOL" in item && item.hasEOL === true;
     if (transform !== undefined) {
-      items.push({
+      raw.push({
         text: item.str,
+        hasEOL,
         boundingBox: {
           x: transform[4] ?? 0,
           y: transform[5] ?? 0,
@@ -192,10 +327,10 @@ async function extractNativeItems(
         },
       });
     } else {
-      items.push({ text: item.str });
+      raw.push({ text: item.str, hasEOL });
     }
   }
-  return items;
+  return joinPdfNativeItems(raw);
 }
 
 async function countImageOperators(page: PdfPageProxy, ops: PdfOps): Promise<number> {
@@ -238,11 +373,6 @@ async function ocrPdfPage(
   issues: SourceIssue[],
 ): Promise<RecoveredPage> {
   if (context.ocrEngine === undefined) {
-    issues.push({
-      code: "OCR_FAILED",
-      message: "OCR required but no local OCR engine was configured.",
-      pageNumber,
-    });
     return buildRecoveredPage({
       runId: context.runId,
       sourceDocumentId: context.sourceDocumentId,
@@ -258,11 +388,6 @@ async function ocrPdfPage(
       context.rasterizer ??
       (context.resolvePageRasterizer ? await context.resolvePageRasterizer() : undefined);
     if (rasterizer === undefined) {
-      issues.push({
-        code: "OCR_FAILED",
-        message: "OCR required but no PDF rasterizer was configured.",
-        pageNumber,
-      });
       return buildRecoveredPage({
         runId: context.runId,
         sourceDocumentId: context.sourceDocumentId,

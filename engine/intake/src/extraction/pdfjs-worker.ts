@@ -1,6 +1,7 @@
+import { createRequire } from "node:module";
 import { existsSync } from "node:fs";
 import path from "node:path";
-import { pathToFileURL } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
 type PdfJsModule = {
   getDocument: (params: Record<string, unknown>) => { promise: Promise<unknown> };
@@ -17,6 +18,8 @@ export type PdfJsWithOps = {
   OPS: NonNullable<PdfJsModule["OPS"]>;
 };
 
+const require = createRequire(import.meta.url);
+
 function toWorkerSrc(pathOrUrl: string): string {
   if (
     pathOrUrl.startsWith("file:") ||
@@ -29,39 +32,42 @@ function toWorkerSrc(pathOrUrl: string): string {
   return pathToFileURL(pathOrUrl).href;
 }
 
-function pdfJsInstallRoots(): string[] {
+function resolvePdfJsModulePaths(): { mainHref: string; workerSrc: string | null } {
+  try {
+    const mainPath = require.resolve("pdfjs-dist/legacy/build/pdf.mjs");
+    let workerSrc: string | null = null;
+    try {
+      workerSrc = toWorkerSrc(require.resolve("pdfjs-dist/legacy/build/pdf.worker.mjs"));
+    } catch {
+      workerSrc = null;
+    }
+    return { mainHref: pathToFileURL(mainPath).href, workerSrc };
+  } catch {
+    // Fall back to legacy layout discovery (tests / odd monorepo layouts).
+  }
+
   const cwd = process.cwd();
   const bases = [cwd, path.join(cwd, ".."), path.join(cwd, "../.."), path.join(cwd, "../../..")];
-  const roots: string[] = [];
   for (const base of bases) {
-    roots.push(path.join(base, "node_modules", "pdfjs-dist"));
-    roots.push(path.join(base, "packages", "intake", "node_modules", "pdfjs-dist"));
-    roots.push(path.join(base, "apps", "web", "node_modules", "pdfjs-dist"));
-  }
-  return roots;
-}
-
-function resolvePdfJsMainModuleHref(): string {
-  for (const root of pdfJsInstallRoots()) {
-    const mainPath = path.join(root, "legacy", "build", "pdf.mjs");
-    if (existsSync(mainPath)) {
-      return pathToFileURL(mainPath).href;
+    for (const root of [
+      path.join(base, "node_modules", "pdfjs-dist"),
+      path.join(base, "engine", "intake", "node_modules", "pdfjs-dist"),
+      path.join(base, "packages", "intake", "node_modules", "pdfjs-dist"),
+    ]) {
+      const mainPath = path.join(root, "legacy", "build", "pdf.mjs");
+      if (existsSync(mainPath)) {
+        const workerPath = path.join(root, "legacy", "build", "pdf.worker.mjs");
+        return {
+          mainHref: pathToFileURL(mainPath).href,
+          workerSrc: existsSync(workerPath) ? toWorkerSrc(workerPath) : null,
+        };
+      }
     }
   }
   throw new Error("pdfjs-dist legacy build could not be resolved from node_modules");
 }
 
-function resolveWorkerFileUrl(): string | null {
-  for (const root of pdfJsInstallRoots()) {
-    const workerPath = path.join(root, "legacy", "build", "pdf.worker.mjs");
-    if (existsSync(workerPath)) {
-      return toWorkerSrc(workerPath);
-    }
-  }
-  return null;
-}
-
-let cachedPdfJs: PdfJsModule | null | undefined;
+let cachedPdfJs: PdfJsModule | undefined;
 let workerConfigured = false;
 
 export async function loadPdfJsWithOps(): Promise<PdfJsWithOps> {
@@ -76,23 +82,16 @@ export async function loadPdfJs(): Promise<PdfJsModule> {
   if (cachedPdfJs) {
     return cachedPdfJs;
   }
-  if (cachedPdfJs === null) {
-    throw new Error("pdfjs-dist could not be loaded");
-  }
   try {
-    const mainHref = resolvePdfJsMainModuleHref();
+    const { mainHref, workerSrc } = resolvePdfJsModulePaths();
     const mod = (await import(/* webpackIgnore: true */ mainHref)) as PdfJsModule;
-    if (!workerConfigured) {
-      const workerSrc = resolveWorkerFileUrl();
-      if (workerSrc) {
-        mod.GlobalWorkerOptions.workerSrc = workerSrc;
-      }
+    if (!workerConfigured && workerSrc) {
+      mod.GlobalWorkerOptions.workerSrc = workerSrc;
       workerConfigured = true;
     }
     cachedPdfJs = mod;
     return mod;
   } catch (error) {
-    cachedPdfJs = null;
     const message = error instanceof Error ? error.message : String(error);
     throw new Error(`pdfjs-dist could not be loaded: ${message}`);
   }

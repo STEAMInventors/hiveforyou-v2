@@ -1,0 +1,19 @@
+{
+  "caseId": "04-two-column-narrative",
+  "fixtureFile": "04-two-column-narrative.pdf",
+  "mimeType": "application/pdf",
+  "comment": "Column order follows PDF reading order (often interleaved L/R lines) until C4 column segmentation lands; snapshot reflects current behavior.",
+  "extractionStatus": "SUCCEEDED",
+  "errorCode": null,
+  "extractorVersion": "nestiep-extractor/4",
+  "unreadablePageRanges": [],
+  "pages": [
+    {
+      "pageNumber": 1,
+      "extractionMethod": "NATIVE",
+      "issueCodes": [],
+      "canonicalText": "Left column line one for fixture. Right column line one for fixture.\nLeft column line two for fixture. Right column line two for fixture.\nLeft column line three for fixture. Right column line three for fixture.\nSynthetic fixture document for automated extraction regression testing only. No real student names, identifiers, or\nprotected health information are present. Repeat marker: ALPHA-BRAVO-CHARLIE-DELTA-ECHO-FOXTROT."
+    }
+  ],
+  "canonicalText": "Left column line one for fixture. Right column line one for fixture.\nLeft column line two for fixture. Right column line two for fixture.\nLeft column line three for fixture. Right column line three for fixture.\nSynthetic fixture document for automated extraction regression testing only. No real student names, identifiers, or\nprotected health information are present. Repeat marker: ALPHA-BRAVO-CHARLIE-DELTA-ECHO-FOXTROT."
+}

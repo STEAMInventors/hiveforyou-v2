@@ -1,0 +1,19 @@
+{
+  "caseId": "12-score-kerning-baked-item",
+  "fixtureFile": "12-score-kerning-baked-item.pdf",
+  "mimeType": "application/pdf",
+  "comment": "Word gap before digits; baked single-item kerning space stays as 8 5.",
+  "extractionStatus": "SUCCEEDED",
+  "errorCode": null,
+  "extractorVersion": "nestiep-extractor/4",
+  "unreadablePageRanges": [],
+  "pages": [
+    {
+      "pageNumber": 1,
+      "extractionMethod": "NATIVE",
+      "issueCodes": [],
+      "canonicalText": "Score 8 5\nSynthetic fixture document for automated extraction regression testing only. No real student names,\nidentifiers, or protected health information are present. Repeat marker:\nALPHA-BRAVO-CHARLIE-DELTA-ECHO-FOXTROT."
+    }
+  ],
+  "canonicalText": "Score 8 5\nSynthetic fixture document for automated extraction regression testing only. No real student names,\nidentifiers, or protected health information are present. Repeat marker:\nALPHA-BRAVO-CHARLIE-DELTA-ECHO-FOXTROT."
+}

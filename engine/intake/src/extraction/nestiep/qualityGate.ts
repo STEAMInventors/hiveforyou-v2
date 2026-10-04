@@ -57,13 +57,17 @@ export function decideNativeVsOcr(
 ): PageQualityDecision {
   const reasons: string[] = [];
 
-  if (metrics.characterCount === 0 && metrics.imageOperatorCount === 0) {
+  const imageCount = metrics.imageOperatorCount ?? 0;
+  if (metrics.characterCount === 0 && imageCount === 0) {
     return { useOcr: false, reasons: ["empty-page-no-images"], metrics };
   }
-  if (metrics.characterCount === 0 && metrics.imageOperatorCount > 0) {
+  if (metrics.characterCount === 0 && imageCount > 0) {
     reasons.push("empty-native-text-with-images");
   }
-  if (metrics.meaningfulCharacterCount < thresholds.minMeaningfulCharacters) {
+  if (
+    metrics.meaningfulCharacterCount < thresholds.minMeaningfulCharacters &&
+    imageCount > 0
+  ) {
     reasons.push("low-meaningful-character-count");
   }
   if (metrics.characterCount > 0 && metrics.printableRatio < thresholds.minPrintableRatio) {
@@ -81,7 +85,7 @@ export function decideNativeVsOcr(
   if (
     metrics.estimatedCoverage < thresholds.minCoverageWhenSparse &&
     metrics.meaningfulCharacterCount < thresholds.sparseMeaningfulLimit &&
-    metrics.imageOperatorCount > 0
+    imageCount > 0
   ) {
     reasons.push("sparse-text-coverage-over-images");
   }
@@ -92,6 +96,37 @@ export function decideNativeVsOcr(
     reasons: useOcr ? reasons : ["native-quality-adequate"],
     metrics,
   };
+}
+
+export function countMeaningfulCharacters(text: string): number {
+  let meaningful = 0;
+  for (const char of text) {
+    if (MEANINGFUL.test(char)) {
+      meaningful += 1;
+    }
+  }
+  return meaningful;
+}
+
+/** P1: skip getOperatorList when image ops cannot affect the gate outcome. */
+export function canSkipOperatorList(
+  meaningfulCharacterCount: number,
+  thresholds: QualityThresholds = DEFAULT_QUALITY_THRESHOLDS,
+): boolean {
+  return (
+    meaningfulCharacterCount >= thresholds.minMeaningfulCharacters &&
+    meaningfulCharacterCount >= thresholds.sparseMeaningfulLimit
+  );
+}
+
+export const GARBAGE_OCR_REASONS = new Set([
+  "high-garbage-ratio",
+  "low-printable-ratio",
+  "high-duplicate-text-ratio",
+]);
+
+export function isGarbageOcrReasons(reasons: readonly string[]): boolean {
+  return reasons.some((reason) => GARBAGE_OCR_REASONS.has(reason));
 }
 
 function duplicateRatio(text: string): number {

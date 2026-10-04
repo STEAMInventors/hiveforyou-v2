@@ -13,13 +13,16 @@ export function iepScanDocumentFromNormalized(input: {
     text: page.canonicalText,
   }));
   const pageCount = Math.max(pages.length, input.normalized.statistics.pageCount, 1);
+  const anyText = pages.some((page) => page.text.trim().length > 0);
+  const allText = pages.every((page) => page.text.trim().length > 0);
+  const readStatus = !anyText ? "needs_ocr" : allText ? "ok" : "partially_read";
   return {
     scanDocumentId: input.sourceDocumentId,
     originalDisplayName: input.filename,
     mimeType: input.mimeType,
     pageCount,
     pages,
-    readStatus: pages.some((page) => page.text.trim().length > 0) ? "ok" : "needs_ocr",
+    readStatus,
     sourceUploadId: input.sourceDocumentId,
   };
 }

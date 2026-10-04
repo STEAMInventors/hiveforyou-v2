@@ -1,0 +1,18 @@
+{
+  "caseId": "02-short-signature",
+  "fixtureFile": "02-short-signature.pdf",
+  "mimeType": "application/pdf",
+  "extractionStatus": "SUCCEEDED",
+  "errorCode": null,
+  "extractorVersion": "nestiep-extractor/4",
+  "unreadablePageRanges": [],
+  "pages": [
+    {
+      "pageNumber": 1,
+      "extractionMethod": "NATIVE",
+      "issueCodes": [],
+      "canonicalText": "Signed: J. Doe"
+    }
+  ],
+  "canonicalText": "Signed: J. Doe"
+}

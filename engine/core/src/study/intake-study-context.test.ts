@@ -77,6 +77,52 @@ describe("intake study context", () => {
     expect(engine1.documents[0]?.id).toBe("logic-1");
   });
 
+  it("includes a document that was too short to classify", () => {
+    const shortPack = {
+      ...packExecution,
+      logicalDocuments: [
+        {
+          ...packExecution.logicalDocuments[0]!,
+          logicalDocumentId: "logic-short",
+          sourceDocumentId: "src-short",
+          processingDisposition: "NEEDS_REVIEW" as const,
+          classificationReason: "unmatched",
+          customerLabel: "Other",
+        },
+      ],
+    };
+    const request = assembleIntakeStudyRequest({
+      caseId: "case-1",
+      intakeRunId: "intake-1",
+      domainId: "iep",
+      domainLabel: "Special education records",
+      domainPackVersion: "0.0.0-test",
+      packExecution: shortPack,
+      identities: [{ sourceDocumentId: "src-short", analysisDisposition: "PRESENT" }],
+      sources: [
+        {
+          id: "src-short",
+          caseId: "case-1",
+          userId: "user-1",
+          clientStagedId: null,
+          originalFilename: "signature.pdf",
+          mimeType: "application/pdf",
+          sizeBytes: 100,
+          sha256: "abc",
+          storageBucket: "b",
+          storagePath: "p",
+          status: "stored",
+          intakeRunId: "intake-1",
+          studyRunId: null,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        },
+      ],
+    });
+    expect(request.sourceDocuments.map((doc) => doc.sourceDocumentId)).toEqual(["src-short"]);
+    expect(request.engine1Result.documents.map((doc) => doc.stagedDocumentId)).toEqual(["src-short"]);
+  });
+
   it("assembles a start request with intake fingerprints", () => {
     const request = assembleIntakeStudyRequest({
       caseId: "case-1",

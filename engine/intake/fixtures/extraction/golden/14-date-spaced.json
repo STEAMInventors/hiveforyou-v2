@@ -1,0 +1,18 @@
+{
+  "caseId": "14-date-spaced",
+  "fixtureFile": "14-date-spaced.pdf",
+  "mimeType": "application/pdf",
+  "extractionStatus": "SUCCEEDED",
+  "errorCode": null,
+  "extractorVersion": "nestiep-extractor/4",
+  "unreadablePageRanges": [],
+  "pages": [
+    {
+      "pageNumber": 1,
+      "extractionMethod": "NATIVE",
+      "issueCodes": [],
+      "canonicalText": "11 12 2024\nSynthetic fixture document for automated extraction regression testing only. No real student names,\nidentifiers, or protected health information are present. Repeat marker:\nALPHA-BRAVO-CHARLIE-DELTA-ECHO-FOXTROT."
+    }
+  ],
+  "canonicalText": "11 12 2024\nSynthetic fixture document for automated extraction regression testing only. No real student names,\nidentifiers, or protected health information are present. Repeat marker:\nALPHA-BRAVO-CHARLIE-DELTA-ECHO-FOXTROT."
+}

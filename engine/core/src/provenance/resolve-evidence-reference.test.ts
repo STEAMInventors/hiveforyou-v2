@@ -49,6 +49,7 @@ function normalizedPacketExtraction(): NormalizedDocumentExtraction {
   const canonicalText = `${line0Text}\n${line1Text}`;
   return {
     schemaVersion: NORMALIZED_EXTRACTION_SCHEMA_VERSION,
+    extractorVersion: "nestiep-extractor/2",
     sourceDocumentId: "src-packet",
     sourceHash: "hash-packet",
     mimeType: "application/pdf",
@@ -307,6 +308,7 @@ describe("L001-style provenance acceptance fixture", () => {
     const goalLine = "Special education and related services: 300 minutes per week";
     const normalized: NormalizedDocumentExtraction = {
       schemaVersion: NORMALIZED_EXTRACTION_SCHEMA_VERSION,
+      extractorVersion: "nestiep-extractor/2",
       sourceDocumentId: "l001-iep-src",
       sourceHash: "l001-hash",
       mimeType: "application/pdf",

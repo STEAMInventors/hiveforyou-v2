@@ -1,0 +1,18 @@
+{
+  "caseId": "08-plain-utf16-bom",
+  "fixtureFile": "08-plain-utf16-bom.txt",
+  "mimeType": "text/plain",
+  "extractionStatus": "SUCCEEDED",
+  "errorCode": null,
+  "extractorVersion": "nestiep-extractor/4",
+  "unreadablePageRanges": [],
+  "pages": [
+    {
+      "pageNumber": 1,
+      "extractionMethod": "NATIVE",
+      "issueCodes": [],
+      "canonicalText": "UTF-16 fixture line.\nSynthetic fixture document for automated extraction regression testing only. No real student names, identifiers, or protected health information are present. Repeat marker: ALPHA-BRAVO-CHARLIE-DELTA-ECHO-FOXTROT."
+    }
+  ],
+  "canonicalText": "UTF-16 fixture line.\nSynthetic fixture document for automated extraction regression testing only. No real student names, identifiers, or protected health information are present. Repeat marker: ALPHA-BRAVO-CHARLIE-DELTA-ECHO-FOXTROT."
+}

@@ -46,7 +46,7 @@ export type IepScanDocument = {
   mimeType: string;
   pageCount: number;
   pages: IepScanPage[];
-  readStatus: "ok" | "unreadable" | "rejected" | "failed" | "needs_ocr";
+  readStatus: "ok" | "partially_read" | "unreadable" | "rejected" | "failed" | "needs_ocr";
   duplicateOfDocumentId?: string;
   sourceUploadId?: string;
   logicalStartPage?: number;
