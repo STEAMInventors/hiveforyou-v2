@@ -28,7 +28,7 @@ function loadEnv(filePath) {
   }
 }
 
-loadEnv(path.join(root, "apps/web/.env.local"));
+loadEnv(path.join(root, "app/.env.local"));
 loadEnv(path.join(root, ".env.local"));
 
 const dbUrl =
@@ -38,7 +38,7 @@ const dbUrl =
 
 if (!dbUrl) {
   console.error(
-    "Set DATABASE_URL, SUPABASE_DB_URL, or DIRECT_URL (Session pooler / direct Postgres) in apps/web/.env.local.",
+    "Set DATABASE_URL, SUPABASE_DB_URL, or DIRECT_URL (Session pooler / direct Postgres) in app/.env.local.",
   );
   process.exit(1);
 }

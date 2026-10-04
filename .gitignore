@@ -38,3 +38,8 @@ artifacts/
 model-output/
 
 domain-packs/**/rulebook/.audit/
+
+baseline-*.txt
+after-move-*.txt
+
+typecheck.txt

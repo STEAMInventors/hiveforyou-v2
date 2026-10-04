@@ -1,15 +1,15 @@
 ---
 description: Backend and domain package conventions
-globs: packages/**/*.{ts,tsx}
+globs: engine/**/*.{ts,tsx}
 alwaysApply: false
 ---
 
 # Backend
 
-- Keep Hive Core **domain-agnostic**. Domain knowledge lives in `domain-packs/`. Generic pack contracts and registry runtime live in `packages/domain-pack`. Core imports the registry (`@hiveforyou/domain-packs`), never an IEP, Medicaid, or Bankruptcy pack package.
+- Keep Hive Core **domain-agnostic**. Domain knowledge lives in `engine/domain-packs/`. Generic pack contracts and registry runtime live in `engine/domain-pack`. Core imports the registry (`@hiveforyou/domain-packs`), never an IEP, Medicaid, or Bankruptcy pack package.
 - Model output is **proposals** only. **Engine 1** validates against Domain Pack rules. **Engine 2:** the model performs semantic Canonical Study; code validates structure, provenance, and integrity (deterministic). Domain Packs may enrich study context but do not whitelist canonical constructs.
 - Version processing runs, study contexts, and persisted intelligence; make reprocessing explicit.
-- Prefer packages: `core`, `intake`, `canonical`, `shared` — avoid circular dependencies (`shared` has no upstream package deps).
+- Prefer engine packages: `core`, `intake`, `canonical`, `shared` under `engine/` — avoid circular dependencies (`shared` has no upstream package deps).
 - Supabase/Postgres access belongs in appropriate layers; migrations in `supabase/migrations`.
 
 See `brain/architecture/overview.md`, `brain/architecture/hive-core.md`, ADRs in `brain/decisions/`.

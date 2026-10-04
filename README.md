@@ -8,13 +8,13 @@ HiveForYou is a domain-agnostic evidence-to-case-intelligence platform. Users up
 
 | Path | Purpose |
 |------|---------|
-| `apps/web` | Next.js frontend (future) |
-| `packages/core` | Hive core / engines (future) |
-| `packages/intake` | Upload & intake (future) |
-| `packages/canonical` | Canonical model & persistence (future) |
-| `packages/domain-pack` | Generic Domain Pack contracts and registry runtime |
-| `domain-packs/` | Domain knowledge (IEP, Medicaid, Bankruptcy) and the one pack registry |
-| `packages/shared` | Shared contracts & types |
+| `app` | Next.js UI + thin API (`@hiveforyou/app`) |
+| `engine/core` | Hive core / engines (`@hiveforyou/core`) |
+| `engine/intake` | Upload & intake (`@hiveforyou/intake`) |
+| `engine/canonical` | Canonical model & persistence |
+| `engine/domain-pack` | Generic Domain Pack contracts and registry runtime |
+| `engine/domain-packs/` | Domain knowledge (IEP, Medicaid, Bankruptcy) and the one pack registry |
+| `engine/shared` | Shared contracts & types |
 | `brain/` | Operational memory for agents — start at [`brain/INDEX.md`](brain/INDEX.md) |
 | `supabase/migrations` | Postgres migrations (future) |
 | `tests/` | Cross-package tests (future) |

@@ -1,4 +1,4 @@
-import type { HandlingKind } from "../domain-packs/_shared/rulebook/schema.ts";
+import type { HandlingKind } from "../engine/domain-packs/_shared/rulebook/schema.ts";
 
 export type DocSignals = {
   docType: string;

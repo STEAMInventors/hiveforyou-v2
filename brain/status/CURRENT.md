@@ -8,6 +8,8 @@ Status: **V2-001E.1 COMPLETE** + **Engine 1 OpenAI Discover** (**frozen**) + **E
 
 - Repository structure, brain architecture, Cursor rules, pnpm monorepo
 
+- **UI / engine layout (blocks 1–4):** Next.js app at `app/` (`@hiveforyou/app`); processing packages under `engine/` (`core`, `intake`, `canonical`, `shared`, `domain-pack`, `domain-packs/`). Workspace: `pnpm-workspace.yaml`. Legacy paths `apps/web`, `packages/*`, top-level `domain-packs/` removed.
+
 - **V2-001A–D** (frozen): upload → documents → document discovery → questions
 
 - **V2-001E** (frozen): Canonical Study execution boundary, persisted evidence, prompt audit, Case Intelligence snapshots

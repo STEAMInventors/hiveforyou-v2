@@ -6,10 +6,10 @@ import { fileURLToPath } from "node:url";
 import { getDomainPackByDomainId, listDomainPackManifests } from "@hiveforyou/domain-pack";
 import "@hiveforyou/domain-packs";
 
-import { validate } from "../domain-packs/_shared/rulebook/validate.ts";
+import { validate } from "../engine/domain-packs/_shared/rulebook/validate.ts";
 
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), "..");
-const packsRoot = join(repoRoot, "domain-packs");
+const packsRoot = join(repoRoot, "engine/domain-packs");
 
 function findTodos(text: string, fileLabel: string): string[] {
   const lines = text.split("\n");

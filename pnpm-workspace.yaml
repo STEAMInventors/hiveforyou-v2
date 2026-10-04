@@ -1,5 +1,9 @@
 packages:
-  - "apps/*"
-  - "packages/*"
-  - "domain-packs/*"
-  - "domain-packs/_shared"
+  - "app"
+  - "engine/core"
+  - "engine/intake"
+  - "engine/canonical"
+  - "engine/shared"
+  - "engine/domain-pack"
+  - "engine/domain-packs/*"
+  - "engine/domain-packs/_shared"

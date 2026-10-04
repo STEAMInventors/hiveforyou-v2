@@ -6,7 +6,7 @@ import { fileURLToPath } from "node:url";
 import { listDomainPackManifests } from "@hiveforyou/domain-pack";
 
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), "..");
-const packsRoot = join(repoRoot, "domain-packs");
+const packsRoot = join(repoRoot, "engine/domain-packs");
 
 function kebabDocType(docType: string): string {
   return docType

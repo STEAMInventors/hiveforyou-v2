@@ -8,8 +8,8 @@ import "@hiveforyou/domain-packs";
 import {
   checkPackAuditReadiness,
   listPackSlots,
-} from "../domain-packs/_shared/rulebook/pack-context.ts";
-import type { HandlingKind } from "../domain-packs/_shared/rulebook/schema.ts";
+} from "../engine/domain-packs/_shared/rulebook/pack-context.ts";
+import type { HandlingKind } from "../engine/domain-packs/_shared/rulebook/schema.ts";
 import {
   decideFromModel,
   type AuditPlan,
@@ -21,7 +21,7 @@ import {
 import { createRulebookModelClient } from "./rulebook-model-client.ts";
 
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), "..");
-const packsRoot = join(repoRoot, "domain-packs");
+const packsRoot = join(repoRoot, "engine/domain-packs");
 
 function buildSignals(
   docType: string,

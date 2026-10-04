@@ -10,10 +10,10 @@ importers:
     devDependencies:
       '@hiveforyou/domain-pack':
         specifier: workspace:*
-        version: link:packages/domain-pack
+        version: link:engine/domain-pack
       '@hiveforyou/domain-packs':
         specifier: workspace:*
-        version: link:domain-packs/registry
+        version: link:engine/domain-packs/registry
       tsx:
         specifier: ^4.19.2
         version: 4.23.15
@@ -21,29 +21,29 @@ importers:
         specifier: ^5.7.2
         version: 5.9.3
 
-  apps/web:
+  app:
     dependencies:
       '@gutenye/ocr-node':
         specifier: ^1.4.8
         version: 1.4.9
       '@hiveforyou/canonical':
         specifier: workspace:*
-        version: link:../../packages/canonical
+        version: link:../engine/canonical
       '@hiveforyou/core':
         specifier: workspace:*
-        version: link:../../packages/core
+        version: link:../engine/core
       '@hiveforyou/domain-pack':
         specifier: workspace:*
-        version: link:../../packages/domain-pack
+        version: link:../engine/domain-pack
       '@hiveforyou/domain-packs':
         specifier: workspace:*
-        version: link:../../domain-packs/registry
+        version: link:../engine/domain-packs/registry
       '@hiveforyou/intake':
         specifier: workspace:*
-        version: link:../../packages/intake
+        version: link:../engine/intake
       '@hiveforyou/shared':
         specifier: workspace:*
-        version: link:../../packages/shared
+        version: link:../engine/shared
       '@napi-rs/canvas':
         specifier: ^0.1.80
         version: 0.1.100
@@ -64,7 +64,7 @@ importers:
         version: 15.5.26(@babel/core@7.29.7)(@types/node@22.20.4)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       pdfjs-dist:
         specifier: ^5.4.296
-        version: 5.4.296
+        version: 5.7.284
       react:
         specifier: ^19.0.0
         version: 19.3.0
@@ -121,96 +121,7 @@ importers:
         specifier: ^2.1.8
         version: 2.1.9(@types/node@22.20.4)(jsdom@25.0.1)(terser@5.51.2)
 
-  domain-packs/_shared:
-    dependencies:
-      '@hiveforyou/domain-pack':
-        specifier: workspace:*
-        version: link:../../packages/domain-pack
-      '@hiveforyou/domain-pack-iep':
-        specifier: workspace:*
-        version: link:../iep
-      '@hiveforyou/domain-pack-medicaid':
-        specifier: workspace:*
-        version: link:../medicaid
-    devDependencies:
-      typescript:
-        specifier: ^5.7.2
-        version: 5.9.3
-      vitest:
-        specifier: ^2.1.8
-        version: 2.1.9(@types/node@22.20.4)(jsdom@25.0.1)(terser@5.51.2)
-
-  domain-packs/bankruptcy:
-    dependencies:
-      '@hiveforyou/domain-pack':
-        specifier: workspace:*
-        version: link:../../packages/domain-pack
-      '@hiveforyou/domain-pack-shared':
-        specifier: workspace:*
-        version: link:../_shared
-    devDependencies:
-      typescript:
-        specifier: ^5.7.2
-        version: 5.9.3
-
-  domain-packs/iep:
-    dependencies:
-      '@hiveforyou/domain-pack':
-        specifier: workspace:*
-        version: link:../../packages/domain-pack
-      '@hiveforyou/domain-pack-shared':
-        specifier: workspace:*
-        version: link:../_shared
-      '@hiveforyou/shared':
-        specifier: workspace:*
-        version: link:../../packages/shared
-    devDependencies:
-      typescript:
-        specifier: ^5.7.2
-        version: 5.9.3
-      vitest:
-        specifier: ^2.1.8
-        version: 2.1.9(@types/node@22.20.4)(jsdom@25.0.1)(terser@5.51.2)
-
-  domain-packs/medicaid:
-    dependencies:
-      '@hiveforyou/domain-pack':
-        specifier: workspace:*
-        version: link:../../packages/domain-pack
-      '@hiveforyou/domain-pack-shared':
-        specifier: workspace:*
-        version: link:../_shared
-    devDependencies:
-      typescript:
-        specifier: ^5.7.2
-        version: 5.9.3
-
-  domain-packs/registry:
-    dependencies:
-      '@hiveforyou/domain-pack':
-        specifier: workspace:*
-        version: link:../../packages/domain-pack
-      '@hiveforyou/domain-pack-bankruptcy':
-        specifier: workspace:*
-        version: link:../bankruptcy
-      '@hiveforyou/domain-pack-iep':
-        specifier: workspace:*
-        version: link:../iep
-      '@hiveforyou/domain-pack-medicaid':
-        specifier: workspace:*
-        version: link:../medicaid
-      '@hiveforyou/shared':
-        specifier: workspace:*
-        version: link:../../packages/shared
-    devDependencies:
-      typescript:
-        specifier: ^5.7.2
-        version: 5.9.3
-      vitest:
-        specifier: ^2.1.8
-        version: 2.1.9(@types/node@22.20.4)(jsdom@25.0.1)(terser@5.51.2)
-
-  packages/canonical:
+  engine/canonical:
     dependencies:
       '@hiveforyou/shared':
         specifier: workspace:*
@@ -223,7 +134,7 @@ importers:
         specifier: ^2.1.8
         version: 2.1.9(@types/node@22.20.4)(jsdom@25.0.1)(terser@5.51.2)
 
-  packages/core:
+  engine/core:
     dependencies:
       '@hiveforyou/canonical':
         specifier: workspace:*
@@ -233,10 +144,10 @@ importers:
         version: link:../domain-pack
       '@hiveforyou/domain-pack-shared':
         specifier: workspace:*
-        version: link:../../domain-packs/_shared
+        version: link:../domain-packs/_shared
       '@hiveforyou/domain-packs':
         specifier: workspace:*
-        version: link:../../domain-packs/registry
+        version: link:../domain-packs/registry
       '@hiveforyou/shared':
         specifier: workspace:*
         version: link:../shared
@@ -254,11 +165,11 @@ importers:
         specifier: ^2.1.8
         version: 2.1.9(@types/node@22.20.4)(jsdom@25.0.1)(terser@5.51.2)
 
-  packages/domain-pack:
+  engine/domain-pack:
     dependencies:
       '@hiveforyou/domain-pack-shared':
         specifier: workspace:*
-        version: link:../../domain-packs/_shared
+        version: link:../domain-packs/_shared
       '@hiveforyou/shared':
         specifier: workspace:*
         version: link:../shared
@@ -270,7 +181,96 @@ importers:
         specifier: ^2.1.8
         version: 2.1.9(@types/node@22.20.4)(jsdom@25.0.1)(terser@5.51.2)
 
-  packages/intake:
+  engine/domain-packs/_shared:
+    dependencies:
+      '@hiveforyou/domain-pack':
+        specifier: workspace:*
+        version: link:../../domain-pack
+      '@hiveforyou/domain-pack-iep':
+        specifier: workspace:*
+        version: link:../iep
+      '@hiveforyou/domain-pack-medicaid':
+        specifier: workspace:*
+        version: link:../medicaid
+    devDependencies:
+      typescript:
+        specifier: ^5.7.2
+        version: 5.9.3
+      vitest:
+        specifier: ^2.1.8
+        version: 2.1.9(@types/node@22.20.4)(jsdom@25.0.1)(terser@5.51.2)
+
+  engine/domain-packs/bankruptcy:
+    dependencies:
+      '@hiveforyou/domain-pack':
+        specifier: workspace:*
+        version: link:../../domain-pack
+      '@hiveforyou/domain-pack-shared':
+        specifier: workspace:*
+        version: link:../_shared
+    devDependencies:
+      typescript:
+        specifier: ^5.7.2
+        version: 5.9.3
+
+  engine/domain-packs/iep:
+    dependencies:
+      '@hiveforyou/domain-pack':
+        specifier: workspace:*
+        version: link:../../domain-pack
+      '@hiveforyou/domain-pack-shared':
+        specifier: workspace:*
+        version: link:../_shared
+      '@hiveforyou/shared':
+        specifier: workspace:*
+        version: link:../../shared
+    devDependencies:
+      typescript:
+        specifier: ^5.7.2
+        version: 5.9.3
+      vitest:
+        specifier: ^2.1.8
+        version: 2.1.9(@types/node@22.20.4)(jsdom@25.0.1)(terser@5.51.2)
+
+  engine/domain-packs/medicaid:
+    dependencies:
+      '@hiveforyou/domain-pack':
+        specifier: workspace:*
+        version: link:../../domain-pack
+      '@hiveforyou/domain-pack-shared':
+        specifier: workspace:*
+        version: link:../_shared
+    devDependencies:
+      typescript:
+        specifier: ^5.7.2
+        version: 5.9.3
+
+  engine/domain-packs/registry:
+    dependencies:
+      '@hiveforyou/domain-pack':
+        specifier: workspace:*
+        version: link:../../domain-pack
+      '@hiveforyou/domain-pack-bankruptcy':
+        specifier: workspace:*
+        version: link:../bankruptcy
+      '@hiveforyou/domain-pack-iep':
+        specifier: workspace:*
+        version: link:../iep
+      '@hiveforyou/domain-pack-medicaid':
+        specifier: workspace:*
+        version: link:../medicaid
+      '@hiveforyou/shared':
+        specifier: workspace:*
+        version: link:../../shared
+    devDependencies:
+      typescript:
+        specifier: ^5.7.2
+        version: 5.9.3
+      vitest:
+        specifier: ^2.1.8
+        version: 2.1.9(@types/node@22.20.4)(jsdom@25.0.1)(terser@5.51.2)
+
+  engine/intake:
     dependencies:
       '@hiveforyou/domain-pack':
         specifier: workspace:*
@@ -292,7 +292,7 @@ importers:
         specifier: ^2.1.8
         version: 2.1.9(@types/node@22.20.4)(jsdom@25.0.1)(terser@5.51.2)
 
-  packages/shared:
+  engine/shared:
     devDependencies:
       typescript:
         specifier: ^5.7.2
@@ -2856,10 +2856,6 @@ packages:
   pathval@2.0.1:
     resolution: {integrity: sha512-//nshmD55c46FuFw26xV/xFAaB5HF9Xdap7HJBBnrKdAd6/GxDBaNA1870O79+9ueg61cZLSVc+OaFlfmObYVQ==}
     engines: {node: '>= 14.16'}
-
-  pdfjs-dist@5.4.296:
-    resolution: {integrity: sha512-DlOzet0HO7OEnmUmB6wWGJrrdvbyJKftI1bhMitK7O2N8W2gc757yyYBbINy9IDafXAV9wmKr9t7xsTaNKRG5Q==}
-    engines: {node: '>=20.16.0 || >=22.3.0'}
 
   pdfjs-dist@5.7.284:
     resolution: {integrity: sha512-h4EdYQczmGhbOlqc3PPZwxevn7ApdWPbovAuWXOB/DjIyigSnwfy2oze7c6mRcSr9XgLp3eN3EeL4DyySTPMFw==}
@@ -6012,10 +6008,6 @@ snapshots:
   pathe@1.1.2: {}
 
   pathval@2.0.1: {}
-
-  pdfjs-dist@5.4.296:
-    optionalDependencies:
-      '@napi-rs/canvas': 0.1.100
 
   pdfjs-dist@5.7.284:
     optionalDependencies:

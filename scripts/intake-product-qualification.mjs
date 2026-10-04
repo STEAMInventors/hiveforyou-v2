@@ -15,16 +15,16 @@ const corpusDir =
 const outDir = join(repoRoot, "artifacts/intake-qualification");
 mkdirSync(outDir, { recursive: true });
 
-await import(pathToFileURL(join(repoRoot, "domain-packs/registry/index.ts")).href);
+await import(pathToFileURL(join(repoRoot, "engine/domain-packs/registry/index.ts")).href);
 
 const { extractDocument } = await import(
-  pathToFileURL(join(repoRoot, "packages/intake/src/extract-document.ts")).href
+  pathToFileURL(join(repoRoot, "engine/intake/src/extract-document.ts")).href
 );
 const { completeIntakeDomainPack } = await import(
-  pathToFileURL(join(repoRoot, "packages/intake/src/complete-intake-domain.ts")).href
+  pathToFileURL(join(repoRoot, "engine/intake/src/complete-intake-domain.ts")).href
 );
 const { resolveIntakeDomain } = await import(
-  pathToFileURL(join(repoRoot, "packages/intake/src/domain-resolution.ts")).href
+  pathToFileURL(join(repoRoot, "engine/intake/src/domain-resolution.ts")).href
 );
 
 const L001_EXPECTED = [
