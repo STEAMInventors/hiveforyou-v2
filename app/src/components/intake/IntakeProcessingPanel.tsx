@@ -1,5 +1,6 @@
 "use client";
 
+import { isIntakeProcessingDelayed } from "@hiveforyou/shared/intake";
 import { useRef } from "react";
 
 import type { IntakeEvidenceWorkspaceView } from "@hiveforyou/shared/intake";
@@ -77,11 +78,13 @@ function intakeLifecycleTarget(input: {
 function IntakeLifecycleCard({
   target,
   errorMessage,
+  processingDelayedMessage,
   onClose,
   onOpenHive,
 }: {
   target: Modal1Phase;
   errorMessage: string | null;
+  processingDelayedMessage: string | null;
   onClose?: () => void;
   onOpenHive?: () => void;
 }) {
@@ -133,6 +136,11 @@ function IntakeLifecycleCard({
           {presentation.title}
         </h2>
         <p className="sub">{presentation.subtitle}</p>
+        {processingDelayedMessage ? (
+          <p className="sub" role="status" data-testid="intake-processing-delayed">
+            {processingDelayedMessage}
+          </p>
+        ) : null}
       </div>
       <StageList
         stages={[0, 1]}
@@ -164,11 +172,18 @@ export function IntakeProcessingPanel({
   preRunPhase = null,
 }: IntakeProcessingPanelProps) {
   const statuses = view?.documents.map((document) => document.processingStatus) ?? [];
+  const runStatus = view?.status ?? (preRunPhase ? "RUNNING" : null);
   const target = intakeLifecycleTarget({
     statuses,
     workspaceReady: view?.workspaceReady ?? false,
-    runStatus: view?.status ?? (preRunPhase ? "RUNNING" : null),
+    runStatus,
   });
+  const processingDelayed =
+    view &&
+    isIntakeProcessingDelayed(view.status, view.runStartedAt ?? null);
+  const processingDelayedMessage = processingDelayed
+    ? "This is taking longer than expected. We're still waiting to start reading your documents."
+    : null;
 
   return (
     <div className="hive-lifecycle overlay" data-testid="intake-processing-modal">
@@ -176,6 +191,7 @@ export function IntakeProcessingPanel({
         key={view?.intakeRunId ?? "intake-start"}
         target={target}
         errorMessage={errorMessage}
+        processingDelayedMessage={processingDelayedMessage}
         onClose={onClose}
         onOpenHive={onOpenHive}
       />

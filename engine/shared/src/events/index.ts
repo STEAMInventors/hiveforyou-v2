@@ -7,14 +7,6 @@ export const HIVE_EVENT_PING = "hive/ping" as const;
 export const HIVE_EVENT_INTAKE_REQUESTED = "hive/intake.requested" as const;
 export const HIVE_EVENT_STUDY_REQUESTED = "hive/study.requested" as const;
 
-export const hiveRunEventDataSchema = z.object({
-  userId: z.string().min(1),
-  caseId: z.string().min(1),
-  runId: z.string().min(1),
-});
-
-export type HiveRunEventData = z.infer<typeof hiveRunEventDataSchema>;
-
 export const hivePingEventDataSchema = z.object({
   userId: z.string().min(1),
   nonce: z.string().min(1),
@@ -22,5 +14,27 @@ export const hivePingEventDataSchema = z.object({
 
 export type HivePingEventData = z.infer<typeof hivePingEventDataSchema>;
 
-export const hiveIntakeRequestedEventDataSchema = hiveRunEventDataSchema;
-export const hiveStudyRequestedEventDataSchema = hiveRunEventDataSchema;
+export const hiveIntakeRequestedEventDataSchema = z.object({
+  userId: z.string().min(1),
+  caseId: z.string().min(1),
+  intakeRunId: z.string().min(1),
+});
+
+export type HiveIntakeRequestedEventData = z.infer<typeof hiveIntakeRequestedEventDataSchema>;
+
+export const hiveStudyRequestedEventDataSchema = z.object({
+  userId: z.string().min(1),
+  caseId: z.string().min(1),
+  studyRunId: z.string().min(1),
+});
+
+export type HiveStudyRequestedEventData = z.infer<typeof hiveStudyRequestedEventDataSchema>;
+
+/** Deterministic Inngest event id for intake queueing (dedupes double-clicks). */
+export function buildIntakeRequestedEventId(intakeRunId: string, appendSeq?: number): string {
+  const trimmed = intakeRunId.trim();
+  if (!appendSeq || appendSeq <= 0) {
+    return `intake:${trimmed}`;
+  }
+  return `intake:${trimmed}:${appendSeq}`;
+}

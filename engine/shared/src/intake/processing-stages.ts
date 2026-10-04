@@ -1,4 +1,8 @@
-import type { IntakeDocumentStatus, IntakeRunStatus } from "./document-identity";
+import {
+  isIntakeRunProcessing,
+  type IntakeDocumentStatus,
+  type IntakeRunStatus,
+} from "./document-identity";
 
 export const INTAKE_PROCESSING_STAGE_LABELS = [
   "Reading your documents",
@@ -47,7 +51,7 @@ export function intakeProcessingStageIndex(input: {
   if (input.workspaceReady) {
     return INTAKE_PROCESSING_STAGE_LABELS.length - 1;
   }
-  if (input.runStatus !== "RUNNING") {
+  if (!isIntakeRunProcessing(input.runStatus)) {
     return INTAKE_PROCESSING_STAGE_LABELS.length - 1;
   }
   const docStage = maxDocumentStage(input.documentStatuses);

@@ -298,7 +298,7 @@ export function buildIntakeSourceFiles(input: {
 
 export function toIntakeEvidenceWorkspaceView(input: {
 
-  run: { id: string; status: IntakeRunStatus; caseId: string };
+  run: { id: string; status: IntakeRunStatus; caseId: string; startedAt?: string | null };
 
   documents: IntakeEvidenceWorkspaceDocumentInput[];
 

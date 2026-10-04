@@ -1,5 +1,7 @@
 import {
   documentIdentityLabel,
+  isIntakeProcessingDelayed,
+  isIntakeRunProcessing,
   type DocumentIdentityType,
   type IntakeDocumentStatus,
   type IntakeRunStatus,
@@ -17,6 +19,10 @@ export type IntakeCustomerDocument = {
 export type IntakeCustomerView = {
   intakeRunId: string;
   status: IntakeRunStatus;
+  /** ISO timestamp from the run record (`started_at`). Used for queued delay messaging. */
+  runStartedAt: string | null;
+  /** True when status is QUEUED and the run has waited longer than {@link INTAKE_QUEUED_DELAY_MS}. */
+  processingDelayed: boolean;
   /** True when the run is terminal and persisted normalized extractions satisfy the workspace gate. */
   workspaceReady: boolean;
   documents: IntakeCustomerDocument[];
@@ -59,7 +65,7 @@ export function computeIntakeWorkspaceReady(
     hasNormalizedExtraction: boolean;
   }>,
 ): boolean {
-  if (runStatus === "RUNNING") {
+  if (isIntakeRunProcessing(runStatus)) {
     return false;
   }
   return documents.every((document) => {
@@ -76,12 +82,15 @@ export function computeIntakeWorkspaceReady(
 }
 
 export function toIntakeCustomerView(
-  run: { id: string; status: IntakeRunStatus },
+  run: { id: string; status: IntakeRunStatus; startedAt?: string | null },
   documents: IntakeCustomerViewDocumentInput[],
 ): IntakeCustomerView {
+  const runStartedAt = run.startedAt ?? null;
   return {
     intakeRunId: run.id,
     status: run.status,
+    runStartedAt,
+    processingDelayed: isIntakeProcessingDelayed(run.status, runStartedAt),
     workspaceReady: computeIntakeWorkspaceReady(run.status, documents),
     documents: documents.map((document) => ({
       sourceDocumentId: document.sourceDocumentId,

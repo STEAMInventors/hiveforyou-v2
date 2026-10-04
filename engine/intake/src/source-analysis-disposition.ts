@@ -26,7 +26,7 @@ export async function setIntakeSourceAnalysisDisposition(
   if (!run) {
     throw new Error("INTAKE_RUN_NOT_FOUND");
   }
-  if (run.status === "RUNNING") {
+  if (run.status === "RUNNING" || run.status === "QUEUED") {
     return run;
   }
 

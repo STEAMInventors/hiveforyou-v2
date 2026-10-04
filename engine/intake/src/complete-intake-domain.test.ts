@@ -24,6 +24,7 @@ function baseRun(overrides: Partial<IntakeRunRecord> = {}): IntakeRunRecord {
     resolutionSource: null,
     studyPath: null,
     packExecutionJson: null,
+    intakeQueueSeq: 0,
     completedAt: new Date().toISOString(),
     errorCode: null,
     createdAt: new Date().toISOString(),

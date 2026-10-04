@@ -1,5 +1,6 @@
 "use client";
 
+import { isIntakeProcessingDelayed, isIntakeRunProcessing } from "@hiveforyou/shared/intake";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
@@ -363,7 +364,7 @@ export function IntakeEvidenceWorkspace({ intakeRunId }: { intakeRunId: string }
         let attempts = 0;
         while (attempts < 120) {
           const next = await reload();
-          if (next.status !== "RUNNING" && next.workspaceReady) {
+          if (!isIntakeRunProcessing(next.status) && next.workspaceReady) {
             break;
           }
           await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -473,6 +474,7 @@ export function IntakeEvidenceWorkspace({ intakeRunId }: { intakeRunId: string }
   const files = [...view.sourceFiles].sort((a, b) => a.filename.localeCompare(b.filename));
   const includedCount = files.filter((file) => file.disposition === "PRESENT").length;
   const domainLabel = view.purpose.domainName ?? "General";
+  const processingDelayed = isIntakeProcessingDelayed(view.status, view.runStartedAt);
 
   return (
     <div className="intake-docs" style={shellStyle} data-testid="intake-evidence-workspace">
@@ -542,6 +544,23 @@ export function IntakeEvidenceWorkspace({ intakeRunId }: { intakeRunId: string }
           </button>
         </div>
       </header>
+
+      {processingDelayed ? (
+        <p
+          role="status"
+          data-testid="intake-processing-delayed"
+          style={{
+            margin: 0,
+            padding: "12px 20px",
+            background: "#FFF8E1",
+            color: "#5D4037",
+            fontSize: 14,
+            textAlign: "center",
+          }}
+        >
+          This is taking longer than expected. We&apos;re still waiting to start reading your documents.
+        </p>
+      ) : null}
 
       <main
         style={{

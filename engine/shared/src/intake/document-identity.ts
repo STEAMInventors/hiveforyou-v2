@@ -39,6 +39,7 @@ export const INTAKE_DOCUMENT_STATUSES = [
 export type IntakeDocumentStatus = (typeof INTAKE_DOCUMENT_STATUSES)[number];
 
 export const INTAKE_RUN_STATUSES = [
+  "QUEUED",
   "RUNNING",
   "SUCCEEDED",
   "NEEDS_REVIEW",
@@ -46,6 +47,39 @@ export const INTAKE_RUN_STATUSES = [
 ] as const;
 
 export type IntakeRunStatus = (typeof INTAKE_RUN_STATUSES)[number];
+
+const TERMINAL_INTAKE_RUN_STATUSES = new Set<IntakeRunStatus>([
+  "SUCCEEDED",
+  "NEEDS_REVIEW",
+  "FAILED",
+]);
+
+/** True while the run is waiting on the worker or actively processing documents. */
+export function isIntakeRunProcessing(status: IntakeRunStatus): boolean {
+  return status === "QUEUED" || status === "RUNNING";
+}
+
+export function isTerminalIntakeRunStatus(status: IntakeRunStatus): boolean {
+  return TERMINAL_INTAKE_RUN_STATUSES.has(status);
+}
+
+export const INTAKE_QUEUED_DELAY_MS = 5 * 60 * 1000;
+
+/** True when a worker-queued run has waited longer than expected without starting. */
+export function isIntakeProcessingDelayed(
+  status: IntakeRunStatus,
+  startedAt: string | null | undefined,
+  nowMs: number = Date.now(),
+): boolean {
+  if (status !== "QUEUED" || !startedAt?.trim()) {
+    return false;
+  }
+  const started = Date.parse(startedAt);
+  if (!Number.isFinite(started)) {
+    return false;
+  }
+  return nowMs - started > INTAKE_QUEUED_DELAY_MS;
+}
 
 export const EXTRACTION_STATUSES = ["SUCCEEDED", "PARTIAL", "NEEDS_OCR", "FAILED"] as const;
 

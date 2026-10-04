@@ -1,6 +1,10 @@
 import { randomUUID } from "node:crypto";
 
-import { INTAKE_CLASSIFIER } from "@hiveforyou/shared/intake";
+import {
+  INTAKE_CLASSIFIER,
+  isTerminalIntakeRunStatus,
+  type IntakeRunStatus,
+} from "@hiveforyou/shared/intake";
 
 import { executeIntakeRun, type IntakeExecutionDeps } from "./execute-intake";
 import { buildIntakeIdempotencyKey, intakeFlightKey } from "./idempotency";
@@ -15,6 +19,8 @@ export type OpenIntakeRunInput = {
   sourceDocumentIds: string[];
   rawIntent?: string | null;
   explicitDomainId?: string | null;
+  /** Defaults to RUNNING (inline). Worker queue uses QUEUED. */
+  initialRunStatus?: IntakeRunStatus;
 };
 
 export type OpenedIntakeRun = {
@@ -32,21 +38,24 @@ export async function openIntakeRun(
   }
   const idempotencyKey = buildIntakeIdempotencyKey(sourceDocumentIds);
   const existing = await deps.runs.getByIdempotencyKey(input.userId, input.caseId, idempotencyKey);
-  const run = existing ?? (await createRun(deps, input, idempotencyKey));
+  const run =
+    existing ??
+    (await createRun(deps, input, idempotencyKey, input.initialRunStatus ?? "RUNNING"));
   await ensureIdentitiesForRun(deps, run, sourceDocumentIds);
 
+  const refreshed = (await deps.runs.getById(run.userId, run.id)) ?? run;
   const flightMap = deps.inFlight ?? defaultIntakeInFlight;
-  const flightKey = intakeFlightKey(run.caseId, run.idempotencyKey);
+  const flightKey = intakeFlightKey(refreshed.caseId, refreshed.idempotencyKey);
 
   const begin = (): Promise<IntakeRunRecord> => {
-    if (run.status !== "RUNNING") {
-      return Promise.resolve(run);
+    if (isTerminalIntakeRunStatus(refreshed.status)) {
+      return Promise.resolve(refreshed);
     }
     const current = flightMap.get(flightKey);
     if (current) {
       return current;
     }
-    const promise = executeIntakeRun(deps, run.id, run.userId).finally(() => {
+    const promise = executeIntakeRun(deps, refreshed.id, refreshed.userId).finally(() => {
       if (flightMap.get(flightKey) === promise) {
         flightMap.delete(flightKey);
       }
@@ -55,7 +64,6 @@ export async function openIntakeRun(
     return promise;
   };
 
-  const refreshed = (await deps.runs.getById(run.userId, run.id)) ?? run;
   return { run: refreshed, begin };
 }
 
@@ -63,6 +71,7 @@ async function createRun(
   deps: IntakeExecutionDeps,
   input: OpenIntakeRunInput,
   idempotencyKey: string,
+  initialStatus: IntakeRunStatus,
 ): Promise<IntakeRunRecord> {
   const now = deps.now?.() ?? new Date().toISOString();
   const run: IntakeRunRecord = {
@@ -70,7 +79,7 @@ async function createRun(
     caseId: input.caseId,
     userId: input.userId,
     idempotencyKey,
-    status: "RUNNING",
+    status: initialStatus,
     classifier: INTAKE_CLASSIFIER,
     classifierVersion: null,
     startedAt: now,
@@ -84,6 +93,7 @@ async function createRun(
     resolutionSource: null,
     studyPath: null,
     packExecutionJson: null,
+    intakeQueueSeq: 0,
     createdAt: now,
     updatedAt: now,
   };

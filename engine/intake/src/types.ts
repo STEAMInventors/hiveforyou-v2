@@ -77,6 +77,8 @@ export type IntakeRunRecord = {
   resolutionSource: "EXPLICIT" | "JEV" | "UNRESOLVED" | null;
   studyPath: IntakeStudyPath | null;
   packExecutionJson: string | null;
+  /** Monotonic counter for append-source Inngest event ids (`intake:{runId}:{n}`). */
+  intakeQueueSeq: number;
   createdAt: string;
   updatedAt: string;
 };

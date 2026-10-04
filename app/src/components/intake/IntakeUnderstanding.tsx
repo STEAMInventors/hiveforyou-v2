@@ -1,5 +1,6 @@
 "use client";
 
+import { isIntakeRunProcessing } from "@hiveforyou/shared/intake";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
@@ -73,10 +74,10 @@ export function IntakeUnderstanding({
         }
         setView(next);
         setIntakeRunId(next.intakeRunId);
-        if (next.status !== "RUNNING" && next.workspaceReady) {
+        if (!isIntakeRunProcessing(next.status) && next.workspaceReady) {
           return;
         }
-        if (next.status !== "RUNNING" && !next.workspaceReady) {
+        if (!isIntakeRunProcessing(next.status) && !next.workspaceReady) {
           await new Promise((resolve) => setTimeout(resolve, POLL_INTERVAL_MS));
           continue;
         }

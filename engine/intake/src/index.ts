@@ -39,6 +39,20 @@ export { extendIntakeRun, prepareExtendIntakeRun } from "./extend-intake-run";
 export { setIntakeSourceAnalysisDisposition } from "./source-analysis-disposition";
 export { finalizeIntakeRunPack } from "./finalize-intake-pack";
 export {
+  completeIntakeRunStatus,
+  finalizeIntakeRunPackStep,
+  isIntakeNonRetriableErrorCode,
+  loadIntakeRunForProcessing,
+  runIntakeClassifyStep,
+  runIntakeExtractStep,
+  runIntakeIdentityClassificationForRun,
+} from "./intake-document-steps";
+export type {
+  IntakeClassifyStepResult,
+  IntakeExtractStepResult,
+  IntakeLoadRunResult,
+} from "./intake-document-steps";
+export {
   decideIntakeDomainFromRawIntent,
   inferIntakeDomainFromIdentities,
 } from "./local-domain-routing";
@@ -49,6 +63,8 @@ export type {
   IntakeRunRepository,
 } from "./repositories";
 export { rollupIntakeRunStatus } from "./run-status";
+export { isIntakeRunProcessing, isTerminalIntakeRunStatus } from "@hiveforyou/shared/intake";
+export { markIntakeRunWorkerFailed } from "./mark-intake-run-failed";
 export { mapWithConcurrency } from "./map-with-concurrency";
 export { hasEnoughIdentityText, identityTextSample, joinPageText } from "./sample";
 export type {

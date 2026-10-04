@@ -1,4 +1,4 @@
-import { after, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
 import { UnauthenticatedError } from "@hiveforyou/core";
 
@@ -7,6 +7,7 @@ import {
   appendSourcesToIntakeRun,
   IntakeDocumentNotFoundError,
 } from "@/lib/intake/intake-service-server";
+import { isInngestIntakePipeline } from "@/lib/intake/pipeline";
 
 export const runtime = "nodejs";
 
@@ -47,13 +48,13 @@ export async function POST(request: Request, context: RouteContext) {
 
   try {
     const opened = await appendSourcesToIntakeRun(intakeRunId, sourceDocumentIds);
-    after(() => {
+    if (!isInngestIntakePipeline()) {
       void opened.begin().catch((error: unknown) => {
         if (process.env.NODE_ENV === "development") {
           console.error("[api/intake/runs/sources] background intake failed", error);
         }
       });
-    });
+    }
     return NextResponse.json({ intakeRunId: opened.run.id, status: opened.run.status });
   } catch (error) {
     if (error instanceof UnauthenticatedError) {

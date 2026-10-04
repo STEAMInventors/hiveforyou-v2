@@ -4,8 +4,12 @@
     "rootDir": "src",
     "outDir": "dist",
     "noEmit": true,
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
+    "declaration": false,
+    "declarationMap": false,
+    "isolatedDeclarations": false,
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "skipLibCheck": true,
     "types": ["node"]
   },
   "include": ["src/**/*.ts"]

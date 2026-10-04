@@ -338,6 +338,18 @@ importers:
 
   worker:
     dependencies:
+      '@hiveforyou/core':
+        specifier: workspace:*
+        version: link:../engine/core
+      '@hiveforyou/domain-packs':
+        specifier: workspace:*
+        version: link:../engine/domain-packs/registry
+      '@hiveforyou/intake':
+        specifier: workspace:*
+        version: link:../engine/intake
+      '@hiveforyou/intake-node':
+        specifier: workspace:*
+        version: link:../engine/intake-node
       '@hiveforyou/shared':
         specifier: workspace:*
         version: link:../engine/shared

@@ -10,9 +10,14 @@
     "dev": "node --env-file=.env.local node_modules/tsx/dist/cli.mjs watch src/main.ts",
     "start": "node --env-file=.env.local node_modules/tsx/dist/cli.mjs src/main.ts",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "finalize:intake-backfill": "node --env-file=.env.local node_modules/tsx/dist/cli.mjs scripts/finalize-intake-runs-backfill.ts",
+    "compare:intake-runs": "node --env-file=.env.local node_modules/tsx/dist/cli.mjs scripts/compare-intake-runs.ts"
   },
   "dependencies": {
+    "@hiveforyou/domain-packs": "workspace:*",
+    "@hiveforyou/intake": "workspace:*",
+    "@hiveforyou/intake-node": "workspace:*",
     "@hiveforyou/shared": "workspace:*",
     "@supabase/supabase-js": "^2.49.4",
     "inngest": "^4.21.1"

@@ -8,7 +8,6 @@ import {
   prepareExtendIntakeRun,
   extractDocument,
   mapWithConcurrency,
-  finalizeIntakeRunPack,
   openIntakeRun,
   setIntakeSourceAnalysisDisposition,
   type IntakeExecutionDeps,
@@ -32,9 +31,11 @@ import {
   SupabaseSourceDocumentRepository,
   SupabaseSourceDocumentStorage,
 } from "@/lib/persistence/supabase-repositories";
+import { emitIntakeRequestedEvent } from "@/lib/intake/emit-intake-requested";
+import { isInngestIntakePipeline } from "@/lib/intake/pipeline";
 import { createServerSupabaseClient, getAuthenticatedUserId } from "@/lib/supabase/server";
 
-const inFlight = new Map<string, Promise<IntakeRunRecord>>();
+const inlineInFlight = new Map<string, Promise<IntakeRunRecord>>();
 
 export class IntakeCaseNotFoundError extends Error {
   readonly code = "CASE_NOT_FOUND";
@@ -84,7 +85,7 @@ async function buildIntakeExecutionDeps(userId: string): Promise<{
     identities: intake,
     extractions: intake,
     normalizedExtractions: intake,
-    inFlight,
+    inFlight: isInngestIntakePipeline() ? undefined : inlineInFlight,
     loadDocuments: async ({ userId: ownerId, caseId: ownerCaseId, sourceDocumentIds: ids }) => {
       const LOAD_DOCUMENT_CONCURRENCY = 3;
       const loaded = await mapWithConcurrency(ids, LOAD_DOCUMENT_CONCURRENCY, async (sourceDocumentId) => {
@@ -159,13 +160,19 @@ export async function startIntakeFromRequest(body: StartIntakeBody): Promise<Ope
     }
   }
 
-  return openIntakeRun(deps, {
+  const pipeline = isInngestIntakePipeline() ? "inngest" : "inline";
+  const opened = await openIntakeRun(deps, {
     userId: sessionUserId,
     caseId,
     sourceDocumentIds,
     rawIntent: body.rawIntent ?? null,
     explicitDomainId: body.explicitDomainId ?? null,
+    initialRunStatus: pipeline === "inngest" ? "QUEUED" : "RUNNING",
   });
+  if (pipeline === "inngest") {
+    await emitIntakeRequestedEvent(opened.run);
+  }
+  return opened;
 }
 
 export async function readIntakeEvidenceWorkspaceView(
@@ -174,25 +181,9 @@ export async function readIntakeEvidenceWorkspaceView(
   readServerEnv();
   const sessionUserId = requireSessionUserId(await getAuthenticatedUserId());
   const { intake, documents: sourceDocuments } = await intakePersistence(sessionUserId);
-  let run = await intake.getById(sessionUserId, intakeRunId);
+  const run = await intake.getById(sessionUserId, intakeRunId);
   if (!run) {
     return null;
-  }
-  if (
-    run.status !== "RUNNING" &&
-    !run.packExecutionJson &&
-    (run.resolvedDomainId == null || run.studyPath === "GENERIC_STUDY")
-  ) {
-    const { deps } = await buildIntakeExecutionDeps(sessionUserId);
-    const refinalized = await finalizeIntakeRunPack(deps, run);
-    if (
-      refinalized.packExecutionJson !== run.packExecutionJson ||
-      refinalized.resolvedDomainId !== run.resolvedDomainId ||
-      refinalized.studyPath !== run.studyPath
-    ) {
-      await intake.save(refinalized);
-      run = refinalized;
-    }
   }
   const identities = await intake.listByRun(sessionUserId, intakeRunId);
   const documents = await Promise.all(
@@ -234,7 +225,7 @@ export async function readIntakeEvidenceWorkspaceView(
     (domainManifest ? `Working in ${domainManifest.name}` : "Your documents");
 
   return toIntakeEvidenceWorkspaceView({
-    run: { id: run.id, status: run.status, caseId: run.caseId },
+    run: { id: run.id, status: run.status, caseId: run.caseId, startedAt: run.startedAt },
     documents,
     studyPath: run.studyPath ?? "GENERIC_STUDY",
     purpose: {
@@ -266,11 +257,17 @@ export async function appendSourcesToIntakeRun(
       throw new IntakeDocumentNotFoundError();
     }
   }
-  return prepareExtendIntakeRun(deps, {
+  const pipeline = isInngestIntakePipeline() ? "inngest" : "inline";
+  const opened = await prepareExtendIntakeRun(deps, {
     userId: sessionUserId,
     intakeRunId,
     sourceDocumentIds,
+    activeRunStatus: pipeline === "inngest" ? "QUEUED" : "RUNNING",
   });
+  if (pipeline === "inngest") {
+    await emitIntakeRequestedEvent(opened.run);
+  }
+  return opened;
 }
 
 export async function discardIntakeSourceFromRun(

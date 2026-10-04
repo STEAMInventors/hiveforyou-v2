@@ -15,10 +15,23 @@ import type {
   IntakeRunStatus,
   NormalizedDocumentExtraction,
 } from "@hiveforyou/shared/intake";
-import { withSessionOwner } from "@hiveforyou/core";
 
-import type { HiveGateway, HiveRow } from "./hive-gateway";
-import { intakeRunQueueSeqColumn } from "./intake-run-row-extras";
+import type { HiveGateway, HiveRow } from "./hive-gateway.js";
+
+function intakeRunQueueSeqColumn(record: IntakeRunRecord): { intake_queue_seq?: number } {
+  const pipeline = process.env.HIVE_PIPELINE?.trim().toLowerCase();
+  if (pipeline !== "inngest") {
+    return {};
+  }
+  return { intake_queue_seq: record.intakeQueueSeq };
+}
+
+function withSessionOwner<T extends Record<string, unknown>>(
+  sessionUserId: string,
+  row: T,
+): T & { user_id: string } {
+  return { ...row, user_id: sessionUserId };
+}
 
 function text(row: HiveRow, key: string): string {
   const value = row[key];
@@ -149,7 +162,7 @@ function mapNormalizedExtraction(row: HiveRow): DocumentNormalizedExtractionReco
   };
 }
 
-export class SupabaseIntakeRepository
+export class WorkerIntakeRepository
   implements
     IntakeRunRepository,
     DocumentIdentityRepository,

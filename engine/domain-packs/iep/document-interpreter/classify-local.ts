@@ -199,6 +199,7 @@ const FAMILY_LABELS: Record<ScanDocumentFamily, string> = {
   BEHAVIOR: "Behavior",
   EXTERNAL: "External",
   TRANSITION_EXIT: "Transition/exit",
+  OTHER_EDUCATIONAL: "Other educational",
   OTHER: "Other",
 };
 

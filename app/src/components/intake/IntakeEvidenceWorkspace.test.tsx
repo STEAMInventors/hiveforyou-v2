@@ -94,6 +94,10 @@ const workspaceView: IntakeEvidenceWorkspaceView = {
 
   status: "SUCCEEDED",
 
+  runStartedAt: null,
+
+  processingDelayed: false,
+
   workspaceReady: true,
 
   studyPath: "DOMAIN_PACK",

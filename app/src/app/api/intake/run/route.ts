@@ -1,4 +1,4 @@
-import { after, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
 import { UnauthenticatedError } from "@hiveforyou/core";
 
@@ -9,6 +9,7 @@ import {
   startIntakeFromRequest,
   type StartIntakeBody,
 } from "@/lib/intake/intake-service-server";
+import { isInngestIntakePipeline } from "@/lib/intake/pipeline";
 
 export const runtime = "nodejs";
 
@@ -34,13 +35,13 @@ export async function POST(request: Request) {
 
   try {
     const opened = await startIntakeFromRequest(body);
-    after(() => {
+    if (!isInngestIntakePipeline()) {
       void opened.begin().catch((error: unknown) => {
         if (process.env.NODE_ENV === "development") {
           console.error("[api/intake/run] background intake failed", error);
         }
       });
-    });
+    }
     return NextResponse.json({
       intakeRunId: opened.run.id,
       status: opened.run.status,

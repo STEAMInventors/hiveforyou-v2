@@ -1,3 +1,5 @@
+import { isTerminalIntakeRunStatus, type IntakeRunStatus } from "@hiveforyou/shared/intake";
+
 import { executeIntakeRun, type IntakeExecutionDeps } from "./execute-intake";
 import { intakeFlightKey } from "./idempotency";
 import { defaultIntakeInFlight, ensureIdentitiesForRun } from "./open-intake";
@@ -5,7 +7,12 @@ import type { IntakeRunRecord } from "./types";
 
 export async function prepareExtendIntakeRun(
   deps: IntakeExecutionDeps,
-  input: { userId: string; intakeRunId: string; sourceDocumentIds: string[] },
+  input: {
+    userId: string;
+    intakeRunId: string;
+    sourceDocumentIds: string[];
+    activeRunStatus?: IntakeRunStatus;
+  },
 ): Promise<{ run: IntakeRunRecord; begin: () => Promise<IntakeRunRecord> }> {
   const sourceDocumentIds = [
     ...new Set(input.sourceDocumentIds.map((id) => id.trim()).filter(Boolean)),
@@ -19,14 +26,23 @@ export async function prepareExtendIntakeRun(
     throw new Error("INTAKE_RUN_NOT_FOUND");
   }
 
+  const beforeCount = (await deps.identities.listByRun(input.userId, input.intakeRunId)).length;
   await ensureIdentitiesForRun(deps, run, sourceDocumentIds);
+  const afterCount = (await deps.identities.listByRun(input.userId, input.intakeRunId)).length;
+  const addedSources = afterCount > beforeCount;
 
+  const targetStatus = input.activeRunStatus ?? "RUNNING";
   let activeRun = run;
-  if (activeRun.status !== "RUNNING") {
+  if (isTerminalIntakeRunStatus(activeRun.status) || addedSources) {
     const now = deps.now?.() ?? new Date().toISOString();
+    const nextQueueSeq =
+      targetStatus === "QUEUED" && (addedSources || isTerminalIntakeRunStatus(run.status))
+        ? activeRun.intakeQueueSeq + 1
+        : activeRun.intakeQueueSeq;
     activeRun = {
       ...activeRun,
-      status: "RUNNING",
+      status: targetStatus,
+      intakeQueueSeq: nextQueueSeq,
       completedAt: null,
       errorCode: null,
       updatedAt: now,
@@ -38,6 +54,9 @@ export async function prepareExtendIntakeRun(
   const flightKey = intakeFlightKey(activeRun.caseId, activeRun.idempotencyKey);
 
   const begin = (): Promise<IntakeRunRecord> => {
+    if (isTerminalIntakeRunStatus(activeRun.status)) {
+      return Promise.resolve(activeRun);
+    }
     const current = flightMap.get(flightKey);
     if (current) {
       return current;

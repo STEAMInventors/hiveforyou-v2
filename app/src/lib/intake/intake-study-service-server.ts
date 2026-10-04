@@ -262,10 +262,14 @@ async function startIntakeCanonicalStudyFromRunInner(
         caseView,
         intelligence,
         env,
-        intent:
-          readStatedWorkPurpose(context.answerSnapshot.userContext) ??
-          context.answerSnapshot.analysisIntent?.label ??
-          null,
+        intent: (() => {
+          const stated = readStatedWorkPurpose(context.answerSnapshot.userContext);
+          if (stated) {
+            return stated;
+          }
+          const label = context.answerSnapshot.analysisIntent?.label;
+          return typeof label === "string" && label.trim().length > 0 ? label.trim() : null;
+        })(),
       }),
     loadNormalizedExtractionsForStudy: async (context) => {
       const extractions = new Map<
