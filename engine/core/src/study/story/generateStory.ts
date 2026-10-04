@@ -2,10 +2,7 @@ import type { DomainPack } from "@hiveforyou/domain-pack";
 import type { Study } from "@hiveforyou/shared/pack-study";
 import type { ValidatedStoryResult } from "@hiveforyou/shared/projections";
 
-import {
-  defaultOpenAICreateResponse,
-  extractOpenAIResponseOutputText,
-} from "../../discover/openai-engine";
+import type { CallModel } from "./call-model";
 import { buildSkeleton } from "./buildSkeleton";
 import { STORY_WRITER_SYSTEM_PROMPT } from "./storyPrompt";
 import {
@@ -19,13 +16,44 @@ import type { StorySkeleton } from "./types";
 /** Default when `HIVE_STORY_WRITER_MODEL` is unset — lighter model than canonical study. */
 export const DEFAULT_STORY_WRITER_MODEL = "gpt-4o-mini";
 
+const STORY_WRITER_JSON_SCHEMA: Record<string, unknown> = {
+  type: "object",
+  additionalProperties: false,
+  properties: {
+    paragraphs: {
+      type: "array",
+      items: {
+        type: "object",
+        additionalProperties: false,
+        properties: {
+          chapter: { type: "string" },
+          sentences: {
+            type: "array",
+            items: {
+              type: "object",
+              additionalProperties: false,
+              properties: {
+                text: { type: "string" },
+                factIds: { type: "array", items: { type: "string" } },
+              },
+              required: ["text", "factIds"],
+            },
+          },
+        },
+        required: ["chapter", "sentences"],
+      },
+    },
+  },
+  required: ["paragraphs"],
+};
+
 export type GenerateStoryInput = {
   pack: DomainPack;
   study: Study;
   intent: string;
-  apiKey?: string;
   model?: string;
   fixtureProse?: ValidatedStoryResult;
+  callModel?: CallModel;
 };
 
 function skeletonForModelPrompt(skeleton: StorySkeleton): unknown {
@@ -54,62 +82,23 @@ async function callStoryModel(
       `${JSON.stringify(skeletonPayload)}\n\nYour previous answer failed these checks: ${retryErrors.join("; ")}. Fix them and return JSON only.`
     : JSON.stringify(skeletonPayload);
 
-  const body = {
-    model: input.model ?? DEFAULT_STORY_WRITER_MODEL,
-    temperature: 0,
-    input: [
-      { role: "system", content: [{ type: "input_text", text: STORY_WRITER_SYSTEM_PROMPT }] },
-      { role: "user", content: [{ type: "input_text", text: userText }] },
-    ],
-    text: {
-      format: {
-        type: "json_schema",
-        name: "story_writer_v1",
-        strict: true,
-        schema: {
-          type: "object",
-          additionalProperties: false,
-          properties: {
-            paragraphs: {
-              type: "array",
-              items: {
-                type: "object",
-                additionalProperties: false,
-                properties: {
-                  chapter: { type: "string" },
-                  sentences: {
-                    type: "array",
-                    items: {
-                      type: "object",
-                      additionalProperties: false,
-                      properties: {
-                        text: { type: "string" },
-                        factIds: { type: "array", items: { type: "string" } },
-                      },
-                      required: ["text", "factIds"],
-                    },
-                  },
-                },
-                required: ["chapter", "sentences"],
-              },
-            },
-          },
-          required: ["paragraphs"],
-        },
-      },
-    },
-  };
-
-  if (!input.apiKey?.trim()) {
+  if (!input.callModel) {
     throw new Error("STORY_MODEL_NO_API_KEY");
   }
-  const responsePayload = await defaultOpenAICreateResponse({
-    apiKey: input.apiKey,
-    model: input.model ?? DEFAULT_STORY_WRITER_MODEL,
-    reasoningEffort: "low",
-    body,
+  const model = input.model ?? DEFAULT_STORY_WRITER_MODEL;
+  const response = await input.callModel({
+    model,
+    temperature: 0,
+    systemPrompt: STORY_WRITER_SYSTEM_PROMPT,
+    userContent: userText,
+    textFormat: {
+      type: "json_schema",
+      name: "story_writer_v1",
+      strict: true,
+      schema: STORY_WRITER_JSON_SCHEMA,
+    },
   });
-  const text = extractOpenAIResponseOutputText(responsePayload);
+  const text = response.outputText;
   if (!text) {
     throw new Error("STORY_MODEL_EMPTY");
   }

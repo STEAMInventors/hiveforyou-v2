@@ -16,7 +16,7 @@ import { HiveCaseClaimChips, HiveCaseChipButton } from "./HiveCaseEvidenceChip";
 import { HiveCaseStatusBar } from "./HiveCaseStatusBar";
 import { HiveCaseStatusBadge } from "./status-badge";
 import type { HiveCaseTab } from "./hive-case-tokens";
-import { shouldPreferPackForCaseView } from "@/lib/story/prefer-pack-narrative";
+import { shouldPreferPackForCaseView } from "@hiveforyou/core/story/prefer-pack-narrative";
 
 export function HiveCaseStoryView({
   presentation,

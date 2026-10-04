@@ -15,7 +15,8 @@
     "./discover/openai-engine": "./src/discover/openai-engine.ts",
     "./pack-study-from-projection": "./src/study/narrative/build-pack-study-from-projection.ts",
     "./case-view-plan": "./src/projections/project-case-view-v2-plan.ts",
-    "./study": "./src/study/index.ts"
+    "./study": "./src/study/index.ts",
+    "./story/prefer-pack-narrative": "./src/study/story/prefer-pack-narrative.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",

@@ -25,6 +25,16 @@ export { composeNarrative } from "./narrative/composeNarrative";
 export type { NarrativeOutput, NarrativeSentence } from "./narrative/composeNarrative";
 export { runStoryWriterPass } from "./story/storyWriterPass";
 export type { StoryWriterPassInput } from "./story/storyWriterPass";
+export {
+  enrichCaseViewWithValidatedStory,
+  parseStoryWriterEngine,
+} from "./story/enrich-case-view-with-validated-story";
+export type { EnrichCaseViewWithValidatedStoryInput } from "./story/enrich-case-view-with-validated-story";
+export type { CallModel, ModelRequest, ModelResponse } from "./story/call-model";
+export {
+  shouldPreferPackForCaseView,
+  shouldPreferPackNarrativeOverValidatedStory,
+} from "./story/prefer-pack-narrative";
 export { generateStory } from "./story/generateStory";
 export { buildSkeleton } from "./story/buildSkeleton";
 export { validateStory } from "./story/validateStory";

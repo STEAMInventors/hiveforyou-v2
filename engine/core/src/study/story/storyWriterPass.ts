@@ -7,6 +7,7 @@ import { domainPackViewConfigForDomainId } from "@hiveforyou/shared/projections"
 
 import { buildAnatomyPlan, buildDocumentIndex } from "../../projections/project-case-view-v2-plan";
 import { buildPackStudyFromCaseProjection } from "../narrative/build-pack-study-from-projection";
+import type { CallModel } from "./call-model";
 import { generateStory } from "./generateStory";
 
 export type StoryWriterPassInput = {
@@ -15,10 +16,10 @@ export type StoryWriterPassInput = {
   pack: DomainPack | null;
   study?: Study | null;
   intent: string;
-  apiKey?: string;
   model?: string;
   mode: "openai" | "fixture" | "off";
   fixtureProse?: ValidatedStoryResult;
+  callModel?: CallModel;
 };
 
 export async function runStoryWriterPass(input: StoryWriterPassInput): Promise<CaseViewV2> {
@@ -52,9 +53,9 @@ export async function runStoryWriterPass(input: StoryWriterPassInput): Promise<C
     pack: input.pack,
     study,
     intent: input.intent,
-    apiKey: input.mode === "openai" ? input.apiKey : undefined,
     model: input.model,
     fixtureProse: input.mode === "fixture" ? input.fixtureProse : undefined,
+    callModel: input.mode === "openai" ? input.callModel : undefined,
   });
 
   return {
