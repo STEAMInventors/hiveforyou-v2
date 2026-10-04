@@ -8,6 +8,8 @@ Status: **V2-001E.1 COMPLETE** + **Engine 1 OpenAI Discover** (**frozen**) + **E
 
 - Repository structure, brain architecture, Cursor rules, pnpm monorepo
 
+- **Inngest worker skeleton (Phase 1):** `@hiveforyou/shared/events` (app id, `hive/ping` + placeholder intake/study event names, Zod ID-only payloads); `worker/` package (`connect` default, `serve` fallback on `/api/inngest`, `hive-ping` function); app `POST /api/hive/ping` via shared Inngest client. Pipeline code still runs in the app — no intake/study migration yet.
+
 - **UI / engine layout (blocks 1–4):** Next.js app at `app/` (`@hiveforyou/app`); processing packages under `engine/` (`core`, `intake`, `intake-node`, `canonical`, `shared`, `domain-pack`, `domain-packs/`). **`@hiveforyou/intake-node`** holds Node native adapters (canvas PDF rasterize, Guten OCR) wired from app intake glue; **`@hiveforyou/intake`** stays free of `@napi-rs/canvas` / `@gutenye/ocr-node`. Workspace: `pnpm-workspace.yaml`. Legacy paths `apps/web`, `packages/*`, top-level `domain-packs/` removed.
 
 - **V2-001A–D** (frozen): upload → documents → document discovery → questions

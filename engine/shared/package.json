@@ -18,7 +18,8 @@
     "./case-intelligence/4": "./src/case-intelligence/4/index.ts",
     "./intake": "./src/intake/index.ts",
     "./intake/extraction-readiness": "./src/intake/extraction-readiness.ts",
-    "./pack-study": "./src/pack-study/index.ts"
+    "./pack-study": "./src/pack-study/index.ts",
+    "./events": "./src/events/index.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
@@ -28,5 +29,8 @@
   "devDependencies": {
     "typescript": "^5.7.2",
     "vitest": "^2.1.8"
+  },
+  "dependencies": {
+    "zod": "^4.6.5"
   }
 }

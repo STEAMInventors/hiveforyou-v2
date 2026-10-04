@@ -18,17 +18,18 @@
     "@hiveforyou/domain-packs": "workspace:*",
     "@hiveforyou/intake": "workspace:*",
     "@hiveforyou/intake-node": "workspace:*",
-    "@napi-rs/canvas": "^0.1.80",
     "@hiveforyou/shared": "workspace:*",
-    "server-only": "^0.0.1",
-    "lucide-react": "^0.469.0",
+    "@napi-rs/canvas": "^0.1.80",
     "@supabase/ssr": "^0.6.1",
     "@supabase/supabase-js": "^2.49.4",
+    "alasql": "4.6.6",
+    "inngest": "^4.21.1",
+    "lucide-react": "^0.469.0",
     "next": "^15.1.3",
     "pdfjs-dist": "^5.4.296",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "alasql": "4.6.6"
+    "server-only": "^0.0.1"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.6.3",
