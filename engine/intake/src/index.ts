@@ -26,6 +26,11 @@ export {
 } from "./jev-client";
 export { resolveIntakeDomain } from "./domain-resolution";
 export { runPackExecutionForIntake } from "./run-pack-execution";
+export {
+  parsePackExecution,
+  refreshPackExecutionForStudy,
+} from "./pack-execution-for-study";
+export type { RefreshPackExecutionForStudyInput } from "./pack-execution-for-study";
 export { buildJevDomainRequest, JEV_DOMAIN_NO_MATCH } from "./jev-domain-client";
 export type { JevErrorCode, JevIdentityDecision, JevIdentityRequest } from "./jev-client";
 export { openIntakeRun, ensureIdentitiesForRun } from "./open-intake";

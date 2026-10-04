@@ -12,17 +12,14 @@ import {
   type CanonicalStudyOutcome,
   type StudyServiceDeps,
 } from "@hiveforyou/core";
-import type { IntakePackExecutionResult } from "@hiveforyou/domain-pack";
-import { INTAKE_PACK_EXECUTION_SCHEMA_VERSION } from "@hiveforyou/domain-pack";
 import { readStatedWorkPurpose } from "@hiveforyou/shared/canonical-study";
 import { computeIntakeWorkspaceReady } from "@hiveforyou/shared/intake";
 import { enrichCaseViewWithValidatedStory } from "@/lib/story/story-writer-from-env.server";
 
 import {
-  runPackExecutionForIntake,
-  type DocumentIdentityRecord,
+  parsePackExecution,
+  refreshPackExecutionForStudy,
 } from "@hiveforyou/intake";
-import type { NormalizedDocumentExtraction } from "@hiveforyou/shared/intake";
 
 import { CANONICAL_STUDY_PROMPT_ID } from "@/lib/canonical-study/canonical-study-config";
 import { CaseNotFoundError } from "@/lib/canonical-study/study-service-server";
@@ -52,76 +49,12 @@ import { IntakeCaseNotFoundError } from "./intake-service-server";
 const inFlight = new Map<string, Promise<CanonicalStudyOutcome>>();
 const intakeStudyInFlight = new Map<string, Promise<CanonicalStudyOutcome>>();
 
-/**
- * Re-run pack execution from stored page text so plan dates and current/prior
- * roles are attached even when the persisted execution predates that step.
- */
-async function refreshPackExecutionForStudy(input: {
-  resolvedDomainId: string;
-  identities: DocumentIdentityRecord[];
-  sources: Array<{ id: string; originalFilename: string; sha256: string }>;
-  loadNormalized: (
-    sourceDocumentId: string,
-    sourceHash: string,
-  ) => Promise<NormalizedDocumentExtraction | null>;
-}): Promise<IntakePackExecutionResult | null> {
-  const documents = [];
-  for (const identity of input.identities) {
-    if (identity.analysisDisposition === "DISCARDED") {
-      continue;
-    }
-    const source = input.sources.find((row) => row.id === identity.sourceDocumentId);
-    if (!source?.sha256) {
-      continue;
-    }
-    const normalized = await input.loadNormalized(identity.sourceDocumentId, source.sha256);
-    if (!normalized) {
-      continue;
-    }
-    documents.push({
-      sourceDocumentId: identity.sourceDocumentId,
-      filename: source.originalFilename,
-      identity,
-      normalized,
-    });
-  }
-  if (!documents.length) {
-    return null;
-  }
-  try {
-    return await runPackExecutionForIntake({
-      resolvedDomainId: input.resolvedDomainId,
-      documents,
-    });
-  } catch (error) {
-    console.info("[intake-study] pack_refresh_failed", {
-      message: error instanceof Error ? error.message : "unknown",
-    });
-    return null;
-  }
-}
-
 export class IntakeStudyNotReadyError extends Error {
   readonly code = "INTAKE_NOT_READY";
 
   constructor(message: string) {
     super(message);
     this.name = "IntakeStudyNotReadyError";
-  }
-}
-
-function parsePackExecution(raw: string | null): IntakePackExecutionResult | null {
-  if (!raw?.trim()) {
-    return null;
-  }
-  try {
-    const parsed = JSON.parse(raw) as IntakePackExecutionResult;
-    if (parsed.schemaVersion !== INTAKE_PACK_EXECUTION_SCHEMA_VERSION) {
-      return null;
-    }
-    return parsed;
-  } catch {
-    return null;
   }
 }
 
@@ -213,6 +146,7 @@ async function startIntakeCanonicalStudyFromRunInner(
         sourceHash,
         candidateSourceDocumentIds: [sourceDocumentId],
       }),
+    onRefreshFailed: (info) => console.info("[intake-study] pack_refresh_failed", info),
   });
   if (refreshed) {
     packExecution = refreshed;
