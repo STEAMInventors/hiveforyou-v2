@@ -21,8 +21,8 @@ import { IEP_AUDIENCE_ROLES } from "./vocabulary/audience-roles";
 import { IEP_CASE_MAP_PROJECTION } from "./case-map/projection-guidance";
 import { IEP_FOCUS_CONSTRUCTS } from "./study/focus-constructs";
 import { IEP_NARRATIVE_BLOCK } from "./narrative";
-import { iepRulebook } from "./rulebook/index.ts";
-import { IEP_RULEBOOK_SLOT_CATALOG } from "./rulebook-slots.ts";
+import { iepRulebook } from "./rulebook/index";
+import { IEP_RULEBOOK_SLOT_CATALOG } from "./rulebook-slots";
 import { IEP_PRO_CONFIG } from "./pro";
 import { IEP_STORY_CONFIG } from "./story";
 import { IEP_STUDY_VOCABULARY, IEP_VOCABULARY } from "./vocabulary/index";
@@ -58,7 +58,7 @@ export const iepDomainPack = {
   narrative: IEP_NARRATIVE_BLOCK,
   story: IEP_STORY_CONFIG,
   pro: IEP_PRO_CONFIG,
-  rulebookSlotCatalog: [...IEP_RULEBOOK_SLOT_CATALOG],
+  rulebookSlotCatalog: IEP_RULEBOOK_SLOT_CATALOG,
   rulebook: iepRulebook,
 } satisfies DomainPack;
 

@@ -1,6 +1,6 @@
 import type { DocumentGuide } from "@hiveforyou/domain-pack-shared/rulebook/schema";
 
-import { IEP_TERM_SECTIONS } from "../terms.ts";
+import { IEP_TERM_SECTIONS } from "../terms";
 
 export const IEP_DOCUMENT_GUIDE: DocumentGuide = {
   kind: "document-guide",

@@ -31,8 +31,7 @@ export function validateLogicalPageBoundaries(
     .slice()
     .sort((a, b) => a.startPage - b.startPage || a.endPage - b.endPage);
   let cursor = 1;
-  for (let i = 0; i < ordered.length; i += 1) {
-    const row = ordered[i];
+  for (const [i, row] of ordered.entries()) {
     if (!Number.isInteger(row.startPage) || !Number.isInteger(row.endPage)) {
       errors.push("non_integer_page");
       continue;
@@ -40,11 +39,12 @@ export function validateLogicalPageBoundaries(
     if (row.startPage < 1 || row.endPage > pageCount || row.startPage > row.endPage) {
       errors.push("range_out_of_bounds");
     }
-    if (i > 0 && row.startPage <= ordered[i - 1].endPage) {
+    const previous = i > 0 ? ordered[i - 1] : undefined;
+    if (previous !== undefined && row.startPage <= previous.endPage) {
       errors.push("overlapping_ranges");
     }
     if (row.startPage > cursor) {
-      if (!row.unknown && !ordered[i - 1]?.unknown) {
+      if (!row.unknown && !previous?.unknown) {
         errors.push("unexplained_gap");
       }
     }

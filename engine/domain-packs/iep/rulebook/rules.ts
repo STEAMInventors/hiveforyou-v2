@@ -1,6 +1,6 @@
 import type { Rule } from "@hiveforyou/domain-pack-shared/rulebook/schema";
 
-import { IEP_TERMS } from "./terms.ts";
+import { IEP_TERMS } from "./terms";
 
 const AUTHORITY = "IDEA, 34 CFR Part 300";
 

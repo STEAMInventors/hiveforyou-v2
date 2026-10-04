@@ -1,7 +1,7 @@
 import type { DomainPack } from "@hiveforyou/domain-pack";
 
-import { listPackDocumentTypes, listPackSlots } from "./pack-context.ts";
-import type { DocumentGuide, QuestionTemplate, Rulebook } from "./schema.ts";
+import { listPackDocumentTypes, listPackSlots } from "./pack-context";
+import type { DocumentGuide, QuestionTemplate, Rulebook } from "./schema";
 
 /** Case verdict language — not general regulatory descriptions (e.g. “a district must have …”). */
 const VERDICT_WORDS =

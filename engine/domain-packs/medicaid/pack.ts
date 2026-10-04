@@ -6,10 +6,10 @@ import {
   type DomainPack,
 } from "@hiveforyou/domain-pack";
 
-import { MEDICAID_DOCUMENT_TYPES } from "./document-types.ts";
+import { MEDICAID_DOCUMENT_TYPES } from "./document-types";
 import { medicaidManifest } from "./manifest";
-import { medicaidRulebook } from "./rulebook/index.ts";
-import { MEDICAID_RULEBOOK_SLOT_CATALOG } from "./rulebook-slots.ts";
+import { medicaidRulebook } from "./rulebook/index";
+import { MEDICAID_RULEBOOK_SLOT_CATALOG } from "./rulebook-slots";
 
 export const medicaidDomainPack = {
   manifest: medicaidManifest,
@@ -28,6 +28,6 @@ export const medicaidDomainPack = {
     catalog: [],
     missingExpectations: [],
   },
-  rulebookSlotCatalog: [...MEDICAID_RULEBOOK_SLOT_CATALOG],
+  rulebookSlotCatalog: MEDICAID_RULEBOOK_SLOT_CATALOG,
   rulebook: medicaidRulebook,
 } satisfies DomainPack;

@@ -1,6 +1,6 @@
 import type { Term } from "@hiveforyou/domain-pack-shared/rulebook/schema";
 
-import { citesFromSections } from "./citations.ts";
+import { citesFromSections } from "./citations";
 
 /** Converted from legacy iep-rulebook.ts (sections field used only for guide mapping). */
 export const IEP_TERMS: Term[] = [
@@ -388,7 +388,19 @@ export const IEP_TERMS: Term[] = [
 ];
 
 /** Legacy section ids from iep-rulebook.ts → term ids for guide assembly. */
-export const IEP_TERM_SECTIONS: Record<string, string[]> = {
+export const IEP_TERM_SECTIONS: {
+  basics: string[];
+  present: string[];
+  goals: string[];
+  progress: string[];
+  services: string[];
+  supports: string[];
+  lre: string[];
+  factors: string[];
+  esy: string[];
+  transition: string[];
+  rights: string[];
+} = {
   basics: ["iep", "idea", "fape", "iepteam", "lea", "sea", "sld", "eligibility", "reeval"],
   present: ["plaafp", "gencurr", "baseline", "wcpm"],
   goals: ["mag", "sto", "mastery", "baseline"],

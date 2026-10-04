@@ -3,7 +3,7 @@ import type { DomainPack } from "@hiveforyou/domain-pack";
 export type PackSlot = {
   id: string;
   label: string;
-  sourceDocTypes: string[];
+  sourceDocTypes: readonly string[];
 };
 
 const SLOT_LABEL_OVERRIDES: Record<string, string> = {

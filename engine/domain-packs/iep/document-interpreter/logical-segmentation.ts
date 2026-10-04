@@ -92,13 +92,19 @@ export function applyLogicalSegmentation(
   const pageCount = Math.max(document.pageCount, document.pages.length, 1);
   const validated = validateLogicalBoundaries(boundaries, pageCount);
   const ranges = validated.ok ? validated.boundaries : identityBoundaries(document);
-  if (ranges.length === 1 && ranges[0].startPage === 1 && ranges[0].endPage === pageCount) {
+  const soleRange = ranges[0];
+  if (
+    ranges.length === 1 &&
+    soleRange !== undefined &&
+    soleRange.startPage === 1 &&
+    soleRange.endPage === pageCount
+  ) {
     return [
       {
         ...document,
         sourceUploadId: document.sourceUploadId ?? document.scanDocumentId,
-        logicalStartPage: ranges[0].startPage,
-        logicalEndPage: ranges[0].endPage,
+        logicalStartPage: soleRange.startPage,
+        logicalEndPage: soleRange.endPage,
       },
     ];
   }

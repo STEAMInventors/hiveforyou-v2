@@ -1,8 +1,8 @@
 import type { Rulebook } from "@hiveforyou/domain-pack-shared/rulebook/schema";
 
-import { IEP_DOCUMENT_GUIDE } from "./guides/iep.ts";
-import { IEP_RULES } from "./rules.ts";
-import { IEP_TERMS } from "./terms.ts";
+import { IEP_DOCUMENT_GUIDE } from "./guides/iep";
+import { IEP_RULES } from "./rules";
+import { IEP_TERMS } from "./terms";
 
 export const iepRulebook = {
   domain: "iep",

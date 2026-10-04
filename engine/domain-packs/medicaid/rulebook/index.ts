@@ -1,8 +1,8 @@
 import type { Rulebook } from "@hiveforyou/domain-pack-shared/rulebook/schema";
 
-import { MEDICAID_NOTICE_GUIDE } from "./guides/notice-of-action.ts";
-import { MEDICAID_RULES } from "./rules.ts";
-import { MEDICAID_TERMS } from "./terms.ts";
+import { MEDICAID_NOTICE_GUIDE } from "./guides/notice-of-action";
+import { MEDICAID_RULES } from "./rules";
+import { MEDICAID_TERMS } from "./terms";
 
 export const medicaidRulebook = {
   domain: "medicaid",

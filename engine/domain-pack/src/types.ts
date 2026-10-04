@@ -214,7 +214,7 @@ export type DomainPack = {
   rulebookSlotCatalog?: readonly {
     id: string;
     label: string;
-    sourceDocTypes: string[];
+    sourceDocTypes: readonly string[];
   }[];
 };
 

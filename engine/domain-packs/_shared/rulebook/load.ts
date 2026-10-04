@@ -1,7 +1,7 @@
 import type { DomainPack } from "@hiveforyou/domain-pack";
 
-import { validate } from "./validate.ts";
-import type { DocumentGuide, Rulebook, RulebookOverlay } from "./schema.ts";
+import { validate } from "./validate";
+import type { DocumentGuide, Rulebook, RulebookOverlay } from "./schema";
 
 const validatedPackIds = new Set<string>();
 const disabledRulebooks = new Set<string>();
