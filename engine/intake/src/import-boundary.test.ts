@@ -7,6 +7,7 @@ import { describe, expect, it } from "vitest";
 const srcRoot = join(dirname(fileURLToPath(import.meta.url)));
 
 const forbiddenImport = /from\s+["']@hiveforyou\/domain-packs["']/;
+const forbiddenDomainPackImport = /from\s+["']@hiveforyou\/domain-pack-[^"']+["']/;
 
 function sourceFiles(dir: string): string[] {
   const files: string[] = [];
@@ -31,6 +32,17 @@ describe("intake import boundary", () => {
     for (const file of sourceFiles(srcRoot)) {
       const text = readFileSync(file, "utf8");
       if (forbiddenImport.test(text)) {
+        offenders.push(file);
+      }
+    }
+    expect(offenders).toEqual([]);
+  });
+
+  it("does not import concrete domain pack packages", () => {
+    const offenders: string[] = [];
+    for (const file of sourceFiles(srcRoot)) {
+      const text = readFileSync(file, "utf8");
+      if (forbiddenDomainPackImport.test(text)) {
         offenders.push(file);
       }
     }

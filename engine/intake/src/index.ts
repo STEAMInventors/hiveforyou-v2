@@ -8,6 +8,7 @@ export {
   looksLikePdf,
 } from "./extract-document";
 export type { ExtractDocumentInput, PdfPageReader } from "./extract-document";
+export { decideIntakeDocumentIdentity } from "./decide-document-identity-local";
 export { executeIntakeRun } from "./execute-intake";
 export type { IntakeExecutionDeps } from "./execute-intake";
 export { buildIntakeIdempotencyKey } from "./idempotency";

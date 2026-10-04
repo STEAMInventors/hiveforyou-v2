@@ -1,11 +1,31 @@
-import "server-only";
-
-import { classifyIepDocumentLocally } from "@hiveforyou/domain-packs";
-import type { JevIdentityDecision } from "@hiveforyou/intake";
 import {
   INTAKE_IDENTITY_CONFIG_ID,
   type DocumentIdentityType,
 } from "@hiveforyou/shared/intake";
+
+import type { JevIdentityDecision } from "./jev-client";
+
+export type LocalDocumentClassifierInput = {
+  scanDocumentId: string;
+  originalDisplayName: string;
+  mimeType: string;
+  pageCount: number;
+  pages: { pageNumber: number; text: string }[];
+  readStatus: "ok";
+};
+
+export type LocalDocumentClassifierResult = {
+  family: string;
+  confidence: number;
+};
+
+export type LocalDocumentClassifier = (
+  input: LocalDocumentClassifierInput,
+) => LocalDocumentClassifierResult;
+
+export type DecideIntakeDocumentIdentityOptions = {
+  classifyLocally: LocalDocumentClassifier;
+};
 
 function keywordIdentity(sample: string): DocumentIdentityType | null {
   const text = sample.toLowerCase();
@@ -24,7 +44,10 @@ function keywordIdentity(sample: string): DocumentIdentityType | null {
   return null;
 }
 
-export async function decideIntakeDocumentIdentity(sample: string): Promise<JevIdentityDecision> {
+export async function decideIntakeDocumentIdentity(
+  sample: string,
+  { classifyLocally }: DecideIntakeDocumentIdentityOptions,
+): Promise<JevIdentityDecision> {
   const keyword = keywordIdentity(sample);
   if (keyword) {
     return {
@@ -35,7 +58,7 @@ export async function decideIntakeDocumentIdentity(sample: string): Promise<JevI
     };
   }
 
-  const local = classifyIepDocumentLocally({
+  const local = classifyLocally({
     scanDocumentId: "intake-sample",
     originalDisplayName: "",
     mimeType: "application/pdf",

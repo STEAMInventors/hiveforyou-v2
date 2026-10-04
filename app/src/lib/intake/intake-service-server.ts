@@ -1,9 +1,10 @@
 import "server-only";
 
 import "@hiveforyou/domain-packs";
-import { getDomainPackManifest } from "@hiveforyou/domain-packs";
+import { classifyIepDocumentLocally, getDomainPackManifest } from "@hiveforyou/domain-packs";
 import { requireSessionUserId, UnauthenticatedError } from "@hiveforyou/core";
 import {
+  decideIntakeDocumentIdentity,
   prepareExtendIntakeRun,
   extractDocument,
   mapWithConcurrency,
@@ -24,7 +25,6 @@ import {
 } from "@hiveforyou/shared/intake";
 
 import { readServerEnv } from "@/lib/env/server-env";
-import { decideIntakeDocumentIdentity } from "@/lib/intake/local-document-identity.server";
 import { createSupabaseHiveGateway } from "@/lib/persistence/hive-gateway";
 import { SupabaseIntakeRepository } from "@/lib/persistence/supabase-intake";
 import {
@@ -105,7 +105,8 @@ async function buildIntakeExecutionDeps(userId: string): Promise<{
       });
       return loaded.filter((document): document is IntakeSourceDocument => document !== null);
     },
-    decide: (sample) => decideIntakeDocumentIdentity(sample),
+    decide: (sample) =>
+      decideIntakeDocumentIdentity(sample, { classifyLocally: classifyIepDocumentLocally }),
     sourceMetadata: async ({ userId: ownerId, sourceDocumentIds: ids }) => {
       const metadata: Record<string, { filename: string; sourceHash: string }> = {};
       for (const sourceDocumentId of ids) {
