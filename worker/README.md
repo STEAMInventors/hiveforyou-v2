@@ -35,3 +35,12 @@ curl -X POST http://localhost:3000/api/hive/ping -H "Cookie: <session>"
 ```
 
 The response includes an `eventId`. In the Inngest dev dashboard you should see a completed `hive-ping` run with steps `ack` and `count-user-cases`.
+
+## Production bundle (Oracle Cloud ARM64)
+
+```bash
+pnpm --filter @hiveforyou/worker build
+node worker/dist/main.js --self-check
+```
+
+Docker deployment: see [deploy/oracle/README.md](../deploy/oracle/README.md).

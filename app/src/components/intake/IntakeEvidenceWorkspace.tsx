@@ -1,5 +1,6 @@
 "use client";
 
+import { isStudyProcessingDelayed, isStudyRunProcessing } from "@hiveforyou/shared/canonical-study";
 import { isIntakeProcessingDelayed, isIntakeRunProcessing } from "@hiveforyou/shared/intake";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -7,6 +8,7 @@ import { useCallback, useEffect, useId, useRef, useState } from "react";
 
 import { formatFileSize } from "@/lib/format-file-metadata";
 import { commitStagedDocuments } from "@/lib/documents/commit-client";
+import { fetchCaseMapViewBundle } from "@/lib/case-map/case-map-client";
 import {
   appendIntakeSources,
   fetchIntakeRun,
@@ -257,9 +259,11 @@ const STUDY_PRESENTATION: Record<
 function StudyLifecycleModal({
   target,
   onOpenHive,
+  processingDelayedMessage,
 }: {
   target: Modal2Phase;
   onOpenHive: () => void;
+  processingDelayedMessage?: string | null;
 }) {
   const shown = useHeldPhase(target, MODAL2_PHASES);
   const openRef = useRef<HTMLButtonElement>(null);
@@ -287,6 +291,11 @@ function StudyLifecycleModal({
           current={presentation.current}
           finishedThrough={presentation.finishedThrough}
         />
+        {processingDelayedMessage ? (
+          <p className="sub" style={{ marginTop: 8 }}>
+            {processingDelayedMessage}
+          </p>
+        ) : null}
         {complete ? (
           <div className="actions">
             <button ref={openRef} type="button" className="btn dark" onClick={onOpenHive}>
@@ -315,6 +324,42 @@ export function IntakeEvidenceWorkspace({ intakeRunId }: { intakeRunId: string }
   } | null>(null);
   const studyStartInFlight = useRef(false);
   const [dragOver, setDragOver] = useState(false);
+  const [studyDelayedMessage, setStudyDelayedMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    const studyRunId = studyBuild?.studyRunId;
+    if (!studyRunId || studyBuild?.target === "complete") {
+      setStudyDelayedMessage(null);
+      return;
+    }
+    const timer = setInterval(() => {
+      void fetchCaseMapViewBundle(studyRunId)
+        .then((bundle) => {
+          if (isStudyProcessingDelayed(bundle.status, bundle.studyStartedAt)) {
+            setStudyDelayedMessage(
+              "This is taking longer than expected. Your hive is still building — you can leave this page open or come back in a few minutes.",
+            );
+          } else {
+            setStudyDelayedMessage(null);
+          }
+          if (bundle.status === "SUCCEEDED" || bundle.status === "NEEDS_REVIEW") {
+            setStudyBuild((prev) =>
+              prev
+                ? { ...prev, target: "complete", studyRunId: bundle.studyRunId }
+                : prev,
+            );
+            studyStartInFlight.current = false;
+          }
+          if (bundle.status === "FAILED") {
+            studyStartInFlight.current = false;
+            setStudyBuild(null);
+            setErrorMessage("We couldn't complete the study. Please try again in a moment.");
+          }
+        })
+        .catch(() => {});
+    }, 2500);
+    return () => clearInterval(timer);
+  }, [studyBuild?.studyRunId, studyBuild?.target]);
 
   const reload = useCallback(async () => {
     const next = await fetchIntakeRun(intakeRunId);
@@ -850,6 +895,15 @@ export function IntakeEvidenceWorkspace({ intakeRunId }: { intakeRunId: string }
                         target: "complete",
                         studyRunId: outcome.run.studyRunId,
                       });
+                      studyStartInFlight.current = false;
+                      return;
+                    }
+                    if (isStudyRunProcessing(outcome.run.status)) {
+                      setStudyBuild({
+                        session,
+                        target: "migration",
+                        studyRunId: outcome.run.studyRunId,
+                      });
                       return;
                     }
                     const detail = outcome.run.errorMessage?.trim();
@@ -907,6 +961,7 @@ export function IntakeEvidenceWorkspace({ intakeRunId }: { intakeRunId: string }
         <StudyLifecycleModal
           key={studyBuild.session}
           target={studyBuild.target}
+          processingDelayedMessage={studyDelayedMessage}
           onOpenHive={() => {
             if (!studyBuild.studyRunId) {
               return;

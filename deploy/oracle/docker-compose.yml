@@ -1,0 +1,9 @@
+services:
+  hive-worker:
+    build:
+      context: ../..
+      dockerfile: worker/Dockerfile
+    platform: linux/arm64
+    restart: unless-stopped
+    env_file:
+      - /etc/hive-worker/worker.env

@@ -17,7 +17,7 @@ export async function waitForTerminalStudyRun(
   const started = Date.now();
   while (Date.now() - started < timeoutMs) {
     const run = await runRepo.getByIdempotencyKey(caseId, idempotencyKey);
-    if (run && run.status !== "RUNNING") {
+    if (run && run.status !== "RUNNING" && run.status !== "QUEUED") {
       return run;
     }
     await sleep(pollMs);

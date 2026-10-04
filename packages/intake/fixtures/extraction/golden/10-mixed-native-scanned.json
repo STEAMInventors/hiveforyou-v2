@@ -1,0 +1,33 @@
+{
+  "caseId": "10-mixed-native-scanned",
+  "fixtureFile": "10-mixed-native-scanned.pdf",
+  "mimeType": "application/pdf",
+  "extractionStatus": "PARTIAL",
+  "errorCode": null,
+  "extractorVersion": "nestiep-extractor/4",
+  "unreadablePageRanges": [
+    {
+      "start": 2,
+      "end": 2
+    }
+  ],
+  "pages": [
+    {
+      "pageNumber": 1,
+      "extractionMethod": "NATIVE",
+      "issueCodes": [],
+      "canonicalText": "Synthetic fixture document for automated extraction regression testing only. No real student\nnames, identifiers, or protected health information are present. Repeat marker:\nALPHA-BRAVO-CHARLIE-DELTA-ECHO-FOXTROT."
+    },
+    {
+      "pageNumber": 2,
+      "extractionMethod": "NATIVE",
+      "issueCodes": [
+        "EMPTY_PAGE",
+        "OCR_REQUIRED",
+        "OCR_UNAVAILABLE"
+      ],
+      "canonicalText": ""
+    }
+  ],
+  "canonicalText": "Synthetic fixture document for automated extraction regression testing only. No real student\nnames, identifiers, or protected health information are present. Repeat marker:\nALPHA-BRAVO-CHARLIE-DELTA-ECHO-FOXTROT."
+}

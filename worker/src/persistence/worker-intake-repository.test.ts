@@ -49,6 +49,9 @@ describe("WorkerIntakeRepository user scoping", () => {
         );
       },
       downloadObject: async () => new Uint8Array(),
+      upsert: async () => {},
+      uploadObject: async () => {},
+      removeObject: async () => {},
     };
     const repoA = new WorkerIntakeRepository(gateway as ReturnType<typeof createSupabaseHiveGateway>, USER_A);
     await repoA.insert(sampleRun(USER_A));

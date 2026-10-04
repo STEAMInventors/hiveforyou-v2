@@ -1,21 +1,14 @@
 import "server-only";
 
-import {
-  buildCaseProvenanceBundleV3,
-  loadCaseCustomerContextSnapshot,
-  persistCaseProjectionsV3,
-  projectCaseViewV2Minimal,
-  requireSessionUserId,
-} from "@hiveforyou/core";
-import { getCaseMapProjectionByDomainId } from "@hiveforyou/domain-packs";
+import { buildCaseProvenanceBundleV3, loadCaseCustomerContextSnapshot, requireSessionUserId } from "@hiveforyou/core";
 import type { CaseMap, CaseViewV2, ProView } from "@hiveforyou/shared/projections";
 import { CASE_MAP_SCHEMA, CASE_VIEW_V2_SCHEMA } from "@hiveforyou/shared/projections";
+import { isStudyRunProcessing } from "@hiveforyou/shared/canonical-study";
 
 import { CaseNotFoundError } from "@/lib/canonical-study/study-service-server";
-import { readServerEnv } from "@/lib/env/server-env";
-import { enrichCaseViewWithValidatedStory } from "@/lib/story/story-writer-from-env.server";
 import { loadCanonicalCaseByStudyRunId } from "@/lib/case/load-case-by-study-run";
 import type { CaseMapViewBundle } from "@/lib/case-map/case-map-view-bundle";
+import { emitStudyRequestedEvent } from "@/lib/intake/emit-study-requested";
 import { createSupabaseHiveGateway } from "@/lib/persistence/hive-gateway";
 import {
   loadLatestStructureMapForCase,
@@ -31,6 +24,32 @@ export class StudyRunNotFoundError extends Error {
   constructor() {
     super("Study run was not found.");
     this.name = "StudyRunNotFoundError";
+  }
+}
+
+const regenerationInFlight = new Set<string>();
+
+async function requestProjectionRegeneration(
+  run: NonNullable<Awaited<ReturnType<SupabaseStudyRunRepository["getByStudyRunId"]>>>,
+  userId: string,
+): Promise<void> {
+  if (!run.intakeRunId?.trim()) {
+    return;
+  }
+  if (run.status !== "SUCCEEDED" && run.status !== "NEEDS_REVIEW") {
+    return;
+  }
+  const key = run.studyRunId;
+  if (regenerationInFlight.has(key)) {
+    return;
+  }
+  regenerationInFlight.add(key);
+  try {
+    await emitStudyRequestedEvent(run, userId);
+  } catch {
+    // best-effort; page shows preparing state
+  } finally {
+    regenerationInFlight.delete(key);
   }
 }
 
@@ -59,9 +78,11 @@ export async function loadCaseMapViewBundle(studyRunId: string): Promise<CaseMap
     proView: null,
     caseView: null,
     canonicalSnapshot: null,
+    projectionsPending: false,
+    studyStartedAt: run.startedAt,
   };
 
-  if (run.status === "RUNNING") {
+  if (isStudyRunProcessing(run.status)) {
     return base;
   }
 
@@ -76,19 +97,19 @@ export async function loadCaseMapViewBundle(studyRunId: string): Promise<CaseMap
   }
 
   const projectionRepo = new SupabaseCaseProjectionRepository(gateway, sessionUserId);
-  let caseMap = (await projectionRepo.getByVersionAndKind(
+  const caseMap = (await projectionRepo.getByVersionAndKind(
     run.caseId,
     snapshot.version,
     "case_map",
   )) as CaseMap | null;
 
-  let proView = (await projectionRepo.getByVersionAndKind(
+  const proView = (await projectionRepo.getByVersionAndKind(
     run.caseId,
     snapshot.version,
     "pro",
   )) as ProView | null;
 
-  let caseView = (await projectionRepo.getByVersionAndKind(
+  const caseView = (await projectionRepo.getByVersionAndKind(
     run.caseId,
     snapshot.version,
     "case_view",
@@ -101,22 +122,29 @@ export async function loadCaseMapViewBundle(studyRunId: string): Promise<CaseMap
   );
 
   const structureMap = await loadLatestStructureMapForCase(gateway, sessionUserId, run.caseId);
-  const logicalDocuments = structureMap?.logicalDocuments;
 
   if (!caseMap || !proView || !caseView) {
-    const built = await persistCaseProjectionsV3(projectionRepo, {
-      intelligence: snapshot,
-      customerContext,
-      caseMapProjection: getCaseMapProjectionByDomainId(snapshot.domainId),
-      logicalDocuments,
-    });
-    caseMap = built.caseMap;
-    proView = built.proView;
-    caseView = built.caseView;
+    void requestProjectionRegeneration(run, sessionUserId);
+    return {
+      ...base,
+      canonicalSnapshot: snapshot,
+      projectionsPending: true,
+    };
   }
 
   if (caseMap.schemaVersion !== CASE_MAP_SCHEMA) {
     throw new Error("CASE_MAP_SCHEMA_MISMATCH");
+  }
+
+  if (caseView.schemaVersion !== CASE_VIEW_V2_SCHEMA) {
+    void requestProjectionRegeneration(run, sessionUserId);
+    return {
+      ...base,
+      caseMap,
+      proView,
+      canonicalSnapshot: snapshot,
+      projectionsPending: true,
+    };
   }
 
   const provenance = buildCaseProvenanceBundleV3({
@@ -124,34 +152,7 @@ export async function loadCaseMapViewBundle(studyRunId: string): Promise<CaseMap
     structureMap,
   });
 
-  const storedValidatedStory = caseView?.validatedStory ?? null;
-
-  const needsCaseViewRebuild =
-    !caseView ||
-    caseView.schemaVersion !== CASE_VIEW_V2_SCHEMA ||
-    (caseView.packNarrative == null && caseView.validatedStory?.kind !== "prose") ||
-    (caseView.plan.cards.length === 0 && (logicalDocuments?.length ?? 0) > 0);
-
-  if (needsCaseViewRebuild) {
-    caseView = projectCaseViewV2Minimal({
-      intelligence: snapshot,
-      provenance,
-      customerContext,
-      logicalDocuments,
-    });
-    if (storedValidatedStory?.kind === "prose") {
-      caseView = { ...caseView, validatedStory: storedValidatedStory };
-    }
-  }
-
-  const env = readServerEnv();
-  const enriched = await enrichCaseViewWithValidatedStory({
-    caseView: caseView!,
-    intelligence: snapshot,
-    env,
-    intent: caseView!.header.askedText ?? null,
-  });
-  caseView = enriched;
+  void customerContext;
 
   return {
     ...base,

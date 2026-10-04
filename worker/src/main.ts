@@ -1,13 +1,14 @@
 import { createServer } from "node:http";
 
-import { connect } from "inngest/connect";
-import { serve } from "inngest/node";
-
-import { readWorkerEnv } from "./env.js";
-import { inngest } from "./inngest/client.js";
-import { workerFunctions } from "./inngest/functions/index.js";
+import { assertWorkerStartPolicy, readWorkerEnv } from "./env.js";
+import { startHeartbeat } from "./heartbeat.js";
+import { runSelfCheckIfRequested } from "./self-check.js";
 
 async function startConnect(): Promise<void> {
+  const { connect } = await import("inngest/connect");
+  const { inngest } = await import("./inngest/client.js");
+  const { workerFunctions } = await import("./inngest/functions/index.js");
+
   const connection = await connect({
     apps: [{ client: inngest, functions: workerFunctions }],
     handleShutdownSignals: ["SIGINT", "SIGTERM"],
@@ -20,6 +21,10 @@ async function startConnect(): Promise<void> {
 }
 
 async function startServe(): Promise<void> {
+  const { serve } = await import("inngest/node");
+  const { inngest } = await import("./inngest/client.js");
+  const { workerFunctions } = await import("./inngest/functions/index.js");
+
   const env = readWorkerEnv();
   const inngestHandler = serve({ client: inngest, functions: workerFunctions });
   const server = createServer((req, res) => {
@@ -53,7 +58,12 @@ async function startServe(): Promise<void> {
 }
 
 async function main(): Promise<void> {
+  if (await runSelfCheckIfRequested(process.argv)) {
+    return;
+  }
+  assertWorkerStartPolicy();
   const env = readWorkerEnv();
+  startHeartbeat();
   if (env.HIVE_WORKER_MODE === "serve") {
     await startServe();
     return;

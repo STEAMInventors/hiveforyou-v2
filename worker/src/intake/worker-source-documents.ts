@@ -12,6 +12,8 @@ export type WorkerSourceDocumentRecord = {
   sha256: string;
   storageBucket: string;
   storagePath: string;
+  originalFilename?: string;
+  sizeBytes?: number;
 };
 
 export class WorkerSourceDocumentRepository {
@@ -19,6 +21,26 @@ export class WorkerSourceDocumentRepository {
     private readonly gateway: HiveGateway,
     private readonly userId: string,
   ) {}
+
+  async listByCase(userId: string, caseId: string): Promise<WorkerSourceDocumentRecord[]> {
+    if (userId !== this.userId) {
+      return [];
+    }
+    const rows = await this.gateway.selectWhere("source_documents", {
+      case_id: caseId,
+      user_id: this.userId,
+    });
+    return rows.map((row) => ({
+      id: String(row.id),
+      caseId: String(row.case_id),
+      mimeType: row.mime_type == null ? null : String(row.mime_type),
+      sha256: String(row.sha256),
+      storageBucket: String(row.storage_bucket),
+      storagePath: String(row.storage_path),
+      originalFilename: row.original_filename == null ? "Document" : String(row.original_filename),
+      sizeBytes: row.size_bytes == null ? 0 : Number(row.size_bytes),
+    }));
+  }
 
   async getById(userId: string, id: string): Promise<WorkerSourceDocumentRecord | null> {
     if (userId !== this.userId) {

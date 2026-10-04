@@ -1,0 +1,18 @@
+{
+  "caseId": "15-phone-spaced",
+  "fixtureFile": "15-phone-spaced.pdf",
+  "mimeType": "application/pdf",
+  "extractionStatus": "SUCCEEDED",
+  "errorCode": null,
+  "extractorVersion": "nestiep-extractor/4",
+  "unreadablePageRanges": [],
+  "pages": [
+    {
+      "pageNumber": 1,
+      "extractionMethod": "NATIVE",
+      "issueCodes": [],
+      "canonicalText": "706 555 1234\nSynthetic fixture document for automated extraction regression testing only. No real student names,\nidentifiers, or protected health information are present. Repeat marker:\nALPHA-BRAVO-CHARLIE-DELTA-ECHO-FOXTROT."
+    }
+  ],
+  "canonicalText": "706 555 1234\nSynthetic fixture document for automated extraction regression testing only. No real student names,\nidentifiers, or protected health information are present. Repeat marker:\nALPHA-BRAVO-CHARLIE-DELTA-ECHO-FOXTROT."
+}

@@ -1,6 +1,11 @@
 import type { CanonicalStudyValidationResult } from "./validation";
 
-export type StudyRunStatus = "RUNNING" | "SUCCEEDED" | "NEEDS_REVIEW" | "FAILED";
+export type StudyRunStatus =
+  | "QUEUED"
+  | "RUNNING"
+  | "SUCCEEDED"
+  | "NEEDS_REVIEW"
+  | "FAILED";
 
 export type StudyRunErrorCode =
   | "INCOMPLETE_REQUIRED_QUESTIONS"
@@ -11,6 +16,7 @@ export type StudyRunErrorCode =
   | "MALFORMED_PROPOSAL"
   | "PERSISTENCE_FAILURE"
   | "FIXTURE_MODE_NOT_ALLOWED"
+  | "STUDY_WORKER_FAILED"
   | "UNEXPECTED";
 
 export type CanonicalStudyRun = {

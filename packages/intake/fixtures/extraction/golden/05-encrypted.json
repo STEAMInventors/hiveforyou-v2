@@ -1,0 +1,11 @@
+{
+  "caseId": "05-encrypted",
+  "fixtureFile": "05-encrypted.pdf",
+  "mimeType": "application/pdf",
+  "extractionStatus": "FAILED",
+  "errorCode": "ENCRYPTED_PDF",
+  "extractorVersion": null,
+  "unreadablePageRanges": [],
+  "pages": [],
+  "canonicalText": ""
+}

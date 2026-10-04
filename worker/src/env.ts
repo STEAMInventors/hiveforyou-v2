@@ -1,9 +1,35 @@
+export function assertWorkerStartPolicy(
+  source: Record<string, string | undefined> = process.env,
+): void {
+  if (source.NODE_ENV?.trim() !== "production") {
+    return;
+  }
+  if (source.INNGEST_DEV?.trim()) {
+    throw new Error("WORKER_INNGEST_DEV_FORBIDDEN_IN_PRODUCTION");
+  }
+  if (source.HIVE_FAULT_INJECT?.trim()) {
+    throw new Error("WORKER_FAULT_INJECT_FORBIDDEN_IN_PRODUCTION");
+  }
+  if (!source.INNGEST_SIGNING_KEY?.trim()) {
+    throw new Error("WORKER_INNGEST_SIGNING_KEY_REQUIRED");
+  }
+}
+
 export type WorkerEnv = {
   NEXT_PUBLIC_SUPABASE_URL: string;
   SUPABASE_SERVICE_ROLE_KEY: string;
   HIVE_STORAGE_BUCKET: string;
   HIVE_WORKER_MODE: "connect" | "serve";
   HIVE_WORKER_SERVE_PORT: number;
+  HIVE_CANONICAL_STUDY_ENGINE?: string;
+  OPENAI_API_KEY?: string;
+  HIVE_CANONICAL_STUDY_MODEL?: string;
+  HIVE_OPENAI_MODEL?: string;
+  HIVE_CANONICAL_STUDY_REASONING_EFFORT?: string;
+  HIVE_CANONICAL_STUDY_MAX_OUTPUT_TOKENS?: string;
+  HIVE_OPENAI_MAX_OUTPUT_TOKENS?: string;
+  HIVE_STORY_WRITER_ENGINE?: string;
+  HIVE_STORY_WRITER_MODEL?: string;
   /** Dev-only: `extract-once` fails the first extract step once per document id. */
   HIVE_FAULT_INJECT?: "extract-once";
 };
@@ -36,6 +62,17 @@ export function readWorkerEnv(
     HIVE_STORAGE_BUCKET: storageBucket,
     HIVE_WORKER_MODE: mode,
     HIVE_WORKER_SERVE_PORT: port,
+    HIVE_CANONICAL_STUDY_ENGINE: source.HIVE_CANONICAL_STUDY_ENGINE?.trim() || undefined,
+    OPENAI_API_KEY: source.OPENAI_API_KEY?.trim() || undefined,
+    HIVE_CANONICAL_STUDY_MODEL: source.HIVE_CANONICAL_STUDY_MODEL?.trim() || undefined,
+    HIVE_OPENAI_MODEL: source.HIVE_OPENAI_MODEL?.trim() || undefined,
+    HIVE_CANONICAL_STUDY_REASONING_EFFORT:
+      source.HIVE_CANONICAL_STUDY_REASONING_EFFORT?.trim() || undefined,
+    HIVE_CANONICAL_STUDY_MAX_OUTPUT_TOKENS:
+      source.HIVE_CANONICAL_STUDY_MAX_OUTPUT_TOKENS?.trim() || undefined,
+    HIVE_OPENAI_MAX_OUTPUT_TOKENS: source.HIVE_OPENAI_MAX_OUTPUT_TOKENS?.trim() || undefined,
+    HIVE_STORY_WRITER_ENGINE: source.HIVE_STORY_WRITER_ENGINE?.trim() || undefined,
+    HIVE_STORY_WRITER_MODEL: source.HIVE_STORY_WRITER_MODEL?.trim() || undefined,
     HIVE_FAULT_INJECT,
   };
 }

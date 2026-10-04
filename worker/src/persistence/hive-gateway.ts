@@ -4,6 +4,7 @@ export type HiveRow = Record<string, unknown>;
 
 export type HiveGateway = {
   insert(table: string, row: HiveRow): Promise<void>;
+  upsert(table: string, row: HiveRow, onConflict: string): Promise<void>;
   updateWhere(
     table: string,
     row: HiveRow,
@@ -15,6 +16,13 @@ export type HiveGateway = {
     options?: { orderBy?: string; ascending?: boolean; limit?: number },
   ): Promise<HiveRow[]>;
   downloadObject(bucket: string, path: string): Promise<Uint8Array>;
+  uploadObject(
+    bucket: string,
+    path: string,
+    bytes: Uint8Array,
+    contentType?: string,
+  ): Promise<void>;
+  removeObject(bucket: string, path: string): Promise<void>;
 };
 
 function assertNoError(error: { message: string } | null): void {
@@ -27,6 +35,10 @@ export function createSupabaseHiveGateway(client: SupabaseClient): HiveGateway {
   return {
     async insert(table, row) {
       const { error } = await client.schema("hive").from(table).insert(row);
+      assertNoError(error);
+    },
+    async upsert(table, row, onConflict) {
+      const { error } = await client.schema("hive").from(table).upsert(row, { onConflict });
       assertNoError(error);
     },
     async updateWhere(table, row, where) {
@@ -59,6 +71,17 @@ export function createSupabaseHiveGateway(client: SupabaseClient): HiveGateway {
         throw new Error("STORAGE_OBJECT_MISSING");
       }
       return new Uint8Array(await data.arrayBuffer());
+    },
+    async uploadObject(bucket, path, bytes, contentType) {
+      const { error } = await client.storage.from(bucket).upload(path, bytes, {
+        contentType,
+        upsert: true,
+      });
+      assertNoError(error);
+    },
+    async removeObject(bucket, path) {
+      const { error } = await client.storage.from(bucket).remove([path]);
+      assertNoError(error);
     },
   };
 }

@@ -1,0 +1,3 @@
+UTF-8 fixture line.
+Synthetic fixture document for automated extraction regression testing only. No real student names, identifiers, or protected health information are present. Repeat marker: ALPHA-BRAVO-CHARLIE-DELTA-ECHO-FOXTROT.
+Curly quotes: “synthetic” — em dash.

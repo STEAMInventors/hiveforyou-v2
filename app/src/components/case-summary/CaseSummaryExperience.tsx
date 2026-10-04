@@ -117,10 +117,13 @@ export function CaseSummaryExperience({ studyRunId, initialBundle }: CaseSummary
 
   useEffect(() => {
 
-    if (!bundle || bundle.status !== "RUNNING") {
-
+    if (
+      !bundle ||
+      (bundle.status !== "RUNNING" &&
+        bundle.status !== "QUEUED" &&
+        !bundle.projectionsPending)
+    ) {
       return;
-
     }
 
     const timer = setInterval(() => {
@@ -282,10 +285,13 @@ export function CaseSummaryExperience({ studyRunId, initialBundle }: CaseSummary
 
 
 
-  if (!bundle || bundle.status === "RUNNING") {
-
+  if (
+    !bundle ||
+    bundle.status === "RUNNING" ||
+    bundle.status === "QUEUED" ||
+    bundle.projectionsPending
+  ) {
     return <CaseMapStudyingState rootLabel="Your case" />;
-
   }
 
 

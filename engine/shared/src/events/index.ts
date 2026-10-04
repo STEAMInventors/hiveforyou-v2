@@ -25,10 +25,16 @@ export type HiveIntakeRequestedEventData = z.infer<typeof hiveIntakeRequestedEve
 export const hiveStudyRequestedEventDataSchema = z.object({
   userId: z.string().min(1),
   caseId: z.string().min(1),
+  intakeRunId: z.string().min(1),
   studyRunId: z.string().min(1),
 });
 
 export type HiveStudyRequestedEventData = z.infer<typeof hiveStudyRequestedEventDataSchema>;
+
+/** Deterministic Inngest event id for study queueing (dedupes double-clicks). */
+export function buildStudyRequestedEventId(studyRunId: string): string {
+  return `study:${studyRunId.trim()}`;
+}
 
 /** Deterministic Inngest event id for intake queueing (dedupes double-clicks). */
 export function buildIntakeRequestedEventId(intakeRunId: string, appendSeq?: number): string {

@@ -1,8 +1,11 @@
 import "server-only";
 
+import { randomUUID } from "node:crypto";
+
 import {
   assembleIntakeStudyRequest,
   createCanonicalStudyEngineFromEnv,
+  queueCanonicalStudyRun,
   intakePackExecutionToStructureMap,
   loadCaseCustomerContextSnapshot,
   loadCanonicalStudyPrompt,
@@ -44,10 +47,13 @@ import { createServerSupabaseClient, getAuthenticatedUserId } from "@/lib/supaba
 
 import { loadNormalizedExtractionForSource } from "@/lib/evidence/load-normalized-extraction.server";
 
+import { emitStudyRequestedEvent } from "@/lib/intake/emit-study-requested";
+import { isInngestIntakePipeline } from "@/lib/intake/pipeline";
+
 import { IntakeCaseNotFoundError } from "./intake-service-server";
 
-const inFlight = new Map<string, Promise<CanonicalStudyOutcome>>();
-const intakeStudyInFlight = new Map<string, Promise<CanonicalStudyOutcome>>();
+const inlineInFlight = new Map<string, Promise<CanonicalStudyOutcome>>();
+const inlineIntakeStudyInFlight = new Map<string, Promise<CanonicalStudyOutcome>>();
 
 export class IntakeStudyNotReadyError extends Error {
   readonly code = "INTAKE_NOT_READY";
@@ -61,16 +67,19 @@ export class IntakeStudyNotReadyError extends Error {
 export async function startIntakeCanonicalStudyFromRun(
   intakeRunId: string,
 ): Promise<CanonicalStudyOutcome> {
-  let execution = intakeStudyInFlight.get(intakeRunId);
+  if (isInngestIntakePipeline()) {
+    return startIntakeCanonicalStudyFromRunInner(intakeRunId);
+  }
+  let execution = inlineIntakeStudyInFlight.get(intakeRunId);
   if (!execution) {
     execution = startIntakeCanonicalStudyFromRunInner(intakeRunId);
-    intakeStudyInFlight.set(intakeRunId, execution);
+    inlineIntakeStudyInFlight.set(intakeRunId, execution);
   }
   try {
     return await execution;
   } finally {
-    if (intakeStudyInFlight.get(intakeRunId) === execution) {
-      intakeStudyInFlight.delete(intakeRunId);
+    if (inlineIntakeStudyInFlight.get(intakeRunId) === execution) {
+      inlineIntakeStudyInFlight.delete(intakeRunId);
     }
   }
 }
@@ -236,7 +245,7 @@ async function startIntakeCanonicalStudyFromRunInner(
     intelligenceRepo: new SupabaseCaseIntelligenceRepository(gateway, sessionUserId),
     projectionRepo: new SupabaseCaseProjectionRepository(gateway, sessionUserId),
     studyArtifactRepo: new SupabaseStudyArtifactRepository(gateway, sessionUserId),
-    inFlight,
+    inFlight: isInngestIntakePipeline() ? undefined : inlineInFlight,
     sessionUserId,
     domainLearning: createSupabaseDomainLearningPort(gateway, adminGateway, sessionUserId),
     loadStructureMapForIntakeRun: async () =>
@@ -307,6 +316,21 @@ async function startIntakeCanonicalStudyFromRunInner(
     promptVersion: prompt.version,
     sourceDocumentCount: assembledRequest.sourceDocuments.length,
   });
+
+  if (isInngestIntakePipeline()) {
+    const studyRunId = randomUUID();
+    const queued = await queueCanonicalStudyRun(assembledRequest, deps, { studyRunId });
+    if (queued.run.status === "QUEUED") {
+      await emitStudyRequestedEvent(queued.run, sessionUserId);
+    }
+    if (queued.run.studyContextId !== "not-created") {
+      await documents.attachStudyRun(sessionUserId, run.caseId, queued.run.studyRunId);
+    }
+    if (queued.run.domainId !== "unknown") {
+      await cases.setDomain(sessionUserId, run.caseId, queued.run.domainId);
+    }
+    return queued;
+  }
 
   const outcome = await runCanonicalStudy(assembledRequest, deps);
   if (outcome.run.studyContextId !== "not-created") {

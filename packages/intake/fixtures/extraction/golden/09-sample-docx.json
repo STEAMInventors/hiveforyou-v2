@@ -1,0 +1,11 @@
+{
+  "caseId": "09-sample-docx",
+  "fixtureFile": "09-sample.docx",
+  "mimeType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  "extractionStatus": "FAILED",
+  "errorCode": "UNSUPPORTED_FILE",
+  "extractorVersion": "nestiep-extractor/4",
+  "unreadablePageRanges": [],
+  "pages": [],
+  "canonicalText": ""
+}

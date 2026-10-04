@@ -7,8 +7,19 @@ function isMissingSessionGetUserError(error: AuthError): boolean {
   return error.message.includes("Auth session missing");
 }
 
-function readDevAuthCredentials(): { email: string; password: string } | null {
+function isDevAutoAuthEnabled(): boolean {
   if (process.env.NODE_ENV !== "development") {
+    return false;
+  }
+  if (process.env.VERCEL === "1") {
+    return false;
+  }
+  const optIn = process.env.HIVE_DEV_AUTO_AUTH?.trim().toLowerCase();
+  return optIn === "1" || optIn === "true";
+}
+
+function readDevAuthCredentials(): { email: string; password: string } | null {
+  if (!isDevAutoAuthEnabled()) {
     return null;
   }
   const email = process.env.HIVE_DEV_AUTH_EMAIL?.trim();
@@ -21,7 +32,8 @@ function readDevAuthCredentials(): { email: string; password: string } | null {
 
 /**
  * Development-only: establish a normal Supabase session via password sign-in when none exists.
- * Never runs outside NODE_ENV=development. Credentials stay server-side (not NEXT_PUBLIC_*).
+ * Never runs in production or on Vercel. Requires HIVE_DEV_AUTO_AUTH=1 and NODE_ENV=development.
+ * Credentials stay server-side (not NEXT_PUBLIC_*).
  */
 export async function ensureDevSupabaseSession(supabase: SupabaseClient): Promise<void> {
   const credentials = readDevAuthCredentials();

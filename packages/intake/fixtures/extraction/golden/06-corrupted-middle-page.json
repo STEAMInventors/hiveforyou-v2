@@ -1,0 +1,32 @@
+{
+  "caseId": "06-corrupted-middle-page",
+  "fixtureFile": "06-corrupted-middle-page.pdf",
+  "mimeType": "application/pdf",
+  "extractionStatus": "SUCCEEDED",
+  "errorCode": null,
+  "extractorVersion": "nestiep-extractor/4",
+  "unreadablePageRanges": [],
+  "pages": [
+    {
+      "pageNumber": 1,
+      "extractionMethod": "NATIVE",
+      "issueCodes": [],
+      "canonicalText": "Good page 1. Synthetic fixture document for automated extraction regression testing only. No real student\nnames, identifiers, or protected health information are present. Repeat marker: ALPHA-BRAVO-\nCHARLIE-DELTA-ECHO-FOXTROT."
+    },
+    {
+      "pageNumber": 2,
+      "extractionMethod": "NATIVE",
+      "issueCodes": [
+        "EMPTY_PAGE"
+      ],
+      "canonicalText": ""
+    },
+    {
+      "pageNumber": 3,
+      "extractionMethod": "NATIVE",
+      "issueCodes": [],
+      "canonicalText": "Good page 3. Synthetic fixture document for automated extraction regression testing only. No real student\nnames, identifiers, or protected health information are present. Repeat marker: ALPHA-BRAVO-\nCHARLIE-DELTA-ECHO-FOXTROT."
+    }
+  ],
+  "canonicalText": "Good page 1. Synthetic fixture document for automated extraction regression testing only. No real student\nnames, identifiers, or protected health information are present. Repeat marker: ALPHA-BRAVO-\nCHARLIE-DELTA-ECHO-FOXTROT.\n\nGood page 3. Synthetic fixture document for automated extraction regression testing only. No real student\nnames, identifiers, or protected health information are present. Repeat marker: ALPHA-BRAVO-\nCHARLIE-DELTA-ECHO-FOXTROT."
+}

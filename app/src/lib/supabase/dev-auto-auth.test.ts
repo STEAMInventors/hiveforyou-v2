@@ -16,8 +16,10 @@ function mockSupabase() {
 
 describe("ensureDevSupabaseSession", () => {
   beforeEach(() => {
+    delete process.env.HIVE_DEV_AUTO_AUTH;
     delete process.env.HIVE_DEV_AUTH_EMAIL;
     delete process.env.HIVE_DEV_AUTH_PASSWORD;
+    delete process.env.VERCEL;
   });
 
   afterEach(() => {
@@ -25,8 +27,35 @@ describe("ensureDevSupabaseSession", () => {
     vi.restoreAllMocks();
   });
 
+  it("does nothing on Vercel even in development", async () => {
+    vi.stubEnv("NODE_ENV", "development");
+    vi.stubEnv("VERCEL", "1");
+    process.env.HIVE_DEV_AUTO_AUTH = "1";
+    process.env.HIVE_DEV_AUTH_EMAIL = "dev@example.com";
+    process.env.HIVE_DEV_AUTH_PASSWORD = "secret";
+    const { client, getUser, signInWithPassword } = mockSupabase();
+
+    await ensureDevSupabaseSession(client as never);
+
+    expect(getUser).not.toHaveBeenCalled();
+    expect(signInWithPassword).not.toHaveBeenCalled();
+  });
+
+  it("does nothing without explicit opt-in", async () => {
+    vi.stubEnv("NODE_ENV", "development");
+    process.env.HIVE_DEV_AUTH_EMAIL = "dev@example.com";
+    process.env.HIVE_DEV_AUTH_PASSWORD = "secret";
+    const { client, getUser, signInWithPassword } = mockSupabase();
+
+    await ensureDevSupabaseSession(client as never);
+
+    expect(getUser).not.toHaveBeenCalled();
+    expect(signInWithPassword).not.toHaveBeenCalled();
+  });
+
   it("does nothing outside development", async () => {
     vi.stubEnv("NODE_ENV", "production");
+    process.env.HIVE_DEV_AUTO_AUTH = "1";
     process.env.HIVE_DEV_AUTH_EMAIL = "dev@example.com";
     process.env.HIVE_DEV_AUTH_PASSWORD = "secret";
     const { client, getUser, signInWithPassword } = mockSupabase();
@@ -39,6 +68,7 @@ describe("ensureDevSupabaseSession", () => {
 
   it("does nothing in test environment", async () => {
     vi.stubEnv("NODE_ENV", "test");
+    process.env.HIVE_DEV_AUTO_AUTH = "1";
     process.env.HIVE_DEV_AUTH_EMAIL = "dev@example.com";
     process.env.HIVE_DEV_AUTH_PASSWORD = "secret";
     const { client, getUser, signInWithPassword } = mockSupabase();
@@ -61,6 +91,7 @@ describe("ensureDevSupabaseSession", () => {
 
   it("skips sign-in when a session already exists", async () => {
     vi.stubEnv("NODE_ENV", "development");
+    process.env.HIVE_DEV_AUTO_AUTH = "1";
     process.env.HIVE_DEV_AUTH_EMAIL = "dev@example.com";
     process.env.HIVE_DEV_AUTH_PASSWORD = "secret";
     const { client, getUser, signInWithPassword } = mockSupabase();
@@ -74,6 +105,7 @@ describe("ensureDevSupabaseSession", () => {
 
   it("signs in with password when development credentials are set and there is no user", async () => {
     vi.stubEnv("NODE_ENV", "development");
+    process.env.HIVE_DEV_AUTO_AUTH = "1";
     process.env.HIVE_DEV_AUTH_EMAIL = " dev@example.com ";
     process.env.HIVE_DEV_AUTH_PASSWORD = " secret ";
     const { client, getUser, signInWithPassword } = mockSupabase();
@@ -90,6 +122,7 @@ describe("ensureDevSupabaseSession", () => {
 
   it("signs in when getUser reports Auth session missing", async () => {
     vi.stubEnv("NODE_ENV", "development");
+    process.env.HIVE_DEV_AUTO_AUTH = "1";
     process.env.HIVE_DEV_AUTH_EMAIL = "dev@example.com";
     process.env.HIVE_DEV_AUTH_PASSWORD = "secret";
     const { client, getUser, signInWithPassword } = mockSupabase();
@@ -109,6 +142,7 @@ describe("ensureDevSupabaseSession", () => {
 
   it("does not sign in when getUser fails with an unexpected auth error", async () => {
     vi.stubEnv("NODE_ENV", "development");
+    process.env.HIVE_DEV_AUTO_AUTH = "1";
     process.env.HIVE_DEV_AUTH_EMAIL = "dev@example.com";
     process.env.HIVE_DEV_AUTH_PASSWORD = "secret";
     const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});

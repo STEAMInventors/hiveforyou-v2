@@ -458,7 +458,7 @@ async function executeStudy(
     };
   }
 
-  if (existingRun?.status === "RUNNING") {
+  if (existingRun?.status === "RUNNING" || existingRun?.status === "QUEUED") {
     const terminal = await waitForTerminalStudyRun(
       deps.runRepo,
       request.caseId,

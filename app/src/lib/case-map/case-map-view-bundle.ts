@@ -14,4 +14,7 @@ export type CaseMapViewBundle = {
   caseView: CaseViewV2 | null;
   /** Loaded for detail surfaces (evidence gaps); not a second truth layer. */
   canonicalSnapshot: CanonicalCaseSnapshot | null;
+  /** True when intelligence exists but persisted projections are not ready yet. */
+  projectionsPending?: boolean;
+  studyStartedAt?: string;
 };
