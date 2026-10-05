@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import {
+  createOpenAICallModel,
   extractOpenAIResponseErrorFields,
   extractOpenAIResponseOutputText,
   formatOpenAIResponseFailedErrorMessage,
@@ -65,10 +66,9 @@ describe("OpenAI Responses API error diagnostics", () => {
     );
 
     const engine = new OpenAIDiscoverEngine({
-      apiKey: "test-key",
       model: "gpt-test",
       reasoningEffort: "medium",
-      uploadFile: async () => "file-123",
+      callModel: createOpenAICallModel({ apiKey: "test-key" }),
     });
 
     await expect(
@@ -113,10 +113,9 @@ describe("OpenAI Responses API error diagnostics", () => {
     );
 
     const engine = new OpenAIDiscoverEngine({
-      apiKey: "test-key",
       model: "gpt-test",
       reasoningEffort: "medium",
-      uploadFile: async () => "file-123",
+      callModel: createOpenAICallModel({ apiKey: "test-key" }),
     });
 
     await expect(

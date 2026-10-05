@@ -54,6 +54,8 @@ Status: **V2-001E.1 COMPLETE** + **Engine 1 OpenAI Discover** (**frozen**) + **E
 
 ## Engine 2 / privacy
 
+- **Model boundary:** Hive Core orchestration calls **`CallModel`** only (`engine/core/src/model/call-model.ts` — text, optional **`attachments`**, JSON schema/object formats). OpenAI Responses + file upload live in **`createOpenAICallModel`** (`@hiveforyou/core/discover/openai-engine`), wired from app/worker env at composition roots; core study/discover engines do not read env or call the API directly.
+
 - `HIVE_CANONICAL_STUDY_ENGINE=openai` for production study when `OPENAI_API_KEY` + model configured; `fixture` for explicit tests/dev only. Unset or any other value **fail-closes** (`ENGINE_UNAVAILABLE`). Fixture proposals **cannot persist** case intelligence or projections outside `NODE_ENV=test` (`FIXTURE_MODE_NOT_ALLOWED`).
 - Study idempotency fingerprint includes provider mode, model id, and prompt version/hash (engine config changes force a new run without touching Q&A).
 - Study start logs provider mode, proposal mode, model id, prompt version, case/study run id only (no source content).

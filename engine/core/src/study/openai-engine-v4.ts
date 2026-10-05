@@ -5,10 +5,7 @@ import {
 } from "@hiveforyou/shared/case-intelligence/4";
 import type { CanonicalStudyContext } from "@hiveforyou/shared/canonical-study";
 
-import {
-  defaultOpenAICreateResponse,
-  defaultOpenAIUploadFile,
-} from "../discover/openai-engine";
+import type { CallModel } from "../model/call-model";
 import type { CanonicalStudyEngineV3Runtime } from "./engine-v3";
 import { buildCanonicalStudyUserMessage } from "./openai-engine-v3";
 import { normalizeOpenAIClaimValue } from "./normalize-openai-claim-value-v3";
@@ -18,50 +15,11 @@ import {
 } from "./study-engine-errors";
 
 export type OpenAICanonicalStudyEngineV4Options = {
-  apiKey: string;
   model: string;
   reasoningEffort: string;
   maxOutputTokens?: number;
-  uploadFile?: typeof defaultOpenAIUploadFile;
-  createResponse?: typeof defaultOpenAICreateResponse;
+  callModel: CallModel;
 };
-
-function extractOutputText(payload: unknown): string | null {
-  if (typeof payload !== "object" || payload === null) {
-    return null;
-  }
-  const record = payload as Record<string, unknown>;
-  if (typeof record.output_text === "string") {
-    return record.output_text;
-  }
-  const output = record.output;
-  if (!Array.isArray(output)) {
-    return null;
-  }
-  for (const item of output) {
-    if (typeof item !== "object" || item === null) {
-      continue;
-    }
-    const message = item as Record<string, unknown>;
-    if (message.type !== "message") {
-      continue;
-    }
-    const content = message.content;
-    if (!Array.isArray(content)) {
-      continue;
-    }
-    for (const part of content) {
-      if (typeof part !== "object" || part === null) {
-        continue;
-      }
-      const piece = part as Record<string, unknown>;
-      if (piece.type === "output_text" && typeof piece.text === "string") {
-        return piece.text;
-      }
-    }
-  }
-  return null;
-}
 
 function normalizeProposalV4(
   parsed: CanonicalStudyProposalV4,
@@ -187,8 +145,7 @@ export class OpenAICanonicalStudyEngineV4 {
     }
 
     const bytesById = runtime.sourceDocumentBytes ?? new Map<string, Uint8Array>();
-    const fileIds: string[] = [];
-    for (const source of context.sourceDocuments) {
+    const attachments = context.sourceDocuments.map((source) => {
       const keys = [
         source.sourceDocumentId,
         source.stagedDocumentId,
@@ -204,66 +161,40 @@ export class OpenAICanonicalStudyEngineV4 {
       if (!bytes) {
         throw new CanonicalStudyEngineUnavailableError("MISSING_SOURCE_DOCUMENT_BYTES");
       }
-      const uploadFile = this.options.uploadFile ?? defaultOpenAIUploadFile;
-      try {
-        const fileId = await uploadFile({
-          apiKey: this.options.apiKey,
-          filename: source.originalFilename,
-          bytes,
-          mimeType: source.mimeType,
-        });
-        fileIds.push(fileId);
-      } catch {
-        throw new CanonicalStudyEngineUnavailableError("OPENAI_FILE_UPLOAD_FAILED");
-      }
-    }
+      return {
+        filename: source.originalFilename,
+        bytes,
+        mimeType: source.mimeType,
+      };
+    });
 
     const userText = buildCanonicalStudyUserMessage(runtime.composed, context, {
       extractionLocatorCatalog: runtime.extractionLocatorCatalog,
       recognitionVocabulary: runtime.recognitionVocabulary,
     });
 
-    const body: Record<string, unknown> = {
-      model: this.options.model,
-      reasoning: { effort: this.options.reasoningEffort },
-      input: [
-        {
-          role: "system",
-          content: [{ type: "input_text", text: runtime.composed.system }],
-        },
-        {
-          role: "user",
-          content: [
-            { type: "input_text", text: userText },
-            ...fileIds.map((fileId) => ({ type: "input_file", file_id: fileId })),
-          ],
-        },
-      ],
-      text: {
-        format: {
+    let response;
+    try {
+      response = await this.options.callModel({
+        model: this.options.model,
+        reasoningEffort: this.options.reasoningEffort,
+        maxOutputTokens: this.options.maxOutputTokens,
+        systemPrompt: runtime.composed.system,
+        userContent: userText,
+        attachments,
+        textFormat: {
           type: "json_schema",
           name: "canonical_study_proposal_v4",
           strict: true,
           schema: CANONICAL_STUDY_PROPOSAL_V4_OPENAI_JSON_SCHEMA,
         },
-      },
-    };
-    if (this.options.maxOutputTokens != null && this.options.maxOutputTokens > 0) {
-      body.max_output_tokens = this.options.maxOutputTokens;
-    }
-
-    const createResponse = this.options.createResponse ?? defaultOpenAICreateResponse;
-    let responsePayload: unknown;
-    try {
-      responsePayload = await createResponse({
-        apiKey: this.options.apiKey,
-        model: this.options.model,
-        reasoningEffort: this.options.reasoningEffort,
-        body,
       });
     } catch (error) {
       if (error instanceof CanonicalStudyEngineUnavailableError) {
         throw error;
+      }
+      if (error instanceof Error && error.message.startsWith("OPENAI_FILE_UPLOAD_FAILED:")) {
+        throw new CanonicalStudyEngineUnavailableError("OPENAI_FILE_UPLOAD_FAILED");
       }
       if (error instanceof Error && error.message.startsWith("OPENAI_RESPONSE_FAILED:")) {
         throw new CanonicalStudyEngineUnavailableError(error.message);
@@ -271,7 +202,7 @@ export class OpenAICanonicalStudyEngineV4 {
       throw new CanonicalStudyEngineUnavailableError("OPENAI_RESPONSE_FAILED");
     }
 
-    const outputText = extractOutputText(responsePayload);
+    const outputText = response.outputText;
     if (!outputText) {
       throw new MalformedCanonicalStudyProposalError("MALFORMED_PROPOSAL:missing_output_text");
     }

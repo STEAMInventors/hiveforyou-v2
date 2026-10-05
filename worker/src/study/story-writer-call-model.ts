@@ -1,8 +1,5 @@
-import type { CallModel, ModelRequest } from "@hiveforyou/core";
-import {
-  defaultOpenAICreateResponse,
-  extractOpenAIResponseOutputText,
-} from "@hiveforyou/core/discover/openai-engine";
+import type { CallModel } from "@hiveforyou/core";
+import { createOpenAICallModel } from "@hiveforyou/core/discover/openai-engine";
 
 export function createWorkerStoryWriterCallModel(env: {
   OPENAI_API_KEY?: string;
@@ -13,24 +10,5 @@ export function createWorkerStoryWriterCallModel(env: {
       throw new Error("STORY_MODEL_NO_API_KEY");
     };
   }
-  return async (req: ModelRequest) => {
-    const body = {
-      model: req.model,
-      temperature: req.temperature,
-      input: [
-        { role: "system", content: [{ type: "input_text", text: req.systemPrompt }] },
-        { role: "user", content: [{ type: "input_text", text: req.userContent }] },
-      ],
-      text: { format: req.textFormat },
-    };
-    const responsePayload = await defaultOpenAICreateResponse({
-      apiKey,
-      model: req.model,
-      reasoningEffort: "low",
-      body,
-    });
-    return {
-      outputText: extractOpenAIResponseOutputText(responsePayload),
-    };
-  };
+  return createOpenAICallModel({ apiKey });
 }

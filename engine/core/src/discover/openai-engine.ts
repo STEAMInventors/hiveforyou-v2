@@ -8,6 +8,8 @@ import {
   HIVE_DISCOVER_PROPOSAL_SCHEMA_V2,
 } from "@hiveforyou/shared/discover";
 
+import type { CallModel, ModelRequest } from "../model/call-model";
+
 import type { DiscoverEngine, DiscoverEngineContext } from "./engine";
 
 export type OpenAIResponseErrorFields = {
@@ -77,23 +79,81 @@ function logOpenAIResponseErrorDiagnostic(
   });
 }
 
-export type OpenAIDiscoverEngineOptions = {
+export type OpenAICallModelOptions = {
   apiKey: string;
+  uploadFile?: typeof defaultOpenAIUploadFile;
+  createResponse?: typeof defaultOpenAICreateResponse;
+};
+
+/** Host-side OpenAI adapter for {@link CallModel} (not used by engine orchestration directly). */
+export function createOpenAICallModel(input: OpenAICallModelOptions): CallModel {
+  const uploadFile = input.uploadFile ?? defaultOpenAIUploadFile;
+  const createResponse = input.createResponse ?? defaultOpenAICreateResponse;
+
+  return async (req: ModelRequest) => {
+    const fileIds: string[] = [];
+    for (const attachment of req.attachments ?? []) {
+      const fileId = await uploadFile({
+        apiKey: input.apiKey,
+        filename: attachment.filename,
+        bytes: attachment.bytes,
+        mimeType: attachment.mimeType,
+      });
+      fileIds.push(fileId);
+    }
+
+    const userParts: Array<Record<string, unknown>> = [
+      { type: "input_text", text: req.userContent },
+      ...fileIds.map((fileId) => ({ type: "input_file", file_id: fileId })),
+    ];
+
+    const inputMessages: Array<Record<string, unknown>> = req.userOnly
+      ? [{ role: "user", content: userParts }]
+      : [
+          ...(req.systemPrompt
+            ? [{ role: "system", content: [{ type: "input_text", text: req.systemPrompt }] }]
+            : []),
+          { role: "user", content: userParts },
+        ];
+
+    const body: Record<string, unknown> = {
+      model: req.model,
+      input: inputMessages,
+      text: { format: req.textFormat },
+    };
+    if (req.reasoningEffort) {
+      body.reasoning = { effort: req.reasoningEffort };
+    }
+    if (req.temperature != null) {
+      body.temperature = req.temperature;
+    }
+    if (req.maxOutputTokens != null && req.maxOutputTokens > 0) {
+      body.max_output_tokens = req.maxOutputTokens;
+    }
+
+    const responsePayload = await createResponse({
+      apiKey: input.apiKey,
+      model: req.model,
+      reasoningEffort: req.reasoningEffort ?? "medium",
+      body,
+    });
+
+    const usage =
+      typeof responsePayload === "object" && responsePayload !== null
+        ? (responsePayload as { usage?: unknown }).usage
+        : undefined;
+
+    return {
+      outputText: extractOpenAIResponseOutputText(responsePayload),
+      usage,
+    };
+  };
+}
+
+export type OpenAIDiscoverEngineOptions = {
   model: string;
   reasoningEffort: string;
-  fetchImpl?: typeof fetch;
-  uploadFile?: (input: {
-    apiKey: string;
-    filename: string;
-    bytes: Uint8Array;
-    mimeType?: string | null;
-  }) => Promise<string>;
-  createResponse?: (input: {
-    apiKey: string;
-    model: string;
-    reasoningEffort: string;
-    body: unknown;
-  }) => Promise<unknown>;
+  callModel: CallModel;
 };
 
 export async function defaultOpenAIUploadFile(input: {
@@ -205,13 +265,7 @@ function parseProposal(text: string, expectedSchema: string): DiscoverProposalOu
 }
 
 export class OpenAIDiscoverEngine implements DiscoverEngine {
-  private readonly uploadFile: OpenAIDiscoverEngineOptions["uploadFile"];
-  private readonly createResponse: OpenAIDiscoverEngineOptions["createResponse"];
-
-  constructor(private readonly options: OpenAIDiscoverEngineOptions) {
-    this.uploadFile = options.uploadFile ?? defaultOpenAIUploadFile;
-    this.createResponse = options.createResponse ?? defaultOpenAICreateResponse;
-  }
+  constructor(private readonly options: OpenAIDiscoverEngineOptions) {}
 
   async discover(context: DiscoverEngineContext): Promise<DiscoverProposalOutput> {
     const isV2 = context.composed.outputSchema === HIVE_DISCOVER_PROPOSAL_SCHEMA_V2;
@@ -223,24 +277,18 @@ export class OpenAIDiscoverEngine implements DiscoverEngine {
     const instruction = isV2
       ? "Examine the attached files and return a hive-discover-proposal/2 JSON object."
       : "Examine the attached files and return a hive-discover-proposal/1 JSON object.";
-    const bytesById =
-      context.sourceDocumentBytes ??
-      new Map<string, Uint8Array>();
-
-    const fileIds: string[] = [];
-    for (const source of context.sourceDocuments) {
+    const bytesById = context.sourceDocumentBytes ?? new Map<string, Uint8Array>();
+    const attachments = context.sourceDocuments.map((source) => {
       const bytes = bytesById.get(source.sourceDocumentId);
       if (!bytes) {
         throw new Error("MISSING_SOURCE_DOCUMENT_BYTES");
       }
-      const fileId = await this.uploadFile!({
-        apiKey: this.options.apiKey,
+      return {
         filename: source.originalFilename,
         bytes,
         mimeType: source.mimeType,
-      });
-      fileIds.push(fileId);
-    }
+      };
+    });
 
     const phaseBlock = context.composed.discoveryPhase
       ? [`Discovery phase: ${context.composed.discoveryPhase}`, ""]
@@ -260,56 +308,34 @@ export class OpenAIDiscoverEngine implements DiscoverEngine {
         ]
       : [];
 
-    const userContent: Array<Record<string, unknown>> = [
-      {
-        type: "input_text",
-        text: [
-          ...phaseBlock,
-          ...objectiveBlock,
-          ...priorBlock,
-          "Domain Pack vocabulary (JSON):",
-          context.composed.domainPackVocabulary,
-          "",
-          "Source document metadata (JSON):",
-          JSON.stringify(context.composed.sourceDocuments, null, 2),
-          "",
-          instruction,
-        ].join("\n"),
-      },
-      ...fileIds.map((fileId) => ({ type: "input_file", file_id: fileId })),
-    ];
+    const userText = [
+      ...phaseBlock,
+      ...objectiveBlock,
+      ...priorBlock,
+      "Domain Pack vocabulary (JSON):",
+      context.composed.domainPackVocabulary,
+      "",
+      "Source document metadata (JSON):",
+      JSON.stringify(context.composed.sourceDocuments, null, 2),
+      "",
+      instruction,
+    ].join("\n");
 
-    const body = {
-      model: this.options.model,
-      reasoning: { effort: this.options.reasoningEffort },
-      input: [
-        {
-          role: "system",
-          content: [{ type: "input_text", text: context.composed.system }],
-        },
-        {
-          role: "user",
-          content: userContent,
-        },
-      ],
-      text: {
-        format: {
-          type: "json_schema",
-          name: schemaName,
-          strict: true,
-          schema,
-        },
-      },
-    };
-
-    const responsePayload = await this.createResponse!({
-      apiKey: this.options.apiKey,
+    const response = await this.options.callModel({
       model: this.options.model,
       reasoningEffort: this.options.reasoningEffort,
-      body,
+      systemPrompt: context.composed.system,
+      userContent: userText,
+      attachments,
+      textFormat: {
+        type: "json_schema",
+        name: schemaName,
+        strict: true,
+        schema,
+      },
     });
 
-    const outputText = extractOpenAIResponseOutputText(responsePayload);
+    const outputText = response.outputText;
     if (!outputText) {
       throw new Error("MALFORMED_PROPOSAL");
     }

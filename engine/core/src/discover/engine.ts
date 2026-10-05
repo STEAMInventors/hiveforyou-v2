@@ -10,8 +10,9 @@ import type { ComposedDiscoverPromptInputs } from "./compose-discover-prompt-inp
 import { FixtureDiscoverEngine } from "./fixture-engine";
 import { FixtureDiscoverResolutionEngine } from "./fixture-resolution-engine";
 import { FixtureDiscoverV2Engine } from "./fixture-v2-engine";
-import { OpenAIDiscoverEngine } from "./openai-engine";
+import { createOpenAICallModel, OpenAIDiscoverEngine } from "./openai-engine";
 import { OpenAIDiscoverResolutionEngine } from "./openai-resolution-engine";
+import type { CallModel } from "../model/call-model";
 import type { DiscoverSourceDocumentInput } from "./types";
 
 import type { DiscoverEnginePhase } from "./types";
@@ -74,14 +75,15 @@ export type DiscoverEngineEnv = {
 };
 
 export type OpenAIEngineFactory = (input: {
-  apiKey: string;
   model: string;
   reasoningEffort: string;
+  callModel: CallModel;
 }) => DiscoverEngine;
 
 export type DiscoverEngineFactoryDeps = {
   createOpenAIEngine?: OpenAIEngineFactory;
   adaptiveV2?: boolean;
+  callModel?: CallModel;
 };
 
 export type DiscoverResolutionEngineConfig = {
@@ -120,9 +122,10 @@ export function createDiscoverEngineFromEnv(
         reasoningEffort,
       };
     }
+    const callModel = deps.callModel ?? createOpenAICallModel({ apiKey });
     const factory = deps.createOpenAIEngine ?? ((input) => new OpenAIDiscoverEngine(input));
     return {
-      engine: factory({ apiKey, model, reasoningEffort }),
+      engine: factory({ model, reasoningEffort, callModel }),
       mode: "openai",
       providerId: "openai-discover-engine",
       modelId: model,
@@ -163,8 +166,9 @@ export function createDiscoverResolutionEngineFromEnv(
         modelId: model,
       };
     }
+    const callModel = deps.callModel ?? createOpenAICallModel({ apiKey });
     return {
-      engine: new OpenAIDiscoverResolutionEngine({ apiKey, model, reasoningEffort }),
+      engine: new OpenAIDiscoverResolutionEngine({ model, reasoningEffort, callModel }),
       providerId: "openai-discover-resolution-engine",
       modelId: model,
     };

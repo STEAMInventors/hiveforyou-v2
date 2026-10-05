@@ -8,7 +8,7 @@ import { fileURLToPath } from "node:url";
 
 import { readStatedWorkPurpose } from "@hiveforyou/shared/canonical-study";
 
-import { defaultOpenAICreateResponse } from "../discover/openai-engine";
+import type { CallModel } from "../model/call-model";
 import { buildClientWriterPayload } from "./build-client-writer-payload";
 import {
   checkTone,
@@ -26,7 +26,7 @@ const PROMPT = readFileSync(
 export type ClientWriterPassInput = {
   caseView: CaseViewV2;
   context: CanonicalStudyContext;
-  apiKey?: string;
+  callModel?: CallModel;
   model?: string;
   reasoningEffort?: string;
 };
@@ -245,7 +245,7 @@ export async function runClientWriterPass(input: ClientWriterPassInput): Promise
     return input.caseView;
   }
 
-  if (!input.apiKey?.trim()) {
+  if (!input.callModel) {
     return {
       ...input.caseView,
       clientSummary: {
@@ -334,44 +334,21 @@ export async function runClientWriterPass(input: ClientWriterPassInput): Promise
     required: ["story", "cards", "timeline", "prep"],
   } as const;
 
-  const body = {
-    model: input.model ?? "gpt-5.6-sol",
-    reasoning: { effort: input.reasoningEffort ?? "medium" },
-    input: [
-      { role: "system", content: [{ type: "input_text", text: PROMPT }] },
-      {
-        role: "user",
-        content: [
-          {
-            type: "input_text",
-            text: `Return client-writer/2 JSON.\n\n${JSON.stringify(userPayload, null, 2)}`,
-          },
-        ],
-      },
-    ],
-    text: {
-      format: {
+  try {
+    const model = input.model ?? "gpt-5.6-sol";
+    const response = await input.callModel({
+      model,
+      reasoningEffort: input.reasoningEffort ?? "medium",
+      systemPrompt: PROMPT,
+      userContent: `Return client-writer/2 JSON.\n\n${JSON.stringify(userPayload, null, 2)}`,
+      textFormat: {
         type: "json_schema",
         name: "client_writer_v2",
         strict: true,
-        schema: responseSchema,
+        schema: responseSchema as Record<string, unknown>,
       },
-    },
-  };
-
-  try {
-    const payload = await defaultOpenAICreateResponse({
-      apiKey: input.apiKey,
-      model: input.model ?? "gpt-5.6-sol",
-      reasoningEffort: input.reasoningEffort ?? "medium",
-      body,
     });
-    const text =
-      typeof payload === "object" &&
-      payload !== null &&
-      typeof (payload as { output_text?: string }).output_text === "string"
-        ? (payload as { output_text: string }).output_text
-        : null;
+    const text = response.outputText;
     if (!text) {
       return input.caseView;
     }

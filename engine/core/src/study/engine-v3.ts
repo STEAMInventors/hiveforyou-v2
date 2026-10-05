@@ -13,6 +13,8 @@ import type { RecognitionVocabularyPromptRow } from "@hiveforyou/domain-packs";
 import type { ExtractionLocatorCatalog } from "../provenance/serialize-extraction-locator-catalog";
 import type { ExtractionReadiness } from "@hiveforyou/shared/intake/extraction-readiness";
 import type { CanonicalStudyPromptInputs } from "../prompts/compose-canonical-study-inputs";
+import { createOpenAICallModel } from "../discover/openai-engine";
+import type { CallModel } from "../model/call-model";
 import { OpenAICanonicalStudyEngineV3 } from "./openai-engine-v3";
 import { OpenAICanonicalStudyEngineV4 } from "./openai-engine-v4";
 
@@ -234,6 +236,7 @@ export class FixtureCanonicalStudyEngineV4 implements CanonicalStudyEngineV3 {
 
 export type CreateCanonicalStudyEngineOptions = {
   promptVersion?: "v3" | "v4";
+  callModel?: CallModel;
 };
 
 export function createCanonicalStudyEngineV3FromEnv(
@@ -282,13 +285,14 @@ export function createCanonicalStudyEngineV3FromEnv(
         modelId: model,
       };
     }
+    const callModel = options?.callModel ?? createOpenAICallModel({ apiKey });
     if (promptVersion === "v4") {
       return {
         engine: new OpenAICanonicalStudyEngineV4({
-          apiKey,
           model,
           reasoningEffort,
           maxOutputTokens,
+          callModel,
         }),
         mode: "openai",
         providerId: "openai-canonical-study-engine-v4",
@@ -297,10 +301,10 @@ export function createCanonicalStudyEngineV3FromEnv(
     }
     return {
       engine: new OpenAICanonicalStudyEngineV3({
-        apiKey,
         model,
         reasoningEffort,
         maxOutputTokens,
+        callModel,
       }),
       mode: "openai",
       providerId: "openai-canonical-study-engine-v3",

@@ -5,7 +5,7 @@ import { readFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { defaultOpenAICreateResponse } from "../discover/openai-engine";
+import type { CallModel } from "../model/call-model";
 
 const PROMPT = readFileSync(
   join(dirname(fileURLToPath(import.meta.url)), "../../prompts/client-summary/client-summary-v1.md"),
@@ -15,7 +15,7 @@ const PROMPT = readFileSync(
 export type ClientSummaryPassInput = {
   caseView: CaseView;
   context: CanonicalStudyContext;
-  apiKey?: string;
+  callModel?: CallModel;
   model?: string;
   reasoningEffort?: string;
 };
@@ -81,7 +81,7 @@ export function buildFixtureClientSummary(caseView: CaseView): ClientSummary {
 }
 
 export async function runClientSummaryPass(input: ClientSummaryPassInput): Promise<ClientSummary> {
-  if (!input.apiKey?.trim()) {
+  if (!input.callModel) {
     return buildFixtureClientSummary(input.caseView);
   }
 
@@ -118,44 +118,21 @@ export async function runClientSummaryPass(input: ClientSummaryPassInput): Promi
     selectedItems: selected,
   };
 
-  const body = {
-    model: input.model ?? "gpt-5.6-sol",
-    reasoning: { effort: input.reasoningEffort ?? "medium" },
-    input: [
-      { role: "system", content: [{ type: "input_text", text: PROMPT }] },
-      {
-        role: "user",
-        content: [
-          {
-            type: "input_text",
-            text: `Return client-summary/1 JSON.\n\n${JSON.stringify(userPayload, null, 2)}`,
-          },
-        ],
-      },
-    ],
-    text: {
-      format: {
+  try {
+    const model = input.model ?? "gpt-5.6-sol";
+    const response = await input.callModel({
+      model,
+      reasoningEffort: input.reasoningEffort ?? "medium",
+      systemPrompt: PROMPT,
+      userContent: `Return client-summary/1 JSON.\n\n${JSON.stringify(userPayload, null, 2)}`,
+      textFormat: {
         type: "json_schema",
         name: "client_summary_v1",
         strict: true,
-        schema: responseSchema,
+        schema: responseSchema as Record<string, unknown>,
       },
-    },
-  };
-
-  try {
-    const payload = await defaultOpenAICreateResponse({
-      apiKey: input.apiKey,
-      model: input.model ?? "gpt-5.6-sol",
-      reasoningEffort: input.reasoningEffort ?? "medium",
-      body,
     });
-    const text =
-      typeof payload === "object" &&
-      payload !== null &&
-      typeof (payload as { output_text?: string }).output_text === "string"
-        ? (payload as { output_text: string }).output_text
-        : null;
+    const text = response.outputText;
     if (!text) {
       return buildFixtureClientSummary(input.caseView);
     }

@@ -1,9 +1,6 @@
 import "server-only";
 
-import {
-  defaultOpenAICreateResponse,
-  extractOpenAIResponseOutputText,
-} from "@hiveforyou/core/discover/openai-engine";
+import { createOpenAICallModel } from "@hiveforyou/core/discover/openai-engine";
 import { buildProExportTables } from "@hiveforyou/core/pro-export-tables";
 import { buildExportSystemPrompt } from "@hiveforyou/core/pro-export-prompt";
 import { validateSql } from "@hiveforyou/core/pro-validate-sql";
@@ -37,22 +34,17 @@ async function callExportModel(request: string, retryErrors?: string): Promise<M
   const user = retryErrors
     ? `${request}\n\nYour previous answer failed these checks: ${retryErrors}. Fix them and return JSON only.`
     : request;
-  const body = {
-    model: env.HIVE_OPENAI_MODEL ?? env.HIVE_STORY_WRITER_MODEL ?? "gpt-4o-mini",
+  const model = env.HIVE_OPENAI_MODEL ?? env.HIVE_STORY_WRITER_MODEL ?? "gpt-4o-mini";
+  const callModel = createOpenAICallModel({ apiKey: env.OPENAI_API_KEY });
+  const response = await callModel({
+    model,
     temperature: 0,
-    input: [
-      { role: "system", content: [{ type: "input_text", text: system }] },
-      { role: "user", content: [{ type: "input_text", text: user }] },
-    ],
-    text: { format: { type: "json_object" } },
-  };
-  const response = await defaultOpenAICreateResponse({
-    apiKey: env.OPENAI_API_KEY,
-    model: body.model,
     reasoningEffort: "low",
-    body,
+    systemPrompt: system,
+    userContent: user,
+    textFormat: { type: "json_object" },
   });
-  const text = extractOpenAIResponseOutputText(response);
+  const text = response.outputText;
   if (!text) {
     throw new Error("MALFORMED_PROPOSAL");
   }
