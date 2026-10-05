@@ -1,4 +1,11 @@
 * text=auto eol=lf
+
+# Committed env files: LF + UTF-8 (avoid PowerShell 5 UTF-16 redirects).
+*.env text eol=lf working-tree-encoding=UTF-8
+*.env.* text eol=lf working-tree-encoding=UTF-8
+*.env.production text eol=lf working-tree-encoding=UTF-8
+*.env.example text eol=lf working-tree-encoding=UTF-8
+worker.config.env text eol=lf working-tree-encoding=UTF-8
 *.pdf binary
 *.png binary
 *.ico binary

@@ -51,3 +51,4 @@ _tmp-*
 
 after-tests.txt
 after-typecheck.txt
+after-core-test-prompts.txt

@@ -42,13 +42,35 @@ describe("server environment", () => {
       "HIVE_STORAGE_BUCKET",
       "HIVE_DISCOVER_PROMPT_VERSION",
     ]);
-    const response = serverMisconfiguredResponse({});
-    expect(response.status).toBe(500);
+    const response = serverMisconfiguredResponse({ NODE_ENV: "development" });
+    expect(response.status).toBe(503);
     return response.json().then((body) => {
       expect(body.error).toBe("SERVER_MISCONFIGURED");
       expect(body.missing).toEqual(listServerEnvConfigurationIssues({}));
       expect(JSON.stringify(body)).not.toMatch(/service-role|sk-|sb_secret/i);
     });
+  });
+
+  it("does not expose missing env names on Vercel production", async () => {
+    const response = serverMisconfiguredResponse({
+      NODE_ENV: "production",
+      VERCEL_ENV: "production",
+    });
+    expect(response.status).toBe(503);
+    const body = await response.json();
+    expect(body.error).toBe("SERVER_MISCONFIGURED");
+    expect(body.missing).toBeUndefined();
+    expect(Object.keys(body).sort()).toEqual(["error", "message"]);
+  });
+
+  it("exposes missing env names on Vercel preview despite NODE_ENV=production", async () => {
+    const response = serverMisconfiguredResponse({
+      NODE_ENV: "production",
+      VERCEL_ENV: "preview",
+    });
+    expect(response.status).toBe(503);
+    const body = await response.json();
+    expect(body.missing).toEqual(listServerEnvConfigurationIssues({}));
   });
 
   it("requires the server variables and keeps the service role off the public config", () => {

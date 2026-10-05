@@ -9,6 +9,7 @@
     "typecheck": "pnpm -r typecheck",
     "lint": "pnpm -r lint",
     "validate": "pnpm typecheck",
+    "check:committed-env": "pnpm --filter @hiveforyou/app exec vitest run src/lib/env",
     "build": "pnpm --filter @hiveforyou/app build",
     "test": "pnpm -r --if-present test",
     "rulebook:audit": "tsx scripts/rulebook-audit.ts",
