@@ -1,6 +1,6 @@
 import "server-only";
 
-import { openAiCallModelFromEnv } from "@/lib/model/openai-call-model.server";
+import { callModelFromEnv } from "@/lib/model/call-model.server";
 import { buildProExportTables } from "@hiveforyou/core/pro-export-tables";
 import { buildExportSystemPrompt } from "@hiveforyou/core/pro-export-prompt";
 import { validateSql } from "@hiveforyou/core/pro-validate-sql";
@@ -27,15 +27,19 @@ type ModelPayload = ProQueryGenerateResult;
 
 async function callExportModel(request: string, retryErrors?: string): Promise<ModelPayload> {
   const env = readServerEnv();
-  if (!env.OPENAI_API_KEY) {
+  const provider = env.MODEL_PROVIDER?.trim().toLowerCase() ?? "openai";
+  const hasModelKey =
+    provider === "anthropic" ? Boolean(env.ANTHROPIC_API_KEY) : Boolean(env.OPENAI_API_KEY);
+  if (!hasModelKey) {
     throw new Error("ENGINE_UNAVAILABLE");
   }
   const system = buildExportSystemPrompt();
   const user = retryErrors
     ? `${request}\n\nYour previous answer failed these checks: ${retryErrors}. Fix them and return JSON only.`
     : request;
-  const model = env.HIVE_OPENAI_MODEL ?? env.HIVE_STORY_WRITER_MODEL ?? "gpt-4o-mini";
-  const callModel = openAiCallModelFromEnv(env);
+  const model =
+    env.HIVE_OPENAI_MODEL ?? env.HIVE_STORY_WRITER_MODEL ?? env.MODEL_NAME ?? "gpt-4o-mini";
+  const callModel = callModelFromEnv(env);
   if (!callModel) {
     throw new Error("ENGINE_UNAVAILABLE");
   }

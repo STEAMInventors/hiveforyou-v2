@@ -16,7 +16,7 @@ import type { StorySkeleton } from "./types";
 /** Default when `HIVE_STORY_WRITER_MODEL` is unset — lighter model than canonical study. */
 export const DEFAULT_STORY_WRITER_MODEL = "gpt-4o-mini";
 
-const STORY_WRITER_JSON_SCHEMA: Record<string, unknown> = {
+export const STORY_WRITER_JSON_SCHEMA: Record<string, unknown> = {
   type: "object",
   additionalProperties: false,
   properties: {

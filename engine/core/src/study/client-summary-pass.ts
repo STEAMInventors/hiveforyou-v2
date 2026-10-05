@@ -12,6 +12,27 @@ const PROMPT = readFileSync(
   "utf8",
 );
 
+export const CLIENT_SUMMARY_RESPONSE_JSON_SCHEMA = {
+  type: "object",
+  additionalProperties: false,
+  properties: {
+    items: {
+      type: "array",
+      items: {
+        type: "object",
+        additionalProperties: false,
+        properties: {
+          sourceItemId: { type: "string" },
+          text: { type: "string" },
+          worthAsking: { type: "string" },
+        },
+        required: ["sourceItemId", "text", "worthAsking"],
+      },
+    },
+  },
+  required: ["items"],
+} as const;
+
 export type ClientSummaryPassInput = {
   caseView: CaseView;
   context: CanonicalStudyContext;
@@ -90,26 +111,7 @@ export async function runClientSummaryPass(input: ClientSummaryPassInput): Promi
     return buildFixtureClientSummary(input.caseView);
   }
 
-  const responseSchema = {
-    type: "object",
-    additionalProperties: false,
-    properties: {
-      items: {
-        type: "array",
-        items: {
-          type: "object",
-          additionalProperties: false,
-          properties: {
-            sourceItemId: { type: "string" },
-            text: { type: "string" },
-            worthAsking: { type: "string" },
-          },
-          required: ["sourceItemId", "text", "worthAsking"],
-        },
-      },
-    },
-    required: ["items"],
-  } as const;
+  const responseSchema = CLIENT_SUMMARY_RESPONSE_JSON_SCHEMA;
 
   const userPayload = {
     schemaVersion: "client-summary/1",

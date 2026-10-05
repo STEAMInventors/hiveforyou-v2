@@ -23,6 +23,84 @@ const PROMPT = readFileSync(
   "utf8",
 );
 
+export const CLIENT_WRITER_RESPONSE_JSON_SCHEMA = {
+  type: "object",
+  additionalProperties: false,
+  properties: {
+    story: {
+      type: "array",
+      items: {
+        type: "object",
+        additionalProperties: false,
+        properties: {
+          slotId: { type: "string" },
+          text: { type: "string" },
+          itemIds: { type: "array", items: { type: "string" } },
+        },
+        required: ["slotId", "text", "itemIds"],
+      },
+    },
+    cards: {
+      type: "array",
+      items: {
+        type: "object",
+        additionalProperties: false,
+        properties: {
+          cardId: { type: "string" },
+          oneLiner: { type: "string" },
+          sinceLine: { type: ["string", "null"] },
+          whyLine: { type: ["string", "null"] },
+          itemIds: { type: "array", items: { type: "string" } },
+        },
+        required: ["cardId", "oneLiner", "sinceLine", "whyLine", "itemIds"],
+      },
+    },
+    timeline: {
+      type: "array",
+      items: {
+        type: "object",
+        additionalProperties: false,
+        properties: {
+          eventId: { type: "string" },
+          detail: { type: ["string", "null"] },
+          itemIds: { type: "array", items: { type: "string" } },
+        },
+        required: ["eventId", "detail", "itemIds"],
+      },
+    },
+    prep: {
+      type: "object",
+      additionalProperties: false,
+      properties: {
+        stayedSame: {
+          type: ["object", "null"],
+          additionalProperties: false,
+          properties: {
+            text: { type: ["string", "null"] },
+            itemIds: { type: "array", items: { type: "string" } },
+          },
+          required: ["text", "itemIds"],
+        },
+        questions: {
+          type: "array",
+          items: {
+            type: "object",
+            additionalProperties: false,
+            properties: {
+              questionId: { type: "string" },
+              text: { type: "string" },
+              itemIds: { type: "array", items: { type: "string" } },
+            },
+            required: ["questionId", "text", "itemIds"],
+          },
+        },
+      },
+      required: ["stayedSame", "questions"],
+    },
+  },
+  required: ["story", "cards", "timeline", "prep"],
+} as const;
+
 export type ClientWriterPassInput = {
   caseView: CaseViewV2;
   context: CanonicalStudyContext;
@@ -256,83 +334,7 @@ export async function runClientWriterPass(input: ClientWriterPassInput): Promise
   }
 
   const userPayload = buildClientWriterPayload(input.caseView, pack);
-  const responseSchema = {
-    type: "object",
-    additionalProperties: false,
-    properties: {
-      story: {
-        type: "array",
-        items: {
-          type: "object",
-          additionalProperties: false,
-          properties: {
-            slotId: { type: "string" },
-            text: { type: "string" },
-            itemIds: { type: "array", items: { type: "string" } },
-          },
-          required: ["slotId", "text", "itemIds"],
-        },
-      },
-      cards: {
-        type: "array",
-        items: {
-          type: "object",
-          additionalProperties: false,
-          properties: {
-            cardId: { type: "string" },
-            oneLiner: { type: "string" },
-            sinceLine: { type: ["string", "null"] },
-            whyLine: { type: ["string", "null"] },
-            itemIds: { type: "array", items: { type: "string" } },
-          },
-          required: ["cardId", "oneLiner", "sinceLine", "whyLine", "itemIds"],
-        },
-      },
-      timeline: {
-        type: "array",
-        items: {
-          type: "object",
-          additionalProperties: false,
-          properties: {
-            eventId: { type: "string" },
-            detail: { type: ["string", "null"] },
-            itemIds: { type: "array", items: { type: "string" } },
-          },
-          required: ["eventId", "detail", "itemIds"],
-        },
-      },
-      prep: {
-        type: "object",
-        additionalProperties: false,
-        properties: {
-          stayedSame: {
-            type: ["object", "null"],
-            additionalProperties: false,
-            properties: {
-              text: { type: ["string", "null"] },
-              itemIds: { type: "array", items: { type: "string" } },
-            },
-            required: ["text", "itemIds"],
-          },
-          questions: {
-            type: "array",
-            items: {
-              type: "object",
-              additionalProperties: false,
-              properties: {
-                questionId: { type: "string" },
-                text: { type: "string" },
-                itemIds: { type: "array", items: { type: "string" } },
-              },
-              required: ["questionId", "text", "itemIds"],
-            },
-          },
-        },
-        required: ["stayedSame", "questions"],
-      },
-    },
-    required: ["story", "cards", "timeline", "prep"],
-  } as const;
+  const responseSchema = CLIENT_WRITER_RESPONSE_JSON_SCHEMA;
 
   try {
     const model = input.model ?? "gpt-5.6-sol";

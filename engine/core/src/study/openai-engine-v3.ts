@@ -318,7 +318,11 @@ export class OpenAICanonicalStudyEngineV3 {
         if (error.kind === "upload_failed") {
           throw new CanonicalStudyEngineUnavailableError("OPENAI_FILE_UPLOAD_FAILED");
         }
-        if (error.kind === "response_failed") {
+        if (
+          error.kind === "response_failed" ||
+          error.kind === "refused" ||
+          error.kind === "truncated"
+        ) {
           throw new CanonicalStudyEngineUnavailableError(error.message);
         }
       }

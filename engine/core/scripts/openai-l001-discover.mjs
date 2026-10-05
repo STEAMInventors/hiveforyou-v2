@@ -24,7 +24,7 @@ import {
   loadDiscoverResolutionPrompt,
   runDiscover,
 } from "@hiveforyou/core";
-import { createOpenAICallModel } from "@hiveforyou/model-providers/openai";
+import { createCallModelFromEnv } from "@hiveforyou/model-providers/env";
 import {
   InMemoryDiscoverArtifactRepository,
   InMemoryDiscoverRunRepository,
@@ -87,9 +87,7 @@ for (const [index, filePath] of paths.entries()) {
   });
 }
 
-const openAiCallModel = process.env.OPENAI_API_KEY?.trim()
-  ? createOpenAICallModel({ apiKey: process.env.OPENAI_API_KEY.trim() })
-  : undefined;
+const { callModel: openAiCallModel, modelName: defaultModelName } = createCallModelFromEnv();
 
 const outcome = await runDiscover(
   { caseId, sourceDocumentIds },
@@ -98,8 +96,8 @@ const outcome = await runDiscover(
     engineConfig: createDiscoverEngineFromEnv(
       {
         engine: process.env.HIVE_DISCOVER_ENGINE ?? "openai",
-        openaiApiKey: process.env.OPENAI_API_KEY,
-        model: process.env.HIVE_DISCOVER_MODEL,
+        openaiApiKey: process.env.OPENAI_API_KEY ?? process.env.ANTHROPIC_API_KEY,
+        model: process.env.HIVE_DISCOVER_MODEL ?? defaultModelName,
         reasoningEffort: process.env.HIVE_DISCOVER_REASONING_EFFORT,
       },
       { adaptiveV2: adaptive, callModel: openAiCallModel },
@@ -114,8 +112,8 @@ const outcome = await runDiscover(
           resolutionEngine: createDiscoverResolutionEngineFromEnv(
             {
               engine: process.env.HIVE_DISCOVER_ENGINE ?? "openai",
-              openaiApiKey: process.env.OPENAI_API_KEY,
-              model: process.env.HIVE_DISCOVER_MODEL,
+              openaiApiKey: process.env.OPENAI_API_KEY ?? process.env.ANTHROPIC_API_KEY,
+              model: process.env.HIVE_DISCOVER_MODEL ?? defaultModelName,
               reasoningEffort: process.env.HIVE_DISCOVER_REASONING_EFFORT,
             },
             { callModel: openAiCallModel },

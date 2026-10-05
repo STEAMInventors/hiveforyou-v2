@@ -24,6 +24,7 @@ export * from "./engine-v3";
 export * from "./validate-proposal-v4";
 export * from "./openai-engine-v4";
 export * from "./client-writer-pass";
+export { CLIENT_SUMMARY_RESPONSE_JSON_SCHEMA } from "./client-summary-pass";
 export * from "./validate-client-writer-output";
 export { composeNarrative } from "./narrative/composeNarrative";
 export type { NarrativeOutput, NarrativeSentence } from "./narrative/composeNarrative";
@@ -45,6 +46,6 @@ export {
   shouldPreferPackForCaseView,
   shouldPreferPackNarrativeOverValidatedStory,
 } from "./story/prefer-pack-narrative";
-export { generateStory } from "./story/generateStory";
+export { generateStory, STORY_WRITER_JSON_SCHEMA } from "./story/generateStory";
 export { buildSkeleton } from "./story/buildSkeleton";
 export { validateStory } from "./story/validateStory";

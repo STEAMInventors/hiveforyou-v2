@@ -29,7 +29,7 @@ import {
   runCanonicalStudy,
   validateCanonicalStudyProposal,
 } from "@hiveforyou/core";
-import { createOpenAICallModel } from "@hiveforyou/model-providers/openai";
+import { createCallModelFromEnv } from "@hiveforyou/model-providers/env";
 import { resolveDomainPackFromDiscoveryLabel } from "@hiveforyou/domain-packs";
 import {
   InMemoryCaseIntelligenceRepository,
@@ -182,19 +182,21 @@ if (!pack) {
 }
 
 const prompt = loadCanonicalStudyPrompt(process.env.HIVE_PROMPT_VERSION ?? "canonical-study-v2");
-const openAiCallModel = process.env.OPENAI_API_KEY?.trim()
-  ? createOpenAICallModel({ apiKey: process.env.OPENAI_API_KEY.trim() })
-  : undefined;
+const { callModel: openAiCallModel, modelName: defaultModelName } = createCallModelFromEnv();
 const engineConfig = createCanonicalStudyEngineFromEnv(
   {
     engine: process.env.HIVE_CANONICAL_STUDY_ENGINE ?? "openai",
-    openaiApiKey: process.env.OPENAI_API_KEY,
-    model: process.env.HIVE_CANONICAL_STUDY_MODEL ?? process.env.HIVE_OPENAI_MODEL,
+    openaiApiKey: process.env.OPENAI_API_KEY ?? process.env.ANTHROPIC_API_KEY,
+    model:
+      process.env.HIVE_CANONICAL_STUDY_MODEL ?? process.env.HIVE_OPENAI_MODEL ?? defaultModelName,
     reasoningEffort:
       process.env.HIVE_CANONICAL_STUDY_REASONING_EFFORT ?? process.env.HIVE_DISCOVER_REASONING_EFFORT,
     maxOutputTokens: process.env.HIVE_CANONICAL_STUDY_MAX_OUTPUT_TOKENS,
   },
-  { callModel: openAiCallModel },
+  {
+    callModel: openAiCallModel,
+    promptVersion: prompt.version === "v4" ? "v4" : "v3",
+  },
 );
 
 const artifactRepo = new InMemoryStudyArtifactRepository();

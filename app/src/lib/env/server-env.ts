@@ -25,7 +25,11 @@ export type ServerEnv = {
   HIVE_DISCOVER_REASONING_EFFORT?: string;
   HIVE_OPENAI_MODEL?: string;
   HIVE_OPENAI_MAX_OUTPUT_TOKENS?: number;
+  MODEL_PROVIDER?: string;
+  MODEL_NAME?: string;
+  MODEL_MAX_OUTPUT_TOKENS?: number;
   OPENAI_API_KEY?: string;
+  ANTHROPIC_API_KEY?: string;
   JEV_API_KEY?: string;
 };
 
@@ -89,7 +93,11 @@ export function readServerEnv(
       source.HIVE_DISCOVER_REASONING_EFFORT?.trim() || undefined,
     HIVE_OPENAI_MODEL: source.HIVE_OPENAI_MODEL?.trim() || undefined,
     HIVE_OPENAI_MAX_OUTPUT_TOKENS: parseOptionalPositiveInt(source.HIVE_OPENAI_MAX_OUTPUT_TOKENS),
+    MODEL_PROVIDER: source.MODEL_PROVIDER?.trim() || undefined,
+    MODEL_NAME: source.MODEL_NAME?.trim() || undefined,
+    MODEL_MAX_OUTPUT_TOKENS: parseOptionalPositiveInt(source.MODEL_MAX_OUTPUT_TOKENS),
     OPENAI_API_KEY: source.OPENAI_API_KEY?.trim() || undefined,
+    ANTHROPIC_API_KEY: source.ANTHROPIC_API_KEY?.trim() || undefined,
     JEV_API_KEY: source.JEV_API_KEY?.trim() || undefined,
   };
 }
