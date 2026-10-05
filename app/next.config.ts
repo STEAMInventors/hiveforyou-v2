@@ -21,7 +21,7 @@ const nextConfig: NextConfig = {
     "onnxruntime-node",
     "alasql",
   ],
-  outputFileTracingRoot: path.join(__dirname, "../.."),
+  outputFileTracingRoot: path.join(__dirname, ".."),
   transpilePackages: [
     "@hiveforyou/shared",
     "@hiveforyou/core",
