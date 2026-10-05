@@ -32,7 +32,7 @@ const nextConfig: NextConfig = {
     "@hiveforyou/intake-node",
   ],
   outputFileTracingIncludes: {
-    "/api/study/run": ["../../engine/core/prompts/**/*"],
+    "/**/*": ["../engine/core/prompts/**/*"],
   },
 };
 
