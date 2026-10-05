@@ -200,6 +200,14 @@ export class SupabaseStudyRunQuestionAnswerRepository
     questionId: string;
     answerId: string;
   }): Promise<void> {
+    const existing = await this.listByStudyRun(input.studyRunId);
+    if (
+      existing.some(
+        (row) => row.questionId === input.questionId && row.answerId === input.answerId,
+      )
+    ) {
+      return;
+    }
     await this.gateway.insert("study_run_question_answers", {
       study_run_id: input.studyRunId,
       question_id: input.questionId,
@@ -251,7 +259,17 @@ export class SupabaseStudyRunDocumentRepository implements StudyRunDocumentRepos
       createdAt: string;
     }[],
   ): Promise<void> {
+    const existing = await this.listByStudyRun(rows[0]?.studyRunId ?? "");
     for (const row of rows) {
+      if (
+        existing.some(
+          (snapshot) =>
+            snapshot.sourceDocumentId === row.sourceDocumentId &&
+            snapshot.includedInStudy === row.includedInStudy,
+        )
+      ) {
+        continue;
+      }
       await this.gateway.insert(
         "study_run_documents",
         withSessionOwner(this.userId, {

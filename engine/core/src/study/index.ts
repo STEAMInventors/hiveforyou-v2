@@ -18,6 +18,7 @@ export * from "./load-study-source-bytes";
 export * from "./study-engine-errors";
 export * from "./openai-engine-v3";
 export * from "./study-artifact-repository";
+export * from "./study-artifact-persistence";
 export * from "./serialize-engine2-structure-context";
 export * from "./intake-study-context";
 export * from "./engine-v3";

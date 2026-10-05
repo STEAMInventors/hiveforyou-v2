@@ -8,6 +8,7 @@ const NON_RETRIABLE: ReadonlySet<StudyRunErrorCode> = new Set([
   "MISSING_STAGED_DOCUMENTS",
   "MISSING_DOMAIN_PACK",
   "STUDY_WORKER_FAILED",
+  "STUDY_ARTIFACT_CONTENT_MISMATCH",
 ]);
 
 export function isStudyNonRetriableErrorCode(code: string | null | undefined): boolean {

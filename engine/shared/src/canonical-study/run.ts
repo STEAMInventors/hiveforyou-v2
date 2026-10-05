@@ -17,6 +17,7 @@ export type StudyRunErrorCode =
   | "PERSISTENCE_FAILURE"
   | "FIXTURE_MODE_NOT_ALLOWED"
   | "STUDY_WORKER_FAILED"
+  | "STUDY_ARTIFACT_CONTENT_MISMATCH"
   | "UNEXPECTED";
 
 export type CanonicalStudyRun = {
