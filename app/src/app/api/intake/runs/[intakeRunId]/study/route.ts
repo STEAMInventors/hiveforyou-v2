@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { serverMisconfiguredResponse } from "@/lib/env/server-misconfigured";
 import { readServerEnv } from "@/lib/env/server-env";
 import { CaseNotFoundError } from "@/lib/canonical-study/study-service-server";
 import { IntakeCaseNotFoundError } from "@/lib/intake/intake-service-server";
@@ -17,10 +18,7 @@ export async function POST(_request: Request, context: RouteContext) {
   try {
     readServerEnv();
   } catch {
-    return NextResponse.json(
-      { error: "SERVER_MISCONFIGURED", message: "Server environment is incomplete." },
-      { status: 500 },
-    );
+    return serverMisconfiguredResponse();
   }
 
   const { intakeRunId } = await context.params;

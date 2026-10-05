@@ -62,10 +62,22 @@ export function readServerEnvPresence(
   };
 }
 
+/** Missing or invalid required configuration (variable names only, never values). */
+export function listServerEnvConfigurationIssues(
+  source: Record<string, string | undefined> = process.env,
+): string[] {
+  const issues = REQUIRED_SERVER_ENV.filter((key) => !source[key]?.trim());
+  const discoverRaw = source.HIVE_DISCOVER_PROMPT_VERSION?.trim();
+  if (discoverRaw && discoverRaw.toLowerCase() === "latest") {
+    issues.push("HIVE_DISCOVER_PROMPT_VERSION");
+  }
+  return issues;
+}
+
 export function readServerEnv(
   source: Record<string, string | undefined> = process.env,
 ): ServerEnv {
-  const missing = REQUIRED_SERVER_ENV.filter((key) => !source[key]?.trim());
+  const missing = listServerEnvConfigurationIssues(source);
   if (missing.length > 0) {
     throw new Error(`Missing required server environment: ${missing.join(", ")}`);
   }

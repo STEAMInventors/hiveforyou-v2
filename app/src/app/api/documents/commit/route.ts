@@ -6,7 +6,8 @@ import {
   UnauthenticatedError,
 } from "@hiveforyou/core";
 
-import { readServerEnv, readServerEnvPresence } from "@/lib/env/server-env";
+import { serverMisconfiguredResponse } from "@/lib/env/server-misconfigured";
+import { readServerEnv } from "@/lib/env/server-env";
 import { createSupabaseHiveGateway } from "@/lib/persistence/hive-gateway";
 import {
   SupabaseCaseRepository,
@@ -85,14 +86,6 @@ function logDocumentCommitNonSuccess(status: number, errorCode: string): void {
   console.error("[api/documents/commit] non-success return", { status, error: errorCode });
 }
 
-/** Development-only. Logs which required configuration checks are satisfied, never their values. */
-function logServerMisconfiguredPresence(check: "readServerEnv" | "getAuthenticatedUserId"): void {
-  if (process.env.NODE_ENV !== "development") {
-    return;
-  }
-  console.error(`[api/documents/commit] SERVER_MISCONFIGURED (${check})`, readServerEnvPresence());
-}
-
 function logDocumentCommitUncaught(error: unknown): void {
   if (process.env.NODE_ENV !== "development") {
     return;
@@ -143,11 +136,7 @@ export async function POST(request: Request) {
       env = readServerEnv();
     } catch {
       logDocumentCommitNonSuccess(500, "SERVER_MISCONFIGURED");
-      logServerMisconfiguredPresence("readServerEnv");
-      return NextResponse.json(
-        { error: "SERVER_MISCONFIGURED", message: "Server environment is incomplete." },
-        { status: 500 },
-      );
+      return serverMisconfiguredResponse();
     }
 
     let sessionUserId: string | null;
@@ -155,11 +144,7 @@ export async function POST(request: Request) {
       sessionUserId = await getAuthenticatedUserId();
     } catch {
       logDocumentCommitNonSuccess(500, "SERVER_MISCONFIGURED");
-      logServerMisconfiguredPresence("getAuthenticatedUserId");
-      return NextResponse.json(
-        { error: "SERVER_MISCONFIGURED", message: "Server environment is incomplete." },
-        { status: 500 },
-      );
+      return serverMisconfiguredResponse();
     }
     if (!sessionUserId) {
       logDocumentCommitNonSuccess(401, "UNAUTHENTICATED");

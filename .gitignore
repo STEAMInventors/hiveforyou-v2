@@ -13,6 +13,9 @@ coverage/
 .env
 .env.*
 !.env.example
+!app/.env.production
+!app/.env.vercel.example
+!deploy/oracle/worker.config.env
 
 *.log
 logs/

@@ -6,4 +6,5 @@ services:
     platform: linux/arm64
     restart: unless-stopped
     env_file:
+      - worker.config.env
       - /etc/hive-worker/worker.env

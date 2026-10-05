@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import { UnauthenticatedError } from "@hiveforyou/core";
 
+import { serverMisconfiguredResponse } from "@/lib/env/server-misconfigured";
 import { readServerEnv } from "@/lib/env/server-env";
 import { discardIntakeSourceFromRun } from "@/lib/intake/intake-service-server";
 
@@ -15,10 +16,7 @@ export async function PATCH(request: Request, context: RouteContext) {
   try {
     readServerEnv();
   } catch {
-    return NextResponse.json(
-      { error: "SERVER_MISCONFIGURED", message: "Server environment is incomplete." },
-      { status: 500 },
-    );
+    return serverMisconfiguredResponse();
   }
 
   const { intakeRunId, sourceDocumentId } = await context.params;

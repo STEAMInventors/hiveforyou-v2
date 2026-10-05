@@ -4,11 +4,13 @@ import { join, relative } from "node:path";
 import { describe, expect, it } from "vitest";
 
 import {
+  listServerEnvConfigurationIssues,
   publicSupabaseConfig,
   readJevClassifierConfig,
   readServerEnv,
   readServerEnvPresence,
 } from "./server-env";
+import { serverMisconfiguredResponse } from "./server-misconfigured";
 
 const REQUIRED = {
   NEXT_PUBLIC_SUPABASE_URL: "https://example.supabase.co",
@@ -32,6 +34,23 @@ function walk(directory: string): string[] {
 }
 
 describe("server environment", () => {
+  it("lists missing required server env names without values", () => {
+    expect(listServerEnvConfigurationIssues({})).toEqual([
+      "NEXT_PUBLIC_SUPABASE_URL",
+      "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+      "SUPABASE_SERVICE_ROLE_KEY",
+      "HIVE_STORAGE_BUCKET",
+      "HIVE_DISCOVER_PROMPT_VERSION",
+    ]);
+    const response = serverMisconfiguredResponse({});
+    expect(response.status).toBe(500);
+    return response.json().then((body) => {
+      expect(body.error).toBe("SERVER_MISCONFIGURED");
+      expect(body.missing).toEqual(listServerEnvConfigurationIssues({}));
+      expect(JSON.stringify(body)).not.toMatch(/service-role|sk-|sb_secret/i);
+    });
+  });
+
   it("requires the server variables and keeps the service role off the public config", () => {
     expect(() => readServerEnv({})).toThrow(/Missing required server environment/);
     const env = readServerEnv({
@@ -78,18 +97,25 @@ describe("server environment", () => {
   });
 
   it("rejects an unpinned discover prompt version", () => {
+    expect(
+      listServerEnvConfigurationIssues({
+        ...REQUIRED,
+        HIVE_DISCOVER_PROMPT_VERSION: "latest",
+      }),
+    ).toEqual(["HIVE_DISCOVER_PROMPT_VERSION"]);
     expect(() =>
       readServerEnv({
         ...REQUIRED,
         HIVE_DISCOVER_PROMPT_VERSION: "latest",
       }),
-    ).toThrow(/latest/);
+    ).toThrow(/HIVE_DISCOVER_PROMPT_VERSION/);
   });
 
   it("does not reference the service-role key from client modules", () => {
     const root = join(process.cwd(), "src");
     const allowed = new Set([
       "lib/env/server-env.ts",
+      "lib/env/committed-env-guard.ts",
       "lib/supabase/admin.ts",
     ]);
     const offenders = walk(root).filter((file) => {
@@ -133,6 +159,7 @@ describe("server environment", () => {
     const root = join(process.cwd(), "src");
     const allowed = new Set([
       "lib/env/server-env.ts",
+      "lib/env/committed-env-guard.ts",
       "lib/intake/intake-service-server.ts",
     ]);
     const offenders = walk(root).filter((file) => {

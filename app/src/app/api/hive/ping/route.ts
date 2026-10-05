@@ -9,6 +9,7 @@ import {
 } from "@hiveforyou/shared/events";
 
 import { inngest } from "@/lib/inngest/client";
+import { serverMisconfiguredResponse } from "@/lib/env/server-misconfigured";
 import { readServerEnv } from "@/lib/env/server-env";
 import { getAuthenticatedUserId } from "@/lib/supabase/server";
 
@@ -18,10 +19,7 @@ export async function POST(request: Request) {
   try {
     readServerEnv();
   } catch {
-    return NextResponse.json(
-      { error: "SERVER_MISCONFIGURED", message: "Server environment is incomplete." },
-      { status: 500 },
-    );
+    return serverMisconfiguredResponse();
   }
 
   let bodyUserId: string | undefined;

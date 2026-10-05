@@ -5,7 +5,7 @@ Runs the Inngest **connect** worker in Docker on Ampere (`linux/arm64`).
 ## Host setup
 
 1. Install Docker Engine and Compose on the VM.
-2. Copy `worker.env.example` to `/etc/hive-worker/worker.env`, fill values, and restrict permissions (`chmod 600`).
+2. Copy `worker.env.example` to `/etc/hive-worker/worker.env`, fill **secrets** only, and restrict permissions (`chmod 600`). Non-secret worker config ships in `worker.config.env` (loaded by Compose before the host secrets file; later entries override).
 3. Set `NODE_ENV=production`, `INNGEST_SIGNING_KEY`, and **do not** set `INNGEST_DEV` or `HIVE_FAULT_INJECT`.
 
 ## Build and run

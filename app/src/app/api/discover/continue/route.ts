@@ -8,16 +8,14 @@ import {
   CaseNotFoundError,
   runDiscoverFromRequest,
 } from "@/lib/document-discovery/discover-service-server";
+import { serverMisconfiguredResponse } from "@/lib/env/server-misconfigured";
 import { readServerEnv } from "@/lib/env/server-env";
 
 export async function POST(request: Request) {
   try {
     readServerEnv();
   } catch {
-    return NextResponse.json(
-      { error: "SERVER_MISCONFIGURED", message: "Server environment is incomplete." },
-      { status: 500 },
-    );
+    return serverMisconfiguredResponse();
   }
 
   let body: {
