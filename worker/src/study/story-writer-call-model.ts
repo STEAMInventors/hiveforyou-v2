@@ -21,7 +21,7 @@ export function createWorkerOpenAiCallModel(
   const provider = env.MODEL_PROVIDER?.trim().toLowerCase() ?? "openai";
   const hasKey =
     provider === "anthropic"
-      ? Boolean(env.ANTHROPIC_API_KEY?.trim())
+      ? Boolean(env.HIVE_ANTHROPIC_API_KEY?.trim())
       : Boolean(env.OPENAI_API_KEY?.trim());
   if (!hasKey) {
     return undefined;

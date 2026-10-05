@@ -186,7 +186,7 @@ const { callModel: openAiCallModel, modelName: defaultModelName } = createCallMo
 const engineConfig = createCanonicalStudyEngineFromEnv(
   {
     engine: process.env.HIVE_CANONICAL_STUDY_ENGINE ?? "openai",
-    openaiApiKey: process.env.OPENAI_API_KEY ?? process.env.ANTHROPIC_API_KEY,
+    openaiApiKey: process.env.OPENAI_API_KEY ?? process.env.HIVE_ANTHROPIC_API_KEY,
     model:
       process.env.HIVE_CANONICAL_STUDY_MODEL ?? process.env.HIVE_OPENAI_MODEL ?? defaultModelName,
     reasoningEffort:

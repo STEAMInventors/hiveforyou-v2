@@ -58,11 +58,12 @@ export function createCallModelFromEnv(
     };
   }
 
-  const apiKey = source.ANTHROPIC_API_KEY?.trim();
+  const apiKey = source.HIVE_ANTHROPIC_API_KEY?.trim();
   if (!apiKey) {
-    throw new Error("ANTHROPIC_API_KEY is required when MODEL_PROVIDER=anthropic");
+    throw new Error("HIVE_ANTHROPIC_API_KEY is required when MODEL_PROVIDER=anthropic");
   }
   const modelName = source.MODEL_NAME?.trim() || DEFAULT_ANTHROPIC_MODEL;
+  const workspaceId = source.HIVE_ANTHROPIC_WORKSPACE_ID?.trim() || undefined;
   return {
     provider,
     modelName,
@@ -71,6 +72,7 @@ export function createCallModelFromEnv(
       apiKey,
       model: modelName,
       defaultMaxOutputTokens: maxOutputTokens,
+      workspaceId,
     }),
   };
 }

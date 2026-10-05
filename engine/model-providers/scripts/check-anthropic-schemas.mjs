@@ -3,6 +3,10 @@
  * See https://docs.anthropic.com/en/docs/build-with-claude/structured-outputs
  */
 
+import { readFileSync } from "node:fs";
+import { dirname, join, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+
 import Anthropic from "@anthropic-ai/sdk";
 import { CANONICAL_STUDY_PROPOSAL_V3_OPENAI_JSON_SCHEMA } from "../../shared/src/case-intelligence/3/openai-proposal-json-schema.ts";
 import { CANONICAL_STUDY_PROPOSAL_V4_OPENAI_JSON_SCHEMA } from "../../shared/src/case-intelligence/4/openai-proposal-json-schema.ts";
@@ -36,6 +40,48 @@ const UNSUPPORTED_KEYWORDS = [
 ];
 
 const SENSITIVE_NAME = /reasoning|thinking|rationale/i;
+
+const scriptDir = dirname(fileURLToPath(import.meta.url));
+const repoRoot = resolve(scriptDir, "../../..");
+
+function loadRepoDotEnv() {
+  const envPath = join(repoRoot, ".env");
+  let content;
+  try {
+    content = readFileSync(envPath, "utf8");
+  } catch {
+    return;
+  }
+  for (const line of content.split(/\r?\n/)) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith("#")) {
+      continue;
+    }
+    const eq = trimmed.indexOf("=");
+    if (eq === -1) {
+      continue;
+    }
+    const key = trimmed.slice(0, eq).trim();
+    let value = trimmed.slice(eq + 1).trim();
+    if (
+      (value.startsWith('"') && value.endsWith('"')) ||
+      (value.startsWith("'") && value.endsWith("'"))
+    ) {
+      value = value.slice(1, -1);
+    }
+    if (process.env[key] === undefined) {
+      process.env[key] = value;
+    }
+  }
+}
+
+loadRepoDotEnv();
+
+const hiveAnthropicKey = process.env.HIVE_ANTHROPIC_API_KEY?.trim();
+const hiveAnthropicWorkspaceId = process.env.HIVE_ANTHROPIC_WORKSPACE_ID?.trim();
+console.log(
+  `key loaded: ${hiveAnthropicKey ? "yes" : "no"}, workspace id loaded: ${hiveAnthropicWorkspaceId ? "yes" : "no"}`,
+);
 
 const SCHEMAS = [
   { name: "hive_discover_proposal_v1", schema: HIVE_DISCOVER_PROPOSAL_JSON_SCHEMA },
@@ -152,11 +198,17 @@ async function liveCompileCheck(schemaName, schema) {
   if (process.env.SKIP_ANTHROPIC_LIVE === "1") {
     return "skipped";
   }
-  const apiKey = process.env.ANTHROPIC_API_KEY?.trim();
+  const apiKey = process.env.HIVE_ANTHROPIC_API_KEY?.trim();
   if (!apiKey) {
-    return "skipped (no ANTHROPIC_API_KEY)";
+    return "skipped (no HIVE_ANTHROPIC_API_KEY)";
   }
-  const client = new Anthropic({ apiKey });
+  const workspaceId = process.env.HIVE_ANTHROPIC_WORKSPACE_ID?.trim();
+  const client = new Anthropic({
+    apiKey,
+    ...(workspaceId
+      ? { defaultHeaders: { "anthropic-workspace-id": workspaceId } }
+      : {}),
+  });
   const model = process.env.MODEL_NAME?.trim() || "claude-opus-5-5";
   try {
     await client.messages.create({

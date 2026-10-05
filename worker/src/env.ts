@@ -23,7 +23,8 @@ export type WorkerEnv = {
   HIVE_WORKER_SERVE_PORT: number;
   HIVE_CANONICAL_STUDY_ENGINE?: string;
   OPENAI_API_KEY?: string;
-  ANTHROPIC_API_KEY?: string;
+  HIVE_ANTHROPIC_API_KEY?: string;
+  HIVE_ANTHROPIC_WORKSPACE_ID?: string;
   MODEL_PROVIDER?: string;
   MODEL_NAME?: string;
   MODEL_MAX_OUTPUT_TOKENS?: string;
@@ -68,7 +69,8 @@ export function readWorkerEnv(
     HIVE_WORKER_SERVE_PORT: port,
     HIVE_CANONICAL_STUDY_ENGINE: source.HIVE_CANONICAL_STUDY_ENGINE?.trim() || undefined,
     OPENAI_API_KEY: source.OPENAI_API_KEY?.trim() || undefined,
-    ANTHROPIC_API_KEY: source.ANTHROPIC_API_KEY?.trim() || undefined,
+    HIVE_ANTHROPIC_API_KEY: source.HIVE_ANTHROPIC_API_KEY?.trim() || undefined,
+    HIVE_ANTHROPIC_WORKSPACE_ID: source.HIVE_ANTHROPIC_WORKSPACE_ID?.trim() || undefined,
     MODEL_PROVIDER: source.MODEL_PROVIDER?.trim() || undefined,
     MODEL_NAME: source.MODEL_NAME?.trim() || undefined,
     MODEL_MAX_OUTPUT_TOKENS: source.MODEL_MAX_OUTPUT_TOKENS?.trim() || undefined,

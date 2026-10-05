@@ -10,6 +10,7 @@ export type AnthropicCallModelOptions = {
   apiKey: string;
   model: string;
   defaultMaxOutputTokens: number;
+  workspaceId?: string;
   createMessage?: (params: Anthropic.Messages.MessageCreateParamsNonStreaming) => Promise<Anthropic.Messages.Message>;
 };
 
@@ -121,7 +122,13 @@ function parseJsonObjectOutput(text: string): string {
 
 /** Host-side Anthropic adapter for {@link CallModel}. */
 export function createAnthropicCallModel(input: AnthropicCallModelOptions): CallModel {
-  const client = new Anthropic({ apiKey: input.apiKey });
+  const workspaceId = input.workspaceId?.trim();
+  const client = new Anthropic({
+    apiKey: input.apiKey,
+    ...(workspaceId
+      ? { defaultHeaders: { "anthropic-workspace-id": workspaceId } }
+      : {}),
+  });
   const createMessage = input.createMessage ?? client.messages.create.bind(client.messages);
 
   return async (req: ModelRequest) => {

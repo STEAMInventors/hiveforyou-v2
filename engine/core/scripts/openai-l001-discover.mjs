@@ -96,7 +96,7 @@ const outcome = await runDiscover(
     engineConfig: createDiscoverEngineFromEnv(
       {
         engine: process.env.HIVE_DISCOVER_ENGINE ?? "openai",
-        openaiApiKey: process.env.OPENAI_API_KEY ?? process.env.ANTHROPIC_API_KEY,
+        openaiApiKey: process.env.OPENAI_API_KEY ?? process.env.HIVE_ANTHROPIC_API_KEY,
         model: process.env.HIVE_DISCOVER_MODEL ?? defaultModelName,
         reasoningEffort: process.env.HIVE_DISCOVER_REASONING_EFFORT,
       },
@@ -112,7 +112,7 @@ const outcome = await runDiscover(
           resolutionEngine: createDiscoverResolutionEngineFromEnv(
             {
               engine: process.env.HIVE_DISCOVER_ENGINE ?? "openai",
-              openaiApiKey: process.env.OPENAI_API_KEY ?? process.env.ANTHROPIC_API_KEY,
+              openaiApiKey: process.env.OPENAI_API_KEY ?? process.env.HIVE_ANTHROPIC_API_KEY,
               model: process.env.HIVE_DISCOVER_MODEL ?? defaultModelName,
               reasoningEffort: process.env.HIVE_DISCOVER_REASONING_EFFORT,
             },

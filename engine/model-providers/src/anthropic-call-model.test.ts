@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi, beforeEach } from "vitest";
 
 import { ModelCallError } from "@hiveforyou/shared/model/call-model";
 
@@ -9,7 +9,28 @@ import {
 import { createCallModelFromEnv } from "./create-call-model-from-env.js";
 import { normalizeJsonEnumCasing } from "./normalize-schema-enum-casing.js";
 
+const { AnthropicMock } = vi.hoisted(() => {
+  const AnthropicMock = vi.fn(function (
+    this: { messages: { create: ReturnType<typeof vi.fn> } },
+    _opts: unknown,
+  ) {
+    this.messages = {
+      create: vi.fn().mockResolvedValue({
+        stop_reason: "end_turn",
+        content: [{ type: "text", text: '{"ok":true}' }],
+        usage: { input_tokens: 1, output_tokens: 1 },
+      }),
+    };
+  });
+  return { AnthropicMock };
+});
+
+vi.mock("@anthropic-ai/sdk", () => ({ default: AnthropicMock }));
+
 describe("createCallModelFromEnv", () => {
+  beforeEach(() => {
+    AnthropicMock.mockClear();
+  });
   it("throws when OPENAI_API_KEY is missing for openai provider", () => {
     expect(() =>
       createCallModelFromEnv({
@@ -19,13 +40,26 @@ describe("createCallModelFromEnv", () => {
     ).toThrow("OPENAI_API_KEY is required when MODEL_PROVIDER=openai");
   });
 
-  it("throws when ANTHROPIC_API_KEY is missing for anthropic provider", () => {
+  it("throws when HIVE_ANTHROPIC_API_KEY is missing for anthropic provider", () => {
     expect(() =>
       createCallModelFromEnv({
         MODEL_PROVIDER: "anthropic",
-        ANTHROPIC_API_KEY: "",
+        HIVE_ANTHROPIC_API_KEY: "",
       }),
-    ).toThrow("ANTHROPIC_API_KEY is required when MODEL_PROVIDER=anthropic");
+    ).toThrow("HIVE_ANTHROPIC_API_KEY is required when MODEL_PROVIDER=anthropic");
+  });
+
+  it("reads HIVE_ANTHROPIC_API_KEY and optional HIVE_ANTHROPIC_WORKSPACE_ID", () => {
+    const result = createCallModelFromEnv({
+      MODEL_PROVIDER: "anthropic",
+      HIVE_ANTHROPIC_API_KEY: "hive-key",
+      HIVE_ANTHROPIC_WORKSPACE_ID: "ws-abc",
+    });
+    expect(result.provider).toBe("anthropic");
+    expect(AnthropicMock).toHaveBeenCalledWith({
+      apiKey: "hive-key",
+      defaultHeaders: { "anthropic-workspace-id": "ws-abc" },
+    });
   });
 });
 
@@ -49,6 +83,48 @@ function mockCreateMessage(
 }
 
 describe("createAnthropicCallModel", () => {
+  beforeEach(() => {
+    AnthropicMock.mockClear();
+  });
+
+  it("passes anthropic-workspace-id default header when workspaceId is set", async () => {
+    const createMessage = vi.fn(async () => ({
+      stop_reason: "end_turn",
+      content: [{ type: "text", text: '{"ok":true}' }],
+      usage: { input_tokens: 1, output_tokens: 1 },
+    }));
+
+    createAnthropicCallModel({
+      apiKey: "test-key",
+      model: "claude-opus-5-5",
+      defaultMaxOutputTokens: 16000,
+      workspaceId: "workspace-42",
+      createMessage: mockCreateMessage(createMessage),
+    });
+
+    expect(AnthropicMock).toHaveBeenCalledWith({
+      apiKey: "test-key",
+      defaultHeaders: { "anthropic-workspace-id": "workspace-42" },
+    });
+  });
+
+  it("omits anthropic-workspace-id default header when workspaceId is unset", async () => {
+    const createMessage = vi.fn(async () => ({
+      stop_reason: "end_turn",
+      content: [{ type: "text", text: '{"ok":true}' }],
+      usage: { input_tokens: 1, output_tokens: 1 },
+    }));
+
+    createAnthropicCallModel({
+      apiKey: "test-key",
+      model: "claude-opus-5-5",
+      defaultMaxOutputTokens: 16000,
+      createMessage: mockCreateMessage(createMessage),
+    });
+
+    expect(AnthropicMock).toHaveBeenCalledWith({ apiKey: "test-key" });
+  });
+
   it("maps json_schema requests with system prompt and output_config.format", async () => {
     const createMessage = vi.fn(async () => ({
       stop_reason: "end_turn",

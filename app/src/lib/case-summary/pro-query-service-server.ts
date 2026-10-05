@@ -29,7 +29,7 @@ async function callExportModel(request: string, retryErrors?: string): Promise<M
   const env = readServerEnv();
   const provider = env.MODEL_PROVIDER?.trim().toLowerCase() ?? "openai";
   const hasModelKey =
-    provider === "anthropic" ? Boolean(env.ANTHROPIC_API_KEY) : Boolean(env.OPENAI_API_KEY);
+    provider === "anthropic" ? Boolean(env.HIVE_ANTHROPIC_API_KEY) : Boolean(env.OPENAI_API_KEY);
   if (!hasModelKey) {
     throw new Error("ENGINE_UNAVAILABLE");
   }

@@ -10,7 +10,7 @@ export function callModelFromEnv(
   const provider = source.MODEL_PROVIDER?.trim().toLowerCase() ?? "openai";
   const hasKey =
     provider === "anthropic"
-      ? Boolean(source.ANTHROPIC_API_KEY?.trim())
+      ? Boolean(source.HIVE_ANTHROPIC_API_KEY?.trim())
       : Boolean(source.OPENAI_API_KEY?.trim());
   if (!hasKey) {
     return undefined;
