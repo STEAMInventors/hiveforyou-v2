@@ -22,7 +22,8 @@
     "typecheck": "tsc --noEmit",
     "lint": "node -e \"process.exit(0)\"",
     "test": "vitest run",
-    "study:l001-v3": "tsx --env-file=../../.env scripts/openai-l001-canonical-study-v3.mjs"
+    "study:l001-v3": "tsx --env-file=../../.env scripts/openai-l001-canonical-study-v3.mjs",
+    "study:l001": "tsx scripts/openai-l001-canonical-study.mjs"
   },
   "dependencies": {
     "@hiveforyou/canonical": "workspace:*",
@@ -33,6 +34,7 @@
   },
   "devDependencies": {
     "@hiveforyou/intake": "workspace:*",
+    "@hiveforyou/intake-node": "workspace:*",
     "@hiveforyou/model-providers": "workspace:*",
     "@types/node": "^22.10.2",
     "tsx": "^4.19.2",

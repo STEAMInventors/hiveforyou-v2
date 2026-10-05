@@ -11,15 +11,17 @@ import { normalizeJsonEnumCasing } from "./normalize-schema-enum-casing.js";
 
 const { AnthropicMock } = vi.hoisted(() => {
   const AnthropicMock = vi.fn(function (
-    this: { messages: { create: ReturnType<typeof vi.fn> } },
+    this: { messages: { stream: ReturnType<typeof vi.fn> } },
     _opts: unknown,
   ) {
     this.messages = {
-      create: vi.fn().mockResolvedValue({
-        stop_reason: "end_turn",
-        content: [{ type: "text", text: '{"ok":true}' }],
-        usage: { input_tokens: 1, output_tokens: 1 },
-      }),
+      stream: vi.fn(() => ({
+        finalMessage: vi.fn().mockResolvedValue({
+          stop_reason: "end_turn",
+          content: [{ type: "text", text: '{"ok":true}' }],
+          usage: { input_tokens: 1, output_tokens: 1 },
+        }),
+      })),
     };
   });
   return { AnthropicMock };
@@ -76,9 +78,9 @@ describe("normalizeJsonEnumCasing", () => {
   });
 });
 
-function mockCreateMessage(
-  impl: AnthropicCallModelOptions["createMessage"],
-): AnthropicCallModelOptions["createMessage"] {
+function mockStreamFinalMessage(
+  impl: AnthropicCallModelOptions["streamFinalMessage"],
+): AnthropicCallModelOptions["streamFinalMessage"] {
   return impl!;
 }
 
@@ -88,7 +90,7 @@ describe("createAnthropicCallModel", () => {
   });
 
   it("passes anthropic-workspace-id default header when workspaceId is set", async () => {
-    const createMessage = vi.fn(async () => ({
+    const streamFinalMessage = vi.fn(async () => ({
       stop_reason: "end_turn",
       content: [{ type: "text", text: '{"ok":true}' }],
       usage: { input_tokens: 1, output_tokens: 1 },
@@ -99,7 +101,7 @@ describe("createAnthropicCallModel", () => {
       model: "claude-opus-5-5",
       defaultMaxOutputTokens: 16000,
       workspaceId: "workspace-42",
-      createMessage: mockCreateMessage(createMessage),
+      streamFinalMessage: mockStreamFinalMessage(streamFinalMessage),
     });
 
     expect(AnthropicMock).toHaveBeenCalledWith({
@@ -109,7 +111,7 @@ describe("createAnthropicCallModel", () => {
   });
 
   it("omits anthropic-workspace-id default header when workspaceId is unset", async () => {
-    const createMessage = vi.fn(async () => ({
+    const streamFinalMessage = vi.fn(async () => ({
       stop_reason: "end_turn",
       content: [{ type: "text", text: '{"ok":true}' }],
       usage: { input_tokens: 1, output_tokens: 1 },
@@ -119,14 +121,14 @@ describe("createAnthropicCallModel", () => {
       apiKey: "test-key",
       model: "claude-opus-5-5",
       defaultMaxOutputTokens: 16000,
-      createMessage: mockCreateMessage(createMessage),
+      streamFinalMessage: mockStreamFinalMessage(streamFinalMessage),
     });
 
     expect(AnthropicMock).toHaveBeenCalledWith({ apiKey: "test-key" });
   });
 
   it("maps json_schema requests with system prompt and output_config.format", async () => {
-    const createMessage = vi.fn(async () => ({
+    const streamFinalMessage = vi.fn(async () => ({
       stop_reason: "end_turn",
       content: [{ type: "text", text: '{"ok":true}' }],
       usage: { input_tokens: 10, output_tokens: 5 },
@@ -136,7 +138,7 @@ describe("createAnthropicCallModel", () => {
       apiKey: "test-key",
       model: "claude-opus-5-5",
       defaultMaxOutputTokens: 16000,
-      createMessage: mockCreateMessage(createMessage),
+      streamFinalMessage: mockStreamFinalMessage(streamFinalMessage),
     });
 
     await callModel({
@@ -157,11 +159,11 @@ describe("createAnthropicCallModel", () => {
       },
     });
 
-    expect(createMessage.mock.calls[0]?.[0]).toMatchSnapshot();
+    expect(streamFinalMessage.mock.calls[0]?.[0]).toMatchSnapshot();
   });
 
   it("omits system when userOnly is true", async () => {
-    const createMessage = vi.fn(async () => ({
+    const streamFinalMessage = vi.fn(async () => ({
       stop_reason: "end_turn",
       content: [{ type: "text", text: '{"ok":true}' }],
       usage: { input_tokens: 1, output_tokens: 1 },
@@ -171,7 +173,7 @@ describe("createAnthropicCallModel", () => {
       apiKey: "test-key",
       model: "claude-opus-5-5",
       defaultMaxOutputTokens: 16000,
-      createMessage: mockCreateMessage(createMessage),
+      streamFinalMessage: mockStreamFinalMessage(streamFinalMessage),
     });
 
     await callModel({
@@ -192,11 +194,11 @@ describe("createAnthropicCallModel", () => {
       },
     });
 
-    expect(createMessage.mock.calls[0]?.[0].system).toBeUndefined();
+    expect(streamFinalMessage.mock.calls[0]?.[0].system).toBeUndefined();
   });
 
   it("maps json_object without output_config.format", async () => {
-    const createMessage = vi.fn(async () => ({
+    const streamFinalMessage = vi.fn(async () => ({
       stop_reason: "end_turn",
       content: [{ type: "text", text: '{"a":1}' }],
       usage: { input_tokens: 1, output_tokens: 1 },
@@ -206,7 +208,7 @@ describe("createAnthropicCallModel", () => {
       apiKey: "test-key",
       model: "claude-opus-5-5",
       defaultMaxOutputTokens: 16000,
-      createMessage: mockCreateMessage(createMessage),
+      streamFinalMessage: mockStreamFinalMessage(streamFinalMessage),
     });
 
     await callModel({
@@ -215,11 +217,11 @@ describe("createAnthropicCallModel", () => {
       textFormat: { type: "json_object" },
     });
 
-    expect(createMessage.mock.calls[0]?.[0].output_config?.format).toBeUndefined();
+    expect(streamFinalMessage.mock.calls[0]?.[0].output_config?.format).toBeUndefined();
   });
 
   it("includes PDF document blocks before user text", async () => {
-    const createMessage = vi.fn(async () => ({
+    const streamFinalMessage = vi.fn(async () => ({
       stop_reason: "end_turn",
       content: [{ type: "text", text: '{"ok":true}' }],
       usage: { input_tokens: 1, output_tokens: 1 },
@@ -229,7 +231,7 @@ describe("createAnthropicCallModel", () => {
       apiKey: "test-key",
       model: "claude-opus-5-5",
       defaultMaxOutputTokens: 16000,
-      createMessage: mockCreateMessage(createMessage),
+      streamFinalMessage: mockStreamFinalMessage(streamFinalMessage),
     });
 
     await callModel({
@@ -245,12 +247,12 @@ describe("createAnthropicCallModel", () => {
       textFormat: { type: "json_object" },
     });
 
-    const content = createMessage.mock.calls[0]?.[0].messages[0].content;
+    const content = streamFinalMessage.mock.calls[0]?.[0].messages[0].content;
     expect(content).toMatchSnapshot();
   });
 
   it("maps stop_reason refusal to ModelCallError refused", async () => {
-    const createMessage = vi.fn(async () => ({
+    const streamFinalMessage = vi.fn(async () => ({
       stop_reason: "refusal",
       content: [{ type: "text", text: "no" }],
       usage: { input_tokens: 1, output_tokens: 1 },
@@ -260,7 +262,7 @@ describe("createAnthropicCallModel", () => {
       apiKey: "test-key",
       model: "claude-opus-5-5",
       defaultMaxOutputTokens: 16000,
-      createMessage: mockCreateMessage(createMessage),
+      streamFinalMessage: mockStreamFinalMessage(streamFinalMessage),
     });
 
     await expect(
@@ -272,8 +274,46 @@ describe("createAnthropicCallModel", () => {
     ).rejects.toMatchObject({ kind: "refused" });
   });
 
+  it("maps stream finalMessage failure to ModelCallError response_failed", async () => {
+    const streamFinalMessage = vi.fn(async () => {
+      throw new Error("stream interrupted");
+    });
+
+    const callModel = createAnthropicCallModel({
+      apiKey: "test-key",
+      model: "claude-opus-5-5",
+      defaultMaxOutputTokens: 16000,
+      streamFinalMessage: mockStreamFinalMessage(streamFinalMessage),
+    });
+
+    await expect(
+      callModel({
+        model: "claude-opus-5-5",
+        userContent: "hello",
+        textFormat: { type: "json_object" },
+      }),
+    ).rejects.toMatchObject({ kind: "response_failed" });
+  });
+
+  it("uses messages.stream().finalMessage() when no test hook is provided", async () => {
+    const callModel = createAnthropicCallModel({
+      apiKey: "test-key",
+      model: "claude-opus-5-5",
+      defaultMaxOutputTokens: 16000,
+    });
+
+    const response = await callModel({
+      model: "claude-opus-5-5",
+      userContent: "hello",
+      textFormat: { type: "json_object" },
+    });
+
+    expect(AnthropicMock.mock.results[0]?.value.messages.stream).toHaveBeenCalled();
+    expect(JSON.parse(response.outputText ?? "")).toEqual({ ok: true });
+  });
+
   it("maps stop_reason max_tokens to ModelCallError truncated", async () => {
-    const createMessage = vi.fn(async () => ({
+    const streamFinalMessage = vi.fn(async () => ({
       stop_reason: "max_tokens",
       content: [{ type: "text", text: '{"partial":true}' }],
       usage: { input_tokens: 1, output_tokens: 1 },
@@ -283,7 +323,7 @@ describe("createAnthropicCallModel", () => {
       apiKey: "test-key",
       model: "claude-opus-5-5",
       defaultMaxOutputTokens: 16000,
-      createMessage: mockCreateMessage(createMessage),
+      streamFinalMessage: mockStreamFinalMessage(streamFinalMessage),
     });
 
     await expect(
@@ -296,7 +336,7 @@ describe("createAnthropicCallModel", () => {
   });
 
   it("throws response_failed when json_object output is not parseable", async () => {
-    const createMessage = vi.fn(async () => ({
+    const streamFinalMessage = vi.fn(async () => ({
       stop_reason: "end_turn",
       content: [{ type: "text", text: "not json" }],
       usage: { input_tokens: 1, output_tokens: 1 },
@@ -306,7 +346,7 @@ describe("createAnthropicCallModel", () => {
       apiKey: "test-key",
       model: "claude-opus-5-5",
       defaultMaxOutputTokens: 16000,
-      createMessage: mockCreateMessage(createMessage),
+      streamFinalMessage: mockStreamFinalMessage(streamFinalMessage),
     });
 
     await expect(
@@ -319,7 +359,7 @@ describe("createAnthropicCallModel", () => {
   });
 
   it("prompt mode: no output_config and schema text in system prompt", async () => {
-    const createMessage = vi.fn(async () => ({
+    const streamFinalMessage = vi.fn(async () => ({
       stop_reason: "end_turn",
       content: [{ type: "text", text: '{"ok":true}' }],
       usage: { input_tokens: 1, output_tokens: 1 },
@@ -336,7 +376,7 @@ describe("createAnthropicCallModel", () => {
       apiKey: "test-key",
       model: "claude-opus-5-5",
       defaultMaxOutputTokens: 16000,
-      createMessage: mockCreateMessage(createMessage),
+      streamFinalMessage: mockStreamFinalMessage(streamFinalMessage),
     });
 
     await callModel({
@@ -351,7 +391,7 @@ describe("createAnthropicCallModel", () => {
       },
     });
 
-    const params = createMessage.mock.calls[0]?.[0];
+    const params = streamFinalMessage.mock.calls[0]?.[0];
     expect(params.output_config).toBeUndefined();
     expect(params.system).toContain("Return only one JSON object that matches this JSON Schema:");
     expect(params.system).toContain(JSON.stringify(schema, null, 2));
@@ -359,7 +399,7 @@ describe("createAnthropicCallModel", () => {
   });
 
   it("prompt mode: garbage reply throws response_failed", async () => {
-    const createMessage = vi.fn(async () => ({
+    const streamFinalMessage = vi.fn(async () => ({
       stop_reason: "end_turn",
       content: [{ type: "text", text: "not json at all" }],
       usage: { input_tokens: 1, output_tokens: 1 },
@@ -369,7 +409,7 @@ describe("createAnthropicCallModel", () => {
       apiKey: "test-key",
       model: "claude-opus-5-5",
       defaultMaxOutputTokens: 16000,
-      createMessage: mockCreateMessage(createMessage),
+      streamFinalMessage: mockStreamFinalMessage(streamFinalMessage),
     });
 
     await expect(
@@ -392,7 +432,7 @@ describe("createAnthropicCallModel", () => {
   });
 
   it("normalizes enum casing in json_schema responses", async () => {
-    const createMessage = vi.fn(async () => ({
+    const streamFinalMessage = vi.fn(async () => ({
       stop_reason: "end_turn",
       content: [{ type: "text", text: '{"status":"active"}' }],
       usage: { input_tokens: 1, output_tokens: 1 },
@@ -402,7 +442,7 @@ describe("createAnthropicCallModel", () => {
       apiKey: "test-key",
       model: "claude-opus-5-5",
       defaultMaxOutputTokens: 16000,
-      createMessage: mockCreateMessage(createMessage),
+      streamFinalMessage: mockStreamFinalMessage(streamFinalMessage),
     });
 
     const response = await callModel({

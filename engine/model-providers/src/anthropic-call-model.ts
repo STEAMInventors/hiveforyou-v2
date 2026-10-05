@@ -17,7 +17,10 @@ export type AnthropicCallModelOptions = {
   model: string;
   defaultMaxOutputTokens: number;
   workspaceId?: string;
-  createMessage?: (params: Anthropic.Messages.MessageCreateParamsNonStreaming) => Promise<Anthropic.Messages.Message>;
+  /** Test hook: replaces `messages.stream(...).finalMessage()`. */
+  streamFinalMessage?: (
+    params: Anthropic.Messages.MessageCreateParamsNonStreaming,
+  ) => Promise<Anthropic.Messages.Message>;
 };
 
 function bytesToBase64(bytes: Uint8Array): string {
@@ -101,8 +104,13 @@ function mapReasoningEffortToOutputConfigEffort(
   return normalized as "low" | "medium" | "high" | "xhigh" | "max";
 }
 
+function isAnthropicApiError(error: unknown): error is Anthropic.APIError {
+  const ApiError = Anthropic.APIError;
+  return typeof ApiError === "function" && error instanceof ApiError;
+}
+
 function formatAnthropicError(error: unknown): string {
-  if (error instanceof Anthropic.APIError) {
+  if (isAnthropicApiError(error)) {
     return `ANTHROPIC_RESPONSE_FAILED:${error.status ?? "unknown"} message=${error.message}`;
   }
   if (error instanceof Error) {
@@ -160,7 +168,10 @@ export function createAnthropicCallModel(input: AnthropicCallModelOptions): Call
       ? { defaultHeaders: { "anthropic-workspace-id": workspaceId } }
       : {}),
   });
-  const createMessage = input.createMessage ?? client.messages.create.bind(client.messages);
+  const streamFinalMessage =
+    input.streamFinalMessage ??
+    (async (params: Anthropic.Messages.MessageCreateParamsNonStreaming) =>
+      client.messages.stream(params).finalMessage());
 
   return async (req: ModelRequest) => {
     const userBlocks: Anthropic.Messages.ContentBlockParam[] = [
@@ -210,9 +221,9 @@ export function createAnthropicCallModel(input: AnthropicCallModelOptions): Call
 
     let response: Anthropic.Messages.Message;
     try {
-      response = await createMessage(params);
+      response = await streamFinalMessage(params);
     } catch (error) {
-      const status = error instanceof Anthropic.APIError ? error.status : undefined;
+      const status = isAnthropicApiError(error) ? error.status : undefined;
       throw new ModelCallError("response_failed", status, formatAnthropicError(error));
     }
 

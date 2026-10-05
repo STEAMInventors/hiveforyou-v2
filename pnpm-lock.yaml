@@ -161,6 +161,9 @@ importers:
       '@hiveforyou/intake':
         specifier: workspace:*
         version: link:../intake
+      '@hiveforyou/intake-node':
+        specifier: workspace:*
+        version: link:../intake-node
       '@hiveforyou/model-providers':
         specifier: workspace:*
         version: link:../model-providers
