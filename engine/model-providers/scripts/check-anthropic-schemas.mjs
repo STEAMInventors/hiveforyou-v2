@@ -8,17 +8,18 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import Anthropic from "@anthropic-ai/sdk";
-import { CANONICAL_STUDY_PROPOSAL_V3_OPENAI_JSON_SCHEMA } from "../../shared/src/case-intelligence/3/openai-proposal-json-schema.ts";
-import { CANONICAL_STUDY_PROPOSAL_V4_OPENAI_JSON_SCHEMA } from "../../shared/src/case-intelligence/4/openai-proposal-json-schema.ts";
-import { HIVE_DISCOVER_PROPOSAL_JSON_SCHEMA } from "../../shared/src/discover/json-schema.ts";
-import { HIVE_DISCOVER_PROPOSAL_V2_JSON_SCHEMA } from "../../shared/src/discover/json-schema-v2.ts";
-import { HIVE_DISCOVER_RESOLUTION_JSON_SCHEMA } from "../../shared/src/discover/json-schema-resolution.ts";
-import { CLIENT_SUMMARY_RESPONSE_JSON_SCHEMA } from "../../core/src/study/client-summary-pass.ts";
-import { CLIENT_WRITER_RESPONSE_JSON_SCHEMA } from "../../core/src/study/client-writer-pass.ts";
-import { STORY_WRITER_JSON_SCHEMA } from "../../core/src/study/story/generateStory.ts";
-import { ANTHROPIC_SCHEMA_MODE } from "../src/anthropic-schema-mode.ts";
+import {
+  ANTHROPIC_SCHEMA_MODE,
+  assertAnthropicSchemaModeCoversMapTypedAdditionalProperties,
+} from "../src/anthropic-schema-mode.ts";
 import { extractFirstJsonObject } from "../src/extract-first-json-object.ts";
-import { sanitizeSchemaForAnthropic } from "../src/sanitize-schema-for-anthropic.ts";
+import { REGISTERED_ANTHROPIC_JSON_SCHEMAS } from "../src/registered-anthropic-json-schemas.ts";
+import {
+  findMapTypedAdditionalPropertiesPaths,
+  getAdditionalPropertiesCoercionsForSchema,
+  MapTypedAdditionalPropertiesError,
+  sanitizeSchemaForAnthropic,
+} from "../src/sanitize-schema-for-anthropic.ts";
 
 const UNSUPPORTED_KEYWORDS = [
   "oneOf",
@@ -88,16 +89,9 @@ console.log(
   `key loaded: ${hiveAnthropicKey ? "yes" : "no"}, workspace id loaded: ${hiveAnthropicWorkspaceId ? "yes" : "no"}`,
 );
 
-const SCHEMAS = [
-  { name: "hive_discover_proposal_v1", schema: HIVE_DISCOVER_PROPOSAL_JSON_SCHEMA },
-  { name: "hive_discover_proposal_v2", schema: HIVE_DISCOVER_PROPOSAL_V2_JSON_SCHEMA },
-  { name: "hive_discover_resolution", schema: HIVE_DISCOVER_RESOLUTION_JSON_SCHEMA },
-  { name: "canonical_study_proposal_v3", schema: CANONICAL_STUDY_PROPOSAL_V3_OPENAI_JSON_SCHEMA },
-  { name: "canonical_study_proposal_v4", schema: CANONICAL_STUDY_PROPOSAL_V4_OPENAI_JSON_SCHEMA },
-  { name: "story_writer_v1", schema: STORY_WRITER_JSON_SCHEMA },
-  { name: "client_summary_v1", schema: CLIENT_SUMMARY_RESPONSE_JSON_SCHEMA },
-  { name: "client_writer_v2", schema: CLIENT_WRITER_RESPONSE_JSON_SCHEMA },
-];
+const SCHEMAS = REGISTERED_ANTHROPIC_JSON_SCHEMAS;
+
+assertAnthropicSchemaModeCoversMapTypedAdditionalProperties();
 
 function visit(node, visitFn, path = "root") {
   if (Array.isArray(node)) {
@@ -290,11 +284,54 @@ function pad(value, width) {
 const rows = [];
 let failed = false;
 
+console.log("\nadditionalProperties coercions (constrained schemas only):");
+for (const entry of SCHEMAS) {
+  const mode = resolveMode(entry.name);
+  if (mode !== "constrained") {
+    console.log(`  ${entry.name}: (prompt mode — no coercion)`);
+    continue;
+  }
+  const mapPaths = findMapTypedAdditionalPropertiesPaths(entry.schema);
+  if (mapPaths.length > 0) {
+    console.error(
+      `  ${entry.name}: map-typed additionalProperties at ${mapPaths.map((p) => p.path).join(", ")} — add prompt mode to ANTHROPIC_SCHEMA_MODE`,
+    );
+    failed = true;
+    continue;
+  }
+  try {
+    sanitizeSchemaForAnthropic(entry.schema);
+  } catch (error) {
+    if (error instanceof MapTypedAdditionalPropertiesError) {
+      console.error(`  ${entry.name}: ${error.message}`);
+      failed = true;
+      continue;
+    }
+    throw error;
+  }
+  const coercions = getAdditionalPropertiesCoercionsForSchema(entry.schema);
+  if (coercions.length === 0) {
+    console.log(`  ${entry.name}: none (already additionalProperties: false everywhere)`);
+  } else {
+    for (const coercion of coercions) {
+      console.log(`  ${entry.name}: ${coercion.path} ← ${coercion.before}`);
+    }
+  }
+}
+console.log("");
+
 for (const entry of SCHEMAS) {
   const mode = resolveMode(entry.name);
   const unionCount = countUnionTypedParams(entry.schema);
   const optionalCount = countOptionalParams(entry.schema);
-  const sanitized = mode === "constrained" ? sanitizeSchemaForAnthropic(entry.schema) : entry.schema;
+  let sanitized = entry.schema;
+  if (mode === "constrained") {
+    try {
+      sanitized = sanitizeSchemaForAnthropic(entry.schema);
+    } catch {
+      sanitized = entry.schema;
+    }
+  }
   const unsupported =
     mode === "prompt" ? [] : findUnsupportedKeywords(sanitized);
   const sensitive = findSensitivePropertyNames(entry.schema);

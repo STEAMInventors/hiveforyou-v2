@@ -1,3 +1,27 @@
+export type AdditionalPropertiesBeforeKind = "true" | "absent";
+
+export type AdditionalPropertiesCoercion = {
+  path: string;
+  before: AdditionalPropertiesBeforeKind;
+};
+
+export type MapTypedAdditionalPropertiesPath = {
+  path: string;
+  before: "schema";
+};
+
+export class MapTypedAdditionalPropertiesError extends Error {
+  readonly paths: MapTypedAdditionalPropertiesPath[];
+
+  constructor(paths: MapTypedAdditionalPropertiesPath[]) {
+    super(
+      `Cannot coerce map-typed additionalProperties for Anthropic constrained output (${paths.map((p) => p.path).join(", ")}). Use prompt mode.`,
+    );
+    this.name = "MapTypedAdditionalPropertiesError";
+    this.paths = paths;
+  }
+}
+
 const REMOVED_KEYWORDS = [
   "minimum",
   "maximum",
@@ -20,7 +44,12 @@ const REMOVED_KEYWORDS = [
   "unevaluatedItems",
 ] as const;
 
-const sanitizeCache = new WeakMap<object, Record<string, unknown>>();
+type SanitizeCacheEntry = {
+  sanitized: Record<string, unknown>;
+  additionalPropertiesCoercions: AdditionalPropertiesCoercion[];
+};
+
+const sanitizeCache = new WeakMap<object, SanitizeCacheEntry>();
 
 function isObjectSchemaNode(node: Record<string, unknown>): boolean {
   const type = node.type;
@@ -28,6 +57,10 @@ function isObjectSchemaNode(node: Record<string, unknown>): boolean {
     return true;
   }
   return Array.isArray(type) && type.includes("object");
+}
+
+function isMapTypedAdditionalProperties(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
 function appendDescription(existing: unknown, note: string): string {
@@ -42,10 +75,103 @@ function cloneJsonValue<T>(value: T): T {
   return JSON.parse(JSON.stringify(value)) as T;
 }
 
-function sanitizeNode(node: unknown): void {
+function visitSchemaNodes(
+  node: unknown,
+  visitFn: (record: Record<string, unknown>, path: string) => void,
+  path = "root",
+): void {
   if (Array.isArray(node)) {
-    for (const child of node) {
-      sanitizeNode(child);
+    for (const [index, child] of node.entries()) {
+      visitSchemaNodes(child, visitFn, `${path}[${index}]`);
+    }
+    return;
+  }
+  if (typeof node !== "object" || node === null) {
+    return;
+  }
+  const record = node as Record<string, unknown>;
+  visitFn(record, path);
+  for (const [key, child] of Object.entries(record)) {
+    if (key === "description" || key === "enum" || key === "required") {
+      continue;
+    }
+    visitSchemaNodes(child, visitFn, `${path}.${key}`);
+  }
+}
+
+/** Map-typed additionalProperties subschemas (cannot be coerced to false for Anthropic constrained mode). */
+export function findMapTypedAdditionalPropertiesPaths(
+  schema: Record<string, unknown>,
+): MapTypedAdditionalPropertiesPath[] {
+  const found: MapTypedAdditionalPropertiesPath[] = [];
+  visitSchemaNodes(schema, (record, path) => {
+    if (!isObjectSchemaNode(record)) {
+      return;
+    }
+    if (!Object.prototype.hasOwnProperty.call(record, "additionalProperties")) {
+      return;
+    }
+    const value = record.additionalProperties;
+    if (isMapTypedAdditionalProperties(value)) {
+      found.push({ path, before: "schema" });
+    }
+  });
+  return found;
+}
+
+/** Paths where sanitizeSchemaForAnthropic would set additionalProperties to false. */
+export function listAdditionalPropertiesCoercions(
+  schema: Record<string, unknown>,
+): AdditionalPropertiesCoercion[] {
+  const coercions: AdditionalPropertiesCoercion[] = [];
+  visitSchemaNodes(schema, (record, path) => {
+    if (!isObjectSchemaNode(record)) {
+      return;
+    }
+    if (!Object.prototype.hasOwnProperty.call(record, "additionalProperties")) {
+      coercions.push({ path, before: "absent" });
+      return;
+    }
+    const value = record.additionalProperties;
+    if (value === false) {
+      return;
+    }
+    if (value === true) {
+      coercions.push({ path, before: "true" });
+      return;
+    }
+    if (isMapTypedAdditionalProperties(value)) {
+      return;
+    }
+  });
+  return coercions;
+}
+
+export function getAdditionalPropertiesCoercionsForSchema(
+  schema: Record<string, unknown>,
+): AdditionalPropertiesCoercion[] {
+  const cached = sanitizeCache.get(schema);
+  if (cached) {
+    return cached.additionalPropertiesCoercions;
+  }
+  return listAdditionalPropertiesCoercions(schema);
+}
+
+function assertNoMapTypedAdditionalProperties(schema: Record<string, unknown>): void {
+  const mapPaths = findMapTypedAdditionalPropertiesPaths(schema);
+  if (mapPaths.length > 0) {
+    throw new MapTypedAdditionalPropertiesError(mapPaths);
+  }
+}
+
+function sanitizeNode(
+  node: unknown,
+  coercions: AdditionalPropertiesCoercion[],
+  path: string,
+): void {
+  if (Array.isArray(node)) {
+    for (const [index, child] of node.entries()) {
+      sanitizeNode(child, coercions, `${path}[${index}]`);
     }
     return;
   }
@@ -71,14 +197,20 @@ function sanitizeNode(node: unknown): void {
     }
   }
 
-  if (isObjectSchemaNode(record) && Object.prototype.hasOwnProperty.call(record, "additionalProperties")) {
-    if (record.additionalProperties !== false) {
+  if (isObjectSchemaNode(record)) {
+    if (Object.prototype.hasOwnProperty.call(record, "additionalProperties")) {
       const value = record.additionalProperties;
+      if (isMapTypedAdditionalProperties(value)) {
+        throw new MapTypedAdditionalPropertiesError([{ path, before: "schema" }]);
+      }
+      if (value === true) {
+        record.additionalProperties = false;
+        coercions.push({ path, before: "true" });
+        record.description = appendDescription(record.description, "(additionalProperties: true)");
+      }
+    } else {
       record.additionalProperties = false;
-      record.description = appendDescription(
-        record.description,
-        `(additionalProperties: ${JSON.stringify(value)})`,
-      );
+      coercions.push({ path, before: "absent" });
     }
   }
 
@@ -86,7 +218,7 @@ function sanitizeNode(node: unknown): void {
     if (key === "description" || key === "enum" || key === "required") {
       continue;
     }
-    sanitizeNode(child);
+    sanitizeNode(child, coercions, `${path}.${key}`);
   }
 }
 
@@ -94,10 +226,15 @@ function sanitizeNode(node: unknown): void {
 export function sanitizeSchemaForAnthropic(schema: Record<string, unknown>): Record<string, unknown> {
   const cached = sanitizeCache.get(schema);
   if (cached) {
-    return cached;
+    return cached.sanitized;
   }
+
+  assertNoMapTypedAdditionalProperties(schema);
+
   const cloned = cloneJsonValue(schema);
-  sanitizeNode(cloned);
-  sanitizeCache.set(schema, cloned);
-  return cloned;
+  const additionalPropertiesCoercions: AdditionalPropertiesCoercion[] = [];
+  sanitizeNode(cloned, additionalPropertiesCoercions, "root");
+  const entry = { sanitized: cloned, additionalPropertiesCoercions };
+  sanitizeCache.set(schema, entry);
+  return entry.sanitized;
 }
