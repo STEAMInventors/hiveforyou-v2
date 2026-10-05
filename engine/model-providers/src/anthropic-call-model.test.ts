@@ -318,6 +318,79 @@ describe("createAnthropicCallModel", () => {
     ).rejects.toBeInstanceOf(ModelCallError);
   });
 
+  it("prompt mode: no output_config and schema text in system prompt", async () => {
+    const createMessage = vi.fn(async () => ({
+      stop_reason: "end_turn",
+      content: [{ type: "text", text: '{"ok":true}' }],
+      usage: { input_tokens: 1, output_tokens: 1 },
+    }));
+
+    const schema = {
+      type: "object",
+      additionalProperties: false,
+      properties: { ok: { type: "boolean" } },
+      required: ["ok"],
+    };
+
+    const callModel = createAnthropicCallModel({
+      apiKey: "test-key",
+      model: "claude-opus-5-5",
+      defaultMaxOutputTokens: 16000,
+      createMessage: mockCreateMessage(createMessage),
+    });
+
+    await callModel({
+      model: "claude-opus-5-5",
+      systemPrompt: "base instructions",
+      userContent: "hello",
+      textFormat: {
+        type: "json_schema",
+        name: "canonical_study_proposal_v4",
+        strict: true,
+        schema,
+      },
+    });
+
+    const params = createMessage.mock.calls[0]?.[0];
+    expect(params.output_config).toBeUndefined();
+    expect(params.system).toContain("Return only one JSON object that matches this JSON Schema:");
+    expect(params.system).toContain(JSON.stringify(schema, null, 2));
+    expect(params.system).toContain("base instructions");
+  });
+
+  it("prompt mode: garbage reply throws response_failed", async () => {
+    const createMessage = vi.fn(async () => ({
+      stop_reason: "end_turn",
+      content: [{ type: "text", text: "not json at all" }],
+      usage: { input_tokens: 1, output_tokens: 1 },
+    }));
+
+    const callModel = createAnthropicCallModel({
+      apiKey: "test-key",
+      model: "claude-opus-5-5",
+      defaultMaxOutputTokens: 16000,
+      createMessage: mockCreateMessage(createMessage),
+    });
+
+    await expect(
+      callModel({
+        model: "claude-opus-5-5",
+        userContent: "hello",
+        textFormat: {
+          type: "json_schema",
+          name: "canonical_study_proposal_v3",
+          strict: true,
+          schema: {
+            type: "object",
+            additionalProperties: false,
+            properties: { ok: { type: "boolean" } },
+            required: ["ok"],
+          },
+        },
+      }),
+    ).rejects.toMatchObject({ kind: "response_failed" });
+  });
+
   it("normalizes enum casing in json_schema responses", async () => {
     const createMessage = vi.fn(async () => ({
       stop_reason: "end_turn",

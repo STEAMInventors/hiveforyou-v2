@@ -2,7 +2,13 @@ import Anthropic from "@anthropic-ai/sdk";
 import type { CallModel, ModelFileAttachment, ModelRequest } from "@hiveforyou/shared/model/call-model";
 import { ModelCallError } from "@hiveforyou/shared/model/call-model";
 
+import { resolveAnthropicSchemaMode } from "./anthropic-schema-mode.js";
+import { extractFirstJsonObject } from "./extract-first-json-object.js";
 import { normalizeJsonEnumCasing } from "./normalize-schema-enum-casing.js";
+import { sanitizeSchemaForAnthropic } from "./sanitize-schema-for-anthropic.js";
+
+const PROMPT_MODE_SCHEMA_INSTRUCTION =
+  "Return only one JSON object that matches this JSON Schema:";
 
 const ANTHROPIC_EFFORT_LEVELS = new Set(["low", "medium", "high", "xhigh", "max"]);
 
@@ -120,6 +126,31 @@ function parseJsonObjectOutput(text: string): string {
   }
 }
 
+function parsePromptModeJsonOutput(text: string): string {
+  try {
+    const jsonSlice = extractFirstJsonObject(text);
+    const parsed = JSON.parse(jsonSlice) as unknown;
+    if (parsed === null || typeof parsed !== "object" || Array.isArray(parsed)) {
+      throw new ModelCallError("response_failed", undefined, "ANTHROPIC_PROMPT_JSON_NOT_OBJECT");
+    }
+    return JSON.stringify(parsed);
+  } catch (error) {
+    if (error instanceof ModelCallError) {
+      throw error;
+    }
+    throw new ModelCallError("response_failed", undefined, "ANTHROPIC_PROMPT_JSON_PARSE_FAILED");
+  }
+}
+
+function buildPromptModeSystemPrompt(
+  baseSystem: string | undefined,
+  schema: Record<string, unknown>,
+): string {
+  const schemaText = JSON.stringify(schema, null, 2);
+  const block = `${PROMPT_MODE_SCHEMA_INSTRUCTION}\n${schemaText}`;
+  return baseSystem?.trim() ? `${baseSystem.trim()}\n\n${block}` : block;
+}
+
 /** Host-side Anthropic adapter for {@link CallModel}. */
 export function createAnthropicCallModel(input: AnthropicCallModelOptions): CallModel {
   const workspaceId = input.workspaceId?.trim();
@@ -142,17 +173,27 @@ export function createAnthropicCallModel(input: AnthropicCallModelOptions): Call
         ? req.maxOutputTokens
         : input.defaultMaxOutputTokens;
 
+    const jsonSchemaMode =
+      req.textFormat.type === "json_schema"
+        ? resolveAnthropicSchemaMode(req.textFormat.name)
+        : null;
+
     const effort = mapReasoningEffortToOutputConfigEffort(req.reasoningEffort);
     const outputConfig: Anthropic.Messages.OutputConfig = {};
-    if (effort) {
+    if (effort && jsonSchemaMode !== "prompt") {
       outputConfig.effort = effort;
     }
-    if (req.textFormat.type === "json_schema") {
+    if (req.textFormat.type === "json_schema" && jsonSchemaMode === "constrained") {
       outputConfig.format = {
         type: "json_schema",
-        schema: req.textFormat.schema,
+        schema: sanitizeSchemaForAnthropic(req.textFormat.schema),
       };
     }
+
+    const systemForRequest =
+      req.textFormat.type === "json_schema" && jsonSchemaMode === "prompt" && !req.userOnly
+        ? buildPromptModeSystemPrompt(req.systemPrompt, req.textFormat.schema)
+        : req.systemPrompt;
 
     const params: Anthropic.Messages.MessageCreateParamsNonStreaming = {
       model: req.model || input.model,
@@ -160,8 +201,8 @@ export function createAnthropicCallModel(input: AnthropicCallModelOptions): Call
       messages: [{ role: "user", content: userBlocks }],
       ...(req.userOnly
         ? {}
-        : req.systemPrompt
-          ? { system: req.systemPrompt }
+        : systemForRequest
+          ? { system: systemForRequest }
           : {}),
       ...(Object.keys(outputConfig).length > 0 ? { output_config: outputConfig } : {}),
       ...(req.temperature != null ? { temperature: req.temperature } : {}),
@@ -190,6 +231,16 @@ export function createAnthropicCallModel(input: AnthropicCallModelOptions): Call
     if (req.textFormat.type === "json_object") {
       return {
         outputText: parseJsonObjectOutput(rawText),
+        usage: mapAnthropicUsage(response.usage),
+      };
+    }
+
+    if (jsonSchemaMode === "prompt") {
+      const outputText = parsePromptModeJsonOutput(rawText);
+      const parsed = JSON.parse(outputText) as unknown;
+      const normalized = normalizeJsonEnumCasing(parsed, req.textFormat.schema);
+      return {
+        outputText: JSON.stringify(normalized),
         usage: mapAnthropicUsage(response.usage),
       };
     }
