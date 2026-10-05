@@ -1,9 +1,8 @@
 import { createHash } from "node:crypto";
-import { readFileSync } from "node:fs";
-import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
 
 import { describe, expect, it } from "vitest";
+
+import { loadBundledPromptContent } from "./load-prompt-content";
 
 import { freezeCanonicalStudyContext } from "../study/freeze-context";
 import { resolveDomainPackFromDiscoveryLabel } from "@hiveforyou/domain-packs";
@@ -48,11 +47,7 @@ function request(): StartCanonicalStudyRequest {
 describe("loadCanonicalStudyPrompt", () => {
   it("reads the requested versioned prompt file and returns its hash", () => {
     const loaded = loadCanonicalStudyPrompt("canonical-study-v1");
-    const filePath = join(
-      dirname(fileURLToPath(import.meta.url)),
-      "../../prompts/canonical-study/canonical-study-v1.md",
-    );
-    const content = readFileSync(filePath, "utf8").replace(/\r\n/g, "\n");
+    const content = loadBundledPromptContent("canonical-study/canonical-study-v1.md");
     expect(loaded).toEqual({
       id: "canonical-study",
       version: "v1",

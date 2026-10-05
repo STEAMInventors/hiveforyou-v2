@@ -48,7 +48,6 @@ WORKDIR /app
 COPY --from=build /repo/worker/dist/main.js ./dist/main.js
 COPY --from=build /repo/worker/dist/main.js.map ./dist/main.js.map
 COPY --from=build /repo/worker/dist/package.json ./package.json
-COPY --from=build /repo/engine/core/prompts /prompts
 
 RUN npm install --omit=dev \
   && npm cache clean --force \

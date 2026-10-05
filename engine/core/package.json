@@ -19,9 +19,10 @@
     "./story/prefer-pack-narrative": "./src/study/story/prefer-pack-narrative.ts"
   },
   "scripts": {
+    "generate:prompts": "node scripts/generate-prompts.mjs",
     "typecheck": "tsc --noEmit",
     "lint": "node -e \"process.exit(0)\"",
-    "test": "vitest run",
+    "test": "node scripts/generate-prompts.mjs && vitest run",
     "study:l001-v3": "tsx --env-file=../../.env scripts/openai-l001-canonical-study-v3.mjs",
     "study:l001": "tsx scripts/openai-l001-canonical-study.mjs"
   },

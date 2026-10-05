@@ -31,9 +31,6 @@ const nextConfig: NextConfig = {
     "@hiveforyou/intake",
     "@hiveforyou/intake-node",
   ],
-  outputFileTracingIncludes: {
-    "/**/*": ["../engine/core/prompts/**/*"],
-  },
 };
 
 export default nextConfig;

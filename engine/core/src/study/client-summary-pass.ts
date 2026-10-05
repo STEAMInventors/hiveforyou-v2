@@ -1,16 +1,11 @@
 import type { CanonicalStudyContext } from "@hiveforyou/shared/canonical-study";
 import type { CaseView, ClientSummary, ClientSummaryItem } from "@hiveforyou/shared/projections";
 
-import { readFileSync } from "node:fs";
-import { join, dirname } from "node:path";
-import { fileURLToPath } from "node:url";
-
 import type { CallModel } from "../model/call-model";
 
-const PROMPT = readFileSync(
-  join(dirname(fileURLToPath(import.meta.url)), "../../prompts/client-summary/client-summary-v1.md"),
-  "utf8",
-);
+import { loadBundledPromptContent } from "../prompts/load-prompt-content";
+
+const PROMPT = loadBundledPromptContent("client-summary/client-summary-v1.md");
 
 export const CLIENT_SUMMARY_RESPONSE_JSON_SCHEMA = {
   type: "object",

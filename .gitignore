@@ -48,5 +48,3 @@ _tmp-*
 
 after-tests.txt
 after-typecheck.txt
-
-/prompts/

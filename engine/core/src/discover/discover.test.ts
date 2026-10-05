@@ -1,9 +1,8 @@
 import { createHash } from "node:crypto";
-import { readFileSync } from "node:fs";
-import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
 
 import { describe, expect, it } from "vitest";
+
+import { loadBundledPromptContent } from "../prompts/load-prompt-content";
 
 import { requireDiscoverPack } from "@hiveforyou/domain-packs";
 
@@ -88,11 +87,7 @@ function baseProposal(
 describe("Engine 1 discover adapter", () => {
   it("loads discover-v1 prompt with explicit versioning and rejects latest", () => {
     const loaded = loadDiscoverPrompt("discover-v1");
-    const filePath = join(
-      dirname(fileURLToPath(import.meta.url)),
-      "../../prompts/discover/discover-v1.md",
-    );
-    const content = readFileSync(filePath, "utf8").replace(/\r\n/g, "\n");
+    const content = loadBundledPromptContent("discover/discover-v1.md");
     expect(loaded.sha256).toBe(createHash("sha256").update(content).digest("hex"));
     expect(loaded.content).toContain("Model proposes. Pack defines. Code validates.");
     expect(() => loadDiscoverPrompt("latest")).toThrow(UnknownDiscoverPromptVersionError);

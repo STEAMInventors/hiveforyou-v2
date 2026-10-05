@@ -1,4 +1,4 @@
-import { cpSync, readFileSync, writeFileSync, mkdirSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -59,13 +59,6 @@ function assertNoBundledRuntimePackages(bundleText) {
 }
 
 /** Banner + bundled sources may each import createRequire; keep one top-level import. */
-/** Bundled code resolves prompts via import.meta.url → ../../prompts (repo root or /prompts in Docker). */
-function syncBundledRuntimePrompts() {
-  const source = path.join(repoRoot, "engine/core/prompts");
-  const target = path.join(repoRoot, "prompts");
-  cpSync(source, target, { recursive: true });
-}
-
 function dedupeCreateRequireImports(bundleText) {
   let seen = false;
   return bundleText.replace(/^import \{ createRequire \} from "node:module";\r?\n/gm, (line) => {
@@ -142,7 +135,5 @@ writeFileSync(
   `${JSON.stringify(runtimePackage, null, 2)}\n`,
   "utf8",
 );
-
-syncBundledRuntimePrompts();
 
 console.info("[worker] bundled dist/main.js (Inngest + native packages external)");

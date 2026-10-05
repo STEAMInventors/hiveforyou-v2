@@ -2,11 +2,9 @@ import type { CanonicalStudyContext } from "@hiveforyou/shared/canonical-study";
 import type { CaseViewV2, DomainPackViewConfigV2 } from "@hiveforyou/shared/projections";
 import { domainPackViewConfigForDomainId } from "@hiveforyou/shared/projections";
 
-import { readFileSync } from "node:fs";
-import { join, dirname } from "node:path";
-import { fileURLToPath } from "node:url";
-
 import { readStatedWorkPurpose } from "@hiveforyou/shared/canonical-study";
+
+import { loadBundledPromptContent } from "../prompts/load-prompt-content";
 
 import type { CallModel } from "../model/call-model";
 import { buildClientWriterPayload } from "./build-client-writer-payload";
@@ -18,10 +16,7 @@ import {
   type ClientWriterModelOutput,
 } from "./validate-client-writer-output";
 
-const PROMPT = readFileSync(
-  join(dirname(fileURLToPath(import.meta.url)), "../../prompts/client-writer/client-writer-v2.md"),
-  "utf8",
-);
+const PROMPT = loadBundledPromptContent("client-writer/client-writer-v2.md");
 
 export const CLIENT_WRITER_RESPONSE_JSON_SCHEMA = {
   type: "object",

@@ -1,7 +1,6 @@
 import { createHash } from "node:crypto";
-import { existsSync, readFileSync } from "node:fs";
-import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
+
+import { hasBundledPrompt, loadBundledPromptContent } from "./load-prompt-content";
 
 export type LoadedCanonicalStudyPrompt = {
   id: "canonical-study";
@@ -30,26 +29,12 @@ const VERSION_FILES: Record<string, { version: string; fileName: string }> = {
   "canonical-study-v4": { version: "v4", fileName: "canonical-study-v4.md" },
 };
 
-function promptDirectories(): string[] {
-  const here = dirname(fileURLToPath(import.meta.url));
-  return [
-    join(here, "../../prompts/canonical-study"),
-    join(process.cwd(), "prompts/canonical-study"),
-    join(process.cwd(), "engine/core/prompts/canonical-study"),
-    join(process.cwd(), "../../engine/core/prompts/canonical-study"),
-    join(process.cwd(), "packages/core/prompts/canonical-study"),
-    join(process.cwd(), "../../packages/core/prompts/canonical-study"),
-  ];
-}
-
-function resolvePromptFile(fileName: string): string {
-  for (const directory of promptDirectories()) {
-    const candidate = join(directory, fileName);
-    if (existsSync(candidate)) {
-      return candidate;
-    }
+function resolvePromptKey(fileName: string): string {
+  const key = `canonical-study/${fileName}`;
+  if (!hasBundledPrompt(key)) {
+    throw new UnknownPromptVersionError(fileName);
   }
-  throw new UnknownPromptVersionError(fileName);
+  return key;
 }
 
 /**
@@ -65,8 +50,8 @@ export function loadCanonicalStudyPrompt(version: string): LoadedCanonicalStudyP
   if (!mapped) {
     throw new UnknownPromptVersionError(requested);
   }
-  const filePath = resolvePromptFile(mapped.fileName);
-  const content = readFileSync(filePath, "utf8").replace(/\r\n/g, "\n");
+  resolvePromptKey(mapped.fileName);
+  const content = loadBundledPromptContent(`canonical-study/${mapped.fileName}`);
   const sha256 = createHash("sha256").update(content).digest("hex");
   return {
     id: "canonical-study",
