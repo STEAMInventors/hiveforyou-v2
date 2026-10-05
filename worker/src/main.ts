@@ -2,6 +2,7 @@ import { createServer } from "node:http";
 
 import { assertWorkerStartPolicy, readWorkerEnv } from "./env.js";
 import { startHeartbeat } from "./heartbeat.js";
+import { runBootCheckIfRequested } from "./boot-check.js";
 import { runSelfCheckIfRequested } from "./self-check.js";
 
 async function startConnect(): Promise<void> {
@@ -59,6 +60,9 @@ async function startServe(): Promise<void> {
 
 async function main(): Promise<void> {
   if (await runSelfCheckIfRequested(process.argv)) {
+    return;
+  }
+  if (await runBootCheckIfRequested(process.argv)) {
     return;
   }
   assertWorkerStartPolicy();

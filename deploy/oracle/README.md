@@ -22,7 +22,7 @@ Build context is the repo root; the image bundles `worker/dist/main.js` and inst
 ## Smoke checks
 
 ```bash
-docker compose exec hive-worker node dist/main.js --self-check
+docker compose exec hive-worker node dist/main.js --boot-check
 docker inspect --format='{{json .State.Health}}' "$(docker compose ps -q hive-worker)"
 ```
 

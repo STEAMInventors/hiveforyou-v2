@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
+import { cpSync, readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -7,13 +7,29 @@ import * as esbuild from "esbuild";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const workerRoot = path.join(__dirname, "..");
 const repoRoot = path.join(workerRoot, "..");
+const outFile = path.join(workerRoot, "dist/main.js");
 
-const RUNTIME_EXTERNAL_EXACT = new Set(["inngest", "@supabase/supabase-js"]);
+const ESM_BANNER = `import { createRequire } from "node:module";
+const require = createRequire(import.meta.url);
+`;
+
 const RUNTIME_EXTERNAL_PREFIXES = [
+  "inngest",
+  "@supabase/supabase-js",
   "@napi-rs/canvas",
   "pdfjs-dist",
   "onnxruntime-node",
   "@gutenye/ocr-node",
+];
+
+/** If any marker appears in dist/main.js, that package was bundled instead of external. */
+const BUNDLED_MARKERS_BY_EXTERNAL = [
+  { label: "inngest", markers: ["inngest/components"] },
+  { label: "@supabase/supabase-js", markers: ["@supabase/auth-js", "@supabase/postgrest-js"] },
+  { label: "@napi-rs/canvas", markers: ["@napi-rs/canvas/index"] },
+  { label: "pdfjs-dist", markers: ["pdfjs-dist/build/pdf"] },
+  { label: "onnxruntime-node", markers: ["onnxruntime-node/dist"] },
+  { label: "@gutenye/ocr-node", markers: ["@gutenye/ocr-node/dist"] },
 ];
 
 function readJson(relativePath) {
@@ -25,12 +41,40 @@ function isHiveWorkspaceImport(importPath) {
 }
 
 function isRuntimeExternal(importPath) {
-  if (RUNTIME_EXTERNAL_EXACT.has(importPath)) {
-    return true;
-  }
   return RUNTIME_EXTERNAL_PREFIXES.some(
     (prefix) => importPath === prefix || importPath.startsWith(`${prefix}/`),
   );
+}
+
+function assertNoBundledRuntimePackages(bundleText) {
+  for (const { label, markers } of BUNDLED_MARKERS_BY_EXTERNAL) {
+    for (const marker of markers) {
+      if (bundleText.includes(marker)) {
+        throw new Error(
+          `[worker] bundle verification failed: found "${marker}" (${label} must stay external)`,
+        );
+      }
+    }
+  }
+}
+
+/** Banner + bundled sources may each import createRequire; keep one top-level import. */
+/** Bundled code resolves prompts via import.meta.url → ../../prompts (repo root or /prompts in Docker). */
+function syncBundledRuntimePrompts() {
+  const source = path.join(repoRoot, "engine/core/prompts");
+  const target = path.join(repoRoot, "prompts");
+  cpSync(source, target, { recursive: true });
+}
+
+function dedupeCreateRequireImports(bundleText) {
+  let seen = false;
+  return bundleText.replace(/^import \{ createRequire \} from "node:module";\r?\n/gm, (line) => {
+    if (seen) {
+      return "";
+    }
+    seen = true;
+    return line;
+  });
 }
 
 mkdirSync(path.join(workerRoot, "dist"), { recursive: true });
@@ -41,7 +85,8 @@ await esbuild.build({
   platform: "node",
   target: "node22",
   format: "esm",
-  outfile: path.join(workerRoot, "dist/main.js"),
+  outfile: outFile,
+  banner: { js: ESM_BANNER },
   sourcemap: true,
   logLevel: "info",
   plugins: [
@@ -68,12 +113,21 @@ await esbuild.build({
   ],
 });
 
+let bundleText = readFileSync(outFile, "utf8");
+bundleText = dedupeCreateRequireImports(bundleText);
+writeFileSync(outFile, bundleText, "utf8");
+assertNoBundledRuntimePackages(bundleText);
+
 const workerPkg = readJson("worker/package.json");
 const dependencies = Object.fromEntries(
   Object.entries(workerPkg.dependencies ?? {}).filter(
     ([, version]) => typeof version === "string" && !version.startsWith("workspace:"),
   ),
 );
+
+if (!dependencies.inngest) {
+  throw new Error("[worker] dist/package.json must list inngest in dependencies");
+}
 
 const runtimePackage = {
   name: "@hiveforyou/worker-runtime",
@@ -88,5 +142,7 @@ writeFileSync(
   `${JSON.stringify(runtimePackage, null, 2)}\n`,
   "utf8",
 );
+
+syncBundledRuntimePrompts();
 
 console.info("[worker] bundled dist/main.js (Inngest + native packages external)");
