@@ -34,7 +34,13 @@ export {
   parseStoryWriterEngine,
 } from "./story/enrich-case-view-with-validated-story";
 export type { EnrichCaseViewWithValidatedStoryInput } from "./story/enrich-case-view-with-validated-story";
-export type { CallModel, ModelRequest, ModelResponse } from "./story/call-model";
+export type {
+  CallModel,
+  ModelCallErrorKind,
+  ModelRequest,
+  ModelResponse,
+} from "./story/call-model";
+export { ModelCallError } from "./story/call-model";
 export {
   shouldPreferPackForCaseView,
   shouldPreferPackNarrativeOverValidatedStory,

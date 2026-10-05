@@ -10,7 +10,7 @@ import type { ComposedDiscoverPromptInputs } from "./compose-discover-prompt-inp
 import { FixtureDiscoverEngine } from "./fixture-engine";
 import { FixtureDiscoverResolutionEngine } from "./fixture-resolution-engine";
 import { FixtureDiscoverV2Engine } from "./fixture-v2-engine";
-import { createOpenAICallModel, OpenAIDiscoverEngine } from "./openai-engine";
+import { OpenAIDiscoverEngine } from "./openai-engine";
 import { OpenAIDiscoverResolutionEngine } from "./openai-resolution-engine";
 import type { CallModel } from "../model/call-model";
 import type { DiscoverSourceDocumentInput } from "./types";
@@ -122,8 +122,21 @@ export function createDiscoverEngineFromEnv(
         reasoningEffort,
       };
     }
-    const callModel = deps.callModel ?? createOpenAICallModel({ apiKey });
     const factory = deps.createOpenAIEngine ?? ((input) => new OpenAIDiscoverEngine(input));
+    const callModel =
+      deps.callModel ??
+      (async () => {
+        throw new Error("DISCOVER_ENGINE_UNAVAILABLE");
+      });
+    if (!deps.callModel && !deps.createOpenAIEngine) {
+      return {
+        engine: new UnconfiguredDiscoverEngine(),
+        mode: "openai",
+        providerId: "openai-discover-engine",
+        modelId: model,
+        reasoningEffort,
+      };
+    }
     return {
       engine: factory({ model, reasoningEffort, callModel }),
       mode: "openai",
@@ -166,9 +179,23 @@ export function createDiscoverResolutionEngineFromEnv(
         modelId: model,
       };
     }
-    const callModel = deps.callModel ?? createOpenAICallModel({ apiKey });
+    if (!deps.callModel) {
+      return {
+        engine: {
+          resolveDiscovery: async () => {
+            throw new Error("DISCOVER_ENGINE_UNAVAILABLE");
+          },
+        },
+        providerId: "openai-discover-resolution-engine",
+        modelId: model,
+      };
+    }
     return {
-      engine: new OpenAIDiscoverResolutionEngine({ model, reasoningEffort, callModel }),
+      engine: new OpenAIDiscoverResolutionEngine({
+        model,
+        reasoningEffort,
+        callModel: deps.callModel,
+      }),
       providerId: "openai-discover-resolution-engine",
       modelId: model,
     };

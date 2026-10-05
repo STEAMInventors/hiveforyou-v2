@@ -5,10 +5,6 @@ import { HIVE_DISCOVER_RESOLUTION_SCHEMA } from "@hiveforyou/shared/discover";
 import type { CallModel } from "../model/call-model";
 
 import type { DiscoverResolutionContext, DiscoverResolutionEngine } from "./engine";
-import {
-  extractOpenAIResponseErrorFields,
-  formatOpenAIResponseFailedErrorMessage,
-} from "./openai-engine";
 
 type OpenAIResolutionEngineOptions = {
   model: string;
@@ -93,5 +89,3 @@ export class OpenAIDiscoverResolutionEngine implements DiscoverResolutionEngine 
     return parsed as HiveDiscoverResolutionProposalV1;
   }
 }
-
-export { extractOpenAIResponseErrorFields, formatOpenAIResponseFailedErrorMessage };

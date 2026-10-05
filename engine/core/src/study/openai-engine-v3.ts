@@ -7,7 +7,7 @@ import type { CanonicalStudyContext } from "@hiveforyou/shared/canonical-study";
 import { readStatedWorkPurpose } from "@hiveforyou/shared/canonical-study";
 
 import type { CanonicalStudyPromptInputs } from "../prompts/compose-canonical-study-inputs";
-import type { CallModel } from "../model/call-model";
+import { ModelCallError, type CallModel } from "../model/call-model";
 import {
   CanonicalStudyEngineUnavailableError,
   MalformedCanonicalStudyProposalError,
@@ -314,11 +314,13 @@ export class OpenAICanonicalStudyEngineV3 {
       if (error instanceof CanonicalStudyEngineUnavailableError) {
         throw error;
       }
-      if (error instanceof Error && error.message.startsWith("OPENAI_FILE_UPLOAD_FAILED:")) {
-        throw new CanonicalStudyEngineUnavailableError("OPENAI_FILE_UPLOAD_FAILED");
-      }
-      if (error instanceof Error && error.message.startsWith("OPENAI_RESPONSE_FAILED:")) {
-        throw new CanonicalStudyEngineUnavailableError(error.message);
+      if (error instanceof ModelCallError) {
+        if (error.kind === "upload_failed") {
+          throw new CanonicalStudyEngineUnavailableError("OPENAI_FILE_UPLOAD_FAILED");
+        }
+        if (error.kind === "response_failed") {
+          throw new CanonicalStudyEngineUnavailableError(error.message);
+        }
       }
       throw new CanonicalStudyEngineUnavailableError("OPENAI_RESPONSE_FAILED");
     }

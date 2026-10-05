@@ -13,7 +13,6 @@ import type { RecognitionVocabularyPromptRow } from "@hiveforyou/domain-packs";
 import type { ExtractionLocatorCatalog } from "../provenance/serialize-extraction-locator-catalog";
 import type { ExtractionReadiness } from "@hiveforyou/shared/intake/extraction-readiness";
 import type { CanonicalStudyPromptInputs } from "../prompts/compose-canonical-study-inputs";
-import { createOpenAICallModel } from "../discover/openai-engine";
 import type { CallModel } from "../model/call-model";
 import { OpenAICanonicalStudyEngineV3 } from "./openai-engine-v3";
 import { OpenAICanonicalStudyEngineV4 } from "./openai-engine-v4";
@@ -285,7 +284,18 @@ export function createCanonicalStudyEngineV3FromEnv(
         modelId: model,
       };
     }
-    const callModel = options?.callModel ?? createOpenAICallModel({ apiKey });
+    const callModel = options?.callModel;
+    if (!callModel) {
+      return {
+        engine: new UnconfiguredProductionStudyEngineV3(),
+        mode: "openai",
+        providerId:
+          promptVersion === "v4"
+            ? "openai-canonical-study-engine-v4"
+            : "openai-canonical-study-engine-v3",
+        modelId: model,
+      };
+    }
     if (promptVersion === "v4") {
       return {
         engine: new OpenAICanonicalStudyEngineV4({

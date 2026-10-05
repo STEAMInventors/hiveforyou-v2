@@ -12,6 +12,7 @@ import {
 } from "@hiveforyou/core";
 import type { StartCanonicalStudyRequest } from "@hiveforyou/shared/canonical-study";
 
+import { openAiCallModelFromEnv } from "@/lib/model/openai-call-model.server";
 import { readServerEnv } from "@/lib/env/server-env";
 import { enrichCaseViewWithValidatedStory } from "@/lib/story/story-writer-from-env.server";
 import { readStatedWorkPurpose } from "@hiveforyou/shared/canonical-study";
@@ -63,7 +64,10 @@ export async function startCanonicalStudyFromRequest(
       maxOutputTokens:
         env.HIVE_CANONICAL_STUDY_MAX_OUTPUT_TOKENS ?? env.HIVE_OPENAI_MAX_OUTPUT_TOKENS,
     },
-    { promptVersion: prompt.version === "v4" ? "v4" : "v3" },
+    {
+      promptVersion: prompt.version === "v4" ? "v4" : "v3",
+      callModel: openAiCallModelFromEnv(env),
+    },
   );
   const gateway = createSupabaseHiveGateway(await createServerSupabaseClient());
   const adminGateway = createSupabaseHiveGateway(createAdminSupabaseClient());

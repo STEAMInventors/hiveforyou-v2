@@ -22,6 +22,7 @@
     "@gutenye/ocr-node": "^1.4.8",
     "@hiveforyou/canonical": "workspace:*",
     "@hiveforyou/core": "workspace:*",
+    "@hiveforyou/model-providers": "workspace:*",
     "@hiveforyou/domain-packs": "workspace:*",
     "@hiveforyou/intake": "workspace:*",
     "@hiveforyou/intake-node": "workspace:*",

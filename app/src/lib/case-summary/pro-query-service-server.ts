@@ -1,6 +1,6 @@
 import "server-only";
 
-import { createOpenAICallModel } from "@hiveforyou/core/discover/openai-engine";
+import { openAiCallModelFromEnv } from "@/lib/model/openai-call-model.server";
 import { buildProExportTables } from "@hiveforyou/core/pro-export-tables";
 import { buildExportSystemPrompt } from "@hiveforyou/core/pro-export-prompt";
 import { validateSql } from "@hiveforyou/core/pro-validate-sql";
@@ -35,7 +35,10 @@ async function callExportModel(request: string, retryErrors?: string): Promise<M
     ? `${request}\n\nYour previous answer failed these checks: ${retryErrors}. Fix them and return JSON only.`
     : request;
   const model = env.HIVE_OPENAI_MODEL ?? env.HIVE_STORY_WRITER_MODEL ?? "gpt-4o-mini";
-  const callModel = createOpenAICallModel({ apiKey: env.OPENAI_API_KEY });
+  const callModel = openAiCallModelFromEnv(env);
+  if (!callModel) {
+    throw new Error("ENGINE_UNAVAILABLE");
+  }
   const response = await callModel({
     model,
     temperature: 0,

@@ -1,0 +1,23 @@
+{
+  "name": "@hiveforyou/model-providers",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    "./openai": "./src/openai-call-model.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "lint": "node -e \"process.exit(0)\"",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@hiveforyou/shared": "workspace:*"
+  },
+  "devDependencies": {
+    "@hiveforyou/core": "workspace:*",
+    "@types/node": "^22.10.2",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  }
+}

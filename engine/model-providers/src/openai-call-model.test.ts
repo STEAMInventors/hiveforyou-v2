@@ -1,3 +1,4 @@
+import { OpenAIDiscoverEngine } from "@hiveforyou/core";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import {
@@ -5,8 +6,7 @@ import {
   extractOpenAIResponseErrorFields,
   extractOpenAIResponseOutputText,
   formatOpenAIResponseFailedErrorMessage,
-  OpenAIDiscoverEngine,
-} from "./openai-engine";
+} from "./openai-call-model.js";
 
 describe("OpenAI Responses API error diagnostics", () => {
   afterEach(() => {

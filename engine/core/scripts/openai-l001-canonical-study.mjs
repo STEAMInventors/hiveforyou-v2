@@ -29,6 +29,7 @@ import {
   runCanonicalStudy,
   validateCanonicalStudyProposal,
 } from "@hiveforyou/core";
+import { createOpenAICallModel } from "@hiveforyou/model-providers/openai";
 import { resolveDomainPackFromDiscoveryLabel } from "@hiveforyou/domain-packs";
 import {
   InMemoryCaseIntelligenceRepository,
@@ -181,14 +182,20 @@ if (!pack) {
 }
 
 const prompt = loadCanonicalStudyPrompt(process.env.HIVE_PROMPT_VERSION ?? "canonical-study-v2");
-const engineConfig = createCanonicalStudyEngineFromEnv({
-  engine: process.env.HIVE_CANONICAL_STUDY_ENGINE ?? "openai",
-  openaiApiKey: process.env.OPENAI_API_KEY,
-  model: process.env.HIVE_CANONICAL_STUDY_MODEL ?? process.env.HIVE_OPENAI_MODEL,
-  reasoningEffort:
-    process.env.HIVE_CANONICAL_STUDY_REASONING_EFFORT ?? process.env.HIVE_DISCOVER_REASONING_EFFORT,
-  maxOutputTokens: process.env.HIVE_CANONICAL_STUDY_MAX_OUTPUT_TOKENS,
-});
+const openAiCallModel = process.env.OPENAI_API_KEY?.trim()
+  ? createOpenAICallModel({ apiKey: process.env.OPENAI_API_KEY.trim() })
+  : undefined;
+const engineConfig = createCanonicalStudyEngineFromEnv(
+  {
+    engine: process.env.HIVE_CANONICAL_STUDY_ENGINE ?? "openai",
+    openaiApiKey: process.env.OPENAI_API_KEY,
+    model: process.env.HIVE_CANONICAL_STUDY_MODEL ?? process.env.HIVE_OPENAI_MODEL,
+    reasoningEffort:
+      process.env.HIVE_CANONICAL_STUDY_REASONING_EFFORT ?? process.env.HIVE_DISCOVER_REASONING_EFFORT,
+    maxOutputTokens: process.env.HIVE_CANONICAL_STUDY_MAX_OUTPUT_TOKENS,
+  },
+  { callModel: openAiCallModel },
+);
 
 const artifactRepo = new InMemoryStudyArtifactRepository();
 const projectionRepo = new InMemoryCaseProjectionRepository();

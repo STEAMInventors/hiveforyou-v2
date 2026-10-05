@@ -17,6 +17,7 @@ import {
 } from "@hiveforyou/core";
 import { readStatedWorkPurpose } from "@hiveforyou/shared/canonical-study";
 import { computeIntakeWorkspaceReady } from "@hiveforyou/shared/intake";
+import { openAiCallModelFromEnv } from "@/lib/model/openai-call-model.server";
 import { enrichCaseViewWithValidatedStory } from "@/lib/story/story-writer-from-env.server";
 
 import {
@@ -220,7 +221,10 @@ async function startIntakeCanonicalStudyFromRunInner(
       maxOutputTokens:
         env.HIVE_CANONICAL_STUDY_MAX_OUTPUT_TOKENS ?? env.HIVE_OPENAI_MAX_OUTPUT_TOKENS,
     },
-    { promptVersion: prompt.version === "v4" ? "v4" : "v3" },
+    {
+      promptVersion: prompt.version === "v4" ? "v4" : "v3",
+      callModel: openAiCallModelFromEnv(env),
+    },
   );
 
   const caseCustomerContextRepo = new SupabaseCaseCustomerContextRepository(

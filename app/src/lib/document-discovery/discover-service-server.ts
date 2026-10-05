@@ -13,6 +13,7 @@ import {
 import type { CaseCustomerContextIntake } from "@hiveforyou/shared/case-customer-context";
 import type { CustomerDiscoveryAnswer, HiveDiscoverResult } from "@hiveforyou/shared/discover";
 
+import { openAiCallModelFromEnv } from "@/lib/model/openai-call-model.server";
 import { readServerEnv } from "@/lib/env/server-env";
 import { createSupabaseHiveGateway } from "@/lib/persistence/hive-gateway";
 import {
@@ -54,6 +55,7 @@ export async function runDiscoverFromRequest(input: {
   const sessionUserId = requireSessionUserId(await getAuthenticatedUserId());
   const prompt = loadDiscoverPrompt(env.HIVE_DISCOVER_PROMPT_VERSION);
   const adaptive = isAdaptiveDiscoverPromptVersion(env.HIVE_DISCOVER_PROMPT_VERSION);
+  const callModel = openAiCallModelFromEnv(env);
   const engineConfig = createDiscoverEngineFromEnv(
     {
       engine: env.HIVE_DISCOVER_ENGINE,
@@ -61,7 +63,7 @@ export async function runDiscoverFromRequest(input: {
       model: env.HIVE_DISCOVER_MODEL,
       reasoningEffort: env.HIVE_DISCOVER_REASONING_EFFORT,
     },
-    { adaptiveV2: adaptive },
+    { adaptiveV2: adaptive, callModel },
   );
 
   const gateway = createSupabaseHiveGateway(await createServerSupabaseClient());
@@ -82,12 +84,15 @@ export async function runDiscoverFromRequest(input: {
   const artifactRepo = new SupabaseDiscoverArtifactRepository(gateway, sessionUserId);
   const adaptiveDeps = adaptive
     ? {
-        resolutionEngine: createDiscoverResolutionEngineFromEnv({
-          engine: env.HIVE_DISCOVER_ENGINE,
-          openaiApiKey: env.OPENAI_API_KEY,
-          model: env.HIVE_DISCOVER_MODEL,
-          reasoningEffort: env.HIVE_DISCOVER_REASONING_EFFORT,
-        }).engine,
+        resolutionEngine: createDiscoverResolutionEngineFromEnv(
+          {
+            engine: env.HIVE_DISCOVER_ENGINE,
+            openaiApiKey: env.OPENAI_API_KEY,
+            model: env.HIVE_DISCOVER_MODEL,
+            reasoningEffort: env.HIVE_DISCOVER_REASONING_EFFORT,
+          },
+          { callModel },
+        ).engine,
         resolutionPrompt: loadDiscoverResolutionPrompt(),
         questionRepo: new SupabaseDiscoverQuestionRepository(gateway, sessionUserId),
         answerRepo: new SupabaseDiscoverCustomerAnswerRepository(gateway, sessionUserId),

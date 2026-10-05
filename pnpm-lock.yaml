@@ -41,6 +41,9 @@ importers:
       '@hiveforyou/intake-node':
         specifier: workspace:*
         version: link:../engine/intake-node
+      '@hiveforyou/model-providers':
+        specifier: workspace:*
+        version: link:../engine/model-providers
       '@hiveforyou/shared':
         specifier: workspace:*
         version: link:../engine/shared
@@ -58,7 +61,7 @@ importers:
         version: 4.6.6
       inngest:
         specifier: ^4.21.1
-        version: 4.21.1(@opentelemetry/core@2.11.0(@opentelemetry/api@1.9.1))(next@15.5.26(@babel/core@7.29.7)(@opentelemetry/api@1.9.1)(@types/node@22.20.4)(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(react@19.3.0)(typescript@5.9.3)(zod@4.6.5)
+        version: 4.21.1(@opentelemetry/core@2.11.0(@opentelemetry/api@1.9.1))(next@15.5.26(@opentelemetry/api@1.9.1)(@types/node@22.20.4)(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(react@19.3.0)(typescript@5.9.3)(zod@4.6.5)
       lucide-react:
         specifier: ^0.469.0
         version: 0.469.0(react@19.3.0)
@@ -158,6 +161,9 @@ importers:
       '@hiveforyou/intake':
         specifier: workspace:*
         version: link:../intake
+      '@hiveforyou/model-providers':
+        specifier: workspace:*
+        version: link:../model-providers
       '@types/node':
         specifier: ^22.10.2
         version: 22.20.4
@@ -323,6 +329,25 @@ importers:
         specifier: ^5.7.2
         version: 5.9.3
 
+  engine/model-providers:
+    dependencies:
+      '@hiveforyou/shared':
+        specifier: workspace:*
+        version: link:../shared
+    devDependencies:
+      '@hiveforyou/core':
+        specifier: workspace:*
+        version: link:../core
+      '@types/node':
+        specifier: ^22.10.2
+        version: 22.20.4
+      typescript:
+        specifier: ^5.7.2
+        version: 5.9.3
+      vitest:
+        specifier: ^2.1.8
+        version: 2.1.9(@types/node@22.20.4)(jsdom@25.0.1)(terser@5.51.2)
+
   engine/shared:
     dependencies:
       zod:
@@ -356,6 +381,9 @@ importers:
       '@hiveforyou/intake-node':
         specifier: workspace:*
         version: link:../engine/intake-node
+      '@hiveforyou/model-providers':
+        specifier: workspace:*
+        version: link:../engine/model-providers
       '@hiveforyou/shared':
         specifier: workspace:*
         version: link:../engine/shared
@@ -367,7 +395,7 @@ importers:
         version: 2.117.2(@opentelemetry/api@1.9.1)
       inngest:
         specifier: ^4.21.1
-        version: 4.21.1(@opentelemetry/core@2.11.0(@opentelemetry/api@1.9.1))(next@15.5.26(@babel/core@7.29.7)(@opentelemetry/api@1.9.1)(@types/node@22.20.4)(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(react@19.3.0)(typescript@5.9.3)(zod@4.6.5)
+        version: 4.21.1(@opentelemetry/core@2.11.0(@opentelemetry/api@1.9.1))(next@15.5.26(@opentelemetry/api@1.9.1)(@types/node@22.20.4)(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(react@19.3.0)(typescript@5.9.3)(zod@4.6.5)
       pdfjs-dist:
         specifier: ^5.6.205
         version: 5.7.284
@@ -7772,7 +7800,7 @@ snapshots:
 
   inherits@2.0.4: {}
 
-  inngest@4.21.1(@opentelemetry/core@2.11.0(@opentelemetry/api@1.9.1))(next@15.5.26(@babel/core@7.29.7)(@opentelemetry/api@1.9.1)(@types/node@22.20.4)(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(react@19.3.0)(typescript@5.9.3)(zod@4.6.5):
+  inngest@4.21.1(@opentelemetry/core@2.11.0(@opentelemetry/api@1.9.1))(next@15.5.26(@opentelemetry/api@1.9.1)(@types/node@22.20.4)(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(react@19.3.0)(typescript@5.9.3)(zod@4.6.5):
     dependencies:
       '@bufbuild/protobuf': 2.16.0
       '@inngest/ai': 0.1.8

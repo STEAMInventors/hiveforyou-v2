@@ -19,7 +19,8 @@
     "./intake": "./src/intake/index.ts",
     "./intake/extraction-readiness": "./src/intake/extraction-readiness.ts",
     "./pack-study": "./src/pack-study/index.ts",
-    "./events": "./src/events/index.ts"
+    "./events": "./src/events/index.ts",
+    "./model/call-model": "./src/model/call-model.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",

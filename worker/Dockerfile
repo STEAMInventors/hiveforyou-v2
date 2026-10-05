@@ -13,6 +13,7 @@ COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY app/package.json app/package.json
 COPY worker/package.json worker/package.json
 COPY engine/core/package.json engine/core/package.json
+COPY engine/model-providers/package.json engine/model-providers/package.json
 COPY engine/intake/package.json engine/intake/package.json
 COPY engine/intake-node/package.json engine/intake-node/package.json
 COPY engine/canonical/package.json engine/canonical/package.json

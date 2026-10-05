@@ -26,7 +26,10 @@ import {
 import { WorkerIntakeRepository } from "../persistence/worker-intake-repository.js";
 import { WorkerSourceDocumentRepository } from "../intake/worker-source-documents.js";
 import { SupabaseCaseCustomerContextRepository } from "../persistence/worker-case-customer-context.js";
-import { createWorkerStoryWriterCallModel } from "./story-writer-call-model.js";
+import {
+  createWorkerOpenAiCallModel,
+  createWorkerStoryWriterCallModel,
+} from "./story-writer-call-model.js";
 
 const CANONICAL_STUDY_PROMPT_ID = "canonical-study-v4";
 
@@ -63,6 +66,7 @@ export function buildWorkerStudyDeps(
   const documents = new WorkerSourceDocumentRepository(gateway, userId);
 
   const prompt = loadCanonicalStudyPrompt(CANONICAL_STUDY_PROMPT_ID);
+  const openAiCallModel = createWorkerOpenAiCallModel(env);
   const engineConfig = createCanonicalStudyEngineFromEnv(
     {
       engine: env.HIVE_CANONICAL_STUDY_ENGINE,
@@ -73,7 +77,10 @@ export function buildWorkerStudyDeps(
         env.HIVE_CANONICAL_STUDY_MAX_OUTPUT_TOKENS ?? env.HIVE_OPENAI_MAX_OUTPUT_TOKENS,
       ),
     },
-    { promptVersion: prompt.version === "v4" ? "v4" : "v3" },
+    {
+      promptVersion: prompt.version === "v4" ? "v4" : "v3",
+      callModel: openAiCallModel,
+    },
   );
 
   const storyMode = parseStoryWriterEngine(env.HIVE_STORY_WRITER_ENGINE);

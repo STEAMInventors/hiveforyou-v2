@@ -12,7 +12,7 @@
     "./pro-validate-sql": "./src/views/pro/validateSql.ts",
     "./pro-export-tables": "./src/views/pro/buildProExportTables.ts",
     "./pro-export-prompt": "./src/views/pro/exportPrompt.ts",
-    "./discover/openai-engine": "./src/discover/openai-engine.ts",
+    "./model/call-model": "./src/model/call-model.ts",
     "./pack-study-from-projection": "./src/study/narrative/build-pack-study-from-projection.ts",
     "./case-view-plan": "./src/projections/project-case-view-v2-plan.ts",
     "./study": "./src/study/index.ts",
@@ -33,6 +33,7 @@
   },
   "devDependencies": {
     "@hiveforyou/intake": "workspace:*",
+    "@hiveforyou/model-providers": "workspace:*",
     "@types/node": "^22.10.2",
     "tsx": "^4.19.2",
     "typescript": "^5.7.2",
