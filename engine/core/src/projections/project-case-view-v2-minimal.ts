@@ -9,6 +9,7 @@ import type {
   CaseHeader,
 
   CaseTimeline,
+  TimelineEvent,
 
   CaseView,
 
@@ -356,8 +357,8 @@ function buildTimeline(v1: CaseView, intelligence: CanonicalCaseSnapshot): CaseT
 
   const sortedCanonical = [...intelligence.events].sort(compareTimelineEvents);
 
-  const events: CaseTimeline["events"] = sortedCanonical
-    .map((event) => {
+  const events: TimelineEvent[] = sortedCanonical
+    .map((event): TimelineEvent | null => {
       const claim = claimsById.get(event.claimId);
       const anchor =
         event.occurredOn?.trim() ||
@@ -392,7 +393,7 @@ function buildTimeline(v1: CaseView, intelligence: CanonicalCaseSnapshot): CaseT
         requestId: null,
       };
     })
-    .filter((row): row is CaseTimeline["events"][number] => row != null);
+    .filter((row): row is TimelineEvent => row != null);
 
   if (events.length === 0) {
     const docs = [...v1.documents]

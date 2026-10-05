@@ -9,7 +9,7 @@ export type ProRowState =
   | "added"
   | "dropped"
   | "reconfirmed"
-  | "not-compared"
+  | "notcompared"
   | "scheduled";
 
 export type ProRow = {

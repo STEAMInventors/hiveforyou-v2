@@ -164,12 +164,16 @@ function buildFacts(
 
   const facts: ProTypedFact[] = [];
   for (const claim of claims) {
-    const ref = primaryRefForClaim(provenance, claim.id) ?? claim.evidenceRefs[0];
+    const resolvedRef = primaryRefForClaim(provenance, claim.id);
+    const ref = resolvedRef ?? claim.evidenceRefs[0];
     if (!ref) {
       continue;
     }
     const sourceDocumentId = ref.sourceDocumentId;
-    const filename = ref.sourceFilename?.trim() || filenameById.get(sourceDocumentId) || sourceDocumentId;
+    const filename =
+      resolvedRef?.sourceFilename?.trim() ||
+      filenameById.get(sourceDocumentId) ||
+      sourceDocumentId;
     const { val, unit } = formatVal(claim);
     const asOf = claim.measurement?.asOf ?? claim.temporalKind;
     if (claim.measurement?.asOf) {
@@ -186,7 +190,7 @@ function buildFacts(
       sourceDocumentId,
       docRole: docRoleFromRef(sourceDocumentId, filename, provenance),
       filename,
-      page: ref.physicalPageNumber ?? ref.page ?? 1,
+      page: resolvedRef?.physicalPageNumber ?? resolvedRef?.page ?? ref.page ?? 1,
     });
   }
 

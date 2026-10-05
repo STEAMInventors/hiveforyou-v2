@@ -477,6 +477,10 @@ export async function runStudyWorkerProjectionsStep(
     builtOverride: built,
   });
 
+  if (nextVersion == null || !snapshot) {
+    throw new Error("STUDY_PROJECTIONS_INTELLIGENCE_VERSION_MISSING");
+  }
+
   const existingIntelligence = await deps.intelligenceRepo.getByVersion(run.caseId, nextVersion);
   if (!existingIntelligence) {
     await deps.intelligenceRepo.save(snapshot);

@@ -5,9 +5,14 @@ import {
 } from "@hiveforyou/domain-packs";
 import type {
   HiveDiscoverProposalV1,
+  HiveDiscoverProposalV2,
   HiveDiscoverValidationResult,
 } from "@hiveforyou/shared/discover";
-import { HIVE_DISCOVER_PROPOSAL_SCHEMA } from "@hiveforyou/shared/discover";
+import {
+  HIVE_DISCOVER_PROPOSAL_SCHEMA,
+  HIVE_DISCOVER_PROPOSAL_SCHEMA_V2,
+} from "@hiveforyou/shared/discover";
+import { validateDiscoveryProposalV2 } from "./validate-discovery-proposal-v2";
 
 import type { DiscoverSourceDocumentInput } from "./types";
 
@@ -182,8 +187,29 @@ export function validateDiscoveryProposal(
   };
 }
 
+export function isHiveDiscoverProposalV1(raw: unknown): raw is HiveDiscoverProposalV1 {
+  return isProposalShape(raw);
+}
+
+export function isHiveDiscoverProposalV2(raw: unknown): raw is HiveDiscoverProposalV2 {
+  if (typeof raw !== "object" || raw === null) {
+    return false;
+  }
+  return (raw as { schemaVersion?: string }).schemaVersion === HIVE_DISCOVER_PROPOSAL_SCHEMA_V2;
+}
+
+export function validateDiscoverProposalOutput(
+  raw: unknown,
+  sources: DiscoverSourceDocumentInput[],
+): HiveDiscoverValidationResult {
+  if (isHiveDiscoverProposalV2(raw)) {
+    return validateDiscoveryProposalV2(raw, sources);
+  }
+  return validateDiscoveryProposal(raw, sources);
+}
+
 export function resolveActiveDiscoverPack(
-  proposal: HiveDiscoverProposalV1,
+  proposal: HiveDiscoverProposalV1 | HiveDiscoverProposalV2,
 ): DiscoverDomainPackSnapshot | null {
   const singleDomain =
     proposal.domainResolution.status === "RESOLVED" ||

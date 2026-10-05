@@ -10,7 +10,7 @@ export function evaluateNarrativeCondition(study: Study, when: NarrativeConditio
     case "seriesPointAfter":
       return (
         when.anchor === "prior" &&
-        study.anchors.prior &&
+        study.anchors.prior != null &&
         study.seriesAfterPrior != null &&
         study.facts[when.measure] != null
       );

@@ -1,13 +1,18 @@
 import type { DiscoverDomainPackSnapshot } from "@hiveforyou/domain-packs";
 import type { DocumentDiscoveryResult } from "@hiveforyou/shared/discovery";
-import type { HiveDiscoverProposalV1 } from "@hiveforyou/shared/discover";
+import type { HiveDiscoverProposalV1, HiveDiscoverProposalV2 } from "@hiveforyou/shared/discover";
 
 import type { DiscoverSourceDocumentInput } from "./types";
 
-export function mapValidatedProposalToDocumentDiscovery(
-  proposal: HiveDiscoverProposalV1,
+function mapLogicalDocumentsToDiscoveryDocuments(
+  proposal: {
+    domainResolution: HiveDiscoverProposalV1["domainResolution"];
+    logicalDocuments: HiveDiscoverProposalV1["logicalDocuments"];
+    relationships: HiveDiscoverProposalV1["relationships"];
+  },
   pack: DiscoverDomainPackSnapshot,
   sources: DiscoverSourceDocumentInput[],
+  missingDocuments: DocumentDiscoveryResult["missingDocuments"],
 ): DocumentDiscoveryResult {
   const sourceById = new Map(sources.map((doc) => [doc.sourceDocumentId, doc]));
   const domainResolutionStatus =
@@ -28,9 +33,7 @@ export function mapValidatedProposalToDocumentDiscovery(
         originalFilename: source?.originalFilename ?? "unknown",
         sizeBytes: source?.sizeBytes ?? 0,
         pageCount:
-          doc.pageEnd != null
-            ? doc.pageEnd - doc.pageStart + 1
-            : undefined,
+          doc.pageEnd != null ? doc.pageEnd - doc.pageStart + 1 : undefined,
         familyRole: doc.familyRole,
         sequenceOrder: doc.sequenceOrder,
         groupId: doc.groupId,
@@ -44,7 +47,20 @@ export function mapValidatedProposalToDocumentDiscovery(
       kind: rel.kind,
       label: rel.label,
     })),
-    missingDocuments: proposal.missingExpectedDocuments.map((missing) => ({
+    missingDocuments,
+  };
+}
+
+export function mapValidatedProposalToDocumentDiscovery(
+  proposal: HiveDiscoverProposalV1,
+  pack: DiscoverDomainPackSnapshot,
+  sources: DiscoverSourceDocumentInput[],
+): DocumentDiscoveryResult {
+  return mapLogicalDocumentsToDiscoveryDocuments(
+    proposal,
+    pack,
+    sources,
+    proposal.missingExpectedDocuments.map((missing) => ({
       id: missing.id,
       expectedDocumentType: missing.expectedDocumentType,
       familyRole: missing.familyRole,
@@ -52,5 +68,13 @@ export function mapValidatedProposalToDocumentDiscovery(
       reasonExpected: missing.reasonExpected,
       sequenceOrder: missing.sequenceOrder,
     })),
-  };
+  );
+}
+
+export function mapValidatedProposalV2ToDocumentDiscovery(
+  proposal: HiveDiscoverProposalV2,
+  pack: DiscoverDomainPackSnapshot,
+  sources: DiscoverSourceDocumentInput[],
+): DocumentDiscoveryResult {
+  return mapLogicalDocumentsToDiscoveryDocuments(proposal, pack, sources, []);
 }

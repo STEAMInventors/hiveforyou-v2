@@ -83,8 +83,7 @@ function mapMissing(
   return {
     id: item.id,
     description,
-    subjectEntityId: item.subjectEntityId,
-    evidenceRefs: item.evidenceRefs,
+    relatedDocumentIds: item.evidenceRefs?.map((ref) => ref.sourceDocumentId),
   };
 }
 

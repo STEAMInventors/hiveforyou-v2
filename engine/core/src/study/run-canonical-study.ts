@@ -147,7 +147,7 @@ async function persistStudyArtifact(
   input: {
     studyRunId: string;
     caseId: string;
-    proposal: CanonicalStudyProposal | null;
+    proposal: import("./engine-v3").CanonicalStudyEngineProposal | null;
     validation: CanonicalStudyValidationResultV3;
   },
 ): Promise<void> {
@@ -201,7 +201,11 @@ async function completeValidatedStudyAfterProposal(input: {
         logicalDocuments: context.logicalDocuments,
         proposalSchema,
         voiceProposal,
-        userText: statedWorkPurpose ?? context.answerSnapshot.analysisIntent?.label ?? "",
+        userText:
+          statedWorkPurpose ??
+          (typeof context.answerSnapshot.analysisIntent?.label === "string"
+            ? context.answerSnapshot.analysisIntent.label
+            : ""),
       });
       const writerPass = deps.clientWriterPass ?? deps.clientSummaryPass;
       if (writerPass) {

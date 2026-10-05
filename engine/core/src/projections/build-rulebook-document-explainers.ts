@@ -9,7 +9,13 @@ import type {
   Rule,
   Term,
 } from "@hiveforyou/domain-pack-shared/rulebook/schema";
-import type { CaseDocument, CaseItem, CaseViewV2, Chip, DisplayValue } from "@hiveforyou/shared/projections";
+import type {
+  CaseDocument,
+  CaseItemV2,
+  CaseViewV2,
+  Chip,
+  DisplayValue,
+} from "@hiveforyou/shared/projections";
 import {
   constructRoot,
   IEP_MEASURE_LABELS,
@@ -168,7 +174,7 @@ function chipSourceLabel(chip: Chip, documents: CaseDocument[]): string {
   return `${name} · p.${chip.page}`;
 }
 
-function chipsForItem(item: CaseItem): Chip[] {
+function chipsForItem(item: CaseItemV2): Chip[] {
   if (item.state === "changed") {
     return item.series.flatMap((p) => p.chips);
   }
@@ -181,12 +187,12 @@ function chipsForItem(item: CaseItem): Chip[] {
   return [];
 }
 
-function primaryChipForItem(item: CaseItem): Chip | null {
+function primaryChipForItem(item: CaseItemV2): Chip | null {
   const chips = chipsForItem(item);
   return chips[0] ?? null;
 }
 
-function claimIdForItem(item: CaseItem): string | undefined {
+function claimIdForItem(item: CaseItemV2): string | undefined {
   if (item.state === "established") {
     return item.claimId;
   }
@@ -196,7 +202,7 @@ function claimIdForItem(item: CaseItem): string | undefined {
   return undefined;
 }
 
-function itemOnDocument(item: CaseItem, logicalDocumentId: string): boolean {
+function itemOnDocument(item: CaseItemV2, logicalDocumentId: string): boolean {
   return chipsForItem(item).some((chip) => chip.logicalDocumentId === logicalDocumentId);
 }
 
@@ -235,7 +241,7 @@ function displayValueText(value: DisplayValue): string {
   return "";
 }
 
-function factFromItem(item: CaseItem, documents: CaseDocument[]): RulebookExplainerFact | null {
+function factFromItem(item: CaseItemV2, documents: CaseDocument[]): RulebookExplainerFact | null {
   if (item.state === "established") {
     const value = displayValueText(item.value);
     if (!value) {
@@ -271,14 +277,14 @@ function factFromItem(item: CaseItem, documents: CaseDocument[]): RulebookExplai
   return null;
 }
 
-function measureSectionForItem(item: CaseItem): string | null {
+function measureSectionForItem(item: CaseItemV2): string | null {
   if (item.state !== "established" && item.state !== "changed") {
     return null;
   }
   return iepSectionForMeasure(item.construct.measure);
 }
 
-function sortItemsForAnchor(items: CaseItem[], anchorDocId: string): CaseItem[] {
+function sortItemsForAnchor(items: CaseItemV2[], anchorDocId: string): CaseItemV2[] {
   return [...items].sort((a, b) => {
     const aOn = itemOnDocument(a, anchorDocId) ? 0 : 1;
     const bOn = itemOnDocument(b, anchorDocId) ? 0 : 1;
@@ -288,7 +294,7 @@ function sortItemsForAnchor(items: CaseItem[], anchorDocId: string): CaseItem[] 
 
 function factsForGuideSection(
   section: GuideSection,
-  allItems: CaseItem[],
+  allItems: CaseItemV2[],
   anchorDocId: string,
   documents: CaseDocument[],
 ): RulebookExplainerFact[] {
@@ -323,7 +329,7 @@ function sayRowsFromFacts(facts: RulebookExplainerFact[]): RulebookExplainerSayR
 function sectionStatus(
   section: GuideSection,
   facts: RulebookExplainerFact[],
-  docItems: CaseItem[],
+  docItems: CaseItemV2[],
 ): { status: RulebookSectionStatus; emptyMessage: string | null } {
   if (facts.length === 0 && section.emptyState.later?.trim()) {
     return { status: "later", emptyMessage: section.emptyState.later.trim() };
@@ -544,7 +550,7 @@ function buildExplainerForDocument(input: {
     const { status, emptyMessage } = sectionStatus(section, facts, docItems);
     const summary = sectionSummary(section, status, facts);
     const questions = (section.questions ?? [])
-      .map((q) => (typeof q === "string" ? q : q.text))
+      .map((q) => (typeof q === "string" ? q : q.ask))
       .filter((q): q is string => typeof q === "string" && q.trim().length > 0);
     return {
       id: section.id,

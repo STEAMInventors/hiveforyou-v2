@@ -198,3 +198,8 @@ export type CaseViewV1Base = {
   clientSummary: ClientSummary;
   audit: CaseAudit;
 };
+
+/** Shared layout fields for case-view/1 and case-view/2 projection builders. */
+export type CaseViewProjectionInput = CaseViewV1Base & {
+  items: CaseItemV2[];
+};

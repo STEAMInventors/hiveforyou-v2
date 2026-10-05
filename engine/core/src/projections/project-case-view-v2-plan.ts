@@ -99,7 +99,10 @@ function primaryLogicalDoc(fact: FactItem): string {
   return fact.chips[0]?.logicalDocumentId ?? fact.chips[0]?.sourceDocumentId ?? "unknown";
 }
 
-function logUnmappedMeasures(v1: CaseView, caseId: string): void {
+function logUnmappedMeasures(
+  v1: import("@hiveforyou/shared/projections").CaseViewProjectionInput,
+  caseId: string,
+): void {
   const unmapped = new Set<string>();
   for (const item of v1.items) {
     if (item.state !== "established") {
@@ -122,11 +125,15 @@ function logUnmappedMeasures(v1: CaseView, caseId: string): void {
   }
 }
 
-export function collectFactRowsForNarrative(v1: CaseView): FactRow[] {
+export function collectFactRowsForNarrative(
+  v1: import("@hiveforyou/shared/projections").CaseViewProjectionInput,
+): FactRow[] {
   return collectFactRows(v1);
 }
 
-function collectFactRows(v1: CaseView): FactRow[] {
+function collectFactRows(
+  v1: import("@hiveforyou/shared/projections").CaseViewProjectionInput,
+): FactRow[] {
   const rows: FactRow[] = [];
   const docByLogical = new Map(v1.documents.map((d) => [d.logicalDocumentId, d]));
 
@@ -428,7 +435,7 @@ export type AnatomyPlanResult = {
 };
 
 export function buildAnatomyPlan(input: {
-  v1: CaseView;
+  v1: import("@hiveforyou/shared/projections").CaseViewProjectionInput;
   intelligence: CanonicalCaseSnapshot;
   pack: DomainPackViewConfigV2 | null;
   docIndex: Map<string, { index: number; doc: CaseDocument }>;

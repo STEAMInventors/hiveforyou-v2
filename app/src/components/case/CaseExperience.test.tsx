@@ -20,6 +20,7 @@ describe("Case UI", () => {
         conflictsById={new Map()}
         missingnessById={new Map()}
         provenance={buildProvenanceIndex(CASE_VIEW_FIXTURE.provenance)}
+        eventsById={new Map()}
         selectedDomainId={null}
         onOpenEvidence={() => undefined}
       />,

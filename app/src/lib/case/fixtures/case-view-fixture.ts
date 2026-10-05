@@ -6,7 +6,9 @@ import type { CaseViewBundle } from "@/lib/case/case-view-bundle";
 export const CASE_VIEW_FIXTURE: CaseViewBundle = {
   caseId: "fixture-case",
   intelligenceVersion: 1,
+  intelligenceSchema: "case-intelligence/3",
   studyStatus: "ready",
+  canonicalSnapshot: null,
   structureMap: null,
   sourceDocuments: [],
   provenance: {

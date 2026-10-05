@@ -201,7 +201,7 @@ function buildGroups(
         label: section.docTitle,
         prior: { empty: "not-captured" },
         current: { empty: "not-captured" },
-        state: "not-compared",
+        state: "notcompared",
       });
     }
     return { sectionId: section.id, title: section.docTitle, rows };

@@ -1,4 +1,10 @@
-import type { CaseDocument, CaseItem, CaseTimeline, CaseViewV2, Chip } from "@hiveforyou/shared/projections";
+import type {
+  CaseDocument,
+  CaseItemV2,
+  CaseTimeline,
+  CaseViewV2,
+  Chip,
+} from "@hiveforyou/shared/projections";
 import { CASE_VIEW_V2_SCHEMA, constructRoot } from "@hiveforyou/shared/projections";
 
 import type { ProvenanceIndex } from "@/lib/case/provenance-index";
@@ -53,7 +59,7 @@ export type FluencyChartModel = {
   caveat: string;
 };
 
-function chipsForItem(item: CaseItem): Chip[] {
+function chipsForItem(item: CaseItemV2): Chip[] {
   if (item.state === "changed") {
     return item.series.flatMap((p) => p.chips);
   }
@@ -66,7 +72,7 @@ function chipsForItem(item: CaseItem): Chip[] {
   return [];
 }
 
-function itemOnDocument(item: CaseItem, doc: CaseDocument): boolean {
+function itemOnDocument(item: CaseItemV2, doc: CaseDocument): boolean {
   return chipsForItem(item).some(
     (c) =>
       (c.logicalDocumentId && c.logicalDocumentId === doc.logicalDocumentId) ||
@@ -166,7 +172,7 @@ function statusToTag(status: string | null | undefined): TimelineFactTag | undef
   return undefined;
 }
 
-function valueText(item: CaseItem): string | null {
+function valueText(item: CaseItemV2): string | null {
   if (item.state === "established") {
     return item.value.display?.trim() || null;
   }
@@ -236,14 +242,14 @@ function isWcpmUnit(unit: string | null | undefined): boolean {
   return /^(wcpm|words per minute)$/i.test(unit.trim());
 }
 
-function itemMeasureRoot(item: CaseItem): string | null {
+function itemMeasureRoot(item: CaseItemV2): string | null {
   if (item.state === "established" || item.state === "changed") {
     return constructRoot(item.construct.measure);
   }
   return null;
 }
 
-function isOralReadingFluencyObservation(item: CaseItem): boolean {
+function isOralReadingFluencyObservation(item: CaseItemV2): boolean {
   return itemMeasureRoot(item) === "oral_reading_fluency";
 }
 
@@ -272,7 +278,7 @@ function anchorDateForFluencyPoint(input: {
   return "";
 }
 
-function pickFluencyGoalTarget(items: CaseItem[]): number | null {
+function pickFluencyGoalTarget(items: CaseItemV2[]): number | null {
   let target: number | null = null;
   let latestAnchor = "";
 

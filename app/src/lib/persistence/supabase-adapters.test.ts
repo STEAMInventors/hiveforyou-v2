@@ -117,7 +117,7 @@ describe("supabase persistence adapters", () => {
     const gateway = memoryGateway();
     const contexts = new SupabaseStudyContextRepository(gateway, USER_A);
     const context = {
-      schemaVersion: "canonical-study-context/1",
+      schemaVersion: "canonical-study-context/2",
       caseId: "case-1",
       studyRunId: "run-1",
       idempotencyKey: "key",
@@ -133,6 +133,7 @@ describe("supabase persistence adapters", () => {
         eventTypes: [],
       },
       sourceDocuments: [],
+      logicalDocuments: [],
       engine1Result: {
         domainLabel: "Special education records",
         domainResolutionStatus: "resolved",

@@ -10,7 +10,10 @@ export type ClaimTemporalKind =
   | "proposed"
   | "superseded"
   | "continued"
-  | "unknown";
+  | "unknown"
+  | "required"
+  | "decided"
+  | "observed";
 
 export type EvidenceReference = {
   id: string;

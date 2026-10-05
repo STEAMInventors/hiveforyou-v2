@@ -168,8 +168,9 @@ export async function generateStory(input: GenerateStoryInput): Promise<Validate
     }
   } catch (error) {
     const message = error instanceof Error ? error.message : "STORY_MODEL_RETRY_FAILED";
-    validated = { ok: false, errors: [...validated.errors, message] };
+    const priorErrors = validated.ok ? [] : validated.errors;
+    validated = { ok: false, errors: [...priorErrors, message] };
   }
 
-  return fallbackFromSkeleton(skeleton, validated.errors);
+  return fallbackFromSkeleton(skeleton, validated.ok ? [] : validated.errors);
 }

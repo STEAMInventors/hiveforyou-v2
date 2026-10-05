@@ -1,11 +1,11 @@
-import { CANONICAL_STUDY_PROPOSAL_V3_OPENAI_JSON_SCHEMA } from "../../shared/src/case-intelligence/3/openai-proposal-json-schema.ts";
-import { CANONICAL_STUDY_PROPOSAL_V4_OPENAI_JSON_SCHEMA } from "../../shared/src/case-intelligence/4/openai-proposal-json-schema.ts";
-import { HIVE_DISCOVER_PROPOSAL_JSON_SCHEMA } from "../../shared/src/discover/json-schema.ts";
-import { HIVE_DISCOVER_PROPOSAL_V2_JSON_SCHEMA } from "../../shared/src/discover/json-schema-v2.ts";
-import { HIVE_DISCOVER_RESOLUTION_JSON_SCHEMA } from "../../shared/src/discover/json-schema-resolution.ts";
-import { CLIENT_SUMMARY_RESPONSE_JSON_SCHEMA } from "../../core/src/study/client-summary-pass.ts";
-import { CLIENT_WRITER_RESPONSE_JSON_SCHEMA } from "../../core/src/study/client-writer-pass.ts";
-import { STORY_WRITER_JSON_SCHEMA } from "../../core/src/study/story/generateStory.ts";
+import { CANONICAL_STUDY_PROPOSAL_V3_OPENAI_JSON_SCHEMA } from "../../shared/src/case-intelligence/3/openai-proposal-json-schema";
+import { CANONICAL_STUDY_PROPOSAL_V4_OPENAI_JSON_SCHEMA } from "../../shared/src/case-intelligence/4/openai-proposal-json-schema";
+import { HIVE_DISCOVER_PROPOSAL_JSON_SCHEMA } from "../../shared/src/discover/json-schema";
+import { HIVE_DISCOVER_PROPOSAL_V2_JSON_SCHEMA } from "../../shared/src/discover/json-schema-v2";
+import { HIVE_DISCOVER_RESOLUTION_JSON_SCHEMA } from "../../shared/src/discover/json-schema-resolution";
+import { CLIENT_SUMMARY_RESPONSE_JSON_SCHEMA } from "../../core/src/study/client-summary-pass";
+import { CLIENT_WRITER_RESPONSE_JSON_SCHEMA } from "../../core/src/study/client-writer-pass";
+import { STORY_WRITER_JSON_SCHEMA } from "../../core/src/study/story/generateStory";
 
 export type RegisteredAnthropicJsonSchema = {
   name: string;

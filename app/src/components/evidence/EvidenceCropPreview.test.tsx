@@ -96,7 +96,7 @@ describe("EvidenceCropPreview", () => {
 
         studyRunId="run-1"
 
-        ref={{ ...ref, sourceDocumentId: undefined }}
+        ref={{ ...ref, sourceDocumentId: "" }}
 
         onOpen={() => undefined}
 

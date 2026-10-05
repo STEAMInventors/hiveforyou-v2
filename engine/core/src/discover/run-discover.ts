@@ -12,7 +12,10 @@ import {
   resolveDiscoverRunIdForRetry,
   resolveDiscoverRunStartedAt,
 } from "./resolve-discover-run-id";
-import { mapValidatedProposalToDocumentDiscovery } from "./map-proposal-to-discovery";
+import {
+  mapValidatedProposalToDocumentDiscovery,
+  mapValidatedProposalV2ToDocumentDiscovery,
+} from "./map-proposal-to-discovery";
 import type {
   DiscoverArtifactRepository,
   DiscoverRunRepository,
@@ -20,8 +23,9 @@ import type {
 import type { RunDiscoverRequest } from "./types";
 import { toDiscoverSourceInput } from "./types";
 import {
+  isHiveDiscoverProposalV2,
   resolveActiveDiscoverPack,
-  validateDiscoveryProposal,
+  validateDiscoverProposalOutput,
 } from "./validate-discovery-proposal";
 import { isAdaptiveDiscoverPromptVersion } from "./adaptive-discover-mode";
 import type { RunAdaptiveDiscoverDeps } from "./run-adaptive-discover";
@@ -191,7 +195,7 @@ export async function runDiscover(
     return { run };
   }
 
-  const validationResult = validateDiscoveryProposal(rawProposal, sourceInputs);
+  const validationResult = validateDiscoverProposalOutput(rawProposal, sourceInputs);
   const activePack = resolveActiveDiscoverPack(rawProposal);
   if (activePack) {
     run = {
@@ -223,7 +227,9 @@ export async function runDiscover(
   }
 
   const documentDiscovery = activePack
-    ? mapValidatedProposalToDocumentDiscovery(rawProposal, activePack, sourceInputs)
+    ? isHiveDiscoverProposalV2(rawProposal)
+      ? mapValidatedProposalV2ToDocumentDiscovery(rawProposal, activePack, sourceInputs)
+      : mapValidatedProposalToDocumentDiscovery(rawProposal, activePack, sourceInputs)
     : undefined;
 
   run = {

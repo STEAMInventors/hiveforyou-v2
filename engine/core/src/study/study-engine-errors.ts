@@ -1,4 +1,3 @@
-import type { CanonicalStudyProposalV2 } from "@hiveforyou/shared/canonical-study";
 
 /** OpenAI/API transport or configuration failure — not a parseable proposal. */
 export class CanonicalStudyEngineUnavailableError extends Error {
@@ -16,7 +15,7 @@ export class MalformedCanonicalStudyProposalError extends Error {
 
   constructor(
     message: string,
-    readonly proposal?: CanonicalStudyProposalV2,
+    readonly proposal?: unknown,
   ) {
     super(message);
     this.name = "MalformedCanonicalStudyProposalError";
@@ -25,9 +24,9 @@ export class MalformedCanonicalStudyProposalError extends Error {
 
 export function malformedStudyProposalPlaceholder(
   domainId: string,
-): CanonicalStudyProposalV2 {
+): import("@hiveforyou/shared/canonical-study").CanonicalStudyProposalV2 {
   return {
-    schemaVersion: "canonical-study-proposal/0" as CanonicalStudyProposalV2["schemaVersion"],
+    schemaVersion: "canonical-study-proposal/0" as import("@hiveforyou/shared/canonical-study").CanonicalStudyProposalV2["schemaVersion"],
     domainId,
     entities: [],
     claims: [],

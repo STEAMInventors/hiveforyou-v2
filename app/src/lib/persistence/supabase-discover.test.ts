@@ -133,7 +133,7 @@ function baseRun(overrides: Partial<HiveDiscoverRun> = {}): HiveDiscoverRun {
     caseId: "case-1",
     idempotencyKey: "idem-1",
     providerId: "openai",
-    providerMode: "production",
+    providerMode: "openai",
     promptId: "discover",
     promptVersion: "v1",
     promptSha256: "abc",

@@ -1,6 +1,6 @@
 import type { CaseMap } from "@hiveforyou/shared/projections";
 import type {
-  CaseView,
+  CaseViewV2,
   ChangeItem,
   ConflictItem,
   FactItem,
@@ -23,7 +23,7 @@ import {
   type ProTypedFact,
 } from "./case-summary-pro-living";
 
-function buildFactsFromCaseView(caseView: CaseView): { facts: ProTypedFact[]; docs: ProDocMeta[] } {
+function buildFactsFromCaseView(caseView: CaseViewV2): { facts: ProTypedFact[]; docs: ProDocMeta[] } {
   const facts: ProTypedFact[] = [];
   for (const item of caseView.items) {
     if (item.state !== "established") {
@@ -63,7 +63,10 @@ function buildFactsFromCaseView(caseView: CaseView): { facts: ProTypedFact[]; do
   return { facts, docs };
 }
 
-function buildSignalsFromCaseView(caseView: CaseView, summary: CaseSummaryModel): ProReviewSignal[] {
+function buildSignalsFromCaseView(
+  caseView: CaseViewV2,
+  summary: CaseSummaryModel,
+): ProReviewSignal[] {
   const byId = new Map(caseView.items.map((item) => [item.itemId, item]));
   const orderedIds = [
     ...caseView.layout.needsDecision.inFocus,
@@ -123,7 +126,7 @@ function buildSignalsFromCaseView(caseView: CaseView, summary: CaseSummaryModel)
   }));
 }
 
-function buildTimelineFromCaseView(caseView: CaseView) {
+function buildTimelineFromCaseView(caseView: CaseViewV2) {
   const dated = caseView.documents
     .map((doc) => ({
       docId: doc.sourceDocumentId,
@@ -136,7 +139,7 @@ function buildTimelineFromCaseView(caseView: CaseView) {
 
 /** Pro living model from persisted case-view; prior/proposed compare still from case map. */
 export function buildProLivingModelFromCaseView(input: {
-  caseView: CaseView;
+  caseView: CaseViewV2;
   caseMap: CaseMap;
   summary: CaseSummaryModel;
   provenance: ProvenanceIndex | null;
@@ -191,7 +194,7 @@ export function buildProLivingModelFromCaseView(input: {
 
 /** Prefer case-view facts; fall back to legacy claim-based model when caseView is absent. */
 export function buildProLivingModelForBundle(input: {
-  caseView?: CaseView | null;
+  caseView?: CaseViewV2 | null;
   caseMap: CaseMap;
   summary: CaseSummaryModel;
   claims: import("@hiveforyou/shared/canonical-study").ProposedClaim[];

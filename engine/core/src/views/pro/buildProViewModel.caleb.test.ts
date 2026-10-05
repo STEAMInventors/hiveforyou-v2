@@ -80,7 +80,7 @@ describe("buildProViewModel label guards", () => {
       sectionId: "goals",
       priorSlot: null,
       currentSlot: null,
-      state: "not-compared",
+      state: "notcompared",
     });
     expect(() => buildProViewModel(iepDomainPack, study)).toThrow(UnlabelledAttributeError);
   });

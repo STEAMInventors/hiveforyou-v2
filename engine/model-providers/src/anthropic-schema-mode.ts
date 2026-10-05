@@ -1,5 +1,5 @@
-import { findMapTypedAdditionalPropertiesPaths } from "./sanitize-schema-for-anthropic.js";
-import { REGISTERED_ANTHROPIC_JSON_SCHEMAS } from "./registered-anthropic-json-schemas.js";
+import { findMapTypedAdditionalPropertiesPaths } from "./sanitize-schema-for-anthropic";
+import { REGISTERED_ANTHROPIC_JSON_SCHEMAS } from "./registered-anthropic-json-schemas";
 
 /** Explicit Anthropic structured-output mode per CallModel json_schema name (no auto-detection). */
 export type AnthropicSchemaMode = "constrained" | "prompt";

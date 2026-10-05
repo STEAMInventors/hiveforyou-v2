@@ -481,7 +481,7 @@ function TimelineDocCard({
               onClick={() => {
                 const claimId = entry.claimIds[0];
                 if (claimId) {
-                  onOpenPanel({ kind: "claim", claimId });
+                  onOpenPanel({ t: "one", claimId });
                 }
               }}
               style={{

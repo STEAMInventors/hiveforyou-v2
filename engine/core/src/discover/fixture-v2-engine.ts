@@ -240,13 +240,13 @@ export class FixtureDiscoverV2Engine implements DiscoverEngine {
 
         pageStart: 1,
 
-        pageEnd: null,
+        pageEnd: undefined,
 
         documentType,
 
         title: `Uploaded document ${index + 1}`,
 
-        documentDate: null,
+        documentDate: undefined,
 
         familyRole:
 
@@ -410,7 +410,9 @@ export class FixtureDiscoverV2Engine implements DiscoverEngine {
 
         domainLabel: primaryLabel,
 
-        candidateDomainLabels: isMulti ? domainGroups.map((group) => group.domainLabel) : null,
+        candidateDomainLabels: isMulti
+          ? domainGroups.map((group) => group.domainLabel)
+          : undefined,
 
       },
 

@@ -1,6 +1,6 @@
-import type { CaseItem, CaseView } from "@hiveforyou/shared/projections";
+import type { CaseItemV2, CaseViewV2 } from "@hiveforyou/shared/projections";
 
-export function claimIdsForCaseItem(item: CaseItem | undefined): string[] {
+export function claimIdsForCaseItem(item: CaseItemV2 | undefined): string[] {
   if (!item) {
     return [];
   }
@@ -17,7 +17,7 @@ export function claimIdsForCaseItem(item: CaseItem | undefined): string[] {
   return [];
 }
 
-export function claimIdsForItemId(caseView: CaseView | null, itemId: string): string[] {
+export function claimIdsForItemId(caseView: CaseViewV2 | null, itemId: string): string[] {
   if (!caseView) {
     return [];
   }

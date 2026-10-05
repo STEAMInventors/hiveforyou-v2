@@ -1,4 +1,10 @@
-import type { CaseView, ChangeItem, ConflictItem, FactItem } from "@hiveforyou/shared/projections";
+import type {
+  CaseView,
+  CaseViewV2,
+  ChangeItem,
+  ConflictItem,
+  FactItem,
+} from "@hiveforyou/shared/projections";
 
 import type { CaseSummaryModel } from "./case-summary-presentation";
 
@@ -19,7 +25,7 @@ function chipLabel(chip: { fileName: string; page: number }): string {
   return `${chip.fileName} · p.${chip.page}`;
 }
 
-export function caseViewToSummaryModel(caseView: CaseView): CaseSummaryModel {
+export function caseViewToSummaryModel(caseView: CaseView | CaseViewV2): CaseSummaryModel {
   const itemsById = new Map(caseView.items.map((item) => [item.itemId, item]));
 
   const decisions = caseView.layout.needsDecision.inFocus

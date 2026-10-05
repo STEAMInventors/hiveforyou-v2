@@ -50,6 +50,14 @@ class MemoryDocs implements SourceDocumentRepository {
   async listByCase(_userId: string, caseId: string) {
     return this.rows.filter((row) => row.caseId === caseId);
   }
+
+  async insert(_record: SourceDocumentRecord): Promise<void> {
+    throw new Error("not implemented");
+  }
+
+  async attachStudyRun(): Promise<void> {
+    return;
+  }
 }
 
 const snapshot = {

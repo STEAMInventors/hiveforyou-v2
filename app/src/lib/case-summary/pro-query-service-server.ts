@@ -1,6 +1,6 @@
 import "server-only";
 
-import { callModelFromEnv } from "@/lib/model/call-model.server";
+import { callModelFromServerEnv } from "@/lib/model/call-model.server";
 import { buildProExportTables } from "@hiveforyou/core/pro-export-tables";
 import { buildExportSystemPrompt } from "@hiveforyou/core/pro-export-prompt";
 import { validateSql } from "@hiveforyou/core/pro-validate-sql";
@@ -39,7 +39,7 @@ async function callExportModel(request: string, retryErrors?: string): Promise<M
     : request;
   const model =
     env.HIVE_OPENAI_MODEL ?? env.HIVE_STORY_WRITER_MODEL ?? env.MODEL_NAME ?? "gpt-4o-mini";
-  const callModel = callModelFromEnv(env);
+  const callModel = callModelFromServerEnv(env);
   if (!callModel) {
     throw new Error("ENGINE_UNAVAILABLE");
   }

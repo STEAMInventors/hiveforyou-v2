@@ -235,11 +235,8 @@ export function l001LikeCanonicalSnapshot(): CanonicalCaseSnapshot {
       accepted: {
         entities: [],
         claims: [],
-        relationships: [],
-        events: [],
         conflicts: [],
-        missingness: [],
-        derivedClaimCandidates: [],
+        missingInformation: [],
       },
       rejected: [],
       warnings: [],

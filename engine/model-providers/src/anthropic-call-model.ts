@@ -2,10 +2,10 @@ import Anthropic from "@anthropic-ai/sdk";
 import type { CallModel, ModelFileAttachment, ModelRequest } from "@hiveforyou/shared/model/call-model";
 import { ModelCallError } from "@hiveforyou/shared/model/call-model";
 
-import { resolveAnthropicSchemaMode } from "./anthropic-schema-mode.js";
-import { extractFirstJsonObject } from "./extract-first-json-object.js";
-import { normalizeJsonEnumCasing } from "./normalize-schema-enum-casing.js";
-import { sanitizeSchemaForAnthropic } from "./sanitize-schema-for-anthropic.js";
+import { resolveAnthropicSchemaMode } from "./anthropic-schema-mode";
+import { extractFirstJsonObject } from "./extract-first-json-object";
+import { normalizeJsonEnumCasing } from "./normalize-schema-enum-casing";
+import { sanitizeSchemaForAnthropic } from "./sanitize-schema-for-anthropic";
 
 const PROMPT_MODE_SCHEMA_INSTRUCTION =
   "Return only one JSON object that matches this JSON Schema:";
@@ -104,17 +104,11 @@ function mapReasoningEffortToOutputConfigEffort(
   return normalized as "low" | "medium" | "high" | "xhigh" | "max";
 }
 
-function isAnthropicApiError(error: unknown): error is Anthropic.APIError {
-  const ApiError = Anthropic.APIError;
-  return typeof ApiError === "function" && error instanceof ApiError;
-}
-
 function formatAnthropicError(error: unknown): string {
-  if (isAnthropicApiError(error)) {
-    return `ANTHROPIC_RESPONSE_FAILED:${error.status ?? "unknown"} message=${error.message}`;
-  }
   if (error instanceof Error) {
-    return `ANTHROPIC_RESPONSE_FAILED message=${error.message}`;
+    const statusValue = (error as unknown as { status?: unknown }).status;
+    const status = typeof statusValue === "number" ? statusValue : "unknown";
+    return `ANTHROPIC_RESPONSE_FAILED:${status} message=${error.message}`;
   }
   return "ANTHROPIC_RESPONSE_FAILED";
 }
@@ -223,7 +217,8 @@ export function createAnthropicCallModel(input: AnthropicCallModelOptions): Call
     try {
       response = await streamFinalMessage(params);
     } catch (error) {
-      const status = isAnthropicApiError(error) ? error.status : undefined;
+      const statusRaw = error instanceof Error ? (error as unknown as { status?: unknown }).status : undefined;
+      const status = typeof statusRaw === "number" ? statusRaw : undefined;
       throw new ModelCallError("response_failed", status, formatAnthropicError(error));
     }
 

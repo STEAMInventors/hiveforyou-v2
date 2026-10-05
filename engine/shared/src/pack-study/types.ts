@@ -170,7 +170,7 @@ export type StudyRowState =
 
   | "reconfirmed"
 
-  | "not-compared"
+  | "notcompared"
 
   | "scheduled";
 

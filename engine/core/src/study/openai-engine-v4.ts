@@ -1,7 +1,9 @@
+import type { ClaimValue } from "@hiveforyou/shared/case-intelligence/3";
 import {
   CANONICAL_STUDY_PROPOSAL_SCHEMA_V4,
   CANONICAL_STUDY_PROPOSAL_V4_OPENAI_JSON_SCHEMA,
   type CanonicalStudyProposalV4,
+  type ClaimValueV4,
 } from "@hiveforyou/shared/case-intelligence/4";
 import type { CanonicalStudyContext } from "@hiveforyou/shared/canonical-study";
 
@@ -20,6 +22,35 @@ export type OpenAICanonicalStudyEngineV4Options = {
   maxOutputTokens?: number;
   callModel: CallModel;
 };
+
+function claimValueToV4(value: ClaimValue, unit: string | null | undefined): ClaimValueV4 {
+  switch (value.kind) {
+    case "quantity":
+      return { kind: "quantity", numberValue: value.amount, unit: unit ?? null };
+    case "text":
+      return { kind: "text", textValue: value.text };
+    case "code":
+      return { kind: "code", codeValue: value.code };
+    case "boolean":
+      return { kind: "boolean", booleanValue: value.value };
+    case "entity_ref":
+      return { kind: "entity_ref", entityId: value.entityId };
+    case "date":
+      return { kind: "date", dateValue: value.value };
+    case "period":
+      return {
+        kind: "period",
+        periodStart: value.start ?? null,
+        periodEnd: value.end ?? null,
+      };
+    case "unknown":
+      return { kind: "unknown" };
+    default: {
+      const _exhaustive: never = value;
+      return _exhaustive;
+    }
+  }
+}
 
 function normalizeProposalV4(
   parsed: CanonicalStudyProposalV4,
@@ -54,23 +85,7 @@ function normalizeProposalV4(
           task: claim.construct.task ?? null,
           administration: claim.construct.administration ?? null,
         },
-        value: {
-          kind: normalizedValue.value.kind,
-          numberValue:
-            normalizedValue.value.kind === "quantity" ? normalizedValue.value.amount : null,
-          textValue: normalizedValue.value.kind === "text" ? normalizedValue.value.text : null,
-          codeValue: normalizedValue.value.kind === "code" ? normalizedValue.value.code : null,
-          booleanValue:
-            normalizedValue.value.kind === "boolean" ? normalizedValue.value.value : null,
-          entityId:
-            normalizedValue.value.kind === "entity_ref" ? normalizedValue.value.entityId : null,
-          dateValue: normalizedValue.value.kind === "date" ? normalizedValue.value.value : null,
-          periodStart:
-            normalizedValue.value.kind === "period" ? (normalizedValue.value.start ?? null) : null,
-          periodEnd:
-            normalizedValue.value.kind === "period" ? (normalizedValue.value.end ?? null) : null,
-          unit: normalizedValue.unit,
-        },
+        value: claimValueToV4(normalizedValue.value, normalizedValue.unit),
         unit: normalizedValue.unit,
         evidenceRefs: claim.evidenceRefs.map((ref) => ({
           ...ref,

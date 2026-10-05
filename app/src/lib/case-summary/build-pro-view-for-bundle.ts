@@ -10,14 +10,15 @@ import { buildStudyFromBundle } from "./pro-study-from-bundle";
 
 export function buildProViewModelForBundle(input: {
   bundle: CaseMapViewBundle;
-  summary: CaseSummaryModel;
+  summary: Pick<CaseSummaryModel, "documentCount" | "domainLabel">;
   quotesByFactId?: Record<string, string>;
 }): ProViewModel | null {
   const { bundle, summary } = input;
-  if (!bundle.caseView || !bundle.canonicalSnapshot) {
+  const { caseView, canonicalSnapshot } = bundle;
+  if (!caseView || !canonicalSnapshot) {
     return null;
   }
-  const pack = getDomainPackByDomainId(input.bundle.canonicalSnapshot.domainId);
+  const pack = getDomainPackByDomainId(canonicalSnapshot.domainId);
   if (!pack) {
     return null;
   }
@@ -25,27 +26,26 @@ export function buildProViewModelForBundle(input: {
   if (!study) {
     return null;
   }
-  const recordStart = bundle.caseView.documents
+  const recordStart = caseView.documents
     .map((d) => d.documentDate)
     .filter(Boolean)
     .sort()[0];
-  const recordEnd = bundle.caseView.documents
+  const recordEnd = caseView.documents
     .map((d) => d.documentDate)
     .filter(Boolean)
     .sort()
     .at(-1);
   const recordSpan =
     recordStart && recordEnd ? `${recordStart.slice(0, 7)} – ${recordEnd.slice(0, 7)}` : "";
-  const documents =
-    bundle.caseView?.documents.map((doc) => ({
-      sourceDocumentId: doc.sourceDocumentId,
-      logicalDocumentId: doc.logicalDocumentId,
-      fileName: doc.fileName,
-      documentType: doc.documentType,
-      documentDate: doc.documentDate,
-    })) ?? [];
+  const documents = caseView.documents.map((doc) => ({
+    sourceDocumentId: doc.sourceDocumentId,
+    logicalDocumentId: doc.logicalDocumentId,
+    fileName: doc.fileName,
+    documentType: doc.documentType,
+    documentDate: doc.documentDate,
+  }));
 
-  const documentFactStats = documentFactStatsFromCaseView(bundle.caseView);
+  const documentFactStats = documentFactStatsFromCaseView(caseView);
 
   return buildProViewModel(pack, study, {
     documentCount: summary.documentCount,

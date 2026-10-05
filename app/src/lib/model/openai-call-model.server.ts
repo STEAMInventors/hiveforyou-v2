@@ -1,6 +1,11 @@
 import "server-only";
 
-export { callModelFromEnv, requireCallModelFromEnv } from "./call-model.server";
+export {
+  callModelFromEnv,
+  callModelFromServerEnv,
+  requireCallModelFromEnv,
+  requireCallModelFromServerEnv,
+} from "./call-model.server";
 
 /** @deprecated Use callModelFromEnv */
-export { callModelFromEnv as openAiCallModelFromEnv } from "./call-model.server";
+export { callModelFromServerEnv as openAiCallModelFromEnv } from "./call-model.server";

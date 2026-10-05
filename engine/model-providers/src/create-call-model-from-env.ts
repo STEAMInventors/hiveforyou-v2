@@ -1,7 +1,7 @@
 import type { CallModel } from "@hiveforyou/shared/model/call-model";
 
-import { createAnthropicCallModel } from "./anthropic-call-model.js";
-import { createOpenAICallModel } from "./openai-call-model.js";
+import { createAnthropicCallModel } from "./anthropic-call-model";
+import { createOpenAICallModel } from "./openai-call-model";
 
 export type ModelProviderId = "openai" | "anthropic";
 

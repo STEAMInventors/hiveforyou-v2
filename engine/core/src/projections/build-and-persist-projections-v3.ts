@@ -1,7 +1,7 @@
 import type { CanonicalCaseSnapshot } from "@hiveforyou/shared/case-intelligence/3";
 import type { CaseCustomerContextSnapshot } from "@hiveforyou/shared/case-customer-context";
 import type { CanonicalStudyContext } from "@hiveforyou/shared/canonical-study";
-import type { CaseMap, CaseViewV2, CustomerView, ProView } from "@hiveforyou/shared/projections";
+import type { CaseMap, CaseView, CaseViewV2, CustomerView, ProView } from "@hiveforyou/shared/projections";
 import {
   CASE_MAP_SCHEMA,
   CASE_VIEW_V2_SCHEMA,

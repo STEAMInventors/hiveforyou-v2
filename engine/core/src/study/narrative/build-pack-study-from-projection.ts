@@ -131,7 +131,7 @@ function monthsBetween(startIso: string, endIso: string): number {
 }
 
 function findRecordGap(
-  v1: CaseView,
+  v1: import("@hiveforyou/shared/projections").CaseViewProjectionInput,
   intelligence: CanonicalCaseSnapshot,
 ): Study["recordGap"] {
   for (const item of v1.items) {
@@ -242,7 +242,7 @@ function goalRowsForPlan(rows: FactRow[], planDocId: string): StudyGoalRow[] {
  * Used only to drive {@link composeNarrative} on the web projection path.
  */
 export function buildPackStudyFromCaseProjection(input: {
-  v1: CaseView;
+  v1: import("@hiveforyou/shared/projections").CaseViewProjectionInput;
   intelligence: CanonicalCaseSnapshot;
   anatomy: AnatomyPlanResult;
   pack: DomainPackViewConfigV2 | null;
@@ -514,7 +514,7 @@ export function buildPackStudyFromCaseProjection(input: {
     if (!prior && !current) {
       return;
     }
-    let state: StudyRowState = "not-compared";
+    let state: StudyRowState = "notcompared";
     if (prior && current) {
       state = prior.display.trim().toLowerCase() === current.display.trim().toLowerCase() ? "reconfirmed" : "changed";
     } else if (current) {

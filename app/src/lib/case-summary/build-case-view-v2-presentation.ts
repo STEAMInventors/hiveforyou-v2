@@ -13,8 +13,27 @@ import {
   type PlanCard,
   type PlanSection,
   type StoryLine,
+  GENERIC_VOICE,
+  STORY_NARRATIVE_V2_SCHEMA,
+  type ResolvedVoice,
 } from "@hiveforyou/shared/projections";
 import { IEP_DOMAIN_VIEW } from "@hiveforyou/shared/projections";
+
+function genericResolvedVoice(): ResolvedVoice {
+  return {
+    ...GENERIC_VOICE,
+    sources: {
+      subject: "generic",
+      eventNoun: "generic",
+      helperNoun: "generic",
+      otherPartyNoun: "generic",
+      planNoun: "generic",
+      documentsNoun: "generic",
+    },
+    subjectName: null,
+    useSubjectName: false,
+  };
+}
 
 import type { CaseSummaryModel } from "./case-summary-presentation";
 
@@ -373,6 +392,9 @@ export function buildCaseViewV2FromV1(v1: CaseView, summary: CaseSummaryModel): 
     checklist: buildChecklist(v1),
     prep: buildPrep(v1, summary),
     timeline: buildTimeline(v1),
+    voice: genericResolvedVoice(),
+    packNarrative: null,
+    storyNarrative: { schemaVersion: STORY_NARRATIVE_V2_SCHEMA, movements: [] },
   };
 }
 

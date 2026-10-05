@@ -86,7 +86,7 @@ export async function resolvePersistedSourceDocumentForStudy(input: {
     }
   }
 
-  const logicalFilename = logical?.originalFilename ?? logical?.title;
+  const logicalFilename = logical?.title?.trim();
   if (logicalFilename) {
     const byLogicalName = caseDocs.filter((doc) => doc.originalFilename === logicalFilename);
     const chosen = newestRecord(byLogicalName);
