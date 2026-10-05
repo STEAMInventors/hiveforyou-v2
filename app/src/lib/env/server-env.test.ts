@@ -1,7 +1,7 @@
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
 
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import {
   listServerEnvConfigurationIssues,
@@ -9,8 +9,10 @@ import {
   readJevClassifierConfig,
   readServerEnv,
   readServerEnvPresence,
+  readServerRequiredEnvDiagnostics,
+  SERVER_REQUIRED_ENV_KEYS,
 } from "./server-env";
-import { serverMisconfiguredResponse } from "./server-misconfigured";
+import { logServerMisconfigured, serverMisconfiguredResponse } from "./server-misconfigured";
 
 const REQUIRED = {
   NEXT_PUBLIC_SUPABASE_URL: "https://example.supabase.co",
@@ -61,6 +63,63 @@ describe("server environment", () => {
     expect(body.error).toBe("SERVER_MISCONFIGURED");
     expect(body.missing).toBeUndefined();
     expect(Object.keys(body).sort()).toEqual(["error", "message"]);
+  });
+
+  it("reports required env diagnostics without leaking values", () => {
+    const source = {
+      ...REQUIRED,
+      SUPABASE_SERVICE_ROLE_KEY: "  sb_secret_should_not_leak  ",
+      VERCEL_ENV: " production ",
+      VERCEL_DEPLOYMENT_ID: " dpl_test123 ",
+    };
+    const diagnostics = readServerRequiredEnvDiagnostics(source);
+    for (const key of SERVER_REQUIRED_ENV_KEYS) {
+      expect(diagnostics[key]).toEqual({
+        present: true,
+        nonEmptyAfterTrim: true,
+      });
+    }
+    expect(readServerRequiredEnvDiagnostics({}).SUPABASE_SERVICE_ROLE_KEY).toEqual({
+      present: false,
+      nonEmptyAfterTrim: false,
+    });
+    expect(readServerRequiredEnvDiagnostics({ SUPABASE_SERVICE_ROLE_KEY: "   " })).toEqual({
+      NEXT_PUBLIC_SUPABASE_URL: { present: false, nonEmptyAfterTrim: false },
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: { present: false, nonEmptyAfterTrim: false },
+      SUPABASE_SERVICE_ROLE_KEY: { present: true, nonEmptyAfterTrim: false },
+      HIVE_STORAGE_BUCKET: { present: false, nonEmptyAfterTrim: false },
+      HIVE_DISCOVER_PROMPT_VERSION: { present: false, nonEmptyAfterTrim: false },
+    });
+    const serialized = JSON.stringify(diagnostics);
+    expect(serialized).not.toContain("sb_secret");
+    expect(serialized).not.toContain("anon-key");
+    expect(serialized).not.toContain("service-role-key");
+    expect(serialized).not.toContain("https://example");
+  });
+
+  it("logs SERVER_MISCONFIGURED with per-key diagnostics and deployment metadata only", () => {
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    const source = {
+      NEXT_PUBLIC_SUPABASE_URL: "https://example.supabase.co",
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: "anon-key-leak-test",
+      HIVE_STORAGE_BUCKET: "case-documents",
+      HIVE_DISCOVER_PROMPT_VERSION: "discover-v1",
+      VERCEL_ENV: "production",
+      VERCEL_DEPLOYMENT_ID: "dpl_abc123",
+    };
+    logServerMisconfigured(listServerEnvConfigurationIssues(source), source);
+    expect(errorSpy).toHaveBeenCalledOnce();
+    const [label, payload] = errorSpy.mock.calls[0] as [string, Record<string, unknown>];
+    expect(label).toBe("[server] SERVER_MISCONFIGURED");
+    expect(payload.missing).toEqual(["SUPABASE_SERVICE_ROLE_KEY"]);
+    expect(payload.VERCEL_ENV).toBe("production");
+    expect(payload.VERCEL_DEPLOYMENT_ID).toBe("dpl_abc123");
+    expect(payload.required).toEqual(readServerRequiredEnvDiagnostics(source));
+    const logged = JSON.stringify(payload);
+    expect(logged).not.toContain("anon-key-leak-test");
+    expect(logged).not.toContain("https://example");
+    expect(logged).not.toMatch(/sb_secret|sk-/i);
+    errorSpy.mockRestore();
   });
 
   it("exposes missing env names on Vercel preview despite NODE_ENV=production", async () => {

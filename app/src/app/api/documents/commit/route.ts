@@ -17,6 +17,8 @@ import {
 import { mapWithConcurrency } from "@hiveforyou/intake";
 import { createServerSupabaseClient, getAuthenticatedUserId } from "@/lib/supabase/server";
 
+export const runtime = "nodejs";
+
 /** Parallel Supabase uploads; cap concurrency to limit memory spikes on large batches. */
 const COMMIT_UPLOAD_CONCURRENCY = 3;
 
@@ -86,6 +88,20 @@ function logDocumentCommitNonSuccess(status: number, errorCode: string): void {
   console.error("[api/documents/commit] non-success return", { status, error: errorCode });
 }
 
+/** Auth resolution threw (distinct from missing session → 401). Logged in all environments. */
+function logDocumentCommitAuthFailure(error: unknown): void {
+  if (error instanceof Error) {
+    console.error("[api/documents/commit] auth session resolution failed", {
+      name: error.name,
+      message: error.message,
+    });
+    return;
+  }
+  console.error("[api/documents/commit] auth session resolution failed", {
+    message: String(error),
+  });
+}
+
 function logDocumentCommitUncaught(error: unknown): void {
   if (process.env.NODE_ENV !== "development") {
     return;
@@ -135,16 +151,23 @@ export async function POST(request: Request) {
     try {
       env = readServerEnv();
     } catch {
-      logDocumentCommitNonSuccess(500, "SERVER_MISCONFIGURED");
+      logDocumentCommitNonSuccess(503, "SERVER_MISCONFIGURED");
       return serverMisconfiguredResponse();
     }
 
     let sessionUserId: string | null;
     try {
       sessionUserId = await getAuthenticatedUserId();
-    } catch {
-      logDocumentCommitNonSuccess(500, "SERVER_MISCONFIGURED");
-      return serverMisconfiguredResponse();
+    } catch (error) {
+      logDocumentCommitAuthFailure(error);
+      logDocumentCommitNonSuccess(500, "AUTH_SESSION_FAILED");
+      return NextResponse.json(
+        {
+          error: "AUTH_SESSION_FAILED",
+          message: "Could not resolve sign-in session.",
+        },
+        { status: 500 },
+      );
     }
     if (!sessionUserId) {
       logDocumentCommitNonSuccess(401, "UNAUTHENTICATED");

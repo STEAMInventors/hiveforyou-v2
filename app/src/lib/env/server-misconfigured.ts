@@ -2,13 +2,27 @@ import "server-only";
 
 import { NextResponse } from "next/server";
 
-import { listServerEnvConfigurationIssues } from "./server-env";
+import {
+  listServerEnvConfigurationIssues,
+  readServerRequiredEnvDiagnostics,
+} from "./server-env";
 
-export function logServerMisconfigured(issues: string[]): void {
+export function logServerMisconfigured(
+  issues: string[],
+  source: Record<string, string | undefined> = process.env,
+): void {
   if (issues.length === 0) {
     return;
   }
-  console.error("[server] SERVER_MISCONFIGURED missing:", issues.join(", "));
+  const vercelEnv = source.VERCEL_ENV;
+  const deploymentId = source.VERCEL_DEPLOYMENT_ID;
+  console.error("[server] SERVER_MISCONFIGURED", {
+    missing: issues,
+    required: readServerRequiredEnvDiagnostics(source),
+    VERCEL_ENV: typeof vercelEnv === "string" ? vercelEnv.trim() || null : null,
+    VERCEL_DEPLOYMENT_ID:
+      typeof deploymentId === "string" ? deploymentId.trim() || null : null,
+  });
 }
 
 /** When false, API responses omit missing variable names (logged server-side only). */
@@ -29,7 +43,7 @@ export function serverMisconfiguredResponse(
   source: Record<string, string | undefined> = process.env,
 ): NextResponse {
   const missing = listServerEnvConfigurationIssues(source);
-  logServerMisconfigured(missing);
+  logServerMisconfigured(missing, source);
   const body: { error: string; message: string; missing?: string[] } = {
     error: "SERVER_MISCONFIGURED",
     message: "Server environment is incomplete.",

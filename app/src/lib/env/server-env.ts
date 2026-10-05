@@ -1,12 +1,37 @@
 import "server-only";
 
-const REQUIRED_SERVER_ENV = [
+export const SERVER_REQUIRED_ENV_KEYS = [
   "NEXT_PUBLIC_SUPABASE_URL",
   "NEXT_PUBLIC_SUPABASE_ANON_KEY",
   "SUPABASE_SERVICE_ROLE_KEY",
   "HIVE_STORAGE_BUCKET",
   "HIVE_DISCOVER_PROMPT_VERSION",
 ] as const;
+
+const REQUIRED_SERVER_ENV = SERVER_REQUIRED_ENV_KEYS;
+
+export type ServerRequiredEnvKeyDiagnostic = {
+  present: boolean;
+  nonEmptyAfterTrim: boolean;
+};
+
+/** Per required key: typeof string and non-empty after trim only — never values. */
+export function readServerRequiredEnvDiagnostics(
+  source: Record<string, string | undefined> = process.env,
+): Record<(typeof SERVER_REQUIRED_ENV_KEYS)[number], ServerRequiredEnvKeyDiagnostic> {
+  const diagnostics = {} as Record<
+    (typeof SERVER_REQUIRED_ENV_KEYS)[number],
+    ServerRequiredEnvKeyDiagnostic
+  >;
+  for (const key of SERVER_REQUIRED_ENV_KEYS) {
+    const raw = source[key];
+    diagnostics[key] = {
+      present: typeof raw === "string",
+      nonEmptyAfterTrim: Boolean(raw?.trim()),
+    };
+  }
+  return diagnostics;
+}
 
 export type ServerEnv = {
   NEXT_PUBLIC_SUPABASE_URL: string;
