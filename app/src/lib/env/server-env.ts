@@ -1,5 +1,7 @@
 import "server-only";
 
+import { warnLegacyModelEnvVars } from "@hiveforyou/model-providers/env";
+
 export const SERVER_REQUIRED_ENV_KEYS = [
   "NEXT_PUBLIC_SUPABASE_URL",
   "NEXT_PUBLIC_SUPABASE_ANON_KEY",
@@ -40,16 +42,11 @@ export type ServerEnv = {
   HIVE_STORAGE_BUCKET: string;
   HIVE_DISCOVER_PROMPT_VERSION: string;
   HIVE_CANONICAL_STUDY_ENGINE?: string;
-  HIVE_CANONICAL_STUDY_MODEL?: string;
   HIVE_CANONICAL_STUDY_REASONING_EFFORT?: string;
   HIVE_CANONICAL_STUDY_MAX_OUTPUT_TOKENS?: number;
   HIVE_STORY_WRITER_ENGINE?: string;
-  HIVE_STORY_WRITER_MODEL?: string;
   HIVE_DISCOVER_ENGINE?: string;
-  HIVE_DISCOVER_MODEL?: string;
   HIVE_DISCOVER_REASONING_EFFORT?: string;
-  HIVE_OPENAI_MODEL?: string;
-  HIVE_OPENAI_MAX_OUTPUT_TOKENS?: number;
   MODEL_PROVIDER?: string;
   MODEL_NAME?: string;
   MODEL_MAX_OUTPUT_TOKENS?: number;
@@ -110,6 +107,7 @@ export function readServerEnv(
   if (discoverPromptVersion.toLowerCase() === "latest") {
     throw new Error("HIVE_DISCOVER_PROMPT_VERSION must name a prompt file, not latest.");
   }
+  warnLegacyModelEnvVars(source);
   return {
     NEXT_PUBLIC_SUPABASE_URL: source.NEXT_PUBLIC_SUPABASE_URL!.trim(),
     NEXT_PUBLIC_SUPABASE_ANON_KEY: source.NEXT_PUBLIC_SUPABASE_ANON_KEY!.trim(),
@@ -117,20 +115,15 @@ export function readServerEnv(
     HIVE_STORAGE_BUCKET: source.HIVE_STORAGE_BUCKET!.trim(),
     HIVE_DISCOVER_PROMPT_VERSION: discoverPromptVersion,
     HIVE_CANONICAL_STUDY_ENGINE: source.HIVE_CANONICAL_STUDY_ENGINE?.trim() || undefined,
-    HIVE_CANONICAL_STUDY_MODEL: source.HIVE_CANONICAL_STUDY_MODEL?.trim() || undefined,
     HIVE_CANONICAL_STUDY_REASONING_EFFORT:
       source.HIVE_CANONICAL_STUDY_REASONING_EFFORT?.trim() || undefined,
     HIVE_CANONICAL_STUDY_MAX_OUTPUT_TOKENS: parseOptionalPositiveInt(
-      source.HIVE_CANONICAL_STUDY_MAX_OUTPUT_TOKENS ?? source.HIVE_OPENAI_MAX_OUTPUT_TOKENS,
+      source.HIVE_CANONICAL_STUDY_MAX_OUTPUT_TOKENS,
     ),
     HIVE_STORY_WRITER_ENGINE: source.HIVE_STORY_WRITER_ENGINE?.trim() || undefined,
-    HIVE_STORY_WRITER_MODEL: source.HIVE_STORY_WRITER_MODEL?.trim() || undefined,
     HIVE_DISCOVER_ENGINE: source.HIVE_DISCOVER_ENGINE?.trim() || undefined,
-    HIVE_DISCOVER_MODEL: source.HIVE_DISCOVER_MODEL?.trim() || undefined,
     HIVE_DISCOVER_REASONING_EFFORT:
       source.HIVE_DISCOVER_REASONING_EFFORT?.trim() || undefined,
-    HIVE_OPENAI_MODEL: source.HIVE_OPENAI_MODEL?.trim() || undefined,
-    HIVE_OPENAI_MAX_OUTPUT_TOKENS: parseOptionalPositiveInt(source.HIVE_OPENAI_MAX_OUTPUT_TOKENS),
     MODEL_PROVIDER: source.MODEL_PROVIDER?.trim() || undefined,
     MODEL_NAME: source.MODEL_NAME?.trim() || undefined,
     MODEL_MAX_OUTPUT_TOKENS: parseOptionalPositiveInt(source.MODEL_MAX_OUTPUT_TOKENS),

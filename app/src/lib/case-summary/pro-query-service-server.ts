@@ -1,6 +1,10 @@
 import "server-only";
 
-import { callModelFromServerEnv } from "@/lib/model/call-model.server";
+import {
+  callModelEnvFromServerEnv,
+  callModelFromServerEnv,
+} from "@/lib/model/call-model.server";
+import { tryCreateCallModelFromEnv } from "@hiveforyou/model-providers/env";
 import { buildProExportTables } from "@hiveforyou/core/pro-export-tables";
 import { buildExportSystemPrompt } from "@hiveforyou/core/pro-export-prompt";
 import { validateSql } from "@hiveforyou/core/pro-validate-sql";
@@ -37,8 +41,8 @@ async function callExportModel(request: string, retryErrors?: string): Promise<M
   const user = retryErrors
     ? `${request}\n\nYour previous answer failed these checks: ${retryErrors}. Fix them and return JSON only.`
     : request;
-  const model =
-    env.HIVE_OPENAI_MODEL ?? env.HIVE_STORY_WRITER_MODEL ?? env.MODEL_NAME ?? "gpt-4o-mini";
+  const bundle = tryCreateCallModelFromEnv(callModelEnvFromServerEnv(env));
+  const model = bundle?.modelName ?? "gpt-4o-mini";
   const callModel = callModelFromServerEnv(env);
   if (!callModel) {
     throw new Error("ENGINE_UNAVAILABLE");

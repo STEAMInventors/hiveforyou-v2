@@ -247,7 +247,7 @@ export async function runStudyWorkerProposeStep(
   deps: StudyServiceDeps,
   event: StudyWorkerEvent,
   request: import("@hiveforyou/shared/canonical-study").StartCanonicalStudyRequest,
-): Promise<{ artifactId: string }> {
+): Promise<{ artifactId: string; proposalSkipped?: boolean }> {
   const run = await deps.runRepo.getByStudyRunId(event.studyRunId);
   if (!run) {
     throw new Error("STUDY_RUN_NOT_FOUND");
@@ -259,7 +259,7 @@ export async function runStudyWorkerProposeStep(
 
   const existing = await deps.studyArtifactRepo?.getByStudyRunId(event.studyRunId);
   if (existing?.rawProposalJson) {
-    return { artifactId: event.studyRunId };
+    return { artifactId: event.studyRunId, proposalSkipped: true };
   }
 
   if (deps.domainLearning && deps.sessionUserId) {

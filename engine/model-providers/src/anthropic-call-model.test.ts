@@ -7,6 +7,12 @@ import {
   type AnthropicCallModelOptions,
 } from "./anthropic-call-model.js";
 import { createCallModelFromEnv } from "./create-call-model-from-env.js";
+import {
+  listLegacyModelEnvVarsToWarn,
+  resetLegacyModelEnvWarnForTests,
+  warnLegacyModelEnvVars,
+} from "./create-call-model-from-env.js";
+import { createCanonicalStudyEngineFromEnv } from "@hiveforyou/core";
 import { normalizeJsonEnumCasing } from "./normalize-schema-enum-casing.js";
 
 const { AnthropicMock } = vi.hoisted(() => {
@@ -29,6 +35,25 @@ const { AnthropicMock } = vi.hoisted(() => {
 
 vi.mock("@anthropic-ai/sdk", () => ({ default: AnthropicMock }));
 
+describe("legacy model env", () => {
+  it("warns on legacy model vars without echoing values", () => {
+    resetLegacyModelEnvWarnForTests();
+    const lines: string[] = [];
+    warnLegacyModelEnvVars(
+      { HIVE_CANONICAL_STUDY_MODEL: "gpt-5.6-sol" },
+      (line) => lines.push(line),
+    );
+    expect(lines[0]).toContain("HIVE_CANONICAL_STUDY_MODEL");
+    expect(lines[0]).not.toContain("gpt");
+  });
+
+  it("ignores pass-level reasoning effort in warn list", () => {
+    expect(
+      listLegacyModelEnvVarsToWarn({ HIVE_CANONICAL_STUDY_REASONING_EFFORT: "high" }),
+    ).toEqual([]);
+  });
+});
+
 describe("createCallModelFromEnv", () => {
   beforeEach(() => {
     AnthropicMock.mockClear();
@@ -49,6 +74,21 @@ describe("createCallModelFromEnv", () => {
         HIVE_ANTHROPIC_API_KEY: "",
       }),
     ).toThrow("HIVE_ANTHROPIC_API_KEY is required when MODEL_PROVIDER=anthropic");
+  });
+
+  it("uses MODEL_NAME when legacy HIVE_CANONICAL_STUDY_MODEL is set", () => {
+    const bundle = createCallModelFromEnv({
+      MODEL_PROVIDER: "anthropic",
+      MODEL_NAME: "claude-opus-5-5",
+      HIVE_ANTHROPIC_API_KEY: "hive-key",
+      HIVE_CANONICAL_STUDY_MODEL: "gpt-5.6-sol",
+    });
+    expect(bundle.modelName).toBe("claude-opus-5-5");
+    const engine = createCanonicalStudyEngineFromEnv(
+      { reasoningEffort: "medium" },
+      { callModel: bundle.callModel, modelName: bundle.modelName, promptVersion: "v4" },
+    );
+    expect(engine.modelId).toBe("claude-opus-5-5");
   });
 
   it("reads HIVE_ANTHROPIC_API_KEY and optional HIVE_ANTHROPIC_WORKSPACE_ID", () => {

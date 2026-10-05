@@ -1,3 +1,5 @@
+import { warnLegacyModelEnvVars } from "@hiveforyou/model-providers/env";
+
 export function assertWorkerStartPolicy(
   source: Record<string, string | undefined> = process.env,
 ): void {
@@ -48,6 +50,7 @@ export function readWorkerEnv(
   if (!url || !serviceRole || !storageBucket) {
     throw new Error("WORKER_ENV_INCOMPLETE");
   }
+  warnLegacyModelEnvVars(source);
   const modeRaw = source.HIVE_WORKER_MODE?.trim() ?? "connect";
   const mode = modeRaw === "serve" ? "serve" : "connect";
   const portRaw = source.HIVE_WORKER_SERVE_PORT?.trim();

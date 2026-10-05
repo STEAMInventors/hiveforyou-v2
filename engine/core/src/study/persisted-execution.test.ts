@@ -183,6 +183,11 @@ describe("persisted canonical study execution", () => {
     expect(createCanonicalStudyEngineFromEnv(undefined).mode).toBe("unconfigured");
     expect(createCanonicalStudyEngineFromEnv("").mode).toBe("unconfigured");
     expect(createCanonicalStudyEngineFromEnv("production").mode).toBe("unconfigured");
-    expect(createCanonicalStudyEngineFromEnv("openai").mode).toBe("openai");
+    expect(
+      createCanonicalStudyEngineFromEnv(undefined, {
+        callModel: async () => ({ outputText: "{}" }),
+        modelName: "gpt-test",
+      }).mode,
+    ).toBe("openai");
   });
 });

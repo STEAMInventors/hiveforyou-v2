@@ -27,18 +27,42 @@ import { WorkerIntakeRepository } from "../persistence/worker-intake-repository.
 import { WorkerSourceDocumentRepository } from "../intake/worker-source-documents.js";
 import { SupabaseCaseCustomerContextRepository } from "../persistence/worker-case-customer-context.js";
 import {
-  createWorkerOpenAiCallModel,
-  createWorkerStoryWriterCallModel,
-} from "./story-writer-call-model.js";
+  isCanonicalStudyFixtureMode,
+  readCanonicalStudyPassSettings,
+  tryCreateCallModelFromEnv,
+  warnLegacyModelEnvVars,
+  wrapCallModelWithMetrics,
+  type ModelCallMetrics,
+} from "@hiveforyou/model-providers/env";
 
 const CANONICAL_STUDY_PROMPT_ID = "canonical-study-v4";
 
-function parseOptionalInt(raw: string | undefined): number | undefined {
-  if (!raw?.trim()) {
-    return undefined;
-  }
-  const parsed = Number(raw);
-  return Number.isFinite(parsed) && parsed > 0 ? parsed : undefined;
+export type WorkerStudyModelMetricsSink = {
+  take: () => ModelCallMetrics | undefined;
+  reset: () => void;
+};
+
+function createModelMetricsSink(): WorkerStudyModelMetricsSink & {
+  record: (metrics: ModelCallMetrics) => void;
+} {
+  let pending: ModelCallMetrics | undefined;
+  return {
+    reset: () => {
+      pending = undefined;
+    },
+    take: () => {
+      const value = pending;
+      pending = undefined;
+      return value;
+    },
+    record: (metrics) => {
+      pending = metrics;
+    },
+  };
+}
+
+function wrapEnvRecord(env: WorkerEnv): Record<string, string | undefined> {
+  return env as unknown as Record<string, string | undefined>;
 }
 
 export function buildWorkerStudyDeps(
@@ -60,32 +84,49 @@ export function buildWorkerStudyDeps(
   intake: WorkerIntakeRepository;
   documents: WorkerSourceDocumentRepository;
   customerContextRepo: SupabaseCaseCustomerContextRepository;
+  modelMetrics: WorkerStudyModelMetricsSink;
 } {
   const gateway = createSupabaseHiveGateway(supabase);
   const intake = new WorkerIntakeRepository(gateway, userId);
   const documents = new WorkerSourceDocumentRepository(gateway, userId);
 
+  const envRecord = wrapEnvRecord(env);
+  warnLegacyModelEnvVars(envRecord);
+  const modelMetrics = createModelMetricsSink();
+  const callModelBundle = tryCreateCallModelFromEnv(envRecord);
+  const passSettings = readCanonicalStudyPassSettings(envRecord);
   const prompt = loadCanonicalStudyPrompt(CANONICAL_STUDY_PROMPT_ID);
-  const openAiCallModel = createWorkerOpenAiCallModel(env);
+
+  const studyCallModel = callModelBundle
+    ? wrapCallModelWithMetrics(callModelBundle.callModel, callModelBundle.provider, (metrics) =>
+        modelMetrics.record(metrics),
+      )
+    : undefined;
+  const storyCallModel =
+    callModelBundle && parseStoryWriterEngine(env.HIVE_STORY_WRITER_ENGINE) === "openai"
+      ? wrapCallModelWithMetrics(callModelBundle.callModel, callModelBundle.provider, (metrics) =>
+          modelMetrics.record(metrics),
+        )
+      : undefined;
+
+  const maxOutputTokens =
+    passSettings.maxOutputTokens ?? callModelBundle?.maxOutputTokens;
+
   const engineConfig = createCanonicalStudyEngineFromEnv(
     {
-      engine: env.HIVE_CANONICAL_STUDY_ENGINE,
-      openaiApiKey: env.OPENAI_API_KEY,
-      model: env.HIVE_CANONICAL_STUDY_MODEL ?? env.HIVE_OPENAI_MODEL,
-      reasoningEffort: env.HIVE_CANONICAL_STUDY_REASONING_EFFORT,
-      maxOutputTokens: parseOptionalInt(
-        env.HIVE_CANONICAL_STUDY_MAX_OUTPUT_TOKENS ?? env.HIVE_OPENAI_MAX_OUTPUT_TOKENS,
-      ),
+      engine: isCanonicalStudyFixtureMode(envRecord) ? "fixture" : undefined,
+      reasoningEffort: passSettings.reasoningEffort,
+      maxOutputTokens,
     },
     {
       promptVersion: prompt.version === "v4" ? "v4" : "v3",
-      callModel: openAiCallModel,
+      callModel: studyCallModel,
+      modelName: callModelBundle?.modelName,
     },
   );
 
   const storyMode = parseStoryWriterEngine(env.HIVE_STORY_WRITER_ENGINE);
-  const callModel =
-    storyMode === "openai" ? createWorkerStoryWriterCallModel(env) : undefined;
+  const callModel = storyCallModel;
 
   const customerContextRepo = new SupabaseCaseCustomerContextRepository(gateway, userId);
 
@@ -178,7 +219,7 @@ export function buildWorkerStudyDeps(
         caseView,
         intelligence,
         mode: storyMode,
-        model: env.HIVE_STORY_WRITER_MODEL,
+        model: callModelBundle?.modelName,
         callModel,
         intent: (() => {
           const stated = readStatedWorkPurpose(context.answerSnapshot.userContext);
@@ -191,7 +232,7 @@ export function buildWorkerStudyDeps(
       }),
   };
 
-  return { deps, intake, documents, customerContextRepo };
+  return { deps, intake, documents, customerContextRepo, modelMetrics };
 }
 
 export async function attachCaseCustomerContext(

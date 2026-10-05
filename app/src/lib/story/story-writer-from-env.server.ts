@@ -9,6 +9,10 @@ import type { CaseViewV2 } from "@hiveforyou/shared/projections";
 
 import type { ServerEnv } from "@/lib/env/server-env";
 
+import { tryCreateCallModelFromEnv } from "@hiveforyou/model-providers/env";
+
+import { callModelEnvFromServerEnv } from "@/lib/model/call-model.server";
+
 import { createStoryWriterCallModel } from "./story-writer-call-model.server";
 
 export { parseStoryWriterEngine };
@@ -20,12 +24,13 @@ export async function enrichCaseViewWithValidatedStory(input: {
   intent?: string | null;
 }): Promise<CaseViewV2> {
   const mode = parseStoryWriterEngine(input.env.HIVE_STORY_WRITER_ENGINE);
+  const modelBundle = tryCreateCallModelFromEnv(callModelEnvFromServerEnv(input.env));
   return enrichCaseViewCore({
     caseView: input.caseView,
     intelligence: input.intelligence,
     intent: input.intent,
     mode,
-    model: input.env.HIVE_STORY_WRITER_MODEL,
+    model: modelBundle?.modelName,
     callModel: mode === "openai" ? createStoryWriterCallModel(input.env) : undefined,
     onEnriched: (info) => console.info("[story-writer] enrich_case_view", info),
     onFailed: (info) => console.error("[story-writer] enrich_failed", info),

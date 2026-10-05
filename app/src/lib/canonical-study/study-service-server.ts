@@ -2,7 +2,6 @@ import "server-only";
 
 import {
   assemblePersistedStudyRequest,
-  createCanonicalStudyEngineFromEnv,
   loadCaseCustomerContextSnapshot,
   loadCanonicalStudyPrompt,
   requireSessionUserId,
@@ -12,7 +11,7 @@ import {
 } from "@hiveforyou/core";
 import type { StartCanonicalStudyRequest } from "@hiveforyou/shared/canonical-study";
 
-import { openAiCallModelFromEnv } from "@/lib/model/openai-call-model.server";
+import { canonicalStudyEngineFromServerEnv } from "@/lib/model/call-model.server";
 import { readServerEnv } from "@/lib/env/server-env";
 import { enrichCaseViewWithValidatedStory } from "@/lib/story/story-writer-from-env.server";
 import { readStatedWorkPurpose } from "@hiveforyou/shared/canonical-study";
@@ -54,20 +53,9 @@ export async function startCanonicalStudyFromRequest(
   const env = readServerEnv();
   const sessionUserId = requireSessionUserId(await getAuthenticatedUserId());
   const prompt = loadCanonicalStudyPrompt(CANONICAL_STUDY_PROMPT_ID);
-  const engineConfig = createCanonicalStudyEngineFromEnv(
-    {
-      engine: env.HIVE_CANONICAL_STUDY_ENGINE,
-      openaiApiKey: env.OPENAI_API_KEY,
-      model: env.HIVE_CANONICAL_STUDY_MODEL ?? env.HIVE_OPENAI_MODEL,
-      reasoningEffort:
-        env.HIVE_CANONICAL_STUDY_REASONING_EFFORT ?? env.HIVE_DISCOVER_REASONING_EFFORT,
-      maxOutputTokens:
-        env.HIVE_CANONICAL_STUDY_MAX_OUTPUT_TOKENS ?? env.HIVE_OPENAI_MAX_OUTPUT_TOKENS,
-    },
-    {
-      promptVersion: prompt.version === "v4" ? "v4" : "v3",
-      callModel: openAiCallModelFromEnv(env),
-    },
+  const engineConfig = canonicalStudyEngineFromServerEnv(
+    env,
+    prompt.version === "v4" ? "v4" : "v3",
   );
   const gateway = createSupabaseHiveGateway(await createServerSupabaseClient());
   const adminGateway = createSupabaseHiveGateway(createAdminSupabaseClient());

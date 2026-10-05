@@ -84,6 +84,8 @@ export type DiscoverEngineFactoryDeps = {
   createOpenAIEngine?: OpenAIEngineFactory;
   adaptiveV2?: boolean;
   callModel?: CallModel;
+  /** From createCallModelFromEnv — sole authority for production model id. */
+  modelName?: string;
 };
 
 export type DiscoverResolutionEngineConfig = {
@@ -109,36 +111,24 @@ export function createDiscoverEngineFromEnv(
       modelId: deps.adaptiveV2 ? "fixture-v2" : "fixture-v1",
     };
   }
-  if (normalized === "openai") {
-    const apiKey = env.openaiApiKey?.trim();
-    const model = env.model?.trim() || "gpt-5.6-sol";
-    const reasoningEffort = env.reasoningEffort?.trim() || "medium";
-    if (!apiKey) {
-      return {
-        engine: new UnconfiguredDiscoverEngine(),
-        mode: "openai",
-        providerId: "openai-discover-engine",
-        modelId: model,
-        reasoningEffort,
-      };
-    }
+
+  const reasoningEffort = env.reasoningEffort?.trim() || "medium";
+  const modelName = deps.modelName?.trim();
+  if (deps.callModel && modelName) {
     const factory = deps.createOpenAIEngine ?? ((input) => new OpenAIDiscoverEngine(input));
-    const callModel =
-      deps.callModel ??
-      (async () => {
-        throw new Error("DISCOVER_ENGINE_UNAVAILABLE");
-      });
-    if (!deps.callModel && !deps.createOpenAIEngine) {
-      return {
-        engine: new UnconfiguredDiscoverEngine(),
-        mode: "openai",
-        providerId: "openai-discover-engine",
-        modelId: model,
-        reasoningEffort,
-      };
-    }
     return {
-      engine: factory({ model, reasoningEffort, callModel }),
+      engine: factory({ model: modelName, reasoningEffort, callModel: deps.callModel }),
+      mode: "openai",
+      providerId: "openai-discover-engine",
+      modelId: modelName,
+      reasoningEffort,
+    };
+  }
+
+  if (normalized === "openai") {
+    const model = modelName || "gpt-5.6-sol";
+    return {
+      engine: new UnconfiguredDiscoverEngine(),
       mode: "openai",
       providerId: "openai-discover-engine",
       modelId: model,
@@ -164,38 +154,29 @@ export function createDiscoverResolutionEngineFromEnv(
       modelId: "fixture-v2",
     };
   }
-  if (normalized === "openai") {
-    const apiKey = env.openaiApiKey?.trim();
-    const model = env.model?.trim() || "gpt-5.6-sol";
-    const reasoningEffort = env.reasoningEffort?.trim() || "medium";
-    if (!apiKey) {
-      return {
-        engine: {
-          resolveDiscovery: async () => {
-            throw new Error("DISCOVER_ENGINE_UNAVAILABLE");
-          },
-        },
-        providerId: "openai-discover-resolution-engine",
-        modelId: model,
-      };
-    }
-    if (!deps.callModel) {
-      return {
-        engine: {
-          resolveDiscovery: async () => {
-            throw new Error("DISCOVER_ENGINE_UNAVAILABLE");
-          },
-        },
-        providerId: "openai-discover-resolution-engine",
-        modelId: model,
-      };
-    }
+
+  const modelName = deps.modelName?.trim();
+  const reasoningEffort = env.reasoningEffort?.trim() || "medium";
+  if (deps.callModel && modelName) {
     return {
       engine: new OpenAIDiscoverResolutionEngine({
-        model,
+        model: modelName,
         reasoningEffort,
         callModel: deps.callModel,
       }),
+      providerId: "openai-discover-resolution-engine",
+      modelId: modelName,
+    };
+  }
+
+  if (normalized === "openai") {
+    const model = modelName || "gpt-5.6-sol";
+    return {
+      engine: {
+        resolveDiscovery: async () => {
+          throw new Error("DISCOVER_ENGINE_UNAVAILABLE");
+        },
+      },
       providerId: "openai-discover-resolution-engine",
       modelId: model,
     };

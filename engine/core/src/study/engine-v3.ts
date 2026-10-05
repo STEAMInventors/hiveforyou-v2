@@ -236,7 +236,49 @@ export class FixtureCanonicalStudyEngineV4 implements CanonicalStudyEngineV3 {
 export type CreateCanonicalStudyEngineOptions = {
   promptVersion?: "v3" | "v4";
   callModel?: CallModel;
+  /** From createCallModelFromEnv — sole authority for production model id. */
+  modelName?: string;
 };
+
+function createLiveCanonicalStudyEngine(
+  promptVersion: "v3" | "v4",
+  input: {
+    model: string;
+    reasoningEffort: string;
+    maxOutputTokens?: number;
+    callModel: CallModel;
+  },
+): {
+  engine: CanonicalStudyEngineV3;
+  mode: StudyEngineV3Mode;
+  providerId: string;
+  modelId: string;
+} {
+  if (promptVersion === "v4") {
+    return {
+      engine: new OpenAICanonicalStudyEngineV4({
+        model: input.model,
+        reasoningEffort: input.reasoningEffort,
+        maxOutputTokens: input.maxOutputTokens,
+        callModel: input.callModel,
+      }),
+      mode: "openai",
+      providerId: "openai-canonical-study-engine-v4",
+      modelId: input.model,
+    };
+  }
+  return {
+    engine: new OpenAICanonicalStudyEngineV3({
+      model: input.model,
+      reasoningEffort: input.reasoningEffort,
+      maxOutputTokens: input.maxOutputTokens,
+      callModel: input.callModel,
+    }),
+    mode: "openai",
+    providerId: "openai-canonical-study-engine-v3",
+    modelId: input.model,
+  };
+}
 
 export function createCanonicalStudyEngineV3FromEnv(
   input: string | CanonicalStudyEngineV3Env | undefined,
@@ -268,56 +310,29 @@ export function createCanonicalStudyEngineV3FromEnv(
     };
   }
 
+  const callModel = options?.callModel;
+  const modelName = options?.modelName?.trim();
+  const reasoningEffort = env.reasoningEffort?.trim() || "medium";
+  const maxOutputTokens = env.maxOutputTokens;
+
+  if (callModel && modelName) {
+    return createLiveCanonicalStudyEngine(promptVersion, {
+      model: modelName,
+      reasoningEffort,
+      maxOutputTokens,
+      callModel,
+    });
+  }
+
   if (normalized === "openai") {
-    const apiKey = env.openaiApiKey?.trim();
-    const model = env.model?.trim() || "gpt-5.6-sol";
-    const reasoningEffort = env.reasoningEffort?.trim() || "medium";
-    const maxOutputTokens = env.maxOutputTokens;
-    if (!apiKey) {
-      return {
-        engine: new UnconfiguredProductionStudyEngineV3(),
-        mode: "openai",
-        providerId:
-          promptVersion === "v4"
-            ? "openai-canonical-study-engine-v4"
-            : "openai-canonical-study-engine-v3",
-        modelId: model,
-      };
-    }
-    const callModel = options?.callModel;
-    if (!callModel) {
-      return {
-        engine: new UnconfiguredProductionStudyEngineV3(),
-        mode: "openai",
-        providerId:
-          promptVersion === "v4"
-            ? "openai-canonical-study-engine-v4"
-            : "openai-canonical-study-engine-v3",
-        modelId: model,
-      };
-    }
-    if (promptVersion === "v4") {
-      return {
-        engine: new OpenAICanonicalStudyEngineV4({
-          model,
-          reasoningEffort,
-          maxOutputTokens,
-          callModel,
-        }),
-        mode: "openai",
-        providerId: "openai-canonical-study-engine-v4",
-        modelId: model,
-      };
-    }
+    const model = modelName || "gpt-5.6-sol";
     return {
-      engine: new OpenAICanonicalStudyEngineV3({
-        model,
-        reasoningEffort,
-        maxOutputTokens,
-        callModel,
-      }),
+      engine: new UnconfiguredProductionStudyEngineV3(),
       mode: "openai",
-      providerId: "openai-canonical-study-engine-v3",
+      providerId:
+        promptVersion === "v4"
+          ? "openai-canonical-study-engine-v4"
+          : "openai-canonical-study-engine-v3",
       modelId: model,
     };
   }

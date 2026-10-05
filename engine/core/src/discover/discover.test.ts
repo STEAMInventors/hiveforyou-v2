@@ -98,18 +98,23 @@ describe("Engine 1 discover adapter", () => {
     expect(fixture.mode).toBe("fixture");
     expect(fixture.engine).toBeInstanceOf(FixtureDiscoverEngine);
 
-    const openai = createDiscoverEngineFromEnv({
-      engine: "openai",
-      openaiApiKey: "test-key",
-    });
+    const openai = createDiscoverEngineFromEnv(
+      { reasoningEffort: "medium" },
+      {
+        callModel: async () => ({ outputText: "{}" }),
+        modelName: "gpt-test",
+      },
+    );
     expect(openai.mode).toBe("openai");
     expect(openai.engine).not.toBeInstanceOf(FixtureDiscoverEngine);
   });
 
   it("does not silently fall back from openai to fixture when the provider fails", async () => {
     const failingOpenAI = createDiscoverEngineFromEnv(
-      { engine: "openai", openaiApiKey: "test-key" },
+      { reasoningEffort: "medium" },
       {
+        modelName: "gpt-test",
+        callModel: async () => ({ outputText: "{}" }),
         createOpenAIEngine: () => ({
           discover: async () => {
             throw new Error("OPENAI_RESPONSE_FAILED:500");
@@ -271,8 +276,10 @@ describe("Engine 1 discover adapter", () => {
       },
     });
     const engineConfig = createDiscoverEngineFromEnv(
-      { engine: "openai", openaiApiKey: "key" },
+      { reasoningEffort: "medium" },
       {
+        modelName: "gpt-test",
+        callModel: async () => ({ outputText: "{}" }),
         createOpenAIEngine: () => ({
           discover: async () => proposal,
         }),
@@ -319,8 +326,10 @@ describe("Engine 1 discover adapter", () => {
       },
     });
     const engineConfig = createDiscoverEngineFromEnv(
-      { engine: "openai", openaiApiKey: "key" },
+      { reasoningEffort: "medium" },
       {
+        modelName: "gpt-test",
+        callModel: async () => ({ outputText: "{}" }),
         createOpenAIEngine: () => ({
           discover: async () => proposal,
         }),
@@ -358,8 +367,10 @@ describe("Engine 1 discover adapter", () => {
 
   it("fails closed on malformed provider responses", async () => {
     const engineConfig = createDiscoverEngineFromEnv(
-      { engine: "openai", openaiApiKey: "key" },
+      { reasoningEffort: "medium" },
       {
+        modelName: "gpt-test",
+        callModel: async () => ({ outputText: "{}" }),
         createOpenAIEngine: () => ({
           discover: async () => {
             throw new Error("MALFORMED_PROPOSAL");
@@ -495,8 +506,10 @@ describe("Engine 1 discover adapter", () => {
     const failed = await runDiscover(request, {
       ...baseDeps,
       engineConfig: createDiscoverEngineFromEnv(
-        { engine: "openai", openaiApiKey: "key" },
+        { reasoningEffort: "medium" },
         {
+          modelName: "gpt-test",
+          callModel: async () => ({ outputText: "{}" }),
           createOpenAIEngine: () => ({
             discover: async () => {
               throw new Error("MALFORMED_PROPOSAL");

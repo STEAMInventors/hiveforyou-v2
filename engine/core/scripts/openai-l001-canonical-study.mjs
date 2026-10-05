@@ -34,7 +34,11 @@ import {
   resolveEvidenceReference,
   runCanonicalStudy,
 } from "@hiveforyou/core";
-import { createCallModelFromEnv } from "@hiveforyou/model-providers/env";
+import {
+  createCallModelFromEnv,
+  isCanonicalStudyFixtureMode,
+  readCanonicalStudyPassSettings,
+} from "@hiveforyou/model-providers/env";
 import { resolveDomainPackFromDiscoveryLabel } from "@hiveforyou/domain-packs";
 
 const scriptDir = dirname(fileURLToPath(import.meta.url));
@@ -186,12 +190,7 @@ function addUsage(usage) {
 }
 
 const { callModel: baseCallModel, modelName: callModelDefaultName } = createCallModelFromEnv();
-const engineModelName =
-  process.env.MODEL_NAME?.trim() ||
-  callModelDefaultName ||
-  process.env.HIVE_CANONICAL_STUDY_MODEL?.trim() ||
-  process.env.HIVE_OPENAI_MODEL?.trim() ||
-  modelName;
+const engineModelName = callModelDefaultName;
 const callModel = async (req) => {
   const response = await baseCallModel(req);
   addUsage(response.usage);
@@ -360,17 +359,16 @@ const apiKey =
     ? process.env.HIVE_ANTHROPIC_API_KEY
     : process.env.OPENAI_API_KEY;
 
+const studyPass = readCanonicalStudyPassSettings(process.env);
 const engineConfig = createCanonicalStudyEngineFromEnv(
   {
-    engine: process.env.HIVE_CANONICAL_STUDY_ENGINE ?? "openai",
-    openaiApiKey: apiKey,
-    model: engineModelName,
-    reasoningEffort:
-      process.env.HIVE_CANONICAL_STUDY_REASONING_EFFORT ?? process.env.HIVE_DISCOVER_REASONING_EFFORT,
-    maxOutputTokens,
+    engine: isCanonicalStudyFixtureMode(process.env) ? "fixture" : undefined,
+    reasoningEffort: studyPass.reasoningEffort,
+    maxOutputTokens: studyPass.maxOutputTokens ?? maxOutputTokens,
   },
   {
     callModel,
+    modelName: engineModelName,
     promptVersion: promptEngineVersion,
   },
 );

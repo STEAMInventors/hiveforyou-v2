@@ -21,11 +21,55 @@ import { NonRetriableError } from "inngest";
 
 import { attachCaseCustomerContext, buildWorkerStudyDeps } from "../../study/build-worker-study-deps.js";
 import { loadIntakeStudyRequest } from "../../study/load-intake-study-request.js";
+import type { ModelCallMetrics } from "@hiveforyou/model-providers/env";
 import { readWorkerEnv } from "../../env.js";
 import { createWorkerAdminSupabase } from "../../supabase/admin.js";
 import { inngest } from "../client.js";
 
 const GLOBAL_STUDY_MODEL_CONCURRENCY = 3;
+
+type StudyWorkerStepId =
+  | "load-context"
+  | "propose"
+  | "validate"
+  | "projections"
+  | "story"
+  | "complete";
+
+function elapsedMs(start: number): number {
+  return Math.round(performance.now() - start);
+}
+
+function mergeModelMetrics(
+  payload: Record<string, unknown>,
+  metrics: ModelCallMetrics | undefined,
+): Record<string, unknown> {
+  if (!metrics) {
+    return payload;
+  }
+  return {
+    ...payload,
+    provider: metrics.provider,
+    model: metrics.model,
+    ...(metrics.inputTokens != null ? { inputTokens: metrics.inputTokens } : {}),
+    ...(metrics.outputTokens != null ? { outputTokens: metrics.outputTokens } : {}),
+  };
+}
+
+function extractStepErrorFields(error: unknown): { errorCode?: string; errorKind?: string } {
+  if (error instanceof Error && error.name) {
+    const code =
+      "errorCode" in error && typeof (error as { errorCode?: unknown }).errorCode === "string"
+        ? (error as { errorCode: string }).errorCode
+        : undefined;
+    return { errorCode: code ?? error.name, errorKind: error.name };
+  }
+  return { errorKind: "Error" };
+}
+
+function logStudyStepTiming(payload: Record<string, unknown>): void {
+  console.info("[hive/timing]", JSON.stringify(payload));
+}
 
 export function parseStudyFailureEvent(event: { data?: unknown }) {
   const payload = event.data as { event?: { name?: string; data?: unknown } } | undefined;
@@ -61,20 +105,84 @@ function hasCompletedStudyValidation(artifact: StudyArtifactRecord | null | unde
   );
 }
 
+function readAttempt(ctx: { attempt?: number } | undefined): number {
+  const raw = ctx?.attempt;
+  return typeof raw === "number" && Number.isFinite(raw) ? raw : 0;
+}
+
 async function runHiveStudyHandler({
   event,
   step,
+  attempt = 0,
 }: {
   event: { data: unknown };
   step: {
     run: <T>(id: string, fn: () => Promise<T>) => Promise<T>;
   };
+  attempt?: number;
 }) {
   const data = hiveStudyRequestedEventDataSchema.parse(event.data);
   const env = readWorkerEnv();
   const supabase = createWorkerAdminSupabase(env);
   const built = buildWorkerStudyDeps(supabase, env, data.userId);
   let deps = await attachCaseCustomerContext(built.deps, built.customerContextRepo, data.caseId);
+  const { modelMetrics } = built;
+
+  const timingBase = {
+    stage: "study" as const,
+    studyRunId: data.studyRunId,
+    intakeRunId: data.intakeRunId,
+    attempt,
+  };
+
+  async function runTimedStep<T>(
+    stepId: StudyWorkerStepId,
+    outcomeFromResult: (result: T) => "ok" | "skipped",
+    fn: () => Promise<T>,
+  ): Promise<T> {
+    modelMetrics.reset();
+    const start = performance.now();
+    try {
+      const result = await fn();
+      const outcome = outcomeFromResult(result);
+      logStudyStepTiming(
+        mergeModelMetrics(
+          {
+            ...timingBase,
+            step: stepId,
+            ms: elapsedMs(start),
+            outcome,
+          },
+          modelMetrics.take(),
+        ),
+      );
+      return result;
+    } catch (error) {
+      const fields = extractStepErrorFields(error);
+      logStudyStepTiming(
+        mergeModelMetrics(
+          {
+            ...timingBase,
+            step: stepId,
+            ms: elapsedMs(start),
+            outcome: "error",
+            ...fields,
+          },
+          modelMetrics.take(),
+        ),
+      );
+      throw error;
+    }
+  }
+
+  function logSkippedStep(stepId: StudyWorkerStepId): void {
+    logStudyStepTiming({
+      ...timingBase,
+      step: stepId,
+      ms: 0,
+      outcome: "skipped",
+    });
+  }
 
   const intakeRun = await built.intake.getById(data.userId, data.intakeRunId);
   if (!intakeRun) {
@@ -93,13 +201,15 @@ async function runHiveStudyHandler({
     throw new NonRetriableError("MISSING_DOMAIN_PACK");
   }
 
-  const loaded = await step.run("load-context", async () => {
-    try {
-      return await runStudyWorkerLoadContext(deps, data, request, resolvedPack);
-    } catch (error) {
-      rethrowStepError(error);
-    }
-  });
+  const loaded = await step.run("load-context", async () =>
+    runTimedStep("load-context", (result) => (result.skipped ? "skipped" : "ok"), async () => {
+      try {
+        return await runStudyWorkerLoadContext(deps, data, request, resolvedPack);
+      } catch (error) {
+        rethrowStepError(error);
+      }
+    }),
+  );
 
   if (loaded.skipped) {
     return { skipped: loaded.skipped };
@@ -109,46 +219,63 @@ async function runHiveStudyHandler({
   const validationComplete = hasCompletedStudyValidation(artifactBeforePropose);
 
   if (!validationComplete) {
-    await step.run("propose", async () => {
-      try {
-        return await runStudyWorkerProposeStep(deps, data, request);
-      } catch (error) {
-        rethrowStepError(error);
-      }
-    });
+    await step.run("propose", async () =>
+      runTimedStep(
+        "propose",
+        (result) => (result.proposalSkipped ? "skipped" : "ok"),
+        async () => {
+          try {
+            return await runStudyWorkerProposeStep(deps, data, request);
+          } catch (error) {
+            rethrowStepError(error);
+          }
+        },
+      ),
+    );
 
-    await step.run("validate", async () => {
-      try {
-        return await runStudyWorkerValidateStep(deps, data);
-      } catch (error) {
-        rethrowStepError(error);
-      }
-    });
+    await step.run("validate", async () =>
+      runTimedStep("validate", () => "ok", async () => {
+        try {
+          return await runStudyWorkerValidateStep(deps, data);
+        } catch (error) {
+          rethrowStepError(error);
+        }
+      }),
+    );
+  } else {
+    logSkippedStep("propose");
+    logSkippedStep("validate");
   }
 
-  await step.run("projections", async () => {
-    try {
-      return await runStudyWorkerProjectionsStep(deps, data);
-    } catch (error) {
-      rethrowStepError(error);
-    }
-  });
+  await step.run("projections", async () =>
+    runTimedStep("projections", () => "ok", async () => {
+      try {
+        return await runStudyWorkerProjectionsStep(deps, data);
+      } catch (error) {
+        rethrowStepError(error);
+      }
+    }),
+  );
 
-  await step.run("story", async () => {
-    try {
-      return await runStudyWorkerStoryStep(deps, data);
-    } catch (error) {
-      rethrowStepError(error);
-    }
-  });
+  await step.run("story", async () =>
+    runTimedStep("story", () => "ok", async () => {
+      try {
+        return await runStudyWorkerStoryStep(deps, data);
+      } catch (error) {
+        rethrowStepError(error);
+      }
+    }),
+  );
 
-  const completed = await step.run("complete", async () => {
-    try {
-      return await runStudyWorkerCompleteStep(deps, data);
-    } catch (error) {
-      rethrowStepError(error);
-    }
-  });
+  const completed = await step.run("complete", async () =>
+    runTimedStep("complete", () => "ok", async () => {
+      try {
+        return await runStudyWorkerCompleteStep(deps, data);
+      } catch (error) {
+        rethrowStepError(error);
+      }
+    }),
+  );
 
   return { completed };
 }
@@ -179,5 +306,10 @@ export const hiveStudy = inngest.createFunction(
       return { marked: true as const };
     },
   },
-  runHiveStudyHandler,
+  (ctx) =>
+    runHiveStudyHandler({
+      event: ctx.event,
+      step: ctx.step,
+      attempt: readAttempt(ctx as { attempt?: number }),
+    }),
 );
