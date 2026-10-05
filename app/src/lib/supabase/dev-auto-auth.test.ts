@@ -19,6 +19,9 @@ describe("ensureDevSupabaseSession", () => {
     delete process.env.HIVE_DEV_AUTO_AUTH;
     delete process.env.HIVE_DEV_AUTH_EMAIL;
     delete process.env.HIVE_DEV_AUTH_PASSWORD;
+    delete process.env.HIVE_PREVIEW_PASSWORD;
+    delete process.env.HIVE_PREVIEW_AUTH_EMAIL;
+    delete process.env.HIVE_PREVIEW_AUTH_PASSWORD;
     delete process.env.VERCEL;
   });
 
@@ -158,5 +161,41 @@ describe("ensureDevSupabaseSession", () => {
     expect(consoleError).toHaveBeenCalledWith("[dev-auto-auth] getUser failed", {
       message: "Invalid JWT",
     });
+  });
+
+  it("signs in the preview user on Vercel when the preview password is set", async () => {
+    vi.stubEnv("NODE_ENV", "production");
+    vi.stubEnv("VERCEL", "1");
+    process.env.HIVE_PREVIEW_PASSWORD = "gate";
+    process.env.HIVE_PREVIEW_AUTH_EMAIL = " preview@example.com ";
+    process.env.HIVE_PREVIEW_AUTH_PASSWORD = " preview-secret ";
+    process.env.HIVE_DEV_AUTO_AUTH = "1";
+    process.env.HIVE_DEV_AUTH_EMAIL = "dev@example.com";
+    process.env.HIVE_DEV_AUTH_PASSWORD = "secret";
+    const { client, getUser, signInWithPassword } = mockSupabase();
+    getUser.mockResolvedValue({ data: { user: null }, error: null });
+    signInWithPassword.mockResolvedValue({ data: { session: {} }, error: null });
+
+    await ensureDevSupabaseSession(client as never);
+
+    expect(signInWithPassword).toHaveBeenCalledWith({
+      email: "preview@example.com",
+      password: "preview-secret",
+    });
+  });
+
+  it("does not fall back to dev credentials when preview user credentials are missing", async () => {
+    vi.stubEnv("NODE_ENV", "development");
+    process.env.HIVE_PREVIEW_PASSWORD = "gate";
+    process.env.HIVE_DEV_AUTO_AUTH = "1";
+    process.env.HIVE_DEV_AUTH_EMAIL = "dev@example.com";
+    process.env.HIVE_DEV_AUTH_PASSWORD = "secret";
+    const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
+    const { client, signInWithPassword } = mockSupabase();
+
+    await ensureDevSupabaseSession(client as never);
+
+    expect(signInWithPassword).not.toHaveBeenCalled();
+    expect(consoleError).toHaveBeenCalledWith("[preview-auth] preview user credentials are not set");
   });
 });

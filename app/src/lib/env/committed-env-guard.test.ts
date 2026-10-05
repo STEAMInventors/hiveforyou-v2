@@ -7,6 +7,7 @@ import {
   findCommittedEnvEncodingIssue,
   findForbiddenCommittedEnvKeys,
   findSharedAppWorkerEnvMismatches,
+  FORBIDDEN_COMMITTED_ENV_KEYS,
 } from "./committed-env-guard";
 
 const REPO_ROOT = join(process.cwd(), "..");
@@ -33,6 +34,21 @@ describe("committed env files", () => {
       const content = readFileSync(filePath, "utf8");
       expect(findForbiddenCommittedEnvKeys(content), filePath).toEqual([]);
     }
+  });
+
+  it("forbids the preview password and preview user credential in committed env files", () => {
+    expect(FORBIDDEN_COMMITTED_ENV_KEYS).toEqual(
+      expect.arrayContaining(["HIVE_PREVIEW_PASSWORD", "HIVE_PREVIEW_AUTH_PASSWORD"]),
+    );
+    expect(
+      findForbiddenCommittedEnvKeys(
+        "HIVE_PREVIEW_AUTH_PASSWORD=secret\nHIVE_PREVIEW_PASSWORD=gate\nHIVE_PREVIEW_AUTH_EMAIL=preview@example.com\n",
+      ),
+    ).toEqual([
+      "HIVE_PREVIEW_AUTH_EMAIL",
+      "HIVE_PREVIEW_AUTH_PASSWORD",
+      "HIVE_PREVIEW_PASSWORD",
+    ]);
   });
 
   it("keeps shared app/worker config keys in sync", () => {

@@ -217,9 +217,28 @@ describe("server environment", () => {
       return rel !== "lib/supabase/dev-auto-auth.ts" && !rel.endsWith("dev-auto-auth.test.ts");
     });
     expect(devSecretOffenders).toEqual([]);
+    const previewSecretAllow = new Set([
+      "lib/preview/preview-gate.ts",
+      "lib/supabase/dev-auto-auth.ts",
+      "lib/env/committed-env-guard.ts",
+    ]);
+    const previewSecretOffenders = walk(root).filter((file) => {
+      const source = readFileSync(file, "utf8");
+      const mentionsPreviewSecret =
+        source.includes("HIVE_PREVIEW_PASSWORD") ||
+        source.includes("HIVE_PREVIEW_AUTH_EMAIL") ||
+        source.includes("HIVE_PREVIEW_AUTH_PASSWORD");
+      if (!mentionsPreviewSecret) {
+        return false;
+      }
+      const rel = relative(root, file).replaceAll("\\", "/");
+      return !previewSecretAllow.has(rel);
+    });
+    expect(previewSecretOffenders).toEqual([]);
     const browser = readFileSync(join(root, "lib/supabase/browser.ts"), "utf8");
     expect(browser).not.toContain("SERVICE_ROLE");
     expect(browser).not.toContain("HIVE_DEV_AUTH");
+    expect(browser).not.toContain("HIVE_PREVIEW_");
     const admin = readFileSync(join(root, "lib/supabase/admin.ts"), "utf8");
     expect(admin).toContain('import "server-only"');
   });

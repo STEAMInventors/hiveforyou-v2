@@ -1,9 +1,25 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
+import {
+  authorizationMatchesPreviewPassword,
+  isPreviewPasswordGateEnabled,
+} from "@/lib/preview/preview-gate";
 import { ensureDevSupabaseSession } from "@/lib/supabase/dev-auto-auth";
 
+const PREVIEW_AUTHENTICATE = 'Basic realm="Hive preview", charset="UTF-8"';
+
 export async function middleware(request: NextRequest) {
+  if (
+    isPreviewPasswordGateEnabled() &&
+    !authorizationMatchesPreviewPassword(request.headers.get("authorization"))
+  ) {
+    return new NextResponse("Unauthorized", {
+      status: 401,
+      headers: { "WWW-Authenticate": PREVIEW_AUTHENTICATE },
+    });
+  }
+
   let response = NextResponse.next({ request });
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;

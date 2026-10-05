@@ -1,8 +1,12 @@
 import "server-only";
 
 import { createServerClient } from "@supabase/ssr";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 
+import {
+  authorizationMatchesPreviewPassword,
+  isPreviewPasswordGateEnabled,
+} from "@/lib/preview/preview-gate";
 import { readServerEnv } from "@/lib/env/server-env";
 
 import { ensureDevSupabaseSession } from "./dev-auto-auth";
@@ -29,6 +33,12 @@ export async function createServerSupabaseClient() {
 }
 
 export async function getAuthenticatedUserId(): Promise<string | null> {
+  if (isPreviewPasswordGateEnabled()) {
+    const headerList = await headers();
+    if (!authorizationMatchesPreviewPassword(headerList.get("authorization"))) {
+      return null;
+    }
+  }
   const supabase = await createServerSupabaseClient();
   await ensureDevSupabaseSession(supabase);
   const { data, error } = await supabase.auth.getUser();

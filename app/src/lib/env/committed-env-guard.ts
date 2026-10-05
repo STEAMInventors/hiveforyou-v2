@@ -6,6 +6,9 @@ export const FORBIDDEN_COMMITTED_ENV_KEYS = [
   "INNGEST_EVENT_KEY",
   "INNGEST_SIGNING_KEY",
   "JEV_API_KEY",
+  "HIVE_PREVIEW_PASSWORD",
+  "HIVE_PREVIEW_AUTH_EMAIL",
+  "HIVE_PREVIEW_AUTH_PASSWORD",
 ] as const;
 
 /** Public *_KEY names allowed in committed files. */

@@ -3,7 +3,7 @@
 ## Config sources
 
 - **Committed (Git):** `app/.env.production` — non-secret production defaults (Supabase URL/anon key, engine modes, `HIVE_PIPELINE`, model ids, prompt pins, etc.).
-- **Platform secrets:** set in the Vercel project from `app/.env.vercel.example` (`SUPABASE_SERVICE_ROLE_KEY`, `OPENAI_API_KEY`, `HIVE_ANTHROPIC_API_KEY`, `INNGEST_EVENT_KEY`, `INNGEST_SIGNING_KEY`, `JEV_API_KEY`).
+- **Platform secrets:** set in the Vercel project from `app/.env.vercel.example` (`SUPABASE_SERVICE_ROLE_KEY`, `OPENAI_API_KEY`, `HIVE_ANTHROPIC_API_KEY`, `INNGEST_EVENT_KEY`, `INNGEST_SIGNING_KEY`, `JEV_API_KEY`). Temporary preview gate (optional): `HIVE_PREVIEW_PASSWORD`, `HIVE_PREVIEW_AUTH_EMAIL`, `HIVE_PREVIEW_AUTH_PASSWORD` — set only in Vercel, never commit them.
 
 ## Precedence
 
