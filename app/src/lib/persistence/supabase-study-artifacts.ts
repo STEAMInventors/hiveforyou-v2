@@ -1,10 +1,13 @@
 import { randomUUID } from "node:crypto";
 
 import {
+  decideProposeStudyArtifactSave,
   decideStudyArtifactSave,
+  decideValidateStudyArtifactSave,
   isStudyArtifactDuplicateKeyError,
   withSessionOwner,
 } from "@hiveforyou/core";
+import type { StudyArtifactSaveDecision } from "@hiveforyou/core";
 import type { StudyArtifactRecord, StudyArtifactRepository } from "@hiveforyou/core";
 import type { CanonicalStudyValidationResultV3 } from "@hiveforyou/shared/case-intelligence/3/validation-result";
 
@@ -23,23 +26,42 @@ function toSaveInput(record: {
   };
 }
 
+type SavePhase = "full" | "propose" | "validate";
+
 export class SupabaseStudyArtifactRepository implements StudyArtifactRepository {
   constructor(
     private readonly gateway: HiveGateway,
     private readonly userId: string,
   ) {}
 
-  async save(record: {
-    studyRunId: string;
-    caseId: string;
-    userId: string;
-    rawProposalJson: unknown | null;
-    validationResultJson: StudyArtifactRecord["validationResultJson"];
-  }): Promise<void> {
-    await this.saveWithRetry(record, 0);
+  async save(record: Parameters<StudyArtifactRepository["save"]>[0]): Promise<void> {
+    await this.persist(record, "full", 0);
   }
 
-  private async saveWithRetry(
+  async saveProposed(record: Parameters<StudyArtifactRepository["saveProposed"]>[0]): Promise<void> {
+    await this.persist(record, "propose", 0);
+  }
+
+  async saveValidated(record: Parameters<StudyArtifactRepository["saveValidated"]>[0]): Promise<void> {
+    await this.persist(record, "validate", 0);
+  }
+
+  private decide(
+    phase: SavePhase,
+    studyRunId: string,
+    existing: ReturnType<typeof toSaveInput> | null,
+    incoming: ReturnType<typeof toSaveInput>,
+  ): StudyArtifactSaveDecision {
+    if (phase === "propose") {
+      return decideProposeStudyArtifactSave(existing, incoming);
+    }
+    if (phase === "validate") {
+      return decideValidateStudyArtifactSave(studyRunId, existing, incoming);
+    }
+    return decideStudyArtifactSave(existing, incoming);
+  }
+
+  private async persist(
     record: {
       studyRunId: string;
       caseId: string;
@@ -47,13 +69,13 @@ export class SupabaseStudyArtifactRepository implements StudyArtifactRepository 
       rawProposalJson: unknown | null;
       validationResultJson: StudyArtifactRecord["validationResultJson"];
     },
+    phase: SavePhase,
     attempt: number,
   ): Promise<void> {
-    const existing = await this.getByStudyRunId(record.studyRunId);
-    const decision = decideStudyArtifactSave(
-      existing ? toSaveInput(existing) : null,
-      toSaveInput(record),
-    );
+    const existingRecord = await this.getByStudyRunId(record.studyRunId);
+    const existing = existingRecord ? toSaveInput(existingRecord) : null;
+    const incoming = toSaveInput(record);
+    const decision = this.decide(phase, record.studyRunId, existing, incoming);
 
     if (decision.action === "noop") {
       return;
@@ -66,6 +88,10 @@ export class SupabaseStudyArtifactRepository implements StudyArtifactRepository 
         { study_run_id: record.studyRunId, user_id: this.userId },
       );
       return;
+    }
+
+    if (phase === "validate") {
+      throw new Error("STUDY_ARTIFACT_VALIDATE_INSERT_FORBIDDEN");
     }
 
     try {
@@ -86,7 +112,7 @@ export class SupabaseStudyArtifactRepository implements StudyArtifactRepository 
       if (attempt >= 5) {
         throw error;
       }
-      await this.saveWithRetry(record, attempt + 1);
+      await this.persist(record, phase, attempt + 1);
     }
   }
 

@@ -41,6 +41,7 @@ import {
 import type { StudyServiceDeps } from "./run-canonical-study";
 import { validateCanonicalStudyProposalV3 } from "./validate-proposal-v3";
 import { validateCanonicalStudyProposalV4 } from "./validate-proposal-v4";
+import { createStudyArtifactProposePlaceholderValidation } from "./study-artifact-persistence";
 import { isStudyNonRetriableErrorCode } from "./study-worker-non-retriable";
 
 export type StudyWorkerEvent = {
@@ -309,21 +310,12 @@ export async function runStudyWorkerProposeStep(
     );
   }
 
-  await deps.studyArtifactRepo?.save({
+  await deps.studyArtifactRepo?.saveProposed({
     studyRunId: event.studyRunId,
     caseId: run.caseId,
     userId: event.userId,
     rawProposalJson: proposal,
-    validationResultJson: {
-      status: "FAILED",
-      accepted: { entities: [], claims: [], conflicts: [], missingInformation: [] },
-      rejected: [],
-      warnings: [],
-      unresolved: [],
-      validationErrors: [],
-      provenanceErrors: [],
-      integrityErrors: [],
-    } as CanonicalStudyValidationResultV3,
+    validationResultJson: createStudyArtifactProposePlaceholderValidation(),
   });
 
   await deps.eventRepo.append(
@@ -371,7 +363,7 @@ export async function runStudyWorkerValidateStep(
     validation = enrichValidationWithExtractionReadiness(validation, extractionReadiness, context);
   }
 
-  await deps.studyArtifactRepo?.save({
+  await deps.studyArtifactRepo?.saveValidated({
     studyRunId: event.studyRunId,
     caseId: run.caseId,
     userId: event.userId,

@@ -95,7 +95,7 @@ describe("SupabaseStudyArtifactRepository", () => {
     const gateway = studyArtifactsGateway();
     const repo = new SupabaseStudyArtifactRepository(gateway, USER_ID);
 
-    await repo.save({
+    await repo.saveProposed({
       studyRunId: STUDY_RUN_ID,
       caseId: CASE_ID,
       userId: USER_ID,
@@ -109,7 +109,7 @@ describe("SupabaseStudyArtifactRepository", () => {
       ),
     ).toBe(true);
 
-    await repo.save({
+    await repo.saveValidated({
       studyRunId: STUDY_RUN_ID,
       caseId: CASE_ID,
       userId: USER_ID,
@@ -124,7 +124,7 @@ describe("SupabaseStudyArtifactRepository", () => {
       validationResultJson: succeededValidation,
     });
 
-    await repo.save({
+    await repo.saveValidated({
       studyRunId: STUDY_RUN_ID,
       caseId: CASE_ID,
       userId: USER_ID,
@@ -139,6 +139,21 @@ describe("SupabaseStudyArtifactRepository", () => {
           .validation_result_json as CanonicalStudyValidationResultV3,
       }),
     ).toBe(fp);
+  });
+
+  it("saveValidated does not insert when the propose row is missing", async () => {
+    const gateway = studyArtifactsGateway();
+    const repo = new SupabaseStudyArtifactRepository(gateway, USER_ID);
+    await expect(
+      repo.saveValidated({
+        studyRunId: STUDY_RUN_ID,
+        caseId: CASE_ID,
+        userId: USER_ID,
+        rawProposalJson: proposal,
+        validationResultJson: succeededValidation,
+      }),
+    ).rejects.toThrow(/Study artifact row is required/);
+    expect(gateway.rows).toHaveLength(0);
   });
 
   it("throws StudyArtifactContentMismatchError when validation differs after completion", async () => {

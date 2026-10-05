@@ -43,6 +43,19 @@ export function fingerprintStudyArtifactValidation(
 }
 
 /** Placeholder written by runStudyWorkerProposeStep before validation runs. */
+export function createStudyArtifactProposePlaceholderValidation(): CanonicalStudyValidationResultV3 {
+  return {
+    status: "FAILED",
+    accepted: { entities: [], claims: [], conflicts: [], missingInformation: [] },
+    rejected: [],
+    warnings: [],
+    unresolved: [],
+    validationErrors: [],
+    provenanceErrors: [],
+    integrityErrors: [],
+  };
+}
+
 export function isStudyArtifactProposePlaceholder(
   validation: CanonicalStudyValidationResultV3,
 ): boolean {
@@ -57,6 +70,49 @@ export function isStudyArtifactProposePlaceholder(
     validation.accepted.missingInformation.length === 0 &&
     validation.rejected.length === 0
   );
+}
+
+export class StudyArtifactValidationPrerequisiteError extends Error {
+  readonly errorCode = "STUDY_VALIDATE_PREREQUISITE_MISSING" as const;
+
+  constructor(studyRunId: string) {
+    super(`Study artifact row is required before validation (studyRunId=${studyRunId}).`);
+    this.name = "StudyArtifactValidationPrerequisiteError";
+  }
+}
+
+/** Worker propose step: the only code path that may INSERT a study_artifacts row. */
+export function decideProposeStudyArtifactSave(
+  existing: StudyArtifactSaveInput | null,
+  incoming: StudyArtifactSaveInput,
+): StudyArtifactSaveDecision {
+  if (!existing) {
+    return { action: "insert" };
+  }
+
+  const incomingProposalFp = fingerprintStudyArtifactProposal(incoming.rawProposalJson);
+  const existingProposalFp = fingerprintStudyArtifactProposal(existing.rawProposalJson);
+  if (incomingProposalFp !== existingProposalFp) {
+    throw new StudyArtifactContentMismatchError(
+      `Study artifact proposal mismatch for study run (existing=${existingProposalFp}, incoming=${incomingProposalFp}).`,
+      existingProposalFp,
+      incomingProposalFp,
+    );
+  }
+
+  return { action: "noop" };
+}
+
+/** Worker validate step: completes validation_result_json only; never inserts. */
+export function decideValidateStudyArtifactSave(
+  studyRunId: string,
+  existing: StudyArtifactSaveInput | null,
+  incoming: StudyArtifactSaveInput,
+): StudyArtifactSaveDecision {
+  if (!existing) {
+    throw new StudyArtifactValidationPrerequisiteError(studyRunId);
+  }
+  return decideStudyArtifactSave(existing, incoming);
 }
 
 export function decideStudyArtifactSave(

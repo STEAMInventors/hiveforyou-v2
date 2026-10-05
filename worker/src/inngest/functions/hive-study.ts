@@ -4,6 +4,7 @@ import {
 } from "@hiveforyou/shared/events";
 import { resolveDomainPackFromDiscoveryLabel } from "@hiveforyou/domain-packs";
 import {
+  isStudyArtifactProposePlaceholder,
   isStudyNonRetriableErrorCode,
   markStudyRunWorkerFailed,
   runStudyWorkerCompleteStep,
@@ -12,7 +13,10 @@ import {
   runStudyWorkerProjectionsStep,
   runStudyWorkerStoryStep,
   runStudyWorkerValidateStep,
+  StudyArtifactContentMismatchError,
+  type StudyArtifactRecord,
 } from "@hiveforyou/core";
+import type { CanonicalStudyValidationResultV3 } from "@hiveforyou/shared/case-intelligence/3/validation-result";
 import { NonRetriableError } from "inngest";
 
 import { attachCaseCustomerContext, buildWorkerStudyDeps } from "../../study/build-worker-study-deps.js";
@@ -23,7 +27,7 @@ import { inngest } from "../client.js";
 
 const GLOBAL_STUDY_MODEL_CONCURRENCY = 3;
 
-function parseStudyFailureEvent(event: { data?: unknown }) {
+export function parseStudyFailureEvent(event: { data?: unknown }) {
   const payload = event.data as { event?: { name?: string; data?: unknown } } | undefined;
   if (payload?.event?.name !== HIVE_EVENT_STUDY_REQUESTED) {
     return null;
@@ -35,6 +39,9 @@ function rethrowStepError(error: unknown): never {
   if (error instanceof NonRetriableError) {
     throw error;
   }
+  if (error instanceof StudyArtifactContentMismatchError) {
+    throw new NonRetriableError(error.errorCode);
+  }
   const code =
     error && typeof error === "object" && "errorCode" in error
       ? String((error as { errorCode: unknown }).errorCode)
@@ -43,6 +50,15 @@ function rethrowStepError(error: unknown): never {
     throw new NonRetriableError(code ?? "STUDY_NON_RETRIABLE");
   }
   throw error;
+}
+
+function hasCompletedStudyValidation(artifact: StudyArtifactRecord | null | undefined): boolean {
+  if (!artifact?.validationResultJson || !("status" in artifact.validationResultJson)) {
+    return false;
+  }
+  return !isStudyArtifactProposePlaceholder(
+    artifact.validationResultJson as CanonicalStudyValidationResultV3,
+  );
 }
 
 async function runHiveStudyHandler({
@@ -90,12 +106,9 @@ async function runHiveStudyHandler({
   }
 
   const artifactBeforePropose = await deps.studyArtifactRepo?.getByStudyRunId(data.studyRunId);
-  const hasValidatedArtifact =
-    artifactBeforePropose?.validationResultJson &&
-    "status" in artifactBeforePropose.validationResultJson &&
-    artifactBeforePropose.validationResultJson.status !== "FAILED";
+  const validationComplete = hasCompletedStudyValidation(artifactBeforePropose);
 
-  if (!hasValidatedArtifact) {
+  if (!validationComplete) {
     await step.run("propose", async () => {
       try {
         return await runStudyWorkerProposeStep(deps, data, request);

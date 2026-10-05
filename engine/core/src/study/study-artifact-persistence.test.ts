@@ -4,7 +4,10 @@ import type { CanonicalStudyValidationResultV3 } from "@hiveforyou/shared/case-i
 
 import {
   StudyArtifactContentMismatchError,
+  StudyArtifactValidationPrerequisiteError,
+  decideProposeStudyArtifactSave,
   decideStudyArtifactSave,
+  decideValidateStudyArtifactSave,
   fingerprintStudyArtifactContent,
   isStudyArtifactProposePlaceholder,
 } from "./study-artifact-persistence";
@@ -38,6 +41,27 @@ describe("study artifact persistence", () => {
   it("treats propose placeholder validation as updatable", () => {
     expect(isStudyArtifactProposePlaceholder(placeholderValidation)).toBe(true);
     expect(isStudyArtifactProposePlaceholder(succeededValidation)).toBe(false);
+  });
+
+  it("propose save only inserts or no-ops on matching proposal", () => {
+    expect(decideProposeStudyArtifactSave(null, { rawProposalJson: proposal, validationResultJson: placeholderValidation }).action).toBe(
+      "insert",
+    );
+    expect(
+      decideProposeStudyArtifactSave(
+        { rawProposalJson: proposal, validationResultJson: placeholderValidation },
+        { rawProposalJson: proposal, validationResultJson: placeholderValidation },
+      ).action,
+    ).toBe("noop");
+  });
+
+  it("validate save refuses insert when row is missing", () => {
+    expect(() =>
+      decideValidateStudyArtifactSave("run-1", null, {
+        rawProposalJson: proposal,
+        validationResultJson: succeededValidation,
+      }),
+    ).toThrow(StudyArtifactValidationPrerequisiteError);
   });
 
   it("allows validation completion when proposal matches", () => {
@@ -81,14 +105,14 @@ describe("InMemoryStudyArtifactRepository", () => {
   it("mirrors propose, validate, and validate retry with one row", async () => {
     const repo = new InMemoryStudyArtifactRepository();
     const studyRunId = "run-1";
-    await repo.save({
+    await repo.saveProposed({
       studyRunId,
       caseId: "case-1",
       userId: "user-1",
       rawProposalJson: proposal,
       validationResultJson: placeholderValidation,
     });
-    await repo.save({
+    await repo.saveValidated({
       studyRunId,
       caseId: "case-1",
       userId: "user-1",
@@ -99,7 +123,7 @@ describe("InMemoryStudyArtifactRepository", () => {
       rawProposalJson: proposal,
       validationResultJson: succeededValidation,
     });
-    await repo.save({
+    await repo.saveValidated({
       studyRunId,
       caseId: "case-1",
       userId: "user-1",
