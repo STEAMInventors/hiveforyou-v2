@@ -1,6 +1,13 @@
+// @vitest-environment node
+import { createHash } from "node:crypto";
+import { readFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+
 import { describe, expect, it } from "vitest";
 
 import { buildRecoveredPage } from "./buildRecoveredPage";
+import { recoverNormalizedDocument } from "./recover-document";
 import {
   evaluatePdfPageQuality,
   recoverPdfDocumentPages,
@@ -69,6 +76,23 @@ describe("recoverPdfDocumentPages", () => {
 });
 
 describe("buildRecoveredPage", () => {
+  it("keeps wide horizontal gaps as segments on one visual line", () => {
+    const page = buildRecoveredPage({
+      runId: "run-gap",
+      sourceDocumentId: "doc-gap",
+      pageNumber: 1,
+      extractionMethod: "NATIVE",
+      items: [
+        { text: "Score", boundingBox: { x: 72, y: 700, width: 40, height: 12 } },
+        { text: "85", boundingBox: { x: 160, y: 700, width: 20, height: 12 } },
+      ],
+    });
+    expect(page.lines).toHaveLength(1);
+    expect(page.lines[0]?.text).toBe("Score 85");
+    expect(page.canonicalText).toBe("Score 85");
+    expect(page.lines[0]?.segments).toHaveLength(2);
+  });
+
   it("does not add an issue code the page already has", () => {
     const page = buildRecoveredPage({
       runId: "run-1",
@@ -117,5 +141,50 @@ describe("evaluatePdfPageQuality", () => {
     expect(full.decision.reasons).toEqual(fast.decision.reasons);
     expect(full.decision.metrics.imageOperatorCount).toBe(2);
     expect(fast.decision.metrics.imageOperatorCount).toBeNull();
+  });
+});
+
+const l001CorpusDir = join(dirname(fileURLToPath(import.meta.url)), "../../../fixtures/l001");
+
+describe("L001 08_initial_iep recovered lines", () => {
+  it("page 2 services header is one line with five segments", async () => {
+    const fileName = "08_initial_iep.pdf";
+    const bytes = readFileSync(join(l001CorpusDir, fileName));
+    const sourceHash = createHash("sha256").update(bytes).digest("hex");
+    const normalized = await recoverNormalizedDocument({
+      sourceDocumentId: fileName,
+      sourceHash,
+      bytes,
+      mimeType: "application/pdf",
+      ocrEngine: undefined,
+    });
+    const page = normalized.pages[1];
+    const headers = ["Service", "Frequency", "Minutes", "Location", "Start Date"];
+    const headerLine = page!.lines.find((line) =>
+      headers.every((label) => line.text.includes(label)),
+    );
+    expect(headerLine, "services header should be one recovered line").toBeDefined();
+    expect(headerLine!.segments?.length ?? 0).toBe(5);
+  });
+
+  it("page 2 services data row includes 150 minutes in a segment", async () => {
+    const fileName = "08_initial_iep.pdf";
+    const bytes = readFileSync(join(l001CorpusDir, fileName));
+    const sourceHash = createHash("sha256").update(bytes).digest("hex");
+    const normalized = await recoverNormalizedDocument({
+      sourceDocumentId: fileName,
+      sourceHash,
+      bytes,
+      mimeType: "application/pdf",
+      ocrEngine: undefined,
+    });
+    const page = normalized.pages[1];
+    const dataLine = page!.lines.find(
+      (line) => line.text.includes("150") && line.text.toLowerCase().includes("minute"),
+    );
+    expect(dataLine).toBeDefined();
+    expect(
+      dataLine!.segments?.some((segment) => /150\s*minutes/i.test(segment.text)),
+    ).toBe(true);
   });
 });

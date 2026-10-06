@@ -3,7 +3,7 @@
 export const NORMALIZED_EXTRACTION_SCHEMA_VERSION = "nestiep-recovered-document/1";
 
 /** Bump when extraction output semantics change (cache invalidation + study provenance). */
-export const NESTIEP_EXTRACTOR_VERSION = "nestiep-extractor/4";
+export const NESTIEP_EXTRACTOR_VERSION = "nestiep-extractor/5";
 
 export const NESTIEP_EXTRACTION_METHODS = ["NATIVE", "OCR"] as const;
 export type NestIepExtractionMethod = (typeof NESTIEP_EXTRACTION_METHODS)[number];
@@ -45,12 +45,21 @@ export type NestIepSourceIssue = {
   readonly pageNumber?: number;
 };
 
+export type NestIepRecoveredLineSegment = {
+  readonly text: string;
+  readonly startOffset: number;
+  readonly endOffset: number;
+  readonly boundingBox?: NestIepBoundingBox;
+};
+
 export type NestIepRecoveredLine = {
   readonly text: string;
   readonly startOffset: number;
   readonly endOffset: number;
   readonly boundingBox?: NestIepBoundingBox;
   readonly order: number;
+  /** Present when a visual line has multiple horizontal segments (e.g. table columns). */
+  readonly segments?: readonly NestIepRecoveredLineSegment[];
 };
 
 export type NestIepRecoveredBlock = {
