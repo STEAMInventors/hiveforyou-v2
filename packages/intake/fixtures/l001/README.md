@@ -27,4 +27,14 @@ pnpm --filter @hiveforyou/intake exec node scripts/generate-l001-locator-quotes.
 
 Generator: `engine/intake/scripts/generate-l001-locator-quotes.mjs` (and `.ts` twin) — walks `recoverNormalizedDocument` → `page.lines[].text` (length 12–140).
 
+## `document-pages/*.json`
+
+`DocumentPages` snapshots from `extractNativeWords` for `@hiveforyou/core` assembly tests. Each file records `sourcePdfSha256` and is kept in sync by `l001-document-pages-snapshot.test.ts`.
+
+Regenerate (review diff before commit):
+
+```bash
+pnpm --filter @hiveforyou/intake exec tsx scripts/generate-l001-document-pages.mjs
+```
+
 Provenance commit: *(set when first committed to git)*.
