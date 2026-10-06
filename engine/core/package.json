@@ -21,7 +21,10 @@
     "./document/assembly": "./src/document/assembly.ts",
     "./document/find-consecutive-word-quote": "./src/document/find-consecutive-word-quote.ts",
     "./atoms/run-atoms": "./src/atoms/run-atoms.ts",
-    "./study/shadow/run-shadow-study": "./src/study/shadow/run-shadow-study.ts"
+    "./study/shadow/run-shadow-study": "./src/study/shadow/run-shadow-study.ts",
+    "./study/shadow/shadow-steps": "./src/study/shadow/shadow-steps.ts",
+    "./study/shadow/shadow-v4": "./src/study/shadow/shadow-v4.ts",
+    "./study/shadow/shadow-state": "./src/study/shadow/shadow-state.ts"
   },
   "scripts": {
     "generate:prompts": "node scripts/generate-prompts.mjs",
