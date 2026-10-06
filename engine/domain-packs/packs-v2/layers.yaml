@@ -1,0 +1,47 @@
+# The two layers above a domain pack, and how all four merge.
+# Domain packs live in the repo. These live in Supabase.
+
+# ---------- PRO / FIRM LAYER (one per pro or firm, edited in the Pro view) ----------
+pro_layer:
+  owner: pro_id                 # or firm_id
+  extends: iep@0.2              # pinned pack version; upgrades are explicit
+  questions:
+    add:                        # the pro types the question; the model proposes primitives; the pro confirms
+      - id: pro.q.esy
+        ask: Is extended school year discussed, and is a decision recorded?
+        primitives: [requirement_coverage]
+        weight: 80
+        status: confirmed       # proposed | confirmed; only confirmed questions run
+    weights: {q.timelines: 95}  # re-rank pack questions
+    disable: [q.recommendations]
+  checklist:                    # the firm's own document list = a requirement source
+    source_document: upload_id
+  views:
+    pro: {templates: [service_grid, goal_ledger], export: [csv]}
+    customer_forbidden_add: [denied]   # may only add words, never remove
+
+# ---------- CASE LAYER (one per case) ----------
+case_layer:
+  case_id: uuid
+  intent: "Annual IEP meeting on the 14th. I think speech was cut."   # user's own words
+  anchor: {value: 2026-10-14, source: intent, status: confirmed}
+  questions:                    # model drafts 2-3 from intent; user confirms
+    - id: case.q.speech
+      ask: Did speech therapy minutes change, and is a reason given?
+      primitives: [change_over_time, referenced_not_provided]
+      weight: 100
+      status: confirmed
+  confirmations:                # matches, relations, merchant classes the user or pro confirmed
+    - {kind: relation, subject: "Payee: R. Ray", value: insider, by: pro}
+  measured_behaviors: {}        # behaviors observed in this case's data, e.g. an ID that turned out stable
+
+# ---------- MERGE ----------
+merge:
+  order: [case, pro, domain, core_defaults]     # earlier wins
+  questions: by id; a layer can add, re-weight or disable, not edit another layer's ask
+  primitives: must exist in the core catalog, or the question is rejected at save
+  status: proposed questions never run; they show as drafts
+  behaviors: domain overrides core; case confirmations apply to that case only
+  recurring_case_confirmations: become pack candidates for founder review, never auto-promoted
+  forbidden_words: union across layers; no layer removes a word
+  legal_numbers: only from the jurisdiction overlay; any layer that sets a window, limit or threshold value is rejected at save

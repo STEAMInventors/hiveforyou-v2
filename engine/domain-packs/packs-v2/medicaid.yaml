@@ -1,0 +1,184 @@
+pack: long_term_care_medicaid
+version: 0.3
+# 0.3: built around where applications actually fail: agency verification requests answered late or incomplete,
+#      gaps in the look-back statements, and unexplained money movement. Adds case attributes (marital status,
+#      stage, pro type), two dates (application and snapshot), stage-specific questions (denial, renewal, fair hearing),
+#      family caregiver payments, trusts, discovered accounts, and a documents-package export.
+# The engine shows records, dates and amounts. It never decides eligibility, countable vs exempt, penalty periods,
+# spousal allowances or patient liability. Those are the specialist's.
+pro: elder law attorney, Medicaid planner, or nursing-home business office
+
+case_attributes:
+  marital_status:
+    values: [single, married, widowed]
+    source: pro
+    proposed_from: [application, marriage_certificate, death_certificate]
+  stage:
+    values: [planning, application_filed, verification_requested, denied, approved, renewal, fair_hearing]
+    source: pro
+    proposed_from: [agency_notice, verification_request, application]
+  pro_type:
+    values: [attorney_or_planner, facility]
+    source: pro_layer
+  snapshot_date:                 # first continuous institutionalization; spousal assets are pictured as of this date
+    source: pro
+    proposed_from: [admission_record, application]
+
+anchor:
+  name: application_date         # the look-back is measured back from here
+  fallback: none                 # without it, the look-back "cannot be placed"
+
+jurisdiction_overlay: required
+# Every number comes from the overlay and must be verified against the state's current rules.
+# Keys this pack reads: lookback_months, review_threshold, fair_hearing_request_window,
+#   renewal_period_months, verification_default_window (used only when a request states no due date)
+
+questions:
+  # ---------- every stage ----------
+  - id: q.verification_requests
+    ask: What has the agency (or the firm) asked for, by what date, and which items are in the file?
+    primitives: [requirement_coverage, date_relationships]
+    requires_from: document_requests          # agency verification requests and the firm's own checklist
+    track: [requested_by, request_date, due_date, status, evidence]
+    weight: 100
+  - id: q.deadlines
+    ask: Which dates matter now (request due dates, decision notices, the hearing request window, renewal), and how many days remain from today?
+    primitives: [date_relationships]
+    windows_from: jurisdiction_overlay
+    weight: 96
+  - id: q.lookback_coverage
+    ask: Do statements cover every month of the look-back for every account, and which months are missing?
+    primitives: [series_continuity, identifier_link]
+    window: {from: jurisdiction_overlay, key: lookback_months}
+    weight: 95
+  - id: q.accounts_discovered
+    ask: Which accounts appear in the records (transfers to "account ending 1234", checks drawn on another bank, interest on a 1099) but are not listed?
+    primitives: [identifier_link, referenced_not_provided]
+    weight: 93
+  - id: q.lookback_transfers
+    ask: Which transfers out of any account or asset during the look-back went to people or entities other than ordinary vendors, and what explanation is in the file?
+    primitives: [window_filter, party_relation]
+    window: {from: jurisdiction_overlay, key: lookback_months}
+    match: model_proposed        # relation of a payee to the applicant needs confirmation
+    weight: 92
+  - id: q.large_withdrawals
+    ask: Which cash withdrawals, checks or deposits above the overlay's review threshold need an explanation, and is one in the file?
+    primitives: [window_filter, threshold]
+    threshold: {from: jurisdiction_overlay, key: review_threshold}
+    weight: 90
+  - id: q.unexplained_deposits
+    ask: Which deposits do not match a known income source or a transfer between listed accounts?
+    primitives: [stated_vs_observed, identifier_link]
+    weight: 86
+  - id: q.closed_accounts
+    ask: Which accounts were opened or closed during the look-back, and where did the closing balance go?
+    primitives: [series_continuity, party_relation, identifier_link]
+    weight: 86
+  - id: q.caregiver_payments
+    ask: Which payments went to family members or others for care, is there a written care agreement, is it dated before the payments, and do the payments match its terms?
+    primitives: [party_relation, date_relationships, stated_vs_observed]
+    match: model_proposed
+    weight: 84
+  - id: q.income_sources
+    ask: What income does the applicant receive, from which sources, and do the deposits match the award letters month by month?
+    primitives: [stated_vs_observed, series_over_time]
+    weight: 82
+  - id: q.property_and_vehicles
+    ask: Was any real property or vehicle retitled, sold or encumbered during the look-back, to whom, and for what amount?
+    primitives: [change_over_time, window_filter, party_relation]
+    weight: 82
+  - id: q.trusts
+    ask: Which trusts are referenced or provided, with the type stated in the document, trustee, date created, and which assets or money went into them during the look-back?
+    primitives: [referenced_not_provided, window_filter, identifier_link]
+    weight: 80
+  - id: q.insurance_annuities
+    ask: Which life insurance policies and annuities exist, with face value, cash value, owner and beneficiary as stated, and do the figures agree across documents?
+    primitives: [restatement_agreement, as_of_value]
+    weight: 76
+  - id: q.funeral_burial
+    ask: Are prepaid funeral contracts or burial accounts referenced, and are the contracts and statements provided?
+    primitives: [referenced_not_provided, as_of_value]
+    weight: 62
+  - id: q.application_vs_records
+    ask: Do the application's answers, including answers of "none", match the statements and records provided?
+    primitives: [stated_vs_observed, none_answer_vs_records]
+    audience: pro
+    weight: 80
+
+  # ---------- by marital status ----------
+  - id: q.assets_at_dates
+    ask: What did the applicant own on the application date, by asset, owner and value, from which document?
+    primitives: [as_of_value, identifier_link]
+    weight: 88
+  - id: q.spousal_assets_at_snapshot
+    ask: What did the applicant, the spouse and the two jointly own on the snapshot date, with totals by owner?
+    primitives: [as_of_value, identifier_link, arithmetic]
+    as_of: {case_attribute: snapshot_date}
+    applies_when: {marital_status: [married]}   # totals shown as numbers; the specialist does the allowance calculation
+    weight: 90
+  - id: q.spousal_income
+    ask: What income does the spouse receive, from which sources, as shown in the records?
+    primitives: [stated_vs_observed]
+    applies_when: {marital_status: [married]}
+    weight: 70
+
+  # ---------- by stage ----------
+  - id: q.denial_items
+    ask: What does the denial or notice say was missing or the reason given, and is each item now in the file?
+    primitives: [coverage, date_relationships]
+    applies_when: {stage: [denied, fair_hearing]}
+    weight: 98
+  - id: q.renewal_changes
+    ask: Since the last approval, which accounts, income, assets or household facts changed?
+    primitives: [change_over_time]
+    applies_when: {stage: [renewal]}
+    weight: 90
+
+  # ---------- by pro type ----------
+  - id: q.facility_patient_pay
+    ask: Does the facility ledger show patient-pay amounts received that match the amount stated in the agency notice, month by month?
+    primitives: [stated_vs_observed, series_continuity]
+    applies_when: {pro_type: [facility], stage: [approved, renewal]}
+    weight: 74
+
+behaviors:
+  person.medicaid_id:          {unique: one, stable: true, scope: state, sensitive: true}
+  person.medicare_id:          {unique: one, stable: true, sensitive: true}
+  person.role:                 {values: [applicant, spouse, authorized_representative, power_of_attorney, family_member, caregiver], time_indexed: false}
+  account.ownership:           {values: [individual, joint, trust, business], time_indexed: true}   # adding or removing a joint owner is a change
+  account.signer:              {distinct_from: account.ownership}    # a power of attorney signing on an account is not an owner
+  account.status:              {values: [open, closed], time_indexed: true}
+  account.statement_period:    {unique: one, scope: account, time_indexed: true}   # one statement per account per period; corrected statements are versions
+  policy.number:               {unique: one, stable: true, scope: insurer}
+  policy.cash_value:           {time_indexed: true}
+  policy.face_value:           {stable: true}
+  annuity.contract_number:     {unique: one, stable: true, scope: issuer}
+  trust.identity:              {composed_of: [trust_name, date_created, trustee]}
+  property.parcel_id:          {unique: one, stable: true, scope: county}
+  property.title_holder:       {stable: false, time_indexed: true}      # a change of title is a change, not a conflict
+  transfer.counterparty:       {unique: shared, variants: [truncated, statement_descriptor, reordered, check_payee]}
+  benefit.amount:              {time_indexed: true, period_required: true}   # yearly adjustments make different years non-comparable
+  care_agreement.date:         {stable: true}
+  request.item:                {unique: one, scope: verification_request}
+  request.due_date:            {stable: true, note: "a later request may set a new due date; that is a new request, not a conflict"}
+  funeral_contract.number:     {unique: one, stable: true, scope: provider}
+
+views:
+  customer:
+    tone: plain, gentle; families are often handling this during a crisis, and the applicant may be in care
+    forbidden: [penalty, ineligible, hid, gifted improperly, divestment, countable, excess resources,
+                improper transfer, fraud, denied]
+    sections: [what_we_have, still_needed_and_by_when, items_the_specialist_may_ask_about]
+  pro:
+    templates:
+      verification_tracker: {rows: request_item, columns: [requested_by, request_date, due_date, days_left, status, evidence]}
+      deadlines:            {events: [application, verification_requests, due_dates, notices, hearing_window_end, renewal_due]}
+      coverage_grid:        {rows: account, columns: month_in_lookback, cells: statement_present}
+      discovered_accounts:  {rows: referenced_account, columns: [referenced_in, last4, institution, listed, statements_provided]}
+      lookback_ledger:      {rows: transfer_or_large_item, columns: [date, account_last4, counterparty, relation, amount, explanation_provided]}
+      caregiver_payments:   {rows: payment, columns: [date, payee, amount, agreement_date, agreement_terms_match]}
+      assets_at_dates:      {rows: asset, columns: [owner, value_at_application, value_at_snapshot, as_of, source]}
+      income:               {rows: source, columns: [stated, award_letter, observed_deposits, months_matched]}
+      renewal_diff:         {rows: item, columns: [at_last_approval, now, source], applies_when: {stage: [renewal]}}
+      checklist:            {rows: requirement, columns: [source, status, evidence]}
+    export: [csv, json, documents_package]   # documents_package: provided documents ordered by request item, with an index

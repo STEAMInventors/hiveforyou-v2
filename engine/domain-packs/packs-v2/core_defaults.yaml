@@ -1,0 +1,30 @@
+# Generic attribute behaviors shipped with the core (Senzing-style principles).
+# A pack lists ONLY attributes these defaults don't cover, or overrides one.
+#
+# unique:        one    = identifies a single entity (within `scope`)
+#                shared = many entities can carry the same value
+# stable:        true   = rarely changes over the entity's life
+# time_indexed:  true   = the value means nothing without an as-of date
+# variants:      known ways the same value is written differently
+
+behaviors:
+  person.name:            {unique: shared, stable: false, variants: [reordered, initial_only, nickname, maiden_name]}
+  person.date_of_birth:   {unique: shared, stable: true}
+  person.government_id:   {unique: one, stable: true, scope: issuer, sensitive: true, variants: [masked_last4]}
+  person.address:         {unique: shared, stable: false, time_indexed: true}
+  person.phone:           {unique: shared, stable: false}
+  person.email:           {unique: one, stable: false}
+  org.name:               {unique: shared, stable: true, variants: [truncated, abbreviated, legal_vs_trade, descriptor]}
+  org.tax_id:             {unique: one, stable: true, sensitive: true}
+  account.number:         {unique: one, stable: true, scope: institution, sensitive: true, variants: [masked_last4]}
+  account.holder:         {unique: shared, stable: false, variants: [account_title, initial_only]}
+  money.balance:          {time_indexed: true}
+  money.amount:           {time_indexed: false}
+  money.recurring_amount: {time_indexed: true, period_required: true}
+  document.date:          {stable: true}
+
+# Matching outcomes come from behaviors, not domain rules:
+#   same          = agreeing `unique: one` attribute (same scope), no contradicting stable attribute
+#   possibly same = agreeing shared attributes only, or a variant match on a unique attribute
+#   related       = linked through a statement (transfer, payment, role), not identity
+# Only `same` may produce conflict or agreement findings; the others render as "worth checking".

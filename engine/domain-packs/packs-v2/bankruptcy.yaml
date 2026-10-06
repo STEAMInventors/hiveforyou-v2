@@ -1,0 +1,209 @@
+pack: bankruptcy
+version: 0.4
+# 0.3: income look-back moved to the overlay (was a hardcoded 6 months)
+# 0.4: covers Chapters 7, 13, 11 (small business / Subchapter V) and 12 in one pack.
+#      Chapter is a case attribute; chapter-only questions carry `applies_when`. Questions with no
+#      `applies_when` run for every chapter. Chapters 9 (municipalities) and 15 (cross-border) are out of scope:
+#      different pros, different records.
+# The engine shows numbers and sources. It never decides eligibility, exemptions, dischargeability or abuse.
+pro: bankruptcy attorney or paralegal (case preparation, and claims review after filing)
+
+case_attributes:
+  chapter:
+    values: [ch7, ch13, ch11_small_business, ch12]
+    source: attorney               # set by the attorney in the case layer
+    proposed_from: [voluntary_petition, engagement_letter]   # model may propose it; attorney confirms
+  filing_status:
+    values: [planned, filed]
+
+anchor:
+  name: filing_date              # planned date before filing, petition date after
+  fallback: none                 # without it, windows are shown as "cannot be placed"
+
+jurisdiction_overlay: required
+# Every number comes from the overlay and must be verified against current law and official forms.
+# Keys this pack reads: income_lookback, creditor_payment_window, insider_window, transfer_window,
+#   credit_counseling_window, tax_return_years, prior_filing_windows, median_income_by_household_size,
+#   ch13_debt_limits, small_business_debt_limit, ch12_debt_limit, ch12_income_share, review_threshold
+
+questions:
+  # ---------- all chapters ----------
+  - id: q.income_lookback
+    ask: What was income in each full calendar month of the income look-back before filing, from pay stubs, business records and deposits?
+    primitives: [series_over_time, stated_vs_observed, arithmetic]
+    window: {from: jurisdiction_overlay, key: income_lookback, full_calendar_months: true}
+    weight: 100
+  - id: q.creditor_list_complete
+    ask: Does every creditor seen in statements, credit reports, collection letters and mail appear on the creditor list?
+    primitives: [identifier_link, referenced_not_provided]
+    weight: 95
+  - id: q.stated_vs_statements
+    ask: Do the client's stated balances and monthly payments match the creditor statements and bank records?
+    primitives: [stated_vs_observed]
+    weight: 90
+  - id: q.payments_to_creditors
+    ask: Which payments to creditors fall inside the creditor-payment window before filing?
+    primitives: [window_filter, stated_vs_observed]
+    window: {from: jurisdiction_overlay, key: creditor_payment_window}
+    weight: 90
+  - id: q.payments_to_insiders
+    ask: Which payments or transfers involve relatives, partners or businesses the client controls, inside the insider window?
+    primitives: [window_filter, party_relation]
+    window: {from: jurisdiction_overlay, key: insider_window}
+    match: model_proposed        # relation of a payee to the client needs confirmation
+    weight: 90
+  - id: q.transfers
+    ask: Which property or money left the client's hands inside the transfer window, to whom, and for what stated amount?
+    primitives: [window_filter, party_relation]
+    window: {from: jurisdiction_overlay, key: transfer_window}
+    weight: 85
+  - id: q.accounts_complete
+    ask: Are all accounts seen in the records listed, with statements covering the requested period?
+    primitives: [identifier_link, requirement_coverage, series_continuity]
+    weight: 85
+  - id: q.asset_values
+    ask: For each asset, what value is stated, from which kind of source (tax assessment, appraisal, market listing, client estimate), and what liens are recorded against it?
+    primitives: [restatement_agreement, identifier_link, arithmetic]   # value minus recorded liens, shown as numbers only
+    weight: 82
+  - id: q.tax_returns
+    ask: Are tax returns provided for every year the overlay requires, and do reported incomes agree with the income records?
+    primitives: [requirement_coverage, series_continuity, stated_vs_observed]
+    window: {from: jurisdiction_overlay, key: tax_return_years}
+    weight: 80
+  - id: q.credit_counseling
+    ask: Is a credit counseling certificate provided, and is it dated inside the required window before filing?
+    primitives: [requirement_coverage, date_relationships]
+    window: {from: jurisdiction_overlay, key: credit_counseling_window}
+    weight: 80
+  - id: q.prior_filings
+    ask: Do any documents refer to an earlier bankruptcy filing, and with what dates and outcome?
+    primitives: [referenced_not_provided, date_relationships]
+    window: {from: jurisdiction_overlay, key: prior_filing_windows}
+    weight: 78
+  - id: q.answers_vs_records
+    ask: Which questionnaire answers of "none" sit next to records on the same subject?
+    primitives: [none_answer_vs_records]
+    audience: pro
+    weight: 75
+  - id: q.checklist
+    ask: Which items on the firm's own checklist are still missing?
+    primitives: [requirement_coverage]
+    requires_from: document_requests   # the firm's checklist in the upload is the requirement source
+    weight: 70
+
+  # ---------- Chapter 7 ----------
+  - id: q.means_test_inputs
+    ask: What are the monthly income figures from the records, and how do they compare with the overlay's median for the household size?
+    primitives: [arithmetic, threshold]
+    threshold: {from: jurisdiction_overlay, key: median_income_by_household_size}
+    applies_when: {chapter: [ch7, ch13]}   # comparison shown as numbers; the attorney draws conclusions
+    weight: 95
+
+  # ---------- Chapter 13 ----------
+  - id: q.budget_vs_actual
+    ask: How do the stated monthly expenses compare with actual spending in the statements?
+    primitives: [stated_vs_observed, arithmetic]
+    match: model_proposed        # expense category to merchant needs confirmation
+    applies_when: {chapter: [ch13, ch11_small_business, ch12]}
+    weight: 92
+  - id: q.plan_payment_vs_surplus
+    ask: Does the proposed plan payment fit inside the monthly surplus the budget and records show?
+    primitives: [arithmetic, stated_vs_observed]
+    applies_when: {chapter: [ch13, ch11_small_business, ch12]}
+    weight: 90
+  - id: q.arrears
+    ask: For each secured debt the client keeps, what arrears do the lender statements show, and do they match the stated amount?
+    primitives: [stated_vs_observed, series_over_time]
+    applies_when: {chapter: [ch13, ch12]}
+    weight: 88
+  - id: q.support_obligations
+    ask: Are domestic support payments shown as current in the payment records, month by month?
+    primitives: [series_continuity, stated_vs_observed]
+    applies_when: {chapter: [ch13]}
+    weight: 85
+  - id: q.debt_limits
+    ask: What are total secured and unsecured debts from the records, compared with the overlay's limits for this chapter?
+    primitives: [arithmetic, threshold]
+    threshold: {from: jurisdiction_overlay, key_by_chapter: {ch13: ch13_debt_limits, ch11_small_business: small_business_debt_limit, ch12: ch12_debt_limit}}
+    applies_when: {chapter: [ch13, ch11_small_business, ch12]}
+    weight: 85
+  - id: q.claims_vs_schedules
+    ask: After filing, does each proof of claim match the amount and creditor scheduled, and which scheduled debts have no claim?
+    primitives: [identifier_link, stated_vs_observed, coverage]
+    applies_when: {chapter: [ch13, ch11_small_business, ch12], filing_status: [filed]}
+    weight: 80
+
+  # ---------- Chapter 11 (small business / Subchapter V) ----------
+  - id: q.business_personal_separation
+    ask: Which payments move between business and personal accounts, or pay personal expenses from business accounts?
+    primitives: [identifier_link, party_relation]
+    match: model_proposed
+    applies_when: {chapter: [ch11_small_business, ch12]}
+    weight: 88
+  - id: q.operating_reports
+    ask: After filing, is there a monthly operating report for every month, and do its figures match the bank statements?
+    primitives: [series_continuity, stated_vs_observed]
+    applies_when: {chapter: [ch11_small_business], filing_status: [filed]}
+    weight: 85
+  - id: q.receivables
+    ask: Do stated receivables agree with invoices, aging reports and later deposits?
+    primitives: [stated_vs_observed, identifier_link]
+    applies_when: {chapter: [ch11_small_business, ch12]}
+    weight: 78
+  - id: q.projections_vs_history
+    ask: How do the plan's projected income and expenses compare with the business's actual results in the records?
+    primitives: [series_over_time, stated_vs_observed]
+    applies_when: {chapter: [ch11_small_business, ch12]}
+    weight: 78
+
+  # ---------- Chapter 12 ----------
+  - id: q.farm_income_share
+    ask: What share of income comes from farming or commercial fishing in the records, compared with the overlay's required share?
+    primitives: [arithmetic, threshold]
+    threshold: {from: jurisdiction_overlay, key: ch12_income_share}
+    applies_when: {chapter: [ch12]}
+    weight: 90
+  - id: q.seasonal_income
+    ask: How does income vary by season across the records, and does the plan's payment schedule follow it?
+    primitives: [series_over_time, stated_vs_observed]
+    applies_when: {chapter: [ch12]}
+    weight: 80
+
+behaviors:
+  creditor.account_number:  {unique: one, stable: false, scope: creditor, variants: [masked_last4],
+                             note: "a debt sold to a collector gets a new creditor and number; link by amount, dates and original creditor"}
+  creditor.name:            {variants: [statement_descriptor, servicer_vs_owner, abbreviation]}
+  transaction.counterparty: {unique: shared, variants: [truncated, statement_descriptor, reordered]}
+  vehicle.vin:              {unique: one, stable: true}
+  property.parcel_id:       {unique: one, stable: true, scope: county}
+  property.value:           {time_indexed: true, variants: [tax_assessed, market, appraisal, client_estimate]}   # kinds of value never conflict
+  income.pay_period:        {period_required: true, normalize_to: monthly}
+  debt.balance:             {time_indexed: true}
+  claim.amount:             {time_indexed: true, distinct_from: debt.balance}     # a proof of claim is the creditor's figure, not the scheduled one
+  mortgage.arrears:         {time_indexed: true}
+  plan.payment:             {period_required: true, normalize_to: monthly, time_indexed: true}
+  support_obligation.amount: {period_required: true, time_indexed: true}
+  tax_return.year:          {unique: one, scope: taxpayer}                         # one return per taxpayer per year; amended returns are versions
+  business.account:         {note: "an account titled to the business is distinct from the owner's personal accounts even with the same holder name"}
+  operating_report.period:  {unique: one, scope: case, time_indexed: true}
+  account.title:            {note: "a title such as 'Ray L Savings' is evidence of holder, not proof"}
+
+views:
+  customer:
+    tone: plain, calm, no judgment about debt, spending or the business
+    forbidden: [fraud, concealed, hid, preference, avoidable, abuse, ineligible, non-dischargeable, dismissed, denied]
+    sections: [what_we_have, still_needed, items_your_attorney_may_ask_about]
+  pro:
+    templates:
+      creditor_matrix:     {rows: creditor, columns: [type, secured, balance, monthly_payment, account_last4, statements_provided, matched_transactions]}
+      income_months:       {rows: calendar_month, columns: [gross_from_stubs, business_income, deposits_observed, source_docs]}
+      means_test_inputs:   {rows: calendar_month, columns: [income_by_source, total], footer: [monthly_average, overlay_median], applies_when: {chapter: [ch7, ch13]}}
+      window_ledger:       {rows: transaction_in_window, columns: [date, payee, amount, relation, window]}
+      accounts:            {rows: account, columns: [institution, last4, business_or_personal, holders_stated, holders_on_statement, months_covered]}
+      assets:              {rows: asset, columns: [value, value_source, recorded_liens, value_minus_liens, source]}
+      plan_feasibility:    {rows: month, columns: [income, expenses, surplus, plan_payment], applies_when: {chapter: [ch13, ch11_small_business, ch12]}}
+      debt_limits:         {rows: [secured_total, unsecured_total], columns: [from_records, overlay_limit], applies_when: {chapter: [ch13, ch11_small_business, ch12]}}
+      claims_reconciliation: {rows: creditor, columns: [scheduled_amount, claim_amount, difference, claim_filed], applies_when: {filing_status: [filed]}}
+      operating_reports:   {rows: month, columns: [report_present, report_cash, bank_cash, difference], applies_when: {chapter: [ch11_small_business], filing_status: [filed]}}
+      checklist:           {rows: requirement, columns: [source, status, evidence]}
+    export: [csv, json, creditor_mailing_list]

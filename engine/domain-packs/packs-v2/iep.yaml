@@ -1,0 +1,139 @@
+pack: iep
+version: 0.4
+# 0.3: transition-plan age moved to the overlay (was a hardcoded 16)
+# 0.4: questions sharpened from due-process review patterns, rewritten as document checks:
+#      goal baselines, repeated goals vs progress, service specificity, delivered vs required minutes,
+#      unadopted recommendations vs written explanation, behavior plan when behavior is marked as impeding learning.
+#      No case law, no legal conclusions, no motive. Every timeline, age and window comes from the overlay.
+pro: special education advocate
+anchor:                       # the date relative windows are measured from
+  name: next_iep_meeting
+  fallback: latest_iep_date
+jurisdiction_overlay: required   # state timelines, ages, response windows and forms differ; overlay supplies them
+
+# 1. QUESTIONS — what an advocate asks of a case. Each points at study primitives, never at free model judgment.
+questions:
+  - id: q.operative_iep
+    ask: Which IEP is in effect now, including amendments?
+    primitives: [compose_governing_with_amendments]
+    weight: 100
+
+  - id: q.services_changed
+    ask: Did service minutes, frequency, setting or provider change between IEPs, is a reason recorded, and is there evaluation or progress data dated between the two IEPs?
+    primitives: [change_over_time, referenced_not_provided, date_relationships]
+    weight: 95
+
+  - id: q.goal_baselines
+    ask: Does every annual goal have a baseline stated as a number, in the same measure as its target?
+    primitives: [requirement_coverage, stated_vs_observed]
+    per: goal
+    requires: [baseline_value, target_value]
+    comparable_on: [measure, task, administration]
+    weight: 92
+
+  - id: q.goal_progress
+    ask: For each goal, does reported progress use the same measure as the baseline, and does it move toward the target?
+    primitives: [series_over_time, stated_vs_observed]
+    comparable_on: [measure, task, administration]
+    weight: 90
+
+  - id: q.goals_carried
+    ask: Which goals were repeated, dropped or replaced from one IEP to the next, and for repeated goals with the same target, did reported progress reach that target?
+    primitives: [change_over_time, series_over_time]
+    weight: 88
+
+  - id: q.needs_addressed
+    ask: Is every need identified in an evaluation (school or outside) addressed by a goal, a service or an accommodation, and which of those addresses it?
+    primitives: [coverage]
+    match: model_proposed        # always shown for confirmation, never as a gap on its own
+    record: addressed_by_type    # goal | service | accommodation, so a need met only by an accommodation is visible
+    weight: 88
+
+  - id: q.recommendations
+    ask: Which evaluation recommendations appear in the IEP, and which do not?
+    primitives: [coverage]
+    match: model_proposed
+    weight: 80
+
+  - id: q.recommendations_explained
+    ask: For each evaluation recommendation not found in the IEP, is it discussed in a prior written notice or meeting notes?
+    primitives: [coverage]
+    match: model_proposed
+    explanation_sources: [prior_written_notice, meeting_notes]
+    weight: 78
+
+  - id: q.service_specificity
+    ask: Is each service written with a frequency, session length, setting and group size, or with open terms such as "as needed" or "up to"?
+    primitives: [requirement_coverage]
+    per: service
+    requires: [frequency, session_length, setting, group_size]
+    open_terms: [as needed, up to, consult, consultation, as appropriate]   # listed, not judged
+    weight: 76
+
+  - id: q.services_delivered
+    ask: If service logs or attendance records are provided, do delivered minutes match the IEP's minutes for the same period?
+    primitives: [stated_vs_observed, arithmetic, series_continuity]
+    runs_when: {documents_present: [service_log, attendance_record]}
+    weight: 76
+
+  - id: q.required_parts
+    ask: Does the IEP contain the required parts?
+    primitives: [requirement_coverage]
+    requires: [present_levels, annual_goals, progress_measurement, progress_reporting_schedule,
+               services_with_frequency_location_duration, accommodations, participation_with_nondisabled_peers,
+               {behavior_intervention_plan: {when: {field: behavior_impedes_learning, equals: yes}}},
+               {transition_plan: {when: {student_age_at_anchor_gte: {from: jurisdiction_overlay, key: transition_plan_age}},
+                                  parts: [transition_assessments, postsecondary_goals, transition_services, agency_invitation]}}]
+    weight: 75
+
+  - id: q.timelines
+    ask: Were consent, evaluation, eligibility and meeting dates in order and within the state's timelines?
+    primitives: [date_relationships]
+    windows_from: jurisdiction_overlay
+    weight: 70
+
+  - id: q.parent_requests
+    ask: What did the parent request in writing (including an independent evaluation), and was each request answered in writing within the state's response window?
+    primitives: [request_response_pairing, date_relationships]
+    window: {from: jurisdiction_overlay, key: written_response_window}
+    weight: 70
+
+  - id: q.missing_records
+    ask: Which referenced documents (evaluations, progress reports, prior written notices, service logs, behavior plans) were not provided?
+    primitives: [referenced_not_provided]
+    weight: 65
+
+# 2. ATTRIBUTE BEHAVIORS — only what the core defaults don't cover
+behaviors:
+  student.district_id:        {unique: one, stable: true, scope: district, sensitive: true}
+  goal.id:                    {unique: one, stable: false, scope: iep_document}     # renumbered each IEP; match goals by content
+  goal.baseline:              {time_indexed: true, comparable_on: [measure, task, administration]}
+  goal.target:                {time_indexed: true, comparable_on: [measure, task, administration]}
+  measure.result:             {time_indexed: true, comparable_on: [measure, task, administration]}
+  service.identity:           {composed_of: [service_name, provider_role, setting]}
+  service.amount:             {time_indexed: true, period_required: true, normalize_to: minutes_per_week}
+  service.session_length:     {distinct_from: service.duration}                      # length of a session is not how long the service runs
+  service.group_size:         {time_indexed: true}
+  service.delivered_minutes:  {time_indexed: true, period_required: true, normalize_to: minutes_per_week, distinct_from: service.amount}
+  eligibility.category:       {stable: true, time_indexed: true}
+  school.name:                {stable: false, time_indexed: true}
+
+# 3. VIEWS
+views:
+  customer:
+    tone: plain, non-adversarial; the document or parent is the subject, never the school
+    forbidden: [violation, illegal, noncompliant, failed to, denied FAPE, predetermined, compensatory,
+                liability, de minimis, ghost, platitude]
+    sections: [what_is_in_effect_now, what_changed, questions_to_ask_at_the_meeting, still_needed]
+  pro:
+    templates:
+      service_grid:     {rows: service.identity, columns: iep_document,
+                         cells: [service.amount, frequency, session_length, setting, group_size, open_terms]}
+      goal_ledger:      {rows: goal, columns: [baseline, baseline_is_numeric, target, same_measure, measurement_method,
+                                               latest_progress, repeated_from, prior_target_reached]}
+      needs_map:        {rows: need, columns: [source_evaluation, addressed_by_type, addressed_by, confirmed]}
+      recommendations:  {rows: recommendation, columns: [source_evaluation, in_iep, explained_in]}
+      delivery:         {rows: service.identity, columns: [period, required_minutes, delivered_minutes, difference, source]}
+      timeline:         {events: [referral, consent, evaluations, eligibility, iep, amendments, progress_reports, prior_written_notices]}
+      requests:         {rows: parent_request, columns: [date, response, response_date, within_window]}
+    export: [csv, json]

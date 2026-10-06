@@ -1,0 +1,60 @@
+# Questions every case gets, with or without a domain pack.
+# Same shape as a domain pack. With no pack, this + the case layer is the whole domain.
+# Uses only primitives the domain packs already reference. No windows: there is no overlay without a pack.
+
+pack: core_defaults
+version: 0.1
+pro: none
+anchor:
+  name: from_case_intent        # a date the user states ("meeting on the 14th"), confirmed
+  fallback: latest_document_date
+jurisdiction_overlay: none
+
+questions:
+  - id: q.operative_version
+    ask: Which version of each document is the current one, including later changes to it?
+    primitives: [compose_governing_with_amendments]
+    weight: 60
+  - id: q.changed
+    ask: What changed between versions of the same kind of document?
+    primitives: [change_over_time]
+    weight: 55
+  - id: q.disagree
+    ask: Where do two documents state the same fact differently?
+    primitives: [restatement_agreement]
+    weight: 55
+  - id: q.stated_vs_records
+    ask: Do stated totals and amounts match what the records add up to?
+    primitives: [stated_vs_observed, arithmetic]
+    weight: 50
+  - id: q.series_gaps
+    ask: Are any periods missing from recurring documents (statements, reports)?
+    primitives: [series_continuity]
+    weight: 45
+  - id: q.document_requests
+    ask: What do the documents themselves ask for, and has it been provided?
+    primitives: [requirement_coverage]
+    requires_from: document_requests
+    weight: 45
+  - id: q.missing_records
+    ask: Which documents are referenced but not in the upload?
+    primitives: [referenced_not_provided]
+    weight: 40
+  - id: q.dates_in_order
+    ask: What are the key dates, and are they in a sensible order?
+    primitives: [date_relationships]
+    weight: 35
+
+behaviors: {}                   # core_defaults.yaml supplies them; the case layer adds measured ones
+
+views:
+  customer:
+    tone: plain, neutral; the document is the subject
+    forbidden: [violation, illegal, fraud, failed to, penalty]
+    sections: [what_is_current, what_changed, what_disagrees, still_needed]
+  pro:
+    templates:
+      timeline:       {events: all_dated_events}
+      disagreements:  {rows: fact, columns: [document, value, source]}
+      checklist:      {rows: requirement, columns: [source, status, evidence]}
+    export: [csv, json]
