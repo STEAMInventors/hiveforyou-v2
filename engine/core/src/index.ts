@@ -24,6 +24,7 @@ export {
   buildCaseProvenanceBundleV3 as buildCaseProvenanceBundle,
 } from "./projections/build-case-provenance-bundle-v3";
 export * from "./provenance";
+export * from "./document/page-model";
 export { persistCaseProjectionsV3 as persistCaseProjections } from "./projections/build-and-persist-projections-v3";
 export * from "./projections/project-customer-view-v3";
 export * from "./projections/project-pro-view-v3";
