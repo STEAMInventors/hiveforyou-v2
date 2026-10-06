@@ -22,7 +22,17 @@ import { NonRetriableError } from "inngest";
 import { attachCaseCustomerContext, buildWorkerStudyDeps } from "../../study/build-worker-study-deps.js";
 import { loadIntakeStudyRequest } from "../../study/load-intake-study-request.js";
 import type { ModelCallMetrics } from "@hiveforyou/model-providers/env";
+import { DocumentPagesStorage } from "../../intake/document-pages-storage.js";
 import { readWorkerEnv } from "../../env.js";
+import { SupabaseShadowStudyArtifactRepository } from "../../persistence/supabase-shadow-study-artifacts.js";
+import { createSupabaseHiveGateway } from "../../persistence/hive-gateway.js";
+import { WorkerIntakeRepository } from "../../persistence/worker-intake-repository.js";
+import { WorkerSourceDocumentRepository } from "../../intake/worker-source-documents.js";
+import {
+  isStudyShadowEnabled,
+  runStudyShadowPipeline,
+} from "../../study/run-study-shadow-steps.js";
+import { ShadowWorkStorage } from "../../study/shadow-work-storage.js";
 import { createWorkerAdminSupabase } from "../../supabase/admin.js";
 import { inngest } from "../client.js";
 
@@ -276,6 +286,42 @@ async function runHiveStudyHandler({
       }
     }),
   );
+
+  if (isStudyShadowEnabled(env)) {
+    const gateway = createSupabaseHiveGateway(supabase);
+    const documentPagesBucket = env.HIVE_DOCUMENT_PAGES_BUCKET?.trim() || "document-pages";
+    const studyArtifact = await deps.studyArtifactRepo?.getByStudyRunId(data.studyRunId);
+    try {
+      await runStudyShadowPipeline({
+        ctx: {
+          userId: data.userId,
+          caseId: data.caseId,
+          studyRunId: data.studyRunId,
+          intakeRunId: data.intakeRunId,
+        },
+        deps: {
+          env,
+          artifacts: new SupabaseShadowStudyArtifactRepository(gateway),
+          studyArtifact: studyArtifact ?? null,
+          intake: new WorkerIntakeRepository(gateway, data.userId),
+          documents: new WorkerSourceDocumentRepository(gateway, data.userId),
+          documentPages: new DocumentPagesStorage(gateway, documentPagesBucket),
+          shadowWork: new ShadowWorkStorage(gateway, documentPagesBucket),
+        },
+        step,
+      });
+    } catch (error) {
+      console.info(
+        "[hive/shadow]",
+        JSON.stringify({
+          studyRunId: data.studyRunId,
+          status: "failed",
+          failedStep: "shadow-unhandled",
+          errorKind: error instanceof Error ? error.name : "Error",
+        }),
+      );
+    }
+  }
 
   return { completed };
 }

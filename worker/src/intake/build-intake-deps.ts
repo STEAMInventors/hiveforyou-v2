@@ -11,6 +11,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 
 import type { WorkerEnv } from "../env.js";
 import { createSupabaseHiveGateway } from "../persistence/hive-gateway.js";
+import { DocumentPagesStorage } from "./document-pages-storage.js";
 import { WorkerIntakeRepository } from "../persistence/worker-intake-repository.js";
 import { WorkerSourceDocumentRepository } from "./worker-source-documents.js";
 
@@ -22,12 +23,18 @@ export function buildWorkerIntakeDeps(
   const gateway = createSupabaseHiveGateway(supabase);
   const intake = new WorkerIntakeRepository(gateway, userId);
   const documents = new WorkerSourceDocumentRepository(gateway, userId);
+  const documentPagesBucket = env.HIVE_DOCUMENT_PAGES_BUCKET?.trim() || "document-pages";
+  const documentPagesStorage = new DocumentPagesStorage(gateway, documentPagesBucket);
 
   const deps: IntakeExecutionDeps = {
     runs: intake,
     identities: intake,
     extractions: intake,
     normalizedExtractions: intake,
+    documentPages: {
+      saveIfAbsent: (ownerId, sha256, documentPages) =>
+        documentPagesStorage.saveIfAbsent(ownerId, sha256, documentPages),
+    },
     loadDocuments: async ({
       userId: ownerId,
       caseId: ownerCaseId,

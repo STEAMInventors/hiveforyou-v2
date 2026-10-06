@@ -37,6 +37,8 @@ export type WorkerEnv = {
   HIVE_OPENAI_MAX_OUTPUT_TOKENS?: string;
   HIVE_STORY_WRITER_ENGINE?: string;
   HIVE_STORY_WRITER_MODEL?: string;
+  HIVE_STUDY_SHADOW?: string;
+  HIVE_DOCUMENT_PAGES_BUCKET?: string;
   /** Dev-only: `extract-once` fails the first extract step once per document id. */
   HIVE_FAULT_INJECT?: "extract-once";
 };
@@ -86,6 +88,8 @@ export function readWorkerEnv(
     HIVE_OPENAI_MAX_OUTPUT_TOKENS: source.HIVE_OPENAI_MAX_OUTPUT_TOKENS?.trim() || undefined,
     HIVE_STORY_WRITER_ENGINE: source.HIVE_STORY_WRITER_ENGINE?.trim() || undefined,
     HIVE_STORY_WRITER_MODEL: source.HIVE_STORY_WRITER_MODEL?.trim() || undefined,
+    HIVE_STUDY_SHADOW: source.HIVE_STUDY_SHADOW?.trim() || undefined,
+    HIVE_DOCUMENT_PAGES_BUCKET: source.HIVE_DOCUMENT_PAGES_BUCKET?.trim() || undefined,
     HIVE_FAULT_INJECT,
   };
 }
