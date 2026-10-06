@@ -1,0 +1,2437 @@
+{
+  "proposal": {
+    "schemaVersion": "canonical-study-proposal/4",
+    "domainId": "iep",
+    "entities": [
+      {
+        "id": "entity-maya-carter",
+        "entityType": "student",
+        "label": "Maya Carter",
+        "aliases": [
+          "Maya",
+          "the student"
+        ],
+        "evidenceRefs": [
+          {
+            "id": "ev-entity-maya",
+            "sourceDocumentId": "l001-src-8",
+            "logicalDocumentId": "ld-8",
+            "page": 1,
+            "pageEnd": 1,
+            "quote": "Student: Maya Carter",
+            "extractionId": "line:3",
+            "sourceType": "document"
+          }
+        ]
+      },
+      {
+        "id": "entity-synthetic-elementary",
+        "entityType": "school",
+        "label": "Synthetic Elementary School",
+        "aliases": [],
+        "evidenceRefs": [
+          {
+            "id": "ev-entity-school",
+            "sourceDocumentId": "l001-src-8",
+            "logicalDocumentId": "ld-8",
+            "page": 1,
+            "pageEnd": 1,
+            "quote": "School: Synthetic Elementary School",
+            "extractionId": "line:6",
+            "sourceType": "document"
+          }
+        ]
+      },
+      {
+        "id": "entity-synthetic-district",
+        "entityType": "school_district",
+        "label": "Synthetic District",
+        "aliases": [
+          "District"
+        ],
+        "evidenceRefs": [
+          {
+            "id": "ev-entity-district",
+            "sourceDocumentId": "l001-src-8",
+            "logicalDocumentId": "ld-8",
+            "page": 1,
+            "pageEnd": 1,
+            "quote": "District: Synthetic District",
+            "extractionId": "line:7",
+            "sourceType": "document"
+          }
+        ]
+      },
+      {
+        "id": "entity-eligibility-team",
+        "entityType": "team",
+        "label": "Eligibility team",
+        "aliases": [],
+        "evidenceRefs": [
+          {
+            "id": "ev-entity-team",
+            "sourceDocumentId": "l001-src-7",
+            "logicalDocumentId": "ld-7",
+            "page": 1,
+            "pageEnd": 1,
+            "quote": "Determination By: Eligibility team",
+            "extractionId": "line:11",
+            "sourceType": "document"
+          }
+        ]
+      }
+    ],
+    "claims": [
+      {
+        "id": "claim-dob",
+        "subjectEntityId": "entity-maya-carter",
+        "construct": {
+          "measure": "date_of_birth",
+          "task": null,
+          "administration": null
+        },
+        "value": {
+          "kind": "date",
+          "dateValue": "2017-04-18"
+        },
+        "modality": "observed",
+        "effectivePeriod": null,
+        "occurredOn": "2017-04-18",
+        "evidenceRefs": [
+          {
+            "id": "ev-dob",
+            "sourceDocumentId": "l001-src-8",
+            "logicalDocumentId": "ld-8",
+            "page": 1,
+            "pageEnd": 1,
+            "quote": "Date of Birth: 2017-04-18",
+            "extractionId": "line:4",
+            "sourceType": "document"
+          }
+        ]
+      },
+      {
+        "id": "claim-grade",
+        "subjectEntityId": "entity-maya-carter",
+        "construct": {
+          "measure": "grade_level",
+          "task": null,
+          "administration": null
+        },
+        "value": {
+          "kind": "code",
+          "codeValue": "2"
+        },
+        "modality": "observed",
+        "effectivePeriod": null,
+        "occurredOn": "2024-11-12",
+        "evidenceRefs": [
+          {
+            "id": "ev-grade",
+            "sourceDocumentId": "l001-src-8",
+            "logicalDocumentId": "ld-8",
+            "page": 1,
+            "pageEnd": 1,
+            "quote": "Grade: 2",
+            "extractionId": "line:5",
+            "sourceType": "document"
+          }
+        ]
+      },
+      {
+        "id": "claim-school",
+        "subjectEntityId": "entity-maya-carter",
+        "construct": {
+          "measure": "attends_school",
+          "task": null,
+          "administration": null
+        },
+        "value": {
+          "kind": "entity_ref",
+          "entityId": "entity-synthetic-elementary"
+        },
+        "modality": "observed",
+        "effectivePeriod": null,
+        "occurredOn": "2024-11-12",
+        "evidenceRefs": [
+          {
+            "id": "ev-school-rel",
+            "sourceDocumentId": "l001-src-8",
+            "logicalDocumentId": "ld-8",
+            "page": 1,
+            "pageEnd": 1,
+            "quote": "School: Synthetic Elementary School",
+            "extractionId": "line:6",
+            "sourceType": "document"
+          }
+        ]
+      },
+      {
+        "id": "claim-district",
+        "subjectEntityId": "entity-maya-carter",
+        "construct": {
+          "measure": "school_district",
+          "task": null,
+          "administration": null
+        },
+        "value": {
+          "kind": "entity_ref",
+          "entityId": "entity-synthetic-district"
+        },
+        "modality": "observed",
+        "effectivePeriod": null,
+        "occurredOn": "2024-11-12",
+        "evidenceRefs": [
+          {
+            "id": "ev-district-rel",
+            "sourceDocumentId": "l001-src-8",
+            "logicalDocumentId": "ld-8",
+            "page": 1,
+            "pageEnd": 1,
+            "quote": "District: Synthetic District",
+            "extractionId": "line:7",
+            "sourceType": "document"
+          }
+        ]
+      },
+      {
+        "id": "claim-referral-date",
+        "subjectEntityId": "entity-maya-carter",
+        "construct": {
+          "measure": "referral_date",
+          "task": "initial_special_education_evaluation",
+          "administration": null
+        },
+        "value": {
+          "kind": "date",
+          "dateValue": "2024-08-20"
+        },
+        "modality": "observed",
+        "effectivePeriod": null,
+        "occurredOn": "2024-08-20",
+        "evidenceRefs": [
+          {
+            "id": "ev-referral-date",
+            "sourceDocumentId": "l001-src-1",
+            "logicalDocumentId": "ld-1",
+            "page": 1,
+            "pageEnd": 1,
+            "quote": "Referral Date: 2024-08-20",
+            "extractionId": "line:9",
+            "sourceType": "document"
+          }
+        ]
+      },
+      {
+        "id": "claim-referral-source",
+        "subjectEntityId": "entity-maya-carter",
+        "construct": {
+          "measure": "referral_source",
+          "task": "initial_special_education_evaluation",
+          "administration": null
+        },
+        "value": {
+          "kind": "text",
+          "textValue": "teacher"
+        },
+        "modality": "observed",
+        "effectivePeriod": null,
+        "occurredOn": "2024-08-20",
+        "evidenceRefs": [
+          {
+            "id": "ev-referral-source",
+            "sourceDocumentId": "l001-src-1",
+            "logicalDocumentId": "ld-1",
+            "page": 1,
+            "pageEnd": 1,
+            "quote": "Referred By: Teacher",
+            "extractionId": "line:10",
+            "sourceType": "document"
+          }
+        ]
+      },
+      {
+        "id": "claim-referral-concern",
+        "subjectEntityId": "entity-maya-carter",
+        "construct": {
+          "measure": "area_of_concern",
+          "task": "reading_fluency",
+          "administration": "classroom_performance_and_teacher_observation"
+        },
+        "value": {
+          "kind": "text",
+          "textValue": "persistent difficulty reading connected grade-level text accurately and fluently"
+        },
+        "modality": "observed",
+        "effectivePeriod": null,
+        "occurredOn": "2024-08-20",
+        "evidenceRefs": [
+          {
+            "id": "ev-referral-concern",
+            "sourceDocumentId": "l001-src-1",
+            "logicalDocumentId": "ld-1",
+            "page": 1,
+            "pageEnd": 1,
+            "quote": "Classroom performance and teacher observation indicate persistent difficulty reading connected grade-level text",
+            "extractionId": "line:15",
+            "sourceType": "document"
+          }
+        ]
+      },
+      {
+        "id": "claim-independent-access-impact",
+        "subjectEntityId": "entity-maya-carter",
+        "construct": {
+          "measure": "educational_impact",
+          "task": "grade_level_reading_activities",
+          "administration": "independently"
+        },
+        "value": {
+          "kind": "text",
+          "textValue": "difficulty accessing activities"
+        },
+        "modality": "observed",
+        "effectivePeriod": null,
+        "occurredOn": "2024-08-20",
+        "evidenceRefs": [
+          {
+            "id": "ev-access-impact",
+            "sourceDocumentId": "l001-src-1",
+            "logicalDocumentId": "ld-1",
+            "page": 1,
+            "pageEnd": 1,
+            "quote": "independently.",
+            "extractionId": "line:17",
+            "sourceType": "document"
+          },
+          {
+            "id": "ev-access-impact-context",
+            "sourceDocumentId": "l001-src-1",
+            "logicalDocumentId": "ld-1",
+            "page": 1,
+            "pageEnd": 1,
+            "quote": "accurately and fluently. The concern is affecting Maya's ability to access grade-level reading activities",
+            "extractionId": "line:16",
+            "sourceType": "document"
+          }
+        ]
+      },
+      {
+        "id": "claim-evaluation-plan-date",
+        "subjectEntityId": "entity-maya-carter",
+        "construct": {
+          "measure": "planning_date",
+          "task": "initial_evaluation",
+          "administration": "district"
+        },
+        "value": {
+          "kind": "date",
+          "dateValue": "2024-08-28"
+        },
+        "modality": "planned",
+        "effectivePeriod": null,
+        "occurredOn": "2024-08-28",
+        "evidenceRefs": [
+          {
+            "id": "ev-plan-date",
+            "sourceDocumentId": "l001-src-2",
+            "logicalDocumentId": "ld-2",
+            "page": 1,
+            "pageEnd": 1,
+            "quote": "Planning Date: 2024-08-28",
+            "extractionId": "line:3",
+            "sourceType": "document"
+          }
+        ]
+      },
+      {
+        "id": "claim-evaluation-areas",
+        "subjectEntityId": "entity-maya-carter",
+        "construct": {
+          "measure": "proposed_evaluation_areas",
+          "task": "initial_evaluation",
+          "administration": null
+        },
+        "value": {
+          "kind": "text",
+          "textValue": "academic achievement/reading; reading fluency; review of educational performance"
+        },
+        "modality": "planned",
+        "effectivePeriod": null,
+        "occurredOn": "2024-08-28",
+        "evidenceRefs": [
+          {
+            "id": "ev-area-reading",
+            "sourceDocumentId": "l001-src-2",
+            "logicalDocumentId": "ld-2",
+            "page": 1,
+            "pageEnd": 1,
+            "quote": "[X] Academic achievement / reading",
+            "extractionId": "line:23",
+            "sourceType": "document"
+          },
+          {
+            "id": "ev-area-fluency",
+            "sourceDocumentId": "l001-src-2",
+            "logicalDocumentId": "ld-2",
+            "page": 1,
+            "pageEnd": 1,
+            "quote": "[X] Reading fluency",
+            "extractionId": "line:24",
+            "sourceType": "document"
+          },
+          {
+            "id": "ev-area-performance",
+            "sourceDocumentId": "l001-src-2",
+            "logicalDocumentId": "ld-2",
+            "page": 1,
+            "pageEnd": 1,
+            "quote": "[X] Review of educational performance",
+            "extractionId": "line:25",
+            "sourceType": "document"
+          }
+        ]
+      },
+      {
+        "id": "claim-parent-consent",
+        "subjectEntityId": "entity-maya-carter",
+        "construct": {
+          "measure": "parental_consent",
+          "task": "initial_evaluation",
+          "administration": "written"
+        },
+        "value": {
+          "kind": "boolean",
+          "booleanValue": true
+        },
+        "modality": "decided",
+        "effectivePeriod": null,
+        "occurredOn": "2024-09-04",
+        "evidenceRefs": [
+          {
+            "id": "ev-consent",
+            "sourceDocumentId": "l001-src-3",
+            "logicalDocumentId": "ld-3",
+            "page": 1,
+            "pageEnd": 1,
+            "quote": "[X] I consent to the proposed initial evaluation.",
+            "extractionId": "line:19",
+            "sourceType": "document"
+          },
+          {
+            "id": "ev-consent-date",
+            "sourceDocumentId": "l001-src-3",
+            "logicalDocumentId": "ld-3",
+            "page": 1,
+            "pageEnd": 1,
+            "quote": "Date: 2024-09-04",
+            "extractionId": "line:23",
+            "sourceType": "document"
+          }
+        ]
+      },
+      {
+        "id": "claim-cognitive-functioning",
+        "subjectEntityId": "entity-maya-carter",
+        "construct": {
+          "measure": "general_reasoning_and_cognitive_functioning",
+          "task": null,
+          "administration": "psychoeducational_evaluation"
+        },
+        "value": {
+          "kind": "text",
+          "textValue": "broadly within expected range for age"
+        },
+        "modality": "observed",
+        "effectivePeriod": null,
+        "occurredOn": "2024-10-15",
+        "evidenceRefs": [
+          {
+            "id": "ev-cognitive",
+            "sourceDocumentId": "l001-src-4",
+            "logicalDocumentId": "ld-4",
+            "page": 2,
+            "pageEnd": 2,
+            "quote": "the expected range for age. No global cognitive limitation is identified as the primary explanation for the",
+            "extractionId": "line:2",
+            "sourceType": "document"
+          }
+        ]
+      },
+      {
+        "id": "claim-oral-reading-fluency",
+        "subjectEntityId": "entity-maya-carter",
+        "construct": {
+          "measure": "oral_reading_fluency",
+          "task": "connected_text_reading",
+          "administration": "academic_evaluation"
+        },
+        "value": {
+          "kind": "quantity",
+          "numberValue": 42,
+          "unit": "WCPM"
+        },
+        "unit": "WCPM",
+        "modality": "observed",
+        "effectivePeriod": null,
+        "occurredOn": "2024-10-18",
+        "evidenceRefs": [
+          {
+            "id": "ev-fluency-42",
+            "sourceDocumentId": "l001-src-5",
+            "logicalDocumentId": "ld-5",
+            "page": 1,
+            "pageEnd": 1,
+            "quote": "Oral Reading Fluency 42 WCPM",
+            "extractionId": "line:18",
+            "sourceType": "document"
+          }
+        ]
+      },
+      {
+        "id": "claim-reading-accuracy",
+        "subjectEntityId": "entity-maya-carter",
+        "construct": {
+          "measure": "oral_reading_accuracy",
+          "task": "connected_text_reading",
+          "administration": "academic_evaluation"
+        },
+        "value": {
+          "kind": "quantity",
+          "numberValue": 86,
+          "unit": "%"
+        },
+        "unit": "%",
+        "modality": "observed",
+        "effectivePeriod": null,
+        "occurredOn": "2024-10-18",
+        "evidenceRefs": [
+          {
+            "id": "ev-accuracy-86",
+            "sourceDocumentId": "l001-src-5",
+            "logicalDocumentId": "ld-5",
+            "page": 1,
+            "pageEnd": 1,
+            "quote": "Oral Reading Accuracy 86%",
+            "extractionId": "line:19",
+            "sourceType": "document"
+          }
+        ]
+      },
+      {
+        "id": "claim-reading-comprehension",
+        "subjectEntityId": "entity-maya-carter",
+        "construct": {
+          "measure": "reading_comprehension",
+          "task": "grade_level_text",
+          "administration": "academic_evaluation"
+        },
+        "value": {
+          "kind": "text",
+          "textValue": "below expected classroom level"
+        },
+        "modality": "observed",
+        "effectivePeriod": null,
+        "occurredOn": "2024-10-18",
+        "evidenceRefs": [
+          {
+            "id": "ev-comprehension",
+            "sourceDocumentId": "l001-src-5",
+            "logicalDocumentId": "ld-5",
+            "page": 1,
+            "pageEnd": 1,
+            "quote": "Reading Comprehension Below expected classroom level",
+            "extractionId": "line:20",
+            "sourceType": "document"
+          }
+        ]
+      },
+      {
+        "id": "claim-reading-observation",
+        "subjectEntityId": "entity-maya-carter",
+        "construct": {
+          "measure": "reading_behavior",
+          "task": "connected_text_reading",
+          "administration": "academic_evaluation"
+        },
+        "value": {
+          "kind": "text",
+          "textValue": "slow and effortful with frequent pauses"
+        },
+        "modality": "observed",
+        "effectivePeriod": null,
+        "occurredOn": "2024-10-18",
+        "evidenceRefs": [
+          {
+            "id": "ev-reading-observation",
+            "sourceDocumentId": "l001-src-5",
+            "logicalDocumentId": "ld-5",
+            "page": 1,
+            "pageEnd": 1,
+            "quote": "Connected-text reading is slow and effortful. Frequent pauses were observed. Isolated word reading is stronger than",
+            "extractionId": "line:22",
+            "sourceType": "document"
+          }
+        ]
+      },
+      {
+        "id": "claim-speech-intelligibility",
+        "subjectEntityId": "entity-maya-carter",
+        "construct": {
+          "measure": "speech_intelligibility",
+          "task": "classroom_participation",
+          "administration": "speech_language_evaluation"
+        },
+        "value": {
+          "kind": "text",
+          "textValue": "adequate"
+        },
+        "modality": "observed",
+        "effectivePeriod": null,
+        "occurredOn": "2024-10-22",
+        "evidenceRefs": [
+          {
+            "id": "ev-speech-intelligibility",
+            "sourceDocumentId": "l001-src-6",
+            "logicalDocumentId": "ld-6",
+            "page": 1,
+            "pageEnd": 1,
+            "quote": "adequate for classroom participation. Receptive and expressive language observed during the evaluation are",
+            "extractionId": "line:16",
+            "sourceType": "document"
+          }
+        ]
+      },
+      {
+        "id": "claim-speech-language-need",
+        "subjectEntityId": "entity-maya-carter",
+        "construct": {
+          "measure": "separate_educational_need",
+          "task": "speech_language",
+          "administration": "speech_language_evaluation"
+        },
+        "value": {
+          "kind": "boolean",
+          "booleanValue": false
+        },
+        "modality": "observed",
+        "effectivePeriod": null,
+        "occurredOn": "2024-10-22",
+        "evidenceRefs": [
+          {
+            "id": "ev-no-speech-need",
+            "sourceDocumentId": "l001-src-6",
+            "logicalDocumentId": "ld-6",
+            "page": 1,
+            "pageEnd": 1,
+            "quote": "the evaluation are broadly functional for classroom communication. No separate speech-language educational need",
+            "extractionId": "line:20",
+            "sourceType": "document"
+          }
+        ]
+      },
+      {
+        "id": "claim-speech-service-recommendation",
+        "subjectEntityId": "entity-maya-carter",
+        "construct": {
+          "measure": "service_recommendation",
+          "task": "speech_language_service",
+          "administration": "speech_language_evaluation"
+        },
+        "value": {
+          "kind": "boolean",
+          "booleanValue": false
+        },
+        "modality": "decided",
+        "effectivePeriod": null,
+        "occurredOn": "2024-10-22",
+        "evidenceRefs": [
+          {
+            "id": "ev-no-speech-service",
+            "sourceDocumentId": "l001-src-6",
+            "logicalDocumentId": "ld-6",
+            "page": 1,
+            "pageEnd": 1,
+            "quote": "speech-language service is recommended.",
+            "extractionId": "line:25",
+            "sourceType": "document"
+          }
+        ]
+      },
+      {
+        "id": "claim-eligibility-date",
+        "subjectEntityId": "entity-maya-carter",
+        "construct": {
+          "measure": "determination_date",
+          "task": "initial_eligibility",
+          "administration": "eligibility_team"
+        },
+        "value": {
+          "kind": "date",
+          "dateValue": "2024-11-01"
+        },
+        "modality": "decided",
+        "effectivePeriod": null,
+        "occurredOn": "2024-11-01",
+        "evidenceRefs": [
+          {
+            "id": "ev-eligibility-date",
+            "sourceDocumentId": "l001-src-7",
+            "logicalDocumentId": "ld-7",
+            "page": 1,
+            "pageEnd": 1,
+            "quote": "Determination Date: 2024-11-01",
+            "extractionId": "line:9",
+            "sourceType": "document"
+          }
+        ]
+      },
+      {
+        "id": "claim-eligible",
+        "subjectEntityId": "entity-maya-carter",
+        "construct": {
+          "measure": "special_education_eligibility",
+          "task": null,
+          "administration": "eligibility_team"
+        },
+        "value": {
+          "kind": "boolean",
+          "booleanValue": true
+        },
+        "modality": "decided",
+        "effectivePeriod": {
+          "start": "2024-11-01",
+          "end": null,
+          "precision": "day"
+        },
+        "occurredOn": "2024-11-01",
+        "evidenceRefs": [
+          {
+            "id": "ev-eligible",
+            "sourceDocumentId": "l001-src-7",
+            "logicalDocumentId": "ld-7",
+            "page": 1,
+            "pageEnd": 1,
+            "quote": "[X] Eligible for special education",
+            "extractionId": "line:26",
+            "sourceType": "document"
+          }
+        ]
+      },
+      {
+        "id": "claim-eligibility-category",
+        "subjectEntityId": "entity-maya-carter",
+        "construct": {
+          "measure": "eligibility_category",
+          "task": "reading",
+          "administration": "eligibility_team"
+        },
+        "value": {
+          "kind": "code",
+          "codeValue": "Specific Learning Disability (SLD) - Reading"
+        },
+        "modality": "decided",
+        "effectivePeriod": {
+          "start": "2024-11-01",
+          "end": null,
+          "precision": "day"
+        },
+        "occurredOn": "2024-11-01",
+        "evidenceRefs": [
+          {
+            "id": "ev-eligibility-category",
+            "sourceDocumentId": "l001-src-7",
+            "logicalDocumentId": "ld-7",
+            "page": 1,
+            "pageEnd": 1,
+            "quote": "Eligibility Category: Specific Learning Disability (SLD) - Reading",
+            "extractionId": "line:28",
+            "sourceType": "document"
+          }
+        ]
+      },
+      {
+        "id": "claim-primary-need",
+        "subjectEntityId": "entity-maya-carter",
+        "construct": {
+          "measure": "primary_educational_need",
+          "task": null,
+          "administration": "eligibility_team"
+        },
+        "value": {
+          "kind": "text",
+          "textValue": "reading fluency"
+        },
+        "modality": "decided",
+        "effectivePeriod": {
+          "start": "2024-11-01",
+          "end": null,
+          "precision": "day"
+        },
+        "occurredOn": "2024-11-01",
+        "evidenceRefs": [
+          {
+            "id": "ev-primary-need",
+            "sourceDocumentId": "l001-src-7",
+            "logicalDocumentId": "ld-7",
+            "page": 1,
+            "pageEnd": 1,
+            "quote": "category: Specific Learning Disability (SLD) - Reading. Primary educational need: Reading Fluency.",
+            "extractionId": "line:32",
+            "sourceType": "document"
+          }
+        ]
+      },
+      {
+        "id": "claim-sdi-required",
+        "subjectEntityId": "entity-maya-carter",
+        "construct": {
+          "measure": "specially_designed_instruction_required",
+          "task": "reading_fluency",
+          "administration": "eligibility_team"
+        },
+        "value": {
+          "kind": "boolean",
+          "booleanValue": true
+        },
+        "modality": "required",
+        "effectivePeriod": {
+          "start": "2024-11-01",
+          "end": null,
+          "precision": "day"
+        },
+        "occurredOn": "2024-11-01",
+        "evidenceRefs": [
+          {
+            "id": "ev-sdi-required",
+            "sourceDocumentId": "l001-src-7",
+            "logicalDocumentId": "ld-7",
+            "page": 1,
+            "pageEnd": 1,
+            "quote": "The team determined that Maya requires specially designed instruction targeting the documented reading fluency",
+            "extractionId": "line:34",
+            "sourceType": "document"
+          }
+        ]
+      },
+      {
+        "id": "claim-iep-period",
+        "subjectEntityId": "entity-maya-carter",
+        "construct": {
+          "measure": "iep_period",
+          "task": "initial_iep",
+          "administration": null
+        },
+        "value": {
+          "kind": "period",
+          "periodStart": "2024-11-12",
+          "periodEnd": "2025-11-11"
+        },
+        "modality": "planned",
+        "effectivePeriod": {
+          "start": "2024-11-12",
+          "end": "2025-11-11",
+          "precision": "day"
+        },
+        "occurredOn": "2024-11-12",
+        "evidenceRefs": [
+          {
+            "id": "ev-iep-period",
+            "sourceDocumentId": "l001-src-8",
+            "logicalDocumentId": "ld-8",
+            "page": 1,
+            "pageEnd": 1,
+            "quote": "IEP Period: 2024-11-12 through 2025-11-11",
+            "extractionId": "line:9",
+            "sourceType": "document"
+          }
+        ]
+      },
+      {
+        "id": "claim-goal-id",
+        "subjectEntityId": "entity-maya-carter",
+        "construct": {
+          "measure": "goal_identifier",
+          "task": "reading_fluency",
+          "administration": "annual_goal"
+        },
+        "value": {
+          "kind": "code",
+          "codeValue": "GOAL_READING_FLUENCY"
+        },
+        "modality": "planned",
+        "effectivePeriod": {
+          "start": "2024-11-12",
+          "end": "2025-11-11",
+          "precision": "day"
+        },
+        "occurredOn": "2024-11-12",
+        "evidenceRefs": [
+          {
+            "id": "ev-goal-id",
+            "sourceDocumentId": "l001-src-8",
+            "logicalDocumentId": "ld-8",
+            "page": 1,
+            "pageEnd": 1,
+            "quote": "Goal ID: GOAL_READING_FLUENCY",
+            "extractionId": "line:29",
+            "sourceType": "document"
+          }
+        ]
+      },
+      {
+        "id": "claim-goal-baseline",
+        "subjectEntityId": "entity-maya-carter",
+        "construct": {
+          "measure": "baseline",
+          "task": "oral_reading_fluency",
+          "administration": "grade_level_connected_text_probe"
+        },
+        "value": {
+          "kind": "quantity",
+          "numberValue": 42,
+          "unit": "WCPM"
+        },
+        "unit": "WCPM",
+        "modality": "observed",
+        "effectivePeriod": null,
+        "occurredOn": "2024-10-18",
+        "evidenceRefs": [
+          {
+            "id": "ev-goal-baseline",
+            "sourceDocumentId": "l001-src-8",
+            "logicalDocumentId": "ld-8",
+            "page": 2,
+            "pageEnd": 2,
+            "quote": "Baseline: 42 WCPM",
+            "extractionId": "line:0",
+            "sourceType": "document"
+          }
+        ]
+      },
+      {
+        "id": "claim-goal-target",
+        "subjectEntityId": "entity-maya-carter",
+        "construct": {
+          "measure": "annual_goal_target",
+          "task": "oral_reading_fluency",
+          "administration": "grade_level_connected_text_probe"
+        },
+        "value": {
+          "kind": "quantity",
+          "numberValue": 75,
+          "unit": "WCPM"
+        },
+        "unit": "WCPM",
+        "modality": "planned",
+        "effectivePeriod": {
+          "start": "2024-11-12",
+          "end": "2025-11-11",
+          "precision": "day"
+        },
+        "occurredOn": "2024-11-12",
+        "evidenceRefs": [
+          {
+            "id": "ev-goal-target",
+            "sourceDocumentId": "l001-src-8",
+            "logicalDocumentId": "ld-8",
+            "page": 2,
+            "pageEnd": 2,
+            "quote": "Target: 75 WCPM",
+            "extractionId": "line:1",
+            "sourceType": "document"
+          }
+        ]
+      },
+      {
+        "id": "claim-goal-accuracy",
+        "subjectEntityId": "entity-maya-carter",
+        "construct": {
+          "measure": "accuracy_criterion",
+          "task": "oral_reading_fluency",
+          "administration": "grade_level_connected_text_probe"
+        },
+        "value": {
+          "kind": "quantity",
+          "numberValue": 95,
+          "unit": "%"
+        },
+        "unit": "%",
+        "modality": "planned",
+        "effectivePeriod": {
+          "start": "2024-11-12",
+          "end": "2025-11-11",
+          "precision": "day"
+        },
+        "occurredOn": "2024-11-12",
+        "evidenceRefs": [
+          {
+            "id": "ev-goal-accuracy",
+            "sourceDocumentId": "l001-src-8",
+            "logicalDocumentId": "ld-8",
+            "page": 2,
+            "pageEnd": 2,
+            "quote": "Accuracy Criterion: at least 95% accuracy",
+            "extractionId": "line:2",
+            "sourceType": "document"
+          }
+        ]
+      },
+      {
+        "id": "claim-goal-mastery",
+        "subjectEntityId": "entity-maya-carter",
+        "construct": {
+          "measure": "mastery_criterion",
+          "task": "oral_reading_fluency",
+          "administration": "consecutive_probes"
+        },
+        "value": {
+          "kind": "quantity",
+          "numberValue": 3,
+          "unit": "probes"
+        },
+        "unit": "probes",
+        "modality": "planned",
+        "effectivePeriod": {
+          "start": "2024-11-12",
+          "end": "2025-11-11",
+          "precision": "day"
+        },
+        "occurredOn": "2024-11-12",
+        "evidenceRefs": [
+          {
+            "id": "ev-goal-mastery",
+            "sourceDocumentId": "l001-src-8",
+            "logicalDocumentId": "ld-8",
+            "page": 2,
+            "pageEnd": 2,
+            "quote": "Mastery Criterion: across three consecutive probes",
+            "extractionId": "line:3",
+            "sourceType": "document"
+          }
+        ]
+      },
+      {
+        "id": "claim-progress-measurement",
+        "subjectEntityId": "entity-maya-carter",
+        "construct": {
+          "measure": "data_collection_method",
+          "task": "reading_fluency_goal",
+          "administration": "curriculum_based"
+        },
+        "value": {
+          "kind": "text",
+          "textValue": "oral reading fluency probes"
+        },
+        "modality": "planned",
+        "effectivePeriod": {
+          "start": "2024-11-12",
+          "end": "2025-11-11",
+          "precision": "day"
+        },
+        "occurredOn": "2024-11-12",
+        "evidenceRefs": [
+          {
+            "id": "ev-progress-method",
+            "sourceDocumentId": "l001-src-8",
+            "logicalDocumentId": "ld-8",
+            "page": 2,
+            "pageEnd": 2,
+            "quote": "Progress will be measured using curriculum-based oral reading fluency probes.",
+            "extractionId": "line:6",
+            "sourceType": "document"
+          }
+        ]
+      },
+      {
+        "id": "claim-service-frequency",
+        "subjectEntityId": "entity-maya-carter",
+        "construct": {
+          "measure": "service_frequency",
+          "task": "specialized_reading_instruction",
+          "administration": "special_education_setting"
+        },
+        "value": {
+          "kind": "text",
+          "textValue": "weekly"
+        },
+        "modality": "planned",
+        "effectivePeriod": {
+          "start": "2024-11-12",
+          "end": "2025-11-11",
+          "precision": "day"
+        },
+        "occurredOn": "2024-11-12",
+        "evidenceRefs": [
+          {
+            "id": "ev-service-frequency",
+            "sourceDocumentId": "l001-src-8",
+            "logicalDocumentId": "ld-8",
+            "page": 2,
+            "pageEnd": 2,
+            "quote": "Weekly 150 minutes 2024-11-12",
+            "extractionId": "line:10",
+            "sourceType": "document"
+          }
+        ]
+      },
+      {
+        "id": "claim-service-minutes",
+        "subjectEntityId": "entity-maya-carter",
+        "construct": {
+          "measure": "service_amount",
+          "task": "specialized_reading_instruction",
+          "administration": "special_education_setting"
+        },
+        "value": {
+          "kind": "quantity",
+          "numberValue": 150,
+          "unit": "min/week"
+        },
+        "unit": "min/week",
+        "modality": "planned",
+        "effectivePeriod": {
+          "start": "2024-11-12",
+          "end": "2025-11-11",
+          "precision": "day"
+        },
+        "occurredOn": "2024-11-12",
+        "evidenceRefs": [
+          {
+            "id": "ev-service-minutes",
+            "sourceDocumentId": "l001-src-8",
+            "logicalDocumentId": "ld-8",
+            "page": 2,
+            "pageEnd": 2,
+            "quote": "Specialized reading instruction is provided 150 minutes weekly in the special education setting.",
+            "extractionId": "line:12",
+            "sourceType": "document"
+          }
+        ]
+      },
+      {
+        "id": "claim-service-location",
+        "subjectEntityId": "entity-maya-carter",
+        "construct": {
+          "measure": "service_location",
+          "task": "specialized_reading_instruction",
+          "administration": null
+        },
+        "value": {
+          "kind": "text",
+          "textValue": "special education setting"
+        },
+        "modality": "planned",
+        "effectivePeriod": {
+          "start": "2024-11-12",
+          "end": "2025-11-11",
+          "precision": "day"
+        },
+        "occurredOn": "2024-11-12",
+        "evidenceRefs": [
+          {
+            "id": "ev-service-location",
+            "sourceDocumentId": "l001-src-8",
+            "logicalDocumentId": "ld-8",
+            "page": 2,
+            "pageEnd": 2,
+            "quote": "Specialized reading instruction is provided 150 minutes weekly in the special education setting.",
+            "extractionId": "line:12",
+            "sourceType": "document"
+          }
+        ]
+      },
+      {
+        "id": "claim-accommodation-time",
+        "subjectEntityId": "entity-maya-carter",
+        "construct": {
+          "measure": "accommodation",
+          "task": "classroom_reading_assessments",
+          "administration": null
+        },
+        "value": {
+          "kind": "text",
+          "textValue": "extended time"
+        },
+        "modality": "planned",
+        "effectivePeriod": {
+          "start": "2024-11-12",
+          "end": "2025-11-11",
+          "precision": "day"
+        },
+        "occurredOn": "2024-11-12",
+        "evidenceRefs": [
+          {
+            "id": "ev-accommodation-time",
+            "sourceDocumentId": "l001-src-8",
+            "logicalDocumentId": "ld-8",
+            "page": 2,
+            "pageEnd": 2,
+            "quote": "• Extended time for classroom reading assessments.",
+            "extractionId": "line:14",
+            "sourceType": "document"
+          }
+        ]
+      },
+      {
+        "id": "claim-accommodation-directions",
+        "subjectEntityId": "entity-maya-carter",
+        "construct": {
+          "measure": "accommodation",
+          "task": "directions",
+          "administration": "when_reading_ability_is_not_assessed"
+        },
+        "value": {
+          "kind": "text",
+          "textValue": "read aloud"
+        },
+        "modality": "planned",
+        "effectivePeriod": {
+          "start": "2024-11-12",
+          "end": "2025-11-11",
+          "precision": "day"
+        },
+        "occurredOn": "2024-11-12",
+        "evidenceRefs": [
+          {
+            "id": "ev-accommodation-directions",
+            "sourceDocumentId": "l001-src-8",
+            "logicalDocumentId": "ld-8",
+            "page": 2,
+            "pageEnd": 2,
+            "quote": "• Directions read aloud when reading ability is not being assessed.",
+            "extractionId": "line:15",
+            "sourceType": "document"
+          }
+        ]
+      },
+      {
+        "id": "claim-progress-reporting",
+        "subjectEntityId": "entity-maya-carter",
+        "construct": {
+          "measure": "progress_reporting_frequency",
+          "task": "annual_reading_fluency_goal",
+          "administration": "concurrent_with_report_periods"
+        },
+        "value": {
+          "kind": "text",
+          "textValue": "quarterly"
+        },
+        "modality": "planned",
+        "effectivePeriod": {
+          "start": "2024-11-12",
+          "end": "2025-11-11",
+          "precision": "day"
+        },
+        "occurredOn": "2024-11-12",
+        "evidenceRefs": [
+          {
+            "id": "ev-progress-reporting",
+            "sourceDocumentId": "l001-src-8",
+            "logicalDocumentId": "ld-8",
+            "page": 2,
+            "pageEnd": 2,
+            "quote": "Progress toward the annual goal will be measured using oral-reading-fluency probes and reported quarterly,",
+            "extractionId": "line:17",
+            "sourceType": "document"
+          }
+        ]
+      }
+    ],
+    "conflicts": [],
+    "missingInformation": [
+      {
+        "id": "missing-service-session-structure",
+        "description": "The IEP states 150 minutes of specialized reading instruction weekly but does not specify the number of sessions per week or minutes per session.",
+        "gapKind": "not_found_in_supplied_documents",
+        "subjectEntityId": "entity-maya-carter",
+        "relatedConstruct": "service_session_length_specialized_reading_instruction",
+        "evidenceRefs": [
+          {
+            "id": "ev-missing-session-structure",
+            "sourceDocumentId": "l001-src-8",
+            "logicalDocumentId": "ld-8",
+            "page": 2,
+            "pageEnd": 2,
+            "quote": "Specialized reading instruction is provided 150 minutes weekly in the special education setting.",
+            "extractionId": "line:12",
+            "sourceType": "document"
+          }
+        ],
+        "proposalLineage": {
+          "proposalItemId": "missing-service-session-structure",
+          "studyRunId": "15e41c45-83c5-4b98-9840-185f9eb2bf4a"
+        }
+      },
+      {
+        "id": "missing-extended-time-amount",
+        "description": "The extended-time accommodation does not specify how much additional time is allowed.",
+        "gapKind": "not_found_in_supplied_documents",
+        "subjectEntityId": "entity-maya-carter",
+        "relatedConstruct": "extended_time_amount_classroom_reading_assessments",
+        "evidenceRefs": [
+          {
+            "id": "ev-missing-extended-time",
+            "sourceDocumentId": "l001-src-8",
+            "logicalDocumentId": "ld-8",
+            "page": 2,
+            "pageEnd": 2,
+            "quote": "• Extended time for classroom reading assessments.",
+            "extractionId": "line:14",
+            "sourceType": "document"
+          }
+        ],
+        "proposalLineage": {
+          "proposalItemId": "missing-extended-time-amount",
+          "studyRunId": "15e41c45-83c5-4b98-9840-185f9eb2bf4a"
+        }
+      }
+    ],
+    "voiceProposal": {
+      "subject": {
+        "value": null,
+        "from": null,
+        "evidenceRefs": null
+      },
+      "eventNoun": {
+        "value": null,
+        "from": null,
+        "evidenceRefs": null
+      },
+      "helperNoun": {
+        "value": null,
+        "from": null,
+        "evidenceRefs": null
+      },
+      "otherPartyNoun": {
+        "value": "the district",
+        "from": "document",
+        "evidenceRefs": [
+          {
+            "id": "ev-voice-district",
+            "sourceDocumentId": "l001-src-8",
+            "logicalDocumentId": "ld-8",
+            "page": 1,
+            "pageEnd": 1,
+            "spanStart": null,
+            "spanEnd": null,
+            "quote": "District: Synthetic District",
+            "extractionId": "line:7",
+            "sourceType": "document"
+          }
+        ]
+      },
+      "subjectName": {
+        "value": "Maya Carter",
+        "from": "document",
+        "evidenceRefs": [
+          {
+            "id": "ev-voice-name",
+            "sourceDocumentId": "l001-src-8",
+            "logicalDocumentId": "ld-8",
+            "page": 1,
+            "pageEnd": 1,
+            "spanStart": null,
+            "spanEnd": null,
+            "quote": "Student: Maya Carter",
+            "extractionId": "line:3",
+            "sourceType": "document"
+          }
+        ]
+      }
+    },
+    "modelMetadata": {
+      "providerId": "openai-canonical-study-engine-v4",
+      "modelId": "gpt-5.6-sol",
+      "proposalMode": "production"
+    },
+    "proposedAt": "2025-01-01T00:00:00Z"
+  },
+  "validation": {
+    "status": "SUCCEEDED",
+    "accepted": {
+      "entities": [
+        {
+          "id": "entity-maya-carter",
+          "entityType": "student",
+          "label": "Maya Carter",
+          "evidenceRefs": [
+            {
+              "id": "ev-entity-maya",
+              "sourceDocumentId": "l001-src-8",
+              "sourceType": "document",
+              "logicalDocumentId": "ld-8",
+              "page": 1,
+              "pageEnd": 1,
+              "snippet": "Student: Maya Carter",
+              "extractionId": "line:3"
+            }
+          ]
+        },
+        {
+          "id": "entity-synthetic-elementary",
+          "entityType": "school",
+          "label": "Synthetic Elementary School",
+          "evidenceRefs": [
+            {
+              "id": "ev-entity-school",
+              "sourceDocumentId": "l001-src-8",
+              "sourceType": "document",
+              "logicalDocumentId": "ld-8",
+              "page": 1,
+              "pageEnd": 1,
+              "snippet": "School: Synthetic Elementary School",
+              "extractionId": "line:6"
+            }
+          ]
+        },
+        {
+          "id": "entity-synthetic-district",
+          "entityType": "school_district",
+          "label": "Synthetic District",
+          "evidenceRefs": [
+            {
+              "id": "ev-entity-district",
+              "sourceDocumentId": "l001-src-8",
+              "sourceType": "document",
+              "logicalDocumentId": "ld-8",
+              "page": 1,
+              "pageEnd": 1,
+              "snippet": "District: Synthetic District",
+              "extractionId": "line:7"
+            }
+          ]
+        },
+        {
+          "id": "entity-eligibility-team",
+          "entityType": "team",
+          "label": "Eligibility team",
+          "evidenceRefs": [
+            {
+              "id": "ev-entity-team",
+              "sourceDocumentId": "l001-src-7",
+              "sourceType": "document",
+              "logicalDocumentId": "ld-7",
+              "page": 1,
+              "pageEnd": 1,
+              "snippet": "Determination By: Eligibility team",
+              "extractionId": "line:11"
+            }
+          ]
+        }
+      ],
+      "claims": [
+        {
+          "id": "claim-dob",
+          "subjectEntityId": "entity-maya-carter",
+          "construct": "date_of_birth|-|-",
+          "value": {
+            "kind": "date",
+            "value": "2017-04-18"
+          },
+          "role": "observed",
+          "occurredOn": "2017-04-18",
+          "evidenceRefs": [
+            {
+              "id": "ev-dob",
+              "sourceDocumentId": "l001-src-8",
+              "sourceType": "document",
+              "logicalDocumentId": "ld-8",
+              "page": 1,
+              "pageEnd": 1,
+              "snippet": "Date of Birth: 2017-04-18",
+              "extractionId": "line:4"
+            }
+          ]
+        },
+        {
+          "id": "claim-grade",
+          "subjectEntityId": "entity-maya-carter",
+          "construct": "grade_level|-|-",
+          "value": {
+            "kind": "code",
+            "code": "2"
+          },
+          "role": "observed",
+          "occurredOn": "2024-11-12",
+          "evidenceRefs": [
+            {
+              "id": "ev-grade",
+              "sourceDocumentId": "l001-src-8",
+              "sourceType": "document",
+              "logicalDocumentId": "ld-8",
+              "page": 1,
+              "pageEnd": 1,
+              "snippet": "Grade: 2",
+              "extractionId": "line:5"
+            }
+          ]
+        },
+        {
+          "id": "claim-school",
+          "subjectEntityId": "entity-maya-carter",
+          "construct": "attends_school|-|-",
+          "value": {
+            "kind": "entity_ref",
+            "entityId": "entity-synthetic-elementary"
+          },
+          "role": "observed",
+          "occurredOn": "2024-11-12",
+          "evidenceRefs": [
+            {
+              "id": "ev-school-rel",
+              "sourceDocumentId": "l001-src-8",
+              "sourceType": "document",
+              "logicalDocumentId": "ld-8",
+              "page": 1,
+              "pageEnd": 1,
+              "snippet": "School: Synthetic Elementary School",
+              "extractionId": "line:6"
+            }
+          ]
+        },
+        {
+          "id": "claim-district",
+          "subjectEntityId": "entity-maya-carter",
+          "construct": "school_district|-|-",
+          "value": {
+            "kind": "entity_ref",
+            "entityId": "entity-synthetic-district"
+          },
+          "role": "observed",
+          "occurredOn": "2024-11-12",
+          "evidenceRefs": [
+            {
+              "id": "ev-district-rel",
+              "sourceDocumentId": "l001-src-8",
+              "sourceType": "document",
+              "logicalDocumentId": "ld-8",
+              "page": 1,
+              "pageEnd": 1,
+              "snippet": "District: Synthetic District",
+              "extractionId": "line:7"
+            }
+          ]
+        },
+        {
+          "id": "claim-referral-date",
+          "subjectEntityId": "entity-maya-carter",
+          "construct": "referral_date|initial_special_education_evaluation|-",
+          "value": {
+            "kind": "date",
+            "value": "2024-08-20"
+          },
+          "role": "observed",
+          "occurredOn": "2024-08-20",
+          "evidenceRefs": [
+            {
+              "id": "ev-referral-date",
+              "sourceDocumentId": "l001-src-1",
+              "sourceType": "document",
+              "logicalDocumentId": "ld-1",
+              "page": 1,
+              "pageEnd": 1,
+              "snippet": "Referral Date: 2024-08-20",
+              "extractionId": "line:9"
+            }
+          ]
+        },
+        {
+          "id": "claim-referral-source",
+          "subjectEntityId": "entity-maya-carter",
+          "construct": "referral_source|initial_special_education_evaluation|-",
+          "value": {
+            "kind": "text",
+            "text": "teacher"
+          },
+          "role": "observed",
+          "occurredOn": "2024-08-20",
+          "evidenceRefs": [
+            {
+              "id": "ev-referral-source",
+              "sourceDocumentId": "l001-src-1",
+              "sourceType": "document",
+              "logicalDocumentId": "ld-1",
+              "page": 1,
+              "pageEnd": 1,
+              "snippet": "Referred By: Teacher",
+              "extractionId": "line:10"
+            }
+          ]
+        },
+        {
+          "id": "claim-referral-concern",
+          "subjectEntityId": "entity-maya-carter",
+          "construct": "area_of_concern|reading_fluency|classroom_performance_and_teacher_observation",
+          "value": {
+            "kind": "text",
+            "text": "persistent difficulty reading connected grade-level text accurately and fluently"
+          },
+          "role": "observed",
+          "occurredOn": "2024-08-20",
+          "evidenceRefs": [
+            {
+              "id": "ev-referral-concern",
+              "sourceDocumentId": "l001-src-1",
+              "sourceType": "document",
+              "logicalDocumentId": "ld-1",
+              "page": 1,
+              "pageEnd": 1,
+              "snippet": "Classroom performance and teacher observation indicate persistent difficulty reading connected grade-level text",
+              "extractionId": "line:15"
+            }
+          ]
+        },
+        {
+          "id": "claim-independent-access-impact",
+          "subjectEntityId": "entity-maya-carter",
+          "construct": "educational_impact|grade_level_reading_activities|independently",
+          "value": {
+            "kind": "text",
+            "text": "difficulty accessing activities"
+          },
+          "role": "observed",
+          "occurredOn": "2024-08-20",
+          "evidenceRefs": [
+            {
+              "id": "ev-access-impact",
+              "sourceDocumentId": "l001-src-1",
+              "sourceType": "document",
+              "logicalDocumentId": "ld-1",
+              "page": 1,
+              "pageEnd": 1,
+              "snippet": "independently.",
+              "extractionId": "line:17"
+            },
+            {
+              "id": "ev-access-impact-context",
+              "sourceDocumentId": "l001-src-1",
+              "sourceType": "document",
+              "logicalDocumentId": "ld-1",
+              "page": 1,
+              "pageEnd": 1,
+              "snippet": "accurately and fluently. The concern is affecting Maya's ability to access grade-level reading activities",
+              "extractionId": "line:16"
+            }
+          ]
+        },
+        {
+          "id": "claim-evaluation-plan-date",
+          "subjectEntityId": "entity-maya-carter",
+          "construct": "planning_date|initial_evaluation|district",
+          "value": {
+            "kind": "date",
+            "value": "2024-08-28"
+          },
+          "role": "planned",
+          "occurredOn": "2024-08-28",
+          "evidenceRefs": [
+            {
+              "id": "ev-plan-date",
+              "sourceDocumentId": "l001-src-2",
+              "sourceType": "document",
+              "logicalDocumentId": "ld-2",
+              "page": 1,
+              "pageEnd": 1,
+              "snippet": "Planning Date: 2024-08-28",
+              "extractionId": "line:3"
+            }
+          ]
+        },
+        {
+          "id": "claim-evaluation-areas",
+          "subjectEntityId": "entity-maya-carter",
+          "construct": "proposed_evaluation_areas|initial_evaluation|-",
+          "value": {
+            "kind": "text",
+            "text": "academic achievement/reading; reading fluency; review of educational performance"
+          },
+          "role": "planned",
+          "occurredOn": "2024-08-28",
+          "evidenceRefs": [
+            {
+              "id": "ev-area-reading",
+              "sourceDocumentId": "l001-src-2",
+              "sourceType": "document",
+              "logicalDocumentId": "ld-2",
+              "page": 1,
+              "pageEnd": 1,
+              "snippet": "[X] Academic achievement / reading",
+              "extractionId": "line:23"
+            },
+            {
+              "id": "ev-area-fluency",
+              "sourceDocumentId": "l001-src-2",
+              "sourceType": "document",
+              "logicalDocumentId": "ld-2",
+              "page": 1,
+              "pageEnd": 1,
+              "snippet": "[X] Reading fluency",
+              "extractionId": "line:24"
+            },
+            {
+              "id": "ev-area-performance",
+              "sourceDocumentId": "l001-src-2",
+              "sourceType": "document",
+              "logicalDocumentId": "ld-2",
+              "page": 1,
+              "pageEnd": 1,
+              "snippet": "[X] Review of educational performance",
+              "extractionId": "line:25"
+            }
+          ]
+        },
+        {
+          "id": "claim-parent-consent",
+          "subjectEntityId": "entity-maya-carter",
+          "construct": "parental_consent|initial_evaluation|written",
+          "value": {
+            "kind": "boolean",
+            "value": true
+          },
+          "role": "decided",
+          "occurredOn": "2024-09-04",
+          "evidenceRefs": [
+            {
+              "id": "ev-consent",
+              "sourceDocumentId": "l001-src-3",
+              "sourceType": "document",
+              "logicalDocumentId": "ld-3",
+              "page": 1,
+              "pageEnd": 1,
+              "snippet": "[X] I consent to the proposed initial evaluation.",
+              "extractionId": "line:19"
+            },
+            {
+              "id": "ev-consent-date",
+              "sourceDocumentId": "l001-src-3",
+              "sourceType": "document",
+              "logicalDocumentId": "ld-3",
+              "page": 1,
+              "pageEnd": 1,
+              "snippet": "Date: 2024-09-04",
+              "extractionId": "line:23"
+            }
+          ]
+        },
+        {
+          "id": "claim-cognitive-functioning",
+          "subjectEntityId": "entity-maya-carter",
+          "construct": "general_reasoning_and_cognitive_functioning|-|psychoeducational_evaluation",
+          "value": {
+            "kind": "text",
+            "text": "broadly within expected range for age"
+          },
+          "role": "observed",
+          "occurredOn": "2024-10-15",
+          "evidenceRefs": [
+            {
+              "id": "ev-cognitive",
+              "sourceDocumentId": "l001-src-4",
+              "sourceType": "document",
+              "logicalDocumentId": "ld-4",
+              "page": 2,
+              "pageEnd": 2,
+              "snippet": "the expected range for age. No global cognitive limitation is identified as the primary explanation for the",
+              "extractionId": "line:2"
+            }
+          ]
+        },
+        {
+          "id": "claim-oral-reading-fluency",
+          "subjectEntityId": "entity-maya-carter",
+          "construct": "oral_reading_fluency|connected_text_reading|academic_evaluation",
+          "value": {
+            "kind": "quantity",
+            "amount": 42
+          },
+          "unit": "WCPM",
+          "role": "observed",
+          "occurredOn": "2024-10-18",
+          "evidenceRefs": [
+            {
+              "id": "ev-fluency-42",
+              "sourceDocumentId": "l001-src-5",
+              "sourceType": "document",
+              "logicalDocumentId": "ld-5",
+              "page": 1,
+              "pageEnd": 1,
+              "snippet": "Oral Reading Fluency 42 WCPM",
+              "extractionId": "line:18"
+            }
+          ]
+        },
+        {
+          "id": "claim-reading-accuracy",
+          "subjectEntityId": "entity-maya-carter",
+          "construct": "oral_reading_accuracy|connected_text_reading|academic_evaluation",
+          "value": {
+            "kind": "quantity",
+            "amount": 86
+          },
+          "unit": "%",
+          "role": "observed",
+          "occurredOn": "2024-10-18",
+          "evidenceRefs": [
+            {
+              "id": "ev-accuracy-86",
+              "sourceDocumentId": "l001-src-5",
+              "sourceType": "document",
+              "logicalDocumentId": "ld-5",
+              "page": 1,
+              "pageEnd": 1,
+              "snippet": "Oral Reading Accuracy 86%",
+              "extractionId": "line:19"
+            }
+          ]
+        },
+        {
+          "id": "claim-reading-comprehension",
+          "subjectEntityId": "entity-maya-carter",
+          "construct": "reading_comprehension|grade_level_text|academic_evaluation",
+          "value": {
+            "kind": "text",
+            "text": "below expected classroom level"
+          },
+          "role": "observed",
+          "occurredOn": "2024-10-18",
+          "evidenceRefs": [
+            {
+              "id": "ev-comprehension",
+              "sourceDocumentId": "l001-src-5",
+              "sourceType": "document",
+              "logicalDocumentId": "ld-5",
+              "page": 1,
+              "pageEnd": 1,
+              "snippet": "Reading Comprehension Below expected classroom level",
+              "extractionId": "line:20"
+            }
+          ]
+        },
+        {
+          "id": "claim-reading-observation",
+          "subjectEntityId": "entity-maya-carter",
+          "construct": "reading_behavior|connected_text_reading|academic_evaluation",
+          "value": {
+            "kind": "text",
+            "text": "slow and effortful with frequent pauses"
+          },
+          "role": "observed",
+          "occurredOn": "2024-10-18",
+          "evidenceRefs": [
+            {
+              "id": "ev-reading-observation",
+              "sourceDocumentId": "l001-src-5",
+              "sourceType": "document",
+              "logicalDocumentId": "ld-5",
+              "page": 1,
+              "pageEnd": 1,
+              "snippet": "Connected-text reading is slow and effortful. Frequent pauses were observed. Isolated word reading is stronger than",
+              "extractionId": "line:22"
+            }
+          ]
+        },
+        {
+          "id": "claim-speech-intelligibility",
+          "subjectEntityId": "entity-maya-carter",
+          "construct": "speech_intelligibility|classroom_participation|speech_language_evaluation",
+          "value": {
+            "kind": "text",
+            "text": "adequate"
+          },
+          "role": "observed",
+          "occurredOn": "2024-10-22",
+          "evidenceRefs": [
+            {
+              "id": "ev-speech-intelligibility",
+              "sourceDocumentId": "l001-src-6",
+              "sourceType": "document",
+              "logicalDocumentId": "ld-6",
+              "page": 1,
+              "pageEnd": 1,
+              "snippet": "adequate for classroom participation. Receptive and expressive language observed during the evaluation are",
+              "extractionId": "line:16"
+            }
+          ]
+        },
+        {
+          "id": "claim-speech-language-need",
+          "subjectEntityId": "entity-maya-carter",
+          "construct": "separate_educational_need|speech_language|speech_language_evaluation",
+          "value": {
+            "kind": "boolean",
+            "value": false
+          },
+          "role": "observed",
+          "occurredOn": "2024-10-22",
+          "evidenceRefs": [
+            {
+              "id": "ev-no-speech-need",
+              "sourceDocumentId": "l001-src-6",
+              "sourceType": "document",
+              "logicalDocumentId": "ld-6",
+              "page": 1,
+              "pageEnd": 1,
+              "snippet": "the evaluation are broadly functional for classroom communication. No separate speech-language educational need",
+              "extractionId": "line:20"
+            }
+          ]
+        },
+        {
+          "id": "claim-speech-service-recommendation",
+          "subjectEntityId": "entity-maya-carter",
+          "construct": "service_recommendation|speech_language_service|speech_language_evaluation",
+          "value": {
+            "kind": "boolean",
+            "value": false
+          },
+          "role": "decided",
+          "occurredOn": "2024-10-22",
+          "evidenceRefs": [
+            {
+              "id": "ev-no-speech-service",
+              "sourceDocumentId": "l001-src-6",
+              "sourceType": "document",
+              "logicalDocumentId": "ld-6",
+              "page": 1,
+              "pageEnd": 1,
+              "snippet": "speech-language service is recommended.",
+              "extractionId": "line:25"
+            }
+          ]
+        },
+        {
+          "id": "claim-eligibility-date",
+          "subjectEntityId": "entity-maya-carter",
+          "construct": "determination_date|initial_eligibility|eligibility_team",
+          "value": {
+            "kind": "date",
+            "value": "2024-11-01"
+          },
+          "role": "decided",
+          "occurredOn": "2024-11-01",
+          "evidenceRefs": [
+            {
+              "id": "ev-eligibility-date",
+              "sourceDocumentId": "l001-src-7",
+              "sourceType": "document",
+              "logicalDocumentId": "ld-7",
+              "page": 1,
+              "pageEnd": 1,
+              "snippet": "Determination Date: 2024-11-01",
+              "extractionId": "line:9"
+            }
+          ]
+        },
+        {
+          "id": "claim-eligible",
+          "subjectEntityId": "entity-maya-carter",
+          "construct": "special_education_eligibility|-|eligibility_team",
+          "value": {
+            "kind": "boolean",
+            "value": true
+          },
+          "role": "decided",
+          "occurredOn": "2024-11-01",
+          "evidenceRefs": [
+            {
+              "id": "ev-eligible",
+              "sourceDocumentId": "l001-src-7",
+              "sourceType": "document",
+              "logicalDocumentId": "ld-7",
+              "page": 1,
+              "pageEnd": 1,
+              "snippet": "[X] Eligible for special education",
+              "extractionId": "line:26"
+            }
+          ]
+        },
+        {
+          "id": "claim-eligibility-category",
+          "subjectEntityId": "entity-maya-carter",
+          "construct": "eligibility_category|reading|eligibility_team",
+          "value": {
+            "kind": "code",
+            "code": "Specific Learning Disability (SLD) - Reading"
+          },
+          "role": "decided",
+          "occurredOn": "2024-11-01",
+          "evidenceRefs": [
+            {
+              "id": "ev-eligibility-category",
+              "sourceDocumentId": "l001-src-7",
+              "sourceType": "document",
+              "logicalDocumentId": "ld-7",
+              "page": 1,
+              "pageEnd": 1,
+              "snippet": "Eligibility Category: Specific Learning Disability (SLD) - Reading",
+              "extractionId": "line:28"
+            }
+          ]
+        },
+        {
+          "id": "claim-primary-need",
+          "subjectEntityId": "entity-maya-carter",
+          "construct": "primary_educational_need|-|eligibility_team",
+          "value": {
+            "kind": "text",
+            "text": "reading fluency"
+          },
+          "role": "decided",
+          "occurredOn": "2024-11-01",
+          "evidenceRefs": [
+            {
+              "id": "ev-primary-need",
+              "sourceDocumentId": "l001-src-7",
+              "sourceType": "document",
+              "logicalDocumentId": "ld-7",
+              "page": 1,
+              "pageEnd": 1,
+              "snippet": "category: Specific Learning Disability (SLD) - Reading. Primary educational need: Reading Fluency.",
+              "extractionId": "line:32"
+            }
+          ]
+        },
+        {
+          "id": "claim-sdi-required",
+          "subjectEntityId": "entity-maya-carter",
+          "construct": "specially_designed_instruction_required|reading_fluency|eligibility_team",
+          "value": {
+            "kind": "boolean",
+            "value": true
+          },
+          "role": "required",
+          "occurredOn": "2024-11-01",
+          "evidenceRefs": [
+            {
+              "id": "ev-sdi-required",
+              "sourceDocumentId": "l001-src-7",
+              "sourceType": "document",
+              "logicalDocumentId": "ld-7",
+              "page": 1,
+              "pageEnd": 1,
+              "snippet": "The team determined that Maya requires specially designed instruction targeting the documented reading fluency",
+              "extractionId": "line:34"
+            }
+          ]
+        },
+        {
+          "id": "claim-iep-period",
+          "subjectEntityId": "entity-maya-carter",
+          "construct": "iep_period|initial_iep|-",
+          "value": {
+            "kind": "period",
+            "start": "2024-11-12",
+            "end": "2025-11-11"
+          },
+          "role": "planned",
+          "occurredOn": "2024-11-12",
+          "evidenceRefs": [
+            {
+              "id": "ev-iep-period",
+              "sourceDocumentId": "l001-src-8",
+              "sourceType": "document",
+              "logicalDocumentId": "ld-8",
+              "page": 1,
+              "pageEnd": 1,
+              "snippet": "IEP Period: 2024-11-12 through 2025-11-11",
+              "extractionId": "line:9"
+            }
+          ]
+        },
+        {
+          "id": "claim-goal-id",
+          "subjectEntityId": "entity-maya-carter",
+          "construct": "goal_identifier|reading_fluency|annual_goal",
+          "value": {
+            "kind": "code",
+            "code": "GOAL_READING_FLUENCY"
+          },
+          "role": "planned",
+          "occurredOn": "2024-11-12",
+          "evidenceRefs": [
+            {
+              "id": "ev-goal-id",
+              "sourceDocumentId": "l001-src-8",
+              "sourceType": "document",
+              "logicalDocumentId": "ld-8",
+              "page": 1,
+              "pageEnd": 1,
+              "snippet": "Goal ID: GOAL_READING_FLUENCY",
+              "extractionId": "line:29"
+            }
+          ]
+        },
+        {
+          "id": "claim-goal-baseline",
+          "subjectEntityId": "entity-maya-carter",
+          "construct": "baseline|oral_reading_fluency|grade_level_connected_text_probe",
+          "value": {
+            "kind": "quantity",
+            "amount": 42
+          },
+          "unit": "WCPM",
+          "role": "observed",
+          "occurredOn": "2024-10-18",
+          "evidenceRefs": [
+            {
+              "id": "ev-goal-baseline",
+              "sourceDocumentId": "l001-src-8",
+              "sourceType": "document",
+              "logicalDocumentId": "ld-8",
+              "page": 2,
+              "pageEnd": 2,
+              "snippet": "Baseline: 42 WCPM",
+              "extractionId": "line:0"
+            }
+          ]
+        },
+        {
+          "id": "claim-goal-target",
+          "subjectEntityId": "entity-maya-carter",
+          "construct": "annual_goal_target|oral_reading_fluency|grade_level_connected_text_probe",
+          "value": {
+            "kind": "quantity",
+            "amount": 75
+          },
+          "unit": "WCPM",
+          "role": "planned",
+          "occurredOn": "2024-11-12",
+          "evidenceRefs": [
+            {
+              "id": "ev-goal-target",
+              "sourceDocumentId": "l001-src-8",
+              "sourceType": "document",
+              "logicalDocumentId": "ld-8",
+              "page": 2,
+              "pageEnd": 2,
+              "snippet": "Target: 75 WCPM",
+              "extractionId": "line:1"
+            }
+          ]
+        },
+        {
+          "id": "claim-goal-accuracy",
+          "subjectEntityId": "entity-maya-carter",
+          "construct": "accuracy_criterion|oral_reading_fluency|grade_level_connected_text_probe",
+          "value": {
+            "kind": "quantity",
+            "amount": 95
+          },
+          "unit": "%",
+          "role": "planned",
+          "occurredOn": "2024-11-12",
+          "evidenceRefs": [
+            {
+              "id": "ev-goal-accuracy",
+              "sourceDocumentId": "l001-src-8",
+              "sourceType": "document",
+              "logicalDocumentId": "ld-8",
+              "page": 2,
+              "pageEnd": 2,
+              "snippet": "Accuracy Criterion: at least 95% accuracy",
+              "extractionId": "line:2"
+            }
+          ]
+        },
+        {
+          "id": "claim-goal-mastery",
+          "subjectEntityId": "entity-maya-carter",
+          "construct": "mastery_criterion|oral_reading_fluency|consecutive_probes",
+          "value": {
+            "kind": "quantity",
+            "amount": 3
+          },
+          "unit": "probes",
+          "role": "planned",
+          "occurredOn": "2024-11-12",
+          "evidenceRefs": [
+            {
+              "id": "ev-goal-mastery",
+              "sourceDocumentId": "l001-src-8",
+              "sourceType": "document",
+              "logicalDocumentId": "ld-8",
+              "page": 2,
+              "pageEnd": 2,
+              "snippet": "Mastery Criterion: across three consecutive probes",
+              "extractionId": "line:3"
+            }
+          ]
+        },
+        {
+          "id": "claim-progress-measurement",
+          "subjectEntityId": "entity-maya-carter",
+          "construct": "data_collection_method|reading_fluency_goal|curriculum_based",
+          "value": {
+            "kind": "text",
+            "text": "oral reading fluency probes"
+          },
+          "role": "planned",
+          "occurredOn": "2024-11-12",
+          "evidenceRefs": [
+            {
+              "id": "ev-progress-method",
+              "sourceDocumentId": "l001-src-8",
+              "sourceType": "document",
+              "logicalDocumentId": "ld-8",
+              "page": 2,
+              "pageEnd": 2,
+              "snippet": "Progress will be measured using curriculum-based oral reading fluency probes.",
+              "extractionId": "line:6"
+            }
+          ]
+        },
+        {
+          "id": "claim-service-frequency",
+          "subjectEntityId": "entity-maya-carter",
+          "construct": "service_frequency|specialized_reading_instruction|special_education_setting",
+          "value": {
+            "kind": "text",
+            "text": "weekly"
+          },
+          "role": "planned",
+          "occurredOn": "2024-11-12",
+          "evidenceRefs": [
+            {
+              "id": "ev-service-frequency",
+              "sourceDocumentId": "l001-src-8",
+              "sourceType": "document",
+              "logicalDocumentId": "ld-8",
+              "page": 2,
+              "pageEnd": 2,
+              "snippet": "Weekly 150 minutes 2024-11-12",
+              "extractionId": "line:10"
+            }
+          ]
+        },
+        {
+          "id": "claim-service-minutes",
+          "subjectEntityId": "entity-maya-carter",
+          "construct": "service_amount|specialized_reading_instruction|special_education_setting",
+          "value": {
+            "kind": "quantity",
+            "amount": 150
+          },
+          "unit": "min/week",
+          "role": "planned",
+          "occurredOn": "2024-11-12",
+          "evidenceRefs": [
+            {
+              "id": "ev-service-minutes",
+              "sourceDocumentId": "l001-src-8",
+              "sourceType": "document",
+              "logicalDocumentId": "ld-8",
+              "page": 2,
+              "pageEnd": 2,
+              "snippet": "Specialized reading instruction is provided 150 minutes weekly in the special education setting.",
+              "extractionId": "line:12"
+            }
+          ]
+        },
+        {
+          "id": "claim-service-location",
+          "subjectEntityId": "entity-maya-carter",
+          "construct": "service_location|specialized_reading_instruction|-",
+          "value": {
+            "kind": "text",
+            "text": "special education setting"
+          },
+          "role": "planned",
+          "occurredOn": "2024-11-12",
+          "evidenceRefs": [
+            {
+              "id": "ev-service-location",
+              "sourceDocumentId": "l001-src-8",
+              "sourceType": "document",
+              "logicalDocumentId": "ld-8",
+              "page": 2,
+              "pageEnd": 2,
+              "snippet": "Specialized reading instruction is provided 150 minutes weekly in the special education setting.",
+              "extractionId": "line:12"
+            }
+          ]
+        },
+        {
+          "id": "claim-accommodation-time",
+          "subjectEntityId": "entity-maya-carter",
+          "construct": "accommodation|classroom_reading_assessments|-",
+          "value": {
+            "kind": "text",
+            "text": "extended time"
+          },
+          "role": "planned",
+          "occurredOn": "2024-11-12",
+          "evidenceRefs": [
+            {
+              "id": "ev-accommodation-time",
+              "sourceDocumentId": "l001-src-8",
+              "sourceType": "document",
+              "logicalDocumentId": "ld-8",
+              "page": 2,
+              "pageEnd": 2,
+              "snippet": "• Extended time for classroom reading assessments.",
+              "extractionId": "line:14"
+            }
+          ]
+        },
+        {
+          "id": "claim-accommodation-directions",
+          "subjectEntityId": "entity-maya-carter",
+          "construct": "accommodation|directions|when_reading_ability_is_not_assessed",
+          "value": {
+            "kind": "text",
+            "text": "read aloud"
+          },
+          "role": "planned",
+          "occurredOn": "2024-11-12",
+          "evidenceRefs": [
+            {
+              "id": "ev-accommodation-directions",
+              "sourceDocumentId": "l001-src-8",
+              "sourceType": "document",
+              "logicalDocumentId": "ld-8",
+              "page": 2,
+              "pageEnd": 2,
+              "snippet": "• Directions read aloud when reading ability is not being assessed.",
+              "extractionId": "line:15"
+            }
+          ]
+        },
+        {
+          "id": "claim-progress-reporting",
+          "subjectEntityId": "entity-maya-carter",
+          "construct": "progress_reporting_frequency|annual_reading_fluency_goal|concurrent_with_report_periods",
+          "value": {
+            "kind": "text",
+            "text": "quarterly"
+          },
+          "role": "planned",
+          "occurredOn": "2024-11-12",
+          "evidenceRefs": [
+            {
+              "id": "ev-progress-reporting",
+              "sourceDocumentId": "l001-src-8",
+              "sourceType": "document",
+              "logicalDocumentId": "ld-8",
+              "page": 2,
+              "pageEnd": 2,
+              "snippet": "Progress toward the annual goal will be measured using oral-reading-fluency probes and reported quarterly,",
+              "extractionId": "line:17"
+            }
+          ]
+        }
+      ],
+      "conflicts": [],
+      "missingInformation": [
+        {
+          "id": "missing-service-session-structure",
+          "description": "The IEP states 150 minutes of specialized reading instruction weekly but does not specify the number of sessions per week or minutes per session.",
+          "subjectEntityId": "entity-maya-carter",
+          "relatedConstruct": "service_session_length_specialized_reading_instruction",
+          "evidenceRefs": [
+            {
+              "id": "ev-missing-session-structure",
+              "sourceDocumentId": "l001-src-8",
+              "sourceType": "document",
+              "logicalDocumentId": "ld-8",
+              "page": 2,
+              "pageEnd": 2,
+              "snippet": "Specialized reading instruction is provided 150 minutes weekly in the special education setting.",
+              "extractionId": "line:12"
+            }
+          ],
+          "proposalLineage": {
+            "proposalItemId": "missing-service-session-structure",
+            "studyRunId": "15e41c45-83c5-4b98-9840-185f9eb2bf4a"
+          }
+        },
+        {
+          "id": "missing-extended-time-amount",
+          "description": "The extended-time accommodation does not specify how much additional time is allowed.",
+          "subjectEntityId": "entity-maya-carter",
+          "relatedConstruct": "extended_time_amount_classroom_reading_assessments",
+          "evidenceRefs": [
+            {
+              "id": "ev-missing-extended-time",
+              "sourceDocumentId": "l001-src-8",
+              "sourceType": "document",
+              "logicalDocumentId": "ld-8",
+              "page": 2,
+              "pageEnd": 2,
+              "snippet": "• Extended time for classroom reading assessments.",
+              "extractionId": "line:14"
+            }
+          ],
+          "proposalLineage": {
+            "proposalItemId": "missing-extended-time-amount",
+            "studyRunId": "15e41c45-83c5-4b98-9840-185f9eb2bf4a"
+          }
+        }
+      ]
+    },
+    "rejected": [],
+    "warnings": [],
+    "unresolved": [],
+    "validationErrors": [],
+    "provenanceErrors": [],
+    "integrityErrors": []
+  },
+  "summary": {
+    "replayMode": false,
+    "runStatus": "SUCCEEDED",
+    "errorKind": null,
+    "errorCode": null,
+    "errorMessage": null,
+    "validationStatus": "SUCCEEDED",
+    "claimsProposed": 37,
+    "claimsPassingValidation": 37,
+    "evidenceRefCount": 45,
+    "evidenceLocatorsResolvedToPageAndSnippet": 45,
+    "conflictsFound": 0,
+    "missingInformationItems": 2,
+    "validationErrorCount": 0,
+    "validationErrorMessagesFirst5": [],
+    "rejectedCodes": [],
+    "usage": {
+      "inputTokens": 31680,
+      "outputTokens": 9636
+    },
+    "wallClockMs": 81591,
+    "modelProvider": "openai",
+    "modelName": "gpt-5.6-sol",
+    "promptVersion": "v4",
+    "accepted": {
+      "entityCount": 4,
+      "claimCount": 37,
+      "claimTypes": [
+        null
+      ],
+      "entityTypes": [
+        "student",
+        "school",
+        "school_district",
+        "team"
+      ],
+      "relationshipCount": 0,
+      "eventCount": 0,
+      "conflictCount": 0,
+      "missingnessCount": 2,
+      "derivedCount": 0,
+      "temporalKinds": []
+    },
+    "proposalModel": {
+      "providerId": "openai-canonical-study-engine-v4",
+      "modelId": "gpt-5.6-sol",
+      "proposalMode": "production"
+    },
+    "artifactPersisted": true,
+    "customerProjectionSections": [
+      "case_understanding",
+      "key_facts",
+      "chronology",
+      "plans_decisions",
+      "missing_information"
+    ],
+    "proProjectionClaimCount": 37
+  }
+}
