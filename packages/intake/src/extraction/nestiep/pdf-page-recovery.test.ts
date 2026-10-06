@@ -17,6 +17,7 @@ const context: PdfRecoveryContext = {
   runId: "run-1",
   stepId: "intake-extract",
   sourceDocumentId: "doc-1",
+  sourceHash: "test-hash",
 };
 
 describe("recoverPdfDocumentPages", () => {

@@ -1,3 +1,7 @@
+import type { DocumentPages } from "@hiveforyou/core/document/page-model";
+
+import { buildDocumentPagesFromPdfDocument } from "../extract-native-words";
+import { pageWordsToRawTextItems } from "../page-model-bbox";
 import { loadPdfJsWithOps } from "../pdfjs-worker";
 import type { RecoveredPage, SourceIssue } from "./contracts";
 import { buildRecoveredPage } from "./buildRecoveredPage";
@@ -20,6 +24,8 @@ export interface PdfRecoveryContext {
   readonly runId: string;
   readonly stepId: string;
   readonly sourceDocumentId: string;
+  readonly sourceHash: string;
+  readonly documentPages?: DocumentPages;
   readonly ocrEngine?: OcrEngine;
   readonly qualityThresholds?: QualityThresholds;
   readonly rasterizer?: PageRasterizer;
@@ -98,7 +104,17 @@ export async function recoverPdfPages(
 ): Promise<RecoveredPage[]> {
   const loaded = await loadPdf(bytes);
   try {
-    return await recoverPdfDocumentPages(loaded.document, loaded.ops, context);
+    const documentPages = await buildDocumentPagesFromPdfDocument(
+      loaded.document as unknown as Parameters<typeof buildDocumentPagesFromPdfDocument>[0],
+      {
+        documentId: context.sourceDocumentId,
+        sha256: context.sourceHash,
+      },
+    );
+    return await recoverPdfDocumentPages(loaded.document, loaded.ops, {
+      ...context,
+      documentPages,
+    });
   } finally {
     try {
       await loaded.document.destroy();
@@ -164,6 +180,7 @@ async function qualityDecisionForPage(
   thresholds: QualityThresholds | undefined,
   allowOperatorSkip: boolean,
 ): Promise<PdfPageQualityEvaluation> {
+  // TODO(page-model): remove in Prompt 3 — derived string for quality metrics only.
   const rawText = nativeItems.map((item) => item.text).join(" ");
   const coverage = estimateCoverage(nativeItems, page);
   const textOnlyMetrics = computePageQualityMetrics({
@@ -209,7 +226,10 @@ async function recoverOnePdfPage(
 ): Promise<RecoveredPage> {
   const page = await document.getPage(pageNumber);
   try {
-    const nativeItems = await extractNativeItems(page);
+    const pageModel = context.documentPages?.pages[pageNumber - 1];
+    const nativeItems = pageModel
+      ? pageWordsToRawTextItems(pageModel.words, pageModel.height)
+      : await extractNativeItems(page);
     const quality = await qualityDecisionForPage(
       page,
       ops,

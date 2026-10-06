@@ -138,6 +138,7 @@ export async function recoverNormalizedDocument(
     runId,
     stepId,
     sourceDocumentId: input.sourceDocumentId,
+    sourceHash: input.sourceHash,
     ...(input.ocrEngine === undefined ? {} : { ocrEngine: input.ocrEngine }),
     ...(input.qualityThresholds === undefined ? {} : { qualityThresholds: input.qualityThresholds }),
     ...(input.rasterizer === undefined ? {} : { rasterizer: input.rasterizer }),

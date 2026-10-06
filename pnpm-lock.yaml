@@ -287,6 +287,9 @@ importers:
 
   engine/intake:
     dependencies:
+      '@hiveforyou/core':
+        specifier: workspace:*
+        version: link:../core
       '@hiveforyou/domain-pack':
         specifier: workspace:*
         version: link:../domain-pack

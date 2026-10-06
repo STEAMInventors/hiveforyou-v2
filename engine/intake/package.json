@@ -17,6 +17,7 @@
     "fixtures:extraction:goldens": "node fixtures/extraction/generate-fixtures.mjs && node fixtures/extraction/record-goldens.mjs"
   },
   "dependencies": {
+    "@hiveforyou/core": "workspace:*",
     "@hiveforyou/domain-pack": "workspace:*",
     "@hiveforyou/shared": "workspace:*",
     "pdfjs-dist": "^5.6.205"
