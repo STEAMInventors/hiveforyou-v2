@@ -17,7 +17,8 @@
     "./case-view-plan": "./src/projections/project-case-view-v2-plan.ts",
     "./study": "./src/study/index.ts",
     "./story/prefer-pack-narrative": "./src/study/story/prefer-pack-narrative.ts",
-    "./document/page-model": "./src/document/page-model.ts"
+    "./document/page-model": "./src/document/page-model.ts",
+    "./document/assembly": "./src/document/assembly.ts"
   },
   "scripts": {
     "generate:prompts": "node scripts/generate-prompts.mjs",

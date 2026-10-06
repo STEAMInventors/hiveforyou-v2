@@ -4,13 +4,14 @@ import { fileURLToPath } from "node:url";
 
 import { describe, expect, it } from "vitest";
 
-const srcRoot = join(dirname(fileURLToPath(import.meta.url)));
+const srcRoot = join(dirname(fileURLToPath(import.meta.url)), "..");
 
 const forbidden = [
   /from\s+["']pdfjs-dist/,
   /from\s+["']@napi-rs\/canvas/,
   /from\s+["']@gutenye\/ocr-node/,
   /from\s+["']@hiveforyou\/intake-node/,
+  /from\s+["']@hiveforyou\/intake/,
 ];
 
 function sourceFiles(dir: string): string[] {
@@ -30,8 +31,8 @@ function sourceFiles(dir: string): string[] {
   return files;
 }
 
-describe("document page-model import boundary", () => {
-  it("does not import native PDF/OCR modules", () => {
+describe("core src import boundary", () => {
+  it("does not import native PDF/OCR/intake modules", () => {
     const offenders: string[] = [];
     for (const file of sourceFiles(srcRoot)) {
       const text = readFileSync(file, "utf8");
