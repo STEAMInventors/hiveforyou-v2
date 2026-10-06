@@ -30,7 +30,11 @@ Status: **Slice 4.5 complete.** **Next:** Slice 5 — minimal human decision / c
 
 8. **Slice 6:** Real L001 model study qualification (qualitative acceptance only).
 
+## Prompt A (document extraction / L001 study triage) — in progress
 
+- **Line model:** wide horizontal gaps are **segments on one visual line** (`line.text` joined with spaces; optional `segments[]` offsets in `canonicalText`). Fixes table headers and `Score 85` without extra newlines.
+- **Claim count (57 → 38 on `/5` extraction):** likely **model proposal granularity** after extraction/locator-catalog text changed, not provenance regression (locators stayed 100%). Use `study:l001 --replay` with a pre–Prompt 0 `--proposal-out` capture to compare quote resolution claim-by-claim.
+- **v4 triage (pending pre-P0 `--proposal-out`):** record `accepted.eventCount` and `accepted.claimTypes` from the baseline run; if the 38-claim run matches, track as separate v4 acceptance issue (not extraction).
 
 ## Slice 4.5 constraints
 
