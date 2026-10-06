@@ -1,3 +1,4 @@
+import type { DocumentPages } from "@hiveforyou/core/document/page-model";
 import type {
   DocumentIdentityType,
   ExtractionStatus,
@@ -42,6 +43,8 @@ export type DocumentExtractionResult = {
   errorCode: string | null;
   /** Full NestIEP-equivalent recovered-page artifact when extraction ran. */
   normalizedExtraction: NormalizedDocumentExtraction | null;
+  /** Word-level page model when native PDF extraction produced one. */
+  documentPages?: DocumentPages;
 };
 
 export type DocumentNormalizedExtractionRecord = {

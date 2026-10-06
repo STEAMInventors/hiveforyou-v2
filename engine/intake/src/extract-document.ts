@@ -1,3 +1,4 @@
+import type { DocumentPages } from "@hiveforyou/core/document/page-model";
 import type { NormalizedDocumentExtraction } from "@hiveforyou/shared/intake";
 
 import {
@@ -178,6 +179,7 @@ export async function extractDocument(
         (deps?.resolveOcrEngine ? await deps.resolveOcrEngine() : undefined);
 
   try {
+    let documentPages: DocumentPages | undefined;
     const normalized = await recover({
       sourceDocumentId: input.documentId,
       sourceHash: input.sourceHash,
@@ -185,6 +187,9 @@ export async function extractDocument(
       mimeType: input.mimeType,
       runId: input.runId,
       ocrEngine,
+      onDocumentPages: (pages) => {
+        documentPages = pages;
+      },
       ...(deps?.resolvePageRasterizer === undefined
         ? {}
         : { resolvePageRasterizer: deps.resolvePageRasterizer }),
@@ -195,13 +200,14 @@ export async function extractDocument(
       normalized.detectedKind === "plain-text"
         ? PLAIN_TEXT_METHOD
         : primaryExtractionMethod(normalized);
-    return assessExtraction({
+    const assessed = assessExtraction({
       documentId: input.documentId,
       sourceHash: input.sourceHash,
       extractionMethod,
       pages,
       normalizedExtraction: normalized,
     });
+    return documentPages ? { ...assessed, documentPages } : assessed;
   } catch (error) {
     logExtractionFailure({
       mimeType: input.mimeType,

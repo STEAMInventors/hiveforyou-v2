@@ -7,7 +7,8 @@
     ".": "./src/index.ts",
     "./server-extraction": "./src/server-extraction.ts",
     "./nestiep-rasterize-types": "./src/extraction/nestiep/rasterize-types.ts",
-    "./nestiep-ocr-engine": "./src/extraction/nestiep/ocrEngine.ts"
+    "./nestiep-ocr-engine": "./src/extraction/nestiep/ocrEngine.ts",
+    "./extract-native-words": "./src/extraction/extract-native-words.ts"
   },
   "scripts": {
     "typecheck": "node scripts/typecheck-baseline.mjs",

@@ -111,6 +111,7 @@ export async function recoverPdfPages(
         sha256: context.sourceHash,
       },
     );
+    context.onDocumentPages?.(documentPages);
     return await recoverPdfDocumentPages(loaded.document, loaded.ops, {
       ...context,
       documentPages,

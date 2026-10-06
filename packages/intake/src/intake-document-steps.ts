@@ -302,6 +302,18 @@ export async function runIntakeExtractStep(
     }
   }
 
+  if (extraction.documentPages && deps.documentPages) {
+    try {
+      await deps.documentPages.saveIfAbsent(
+        identity.userId,
+        extraction.sourceHash,
+        extraction.documentPages,
+      );
+    } catch {
+      // Document-pages cache is best-effort; extraction outcome is unchanged.
+    }
+  }
+
   if (extraction.pages.length > 0) {
     const createdAt = now();
     const pages: DocumentExtractionRecord[] = extraction.pages.map((page) => ({

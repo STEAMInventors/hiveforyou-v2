@@ -28,16 +28,23 @@ import type {
   IntakeSourceDocument,
 } from "./types";
 import type { DocumentNormalizedExtractionRepository } from "./repositories";
+import type { DocumentPages } from "@hiveforyou/core/document/page-model";
+
 import type { JevIdentityDecision } from "./jev-client";
 
 /** Cap parallel per-document extract/classify work to limit CPU and memory spikes. */
 const INTAKE_DOCUMENT_CONCURRENCY = 3;
+
+export type DocumentPagesPersistence = {
+  saveIfAbsent(userId: string, sha256: string, documentPages: DocumentPages): Promise<void>;
+};
 
 export type IntakeExecutionDeps = {
   runs: IntakeRunRepository;
   identities: DocumentIdentityRepository;
   extractions: DocumentExtractionRepository;
   normalizedExtractions?: DocumentNormalizedExtractionRepository;
+  documentPages?: DocumentPagesPersistence;
   loadDocuments: (input: {
     userId: string;
     caseId: string;

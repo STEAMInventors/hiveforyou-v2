@@ -10,6 +10,8 @@ import { compressPageRanges, unreadablePageNumbers } from "../page-recovery-summ
 import { buildRecoveredPage } from "./buildRecoveredPage";
 import { detectFileType, suppliedMimeAgrees } from "./detectFileType";
 import type { RecoveredPage, SupportedFileKind } from "./contracts";
+import type { DocumentPages } from "@hiveforyou/core/document/page-model";
+
 import type { RecoveryContext } from "./recovery-context";
 import type { OcrEngine } from "./ocrEngine";
 import type { QualityThresholds } from "./qualityGate";
@@ -27,6 +29,7 @@ export type RecoverDocumentInput = {
   readonly qualityThresholds?: QualityThresholds;
   readonly rasterizer?: PageRasterizer;
   readonly resolvePageRasterizer?: () => Promise<PageRasterizer>;
+  readonly onDocumentPages?: (pages: DocumentPages) => void;
 };
 
 type RecoverableKind = Extract<SupportedFileKind, "pdf" | "jpeg" | "png">;
@@ -139,6 +142,7 @@ export async function recoverNormalizedDocument(
     stepId,
     sourceDocumentId: input.sourceDocumentId,
     sourceHash: input.sourceHash,
+    ...(input.onDocumentPages === undefined ? {} : { onDocumentPages: input.onDocumentPages }),
     ...(input.ocrEngine === undefined ? {} : { ocrEngine: input.ocrEngine }),
     ...(input.qualityThresholds === undefined ? {} : { qualityThresholds: input.qualityThresholds }),
     ...(input.rasterizer === undefined ? {} : { rasterizer: input.rasterizer }),
