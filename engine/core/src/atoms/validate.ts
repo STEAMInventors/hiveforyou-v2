@@ -26,7 +26,61 @@ export type ValidatedAtoms = {
 
 export type ValidationMetrics = {
   dropsByReason: Record<ValidationDropReason, number>;
+  dropKeysByReason: Record<ValidationDropReason, string[]>;
 };
+
+/** Deterministic key for golden diff (documentId + content; map to sha256 in runners). */
+export function validationAtomKey(input: {
+  documentId: string;
+  tier: number;
+  attributeRaw: string | null;
+  valueNorm: string | null;
+  valueRaw: string | null;
+  quote: string;
+  pageNumber: number;
+  blockId: string;
+  cellId: string | null;
+}): string {
+  return [
+    input.documentId,
+    input.tier,
+    input.attributeRaw ?? "",
+    input.valueNorm ?? input.valueRaw ?? "",
+    input.pageNumber,
+    input.blockId,
+    input.cellId ?? "",
+    input.quote,
+  ].join("\u0000");
+}
+
+function atomKeyFromStatement(statement: Statement): string {
+  const ev = statement.evidence[0];
+  return validationAtomKey({
+    documentId: statement.documentId,
+    tier: statement.tier,
+    attributeRaw: statement.attributeRaw,
+    valueNorm: statement.valueNorm,
+    valueRaw: statement.valueRaw,
+    quote: ev?.quote ?? statement.valueRaw ?? "",
+    pageNumber: ev?.pageNumber ?? 0,
+    blockId: ev?.blockId ?? "",
+    cellId: ev?.cellId ?? null,
+  });
+}
+
+function emptyDropKeys(): Record<ValidationDropReason, string[]> {
+  return {
+    quote_empty: [],
+    quote_no_match: [],
+    quote_not_in_block: [],
+    page_missing: [],
+  };
+}
+
+function recordDrop(metrics: ValidationMetrics, reason: ValidationDropReason, key: string): void {
+  metrics.dropsByReason[reason] = (metrics.dropsByReason[reason] ?? 0) + 1;
+  metrics.dropKeysByReason[reason].push(key);
+}
 
 function normalizeWs(text: string): string {
   return normalizeQuoteForMatch(text);
@@ -217,8 +271,8 @@ function validateStatementList(
     const quote = statement.evidence[0]?.quote ?? statement.valueRaw ?? "";
     const { evidence, reason } = validateQuote(assembled, pages, quote);
     if (evidence.length === 0) {
-      const key = reason ?? "quote_no_match";
-      metrics.dropsByReason[key] = (metrics.dropsByReason[key] ?? 0) + 1;
+      const dropReason = reason ?? "quote_no_match";
+      recordDrop(metrics, dropReason, atomKeyFromStatement(statement));
       continue;
     }
     kept.push({ ...statement, evidence });
@@ -237,8 +291,23 @@ function validateEvidenceItems<T extends { evidence: EvidenceSpan[] }>(
     const quote = item.evidence[0]?.quote ?? "";
     const { evidence, reason } = validateQuote(assembled, pages, quote);
     if (evidence.length === 0) {
-      const key = reason ?? "quote_no_match";
-      metrics.dropsByReason[key] = (metrics.dropsByReason[key] ?? 0) + 1;
+      const dropReason = reason ?? "quote_no_match";
+      const quote = item.evidence[0]?.quote ?? "";
+      recordDrop(
+        metrics,
+        dropReason,
+        validationAtomKey({
+          documentId: assembled.documentId,
+          tier: -1,
+          attributeRaw: null,
+          valueNorm: null,
+          valueRaw: null,
+          quote,
+          pageNumber: item.evidence[0]?.pageNumber ?? 0,
+          blockId: item.evidence[0]?.blockId ?? "",
+          cellId: item.evidence[0]?.cellId ?? null,
+        }),
+      );
       continue;
     }
     kept.push({ ...item, evidence });
@@ -263,6 +332,7 @@ export function validateAtoms(input: {
       quote_not_in_block: 0,
       page_missing: 0,
     },
+    dropKeysByReason: emptyDropKeys(),
   };
 
   const profiles = input.profiles.map((profile) => ({
