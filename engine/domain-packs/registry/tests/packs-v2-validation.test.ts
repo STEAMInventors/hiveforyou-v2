@@ -150,13 +150,19 @@ describe("packs-v2 validation", () => {
     expect(r.ok).toBe(true);
   });
 
-  it("validateLayersDocument shape for committed layers.yaml", () => {
+  it("validateLayersDocument accepts committed layers.yaml with zero errors", () => {
     const doc = loadYamlFile("layers.yaml");
     const r = validateLayersDocument(doc, "layers.yaml");
+    expect(r.ok).toBe(true);
+  });
+
+  it("validateLayersDocument rejects numeric case_layer.anchor.value", () => {
+    const doc = loadYamlFile("layers.yaml") as Record<string, unknown>;
+    const caseLayer = { ...(doc.case_layer as Record<string, unknown>) };
+    caseLayer.anchor = { value: 14, source: "intent", status: "confirmed" };
+    const r = validateLayersDocument({ ...doc, case_layer: caseLayer }, "layers.yaml");
     expect(r.ok).toBe(false);
-    if (!r.ok) {
-      expect(r.errors.some((e) => e.path.includes("weights"))).toBe(true);
-    }
+    if (!r.ok) expectError(r.errors, "layers.yaml", "case_layer.anchor.value");
   });
 
   it("accepts requires string and structured when/overlay forms in iep required_parts", () => {

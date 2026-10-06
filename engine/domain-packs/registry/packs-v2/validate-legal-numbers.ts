@@ -15,10 +15,13 @@ function isLegalNumberPath(path: string): boolean {
   if (path === "version") {
     return true;
   }
-  return path.endsWith(".weight") || path === "weight";
+  if (path.endsWith(".weight") || path === "weight") {
+    return true;
+  }
+  return path.includes(".weights.");
 }
 
-/** S21: numbers only at root version and question weight paths. */
+/** S21: numbers only at version, question weight, and questions.weights re-rank values. */
 export function walkLegalNumbers(
   value: unknown,
   path: string,
@@ -27,7 +30,7 @@ export function walkLegalNumbers(
 ): void {
   if (typeof value === "number" && Number.isFinite(value)) {
     if (!isLegalNumberPath(path)) {
-      pushError(errors, file, path, "numbers are only allowed in version and weight");
+      pushError(errors, file, path, "numbers are only allowed in version, weight, and weights");
     }
     return;
   }
