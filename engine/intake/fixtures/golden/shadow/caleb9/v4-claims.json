@@ -1,0 +1,891 @@
+{
+  "studyRunId": "3a739f34-0556-4417-982f-4fedae79ab34",
+  "totalClaims": 65,
+  "claims": [
+    {
+      "id": "claim_001_date_of_birth",
+      "evidenceRefs": [
+        {
+          "id": "e_claim_001",
+          "sourceDocumentId": "b28484c7-29b1-43cf-a484-52f961cd5f23",
+          "page": 1,
+          "extractionId": "line:4",
+          "snippet": "Date of Birth: 2016-03-09"
+        }
+      ]
+    },
+    {
+      "id": "claim_002_attends_school",
+      "evidenceRefs": [
+        {
+          "id": "e_claim_002",
+          "sourceDocumentId": "b28484c7-29b1-43cf-a484-52f961cd5f23",
+          "page": 1,
+          "extractionId": "line:6",
+          "snippet": "School: Synthetic Elementary School"
+        }
+      ]
+    },
+    {
+      "id": "claim_003_enrolled_district",
+      "evidenceRefs": [
+        {
+          "id": "e_claim_003",
+          "sourceDocumentId": "b28484c7-29b1-43cf-a484-52f961cd5f23",
+          "page": 1,
+          "extractionId": "line:7",
+          "snippet": "District: Synthetic District"
+        }
+      ]
+    },
+    {
+      "id": "claim_004_grade_2023",
+      "evidenceRefs": [
+        {
+          "id": "e_claim_004",
+          "sourceDocumentId": "4914a2eb-fe7c-41d1-9988-e268927255e8",
+          "page": 1,
+          "extractionId": "line:5",
+          "snippet": "Grade: 2"
+        }
+      ]
+    },
+    {
+      "id": "claim_005_grade_2024",
+      "evidenceRefs": [
+        {
+          "id": "e_claim_005",
+          "sourceDocumentId": "0ef52e40-1613-4de7-8bed-a6d6ca4fd81e",
+          "page": 1,
+          "extractionId": "line:5",
+          "snippet": "Grade: 3"
+        }
+      ]
+    },
+    {
+      "id": "claim_006_grade_2026",
+      "evidenceRefs": [
+        {
+          "id": "e_claim_006",
+          "sourceDocumentId": "b28484c7-29b1-43cf-a484-52f961cd5f23",
+          "page": 1,
+          "extractionId": "line:5",
+          "snippet": "Grade: 5"
+        }
+      ]
+    },
+    {
+      "id": "claim_007_initial_eligibility_date",
+      "evidenceRefs": [
+        {
+          "id": "e_claim_007",
+          "sourceDocumentId": "d37f2730-ae42-4ae4-93e3-dfa8f11f5591",
+          "page": 1,
+          "extractionId": "line:9",
+          "snippet": "Determination Date: 2023-10-12"
+        }
+      ]
+    },
+    {
+      "id": "claim_008_initial_eligibility_status",
+      "evidenceRefs": [
+        {
+          "id": "e_claim_008",
+          "sourceDocumentId": "d37f2730-ae42-4ae4-93e3-dfa8f11f5591",
+          "page": 1,
+          "extractionId": "line:26",
+          "snippet": "[X] Eligible for special education"
+        }
+      ]
+    },
+    {
+      "id": "claim_009_initial_eligibility_category",
+      "evidenceRefs": [
+        {
+          "id": "e_claim_009",
+          "sourceDocumentId": "d37f2730-ae42-4ae4-93e3-dfa8f11f5591",
+          "page": 1,
+          "extractionId": "line:28",
+          "snippet": "Eligibility Category: Specific Learning Disability (SLD) - Reading"
+        }
+      ]
+    },
+    {
+      "id": "claim_010_initial_primary_need",
+      "evidenceRefs": [
+        {
+          "id": "e_claim_010",
+          "sourceDocumentId": "d37f2730-ae42-4ae4-93e3-dfa8f11f5591",
+          "page": 1,
+          "extractionId": "line:32",
+          "snippet": "category: Specific Learning Disability (SLD) - Reading. Primary educational need: Reading Fluency."
+        }
+      ]
+    },
+    {
+      "id": "claim_011_initial_sdi_requirement",
+      "evidenceRefs": [
+        {
+          "id": "e_claim_011",
+          "sourceDocumentId": "d37f2730-ae42-4ae4-93e3-dfa8f11f5591",
+          "page": 1,
+          "extractionId": "line:34",
+          "snippet": "The team determined that Caleb requires specially designed instruction targeting the documented reading fluency"
+        }
+      ]
+    },
+    {
+      "id": "claim_012_prior_iep_period",
+      "evidenceRefs": [
+        {
+          "id": "e_claim_012",
+          "sourceDocumentId": "4914a2eb-fe7c-41d1-9988-e268927255e8",
+          "page": 1,
+          "extractionId": "line:9",
+          "snippet": "IEP Period: 2023-10-24 through 2024-10-23"
+        }
+      ]
+    },
+    {
+      "id": "claim_013_prior_orf_baseline",
+      "evidenceRefs": [
+        {
+          "id": "e_claim_013",
+          "sourceDocumentId": "4914a2eb-fe7c-41d1-9988-e268927255e8",
+          "page": 1,
+          "extractionId": "line:19",
+          "snippet": "Present levels document an oral reading fluency baseline of 62 WCPM. Connected-text reading is slow and"
+        }
+      ]
+    },
+    {
+      "id": "claim_014_prior_goal_id",
+      "evidenceRefs": [
+        {
+          "id": "e_claim_014",
+          "sourceDocumentId": "4914a2eb-fe7c-41d1-9988-e268927255e8",
+          "page": 1,
+          "extractionId": "line:28",
+          "snippet": "Goal ID: GOAL_ORF_FLUENCY"
+        }
+      ]
+    },
+    {
+      "id": "claim_015_prior_orf_target",
+      "evidenceRefs": [
+        {
+          "id": "e_claim_015",
+          "sourceDocumentId": "4914a2eb-fe7c-41d1-9988-e268927255e8",
+          "page": 2,
+          "extractionId": "line:0",
+          "snippet": "Target: 95 WCPM"
+        }
+      ]
+    },
+    {
+      "id": "claim_016_prior_goal_mastery_criterion",
+      "evidenceRefs": [
+        {
+          "id": "e_claim_016",
+          "sourceDocumentId": "4914a2eb-fe7c-41d1-9988-e268927255e8",
+          "page": 2,
+          "extractionId": "line:1",
+          "snippet": "Mastery Criterion: across three consecutive probes"
+        }
+      ]
+    },
+    {
+      "id": "claim_017_prior_goal_measurement_method",
+      "evidenceRefs": [
+        {
+          "id": "e_claim_017",
+          "sourceDocumentId": "4914a2eb-fe7c-41d1-9988-e268927255e8",
+          "page": 2,
+          "extractionId": "line:4",
+          "snippet": "Progress will be measured using curriculum-based oral reading fluency probes."
+        }
+      ]
+    },
+    {
+      "id": "claim_018_prior_service_frequency",
+      "evidenceRefs": [
+        {
+          "id": "e_claim_018",
+          "sourceDocumentId": "4914a2eb-fe7c-41d1-9988-e268927255e8",
+          "page": 2,
+          "extractionId": "line:10",
+          "snippet": "Specialized reading instruction is provided 5 sessions per week for 45 minutes per session in the special"
+        }
+      ]
+    },
+    {
+      "id": "claim_019_prior_service_session_length",
+      "evidenceRefs": [
+        {
+          "id": "e_claim_019",
+          "sourceDocumentId": "4914a2eb-fe7c-41d1-9988-e268927255e8",
+          "page": 2,
+          "extractionId": "line:10",
+          "snippet": "Specialized reading instruction is provided 5 sessions per week for 45 minutes per session in the special"
+        }
+      ]
+    },
+    {
+      "id": "claim_020_prior_service_location",
+      "evidenceRefs": [
+        {
+          "id": "e_claim_020",
+          "sourceDocumentId": "4914a2eb-fe7c-41d1-9988-e268927255e8",
+          "page": 2,
+          "extractionId": "line:11",
+          "snippet": "education setting."
+        }
+      ]
+    },
+    {
+      "id": "claim_021_prior_extended_time",
+      "evidenceRefs": [
+        {
+          "id": "e_claim_021",
+          "sourceDocumentId": "4914a2eb-fe7c-41d1-9988-e268927255e8",
+          "page": 2,
+          "extractionId": "line:13",
+          "snippet": "• Extended time (1.5x) on classroom and district assessments."
+        }
+      ]
+    },
+    {
+      "id": "claim_022_prior_progress_reporting",
+      "evidenceRefs": [
+        {
+          "id": "e_claim_022",
+          "sourceDocumentId": "4914a2eb-fe7c-41d1-9988-e268927255e8",
+          "page": 2,
+          "extractionId": "line:16",
+          "snippet": "annually, concurrent with report periods."
+        }
+      ]
+    },
+    {
+      "id": "claim_023_progress_report_date",
+      "evidenceRefs": [
+        {
+          "id": "e_claim_023",
+          "sourceDocumentId": "0ef52e40-1613-4de7-8bed-a6d6ca4fd81e",
+          "page": 1,
+          "extractionId": "line:9",
+          "snippet": "Report Date: 2024-10-15"
+        }
+      ]
+    },
+    {
+      "id": "claim_024_orf_progress_result",
+      "evidenceRefs": [
+        {
+          "id": "e_claim_024",
+          "sourceDocumentId": "0ef52e40-1613-4de7-8bed-a6d6ca4fd81e",
+          "page": 1,
+          "extractionId": "line:22",
+          "snippet": "Oral reading fluency 91 WCPM 95 WCPM"
+        }
+      ]
+    },
+    {
+      "id": "claim_025_orf_target_met",
+      "evidenceRefs": [
+        {
+          "id": "e_claim_025",
+          "sourceDocumentId": "0ef52e40-1613-4de7-8bed-a6d6ca4fd81e",
+          "page": 1,
+          "extractionId": "line:24",
+          "snippet": "the annual target of 95 WCPM. The annual target has not yet been met. This report records current progress toward"
+        }
+      ]
+    },
+    {
+      "id": "claim_026_instruction_continued_2024",
+      "evidenceRefs": [
+        {
+          "id": "e_claim_026",
+          "sourceDocumentId": "0ef52e40-1613-4de7-8bed-a6d6ca4fd81e",
+          "page": 1,
+          "extractionId": "line:27",
+          "snippet": "Caleb Nguyen continues to receive specialized reading instruction under the current IEP. Oral reading rate has"
+        }
+      ]
+    },
+    {
+      "id": "claim_027_reevaluation_planning_date",
+      "evidenceRefs": [
+        {
+          "id": "e_claim_027",
+          "sourceDocumentId": "37bdd53b-bc1f-4571-855e-5606e98145cd",
+          "page": 1,
+          "extractionId": "line:3",
+          "snippet": "Planning Date: 2026-09-08"
+        }
+      ]
+    },
+    {
+      "id": "claim_028_reevaluation_planned",
+      "evidenceRefs": [
+        {
+          "id": "e_claim_028",
+          "sourceDocumentId": "37bdd53b-bc1f-4571-855e-5606e98145cd",
+          "page": 1,
+          "extractionId": "line:13",
+          "snippet": "Caleb currently receives special education services under an IEP. A reevaluation is being planned to review current"
+        }
+      ]
+    },
+    {
+      "id": "claim_029_planned_evaluation_areas",
+      "evidenceRefs": [
+        {
+          "id": "e_claim_029a",
+          "sourceDocumentId": "37bdd53b-bc1f-4571-855e-5606e98145cd",
+          "page": 1,
+          "extractionId": "line:25",
+          "snippet": "[X] Current reading achievement"
+        },
+        {
+          "id": "e_claim_029b",
+          "sourceDocumentId": "37bdd53b-bc1f-4571-855e-5606e98145cd",
+          "page": 1,
+          "extractionId": "line:26",
+          "snippet": "[X] Reading comprehension"
+        },
+        {
+          "id": "e_claim_029c",
+          "sourceDocumentId": "37bdd53b-bc1f-4571-855e-5606e98145cd",
+          "page": 1,
+          "extractionId": "line:27",
+          "snippet": "[X] Oral reading fluency"
+        },
+        {
+          "id": "e_claim_029d",
+          "sourceDocumentId": "37bdd53b-bc1f-4571-855e-5606e98145cd",
+          "page": 1,
+          "extractionId": "line:28",
+          "snippet": "[X] Cognitive / processing context"
+        },
+        {
+          "id": "e_claim_029e",
+          "sourceDocumentId": "37bdd53b-bc1f-4571-855e-5606e98145cd",
+          "page": 1,
+          "extractionId": "line:29",
+          "snippet": "[X] Speech-language review"
+        },
+        {
+          "id": "e_claim_029f",
+          "sourceDocumentId": "37bdd53b-bc1f-4571-855e-5606e98145cd",
+          "page": 1,
+          "extractionId": "line:30",
+          "snippet": "[X] Review of existing data"
+        }
+      ]
+    },
+    {
+      "id": "claim_030_information_to_be_gathered",
+      "evidenceRefs": [
+        {
+          "id": "e_claim_030a",
+          "sourceDocumentId": "37bdd53b-bc1f-4571-855e-5606e98145cd",
+          "page": 1,
+          "extractionId": "line:32",
+          "snippet": "[X] Review of existing educational records"
+        },
+        {
+          "id": "e_claim_030b",
+          "sourceDocumentId": "37bdd53b-bc1f-4571-855e-5606e98145cd",
+          "page": 1,
+          "extractionId": "line:33",
+          "snippet": "[X] Teacher input"
+        },
+        {
+          "id": "e_claim_030c",
+          "sourceDocumentId": "37bdd53b-bc1f-4571-855e-5606e98145cd",
+          "page": 1,
+          "extractionId": "line:34",
+          "snippet": "[X] Parent input"
+        },
+        {
+          "id": "e_claim_030d",
+          "sourceDocumentId": "37bdd53b-bc1f-4571-855e-5606e98145cd",
+          "page": 1,
+          "extractionId": "line:35",
+          "snippet": "[X] Current academic assessment of reading"
+        },
+        {
+          "id": "e_claim_030e",
+          "sourceDocumentId": "37bdd53b-bc1f-4571-855e-5606e98145cd",
+          "page": 1,
+          "extractionId": "line:36",
+          "snippet": "[X] Psychoeducational information as needed for reevaluation"
+        }
+      ]
+    },
+    {
+      "id": "claim_031_psychoeducational_evaluation_date",
+      "evidenceRefs": [
+        {
+          "id": "e_claim_031",
+          "sourceDocumentId": "97d24116-ad8b-4b2c-b1c0-f51da4abb974",
+          "page": 1,
+          "extractionId": "line:8",
+          "snippet": "Evaluation Date: 2026-09-22"
+        }
+      ]
+    },
+    {
+      "id": "claim_032_cognitive_ability_range",
+      "evidenceRefs": [
+        {
+          "id": "e_claim_032",
+          "sourceDocumentId": "97d24116-ad8b-4b2c-b1c0-f51da4abb974",
+          "page": 1,
+          "extractionId": "line:22",
+          "snippet": "Cognitive ability is broadly within the average range. Performance across verbal reasoning, visual-spatial"
+        }
+      ]
+    },
+    {
+      "id": "claim_033_cognitive_tasks_age_expectations",
+      "evidenceRefs": [
+        {
+          "id": "e_claim_033a",
+          "sourceDocumentId": "97d24116-ad8b-4b2c-b1c0-f51da4abb974",
+          "page": 1,
+          "extractionId": "line:22",
+          "snippet": "Cognitive ability is broadly within the average range. Performance across verbal reasoning, visual-spatial"
+        },
+        {
+          "id": "e_claim_033b",
+          "sourceDocumentId": "97d24116-ad8b-4b2c-b1c0-f51da4abb974",
+          "page": 1,
+          "extractionId": "line:23",
+          "snippet": "reasoning, and working-memory tasks was consistent with age expectations. Processing speed observed during"
+        }
+      ]
+    },
+    {
+      "id": "claim_034_global_cognitive_limitation",
+      "evidenceRefs": [
+        {
+          "id": "e_claim_034",
+          "sourceDocumentId": "97d24116-ad8b-4b2c-b1c0-f51da4abb974",
+          "page": 1,
+          "extractionId": "line:26",
+          "snippet": "No global cognitive limitation is identified as the primary explanation for the documented reading concern."
+        }
+      ]
+    },
+    {
+      "id": "claim_035_academic_assessment_recommendation",
+      "evidenceRefs": [
+        {
+          "id": "e_claim_035",
+          "sourceDocumentId": "97d24116-ad8b-4b2c-b1c0-f51da4abb974",
+          "page": 2,
+          "extractionId": "line:7",
+          "snippet": "Complete current academic achievement assessment, including reading comprehension and fluency, before the"
+        }
+      ]
+    },
+    {
+      "id": "claim_036_academic_evaluation_date",
+      "evidenceRefs": [
+        {
+          "id": "e_claim_036",
+          "sourceDocumentId": "1dcca507-27bd-4623-a984-c3b64a5cb5c9",
+          "page": 1,
+          "extractionId": "line:12",
+          "snippet": "Evaluation Date: 2026-09-29"
+        }
+      ]
+    },
+    {
+      "id": "claim_037_academic_orf_result",
+      "evidenceRefs": [
+        {
+          "id": "e_claim_037",
+          "sourceDocumentId": "1dcca507-27bd-4623-a984-c3b64a5cb5c9",
+          "page": 1,
+          "extractionId": "line:19",
+          "snippet": "Oral Reading Fluency 104 WCPM"
+        }
+      ]
+    },
+    {
+      "id": "claim_038_reading_accuracy_result",
+      "evidenceRefs": [
+        {
+          "id": "e_claim_038",
+          "sourceDocumentId": "1dcca507-27bd-4623-a984-c3b64a5cb5c9",
+          "page": 1,
+          "extractionId": "line:20",
+          "snippet": "Reading accuracy 97%"
+        }
+      ]
+    },
+    {
+      "id": "claim_039_reading_comprehension_standard_score",
+      "evidenceRefs": [
+        {
+          "id": "e_claim_039",
+          "sourceDocumentId": "1dcca507-27bd-4623-a984-c3b64a5cb5c9",
+          "page": 1,
+          "extractionId": "line:21",
+          "snippet": "Reading comprehension standard score of 78"
+        }
+      ]
+    },
+    {
+      "id": "claim_040_comprehension_relative_to_expectations",
+      "evidenceRefs": [
+        {
+          "id": "e_claim_040",
+          "sourceDocumentId": "1dcca507-27bd-4623-a984-c3b64a5cb5c9",
+          "page": 1,
+          "extractionId": "line:24",
+          "snippet": "are stronger than earlier instructional records. The reading comprehension standard score of 78 is below age-based"
+        }
+      ]
+    },
+    {
+      "id": "claim_041_comprehension_difficulty",
+      "evidenceRefs": [
+        {
+          "id": "e_claim_041",
+          "sourceDocumentId": "1dcca507-27bd-4623-a984-c3b64a5cb5c9",
+          "page": 1,
+          "extractionId": "line:26",
+          "snippet": "Caleb Nguyen reads connected text with improved rate and accuracy but continues to have difficulty constructing"
+        }
+      ]
+    },
+    {
+      "id": "claim_042_academic_recommendations",
+      "evidenceRefs": [
+        {
+          "id": "e_claim_042a",
+          "sourceDocumentId": "1dcca507-27bd-4623-a984-c3b64a5cb5c9",
+          "page": 2,
+          "extractionId": "line:3",
+          "snippet": "• explicit instruction in constructing meaning from connected text"
+        },
+        {
+          "id": "e_claim_042b",
+          "sourceDocumentId": "1dcca507-27bd-4623-a984-c3b64a5cb5c9",
+          "page": 2,
+          "extractionId": "line:4",
+          "snippet": "• guided practice with literal and inferential questions"
+        },
+        {
+          "id": "e_claim_042c",
+          "sourceDocumentId": "1dcca507-27bd-4623-a984-c3b64a5cb5c9",
+          "page": 2,
+          "extractionId": "line:5",
+          "snippet": "• continued progress monitoring of reading comprehension"
+        }
+      ]
+    },
+    {
+      "id": "claim_043_speech_language_review_date",
+      "evidenceRefs": [
+        {
+          "id": "e_claim_043",
+          "sourceDocumentId": "0d10833b-aa10-4fed-bb1e-8676ef943c8a",
+          "page": 1,
+          "extractionId": "line:8",
+          "snippet": "Review Date: 2026-10-06"
+        }
+      ]
+    },
+    {
+      "id": "claim_044_speech_intelligibility",
+      "evidenceRefs": [
+        {
+          "id": "e_claim_044",
+          "sourceDocumentId": "0d10833b-aa10-4fed-bb1e-8676ef943c8a",
+          "page": 1,
+          "extractionId": "line:15",
+          "snippet": "Caleb participated in conversational and structured language tasks during the review. Speech intelligibility is"
+        },
+        {
+          "id": "e_claim_044b",
+          "sourceDocumentId": "0d10833b-aa10-4fed-bb1e-8676ef943c8a",
+          "page": 1,
+          "extractionId": "line:16",
+          "snippet": "adequate for classroom participation. Receptive and expressive language observed during the review are broadly"
+        }
+      ]
+    },
+    {
+      "id": "claim_045_classroom_language_function",
+      "evidenceRefs": [
+        {
+          "id": "e_claim_045",
+          "sourceDocumentId": "0d10833b-aa10-4fed-bb1e-8676ef943c8a",
+          "page": 1,
+          "extractionId": "line:17",
+          "snippet": "functional for classroom communication. No speech-language impairment is diagnosed in this report."
+        }
+      ]
+    },
+    {
+      "id": "claim_046_separate_speech_language_need",
+      "evidenceRefs": [
+        {
+          "id": "e_claim_046",
+          "sourceDocumentId": "0d10833b-aa10-4fed-bb1e-8676ef943c8a",
+          "page": 1,
+          "extractionId": "line:20",
+          "snippet": "this review are broadly functional for classroom communication. No separate speech-language educational need is"
+        }
+      ]
+    },
+    {
+      "id": "claim_047_speech_language_service_recommendation",
+      "evidenceRefs": [
+        {
+          "id": "e_claim_047",
+          "sourceDocumentId": "0d10833b-aa10-4fed-bb1e-8676ef943c8a",
+          "page": 1,
+          "extractionId": "line:27",
+          "snippet": "No speech-language service is recommended. Continue to address the documented reading concern through the"
+        }
+      ]
+    },
+    {
+      "id": "claim_048_reevaluation_eligibility_date",
+      "evidenceRefs": [
+        {
+          "id": "e_claim_048",
+          "sourceDocumentId": "434a8ce4-5dc0-4d7a-8881-46f3fbce57e0",
+          "page": 1,
+          "extractionId": "line:9",
+          "snippet": "Determination Date: 2026-10-14"
+        }
+      ]
+    },
+    {
+      "id": "claim_049_continued_eligibility_status",
+      "evidenceRefs": [
+        {
+          "id": "e_claim_049",
+          "sourceDocumentId": "434a8ce4-5dc0-4d7a-8881-46f3fbce57e0",
+          "page": 1,
+          "extractionId": "line:28",
+          "snippet": "[X] Student continues to meet criteria for special education"
+        }
+      ]
+    },
+    {
+      "id": "claim_050_eligibility_category_unchanged",
+      "evidenceRefs": [
+        {
+          "id": "e_claim_050",
+          "sourceDocumentId": "434a8ce4-5dc0-4d7a-8881-46f3fbce57e0",
+          "page": 1,
+          "extractionId": "line:30",
+          "snippet": "Eligibility Category: Specific Learning Disability (SLD) - Reading"
+        },
+        {
+          "id": "e_claim_050b",
+          "sourceDocumentId": "434a8ce4-5dc0-4d7a-8881-46f3fbce57e0",
+          "page": 1,
+          "extractionId": "line:33",
+          "snippet": "Category Change: None. Eligibility category is unchanged."
+        }
+      ]
+    },
+    {
+      "id": "claim_051_current_primary_need",
+      "evidenceRefs": [
+        {
+          "id": "e_claim_051",
+          "sourceDocumentId": "434a8ce4-5dc0-4d7a-8881-46f3fbce57e0",
+          "page": 1,
+          "extractionId": "line:25",
+          "snippet": "The educational concern that remains most evident is reading comprehension. Caleb continues to have difficulty"
+        }
+      ]
+    },
+    {
+      "id": "claim_052_current_sdi_requirement",
+      "evidenceRefs": [
+        {
+          "id": "e_claim_052",
+          "sourceDocumentId": "434a8ce4-5dc0-4d7a-8881-46f3fbce57e0",
+          "page": 2,
+          "extractionId": "line:1",
+          "snippet": "The team determined that Caleb Nguyen continues to require specially designed instruction targeting the"
+        },
+        {
+          "id": "e_claim_052b",
+          "sourceDocumentId": "434a8ce4-5dc0-4d7a-8881-46f3fbce57e0",
+          "page": 2,
+          "extractionId": "line:2",
+          "snippet": "documented reading comprehension need."
+        }
+      ]
+    },
+    {
+      "id": "claim_053_current_iep_period",
+      "evidenceRefs": [
+        {
+          "id": "e_claim_053",
+          "sourceDocumentId": "b28484c7-29b1-43cf-a484-52f961cd5f23",
+          "page": 1,
+          "extractionId": "line:9",
+          "snippet": "IEP Period: 2026-10-21 through 2027-10-20"
+        }
+      ]
+    },
+    {
+      "id": "claim_054_comprehension_baseline",
+      "evidenceRefs": [
+        {
+          "id": "e_claim_054",
+          "sourceDocumentId": "b28484c7-29b1-43cf-a484-52f961cd5f23",
+          "page": 1,
+          "extractionId": "line:18",
+          "snippet": "On grade-level reading passages, Caleb answers comprehension questions with 60% accuracy. This classroom"
+        }
+      ]
+    },
+    {
+      "id": "claim_055_current_goal_id",
+      "evidenceRefs": [
+        {
+          "id": "e_claim_055",
+          "sourceDocumentId": "b28484c7-29b1-43cf-a484-52f961cd5f23",
+          "page": 1,
+          "extractionId": "line:30",
+          "snippet": "Goal ID: GOAL_READING_COMPREHENSION"
+        }
+      ]
+    },
+    {
+      "id": "claim_056_comprehension_goal_target",
+      "evidenceRefs": [
+        {
+          "id": "e_claim_056",
+          "sourceDocumentId": "b28484c7-29b1-43cf-a484-52f961cd5f23",
+          "page": 2,
+          "extractionId": "line:1",
+          "snippet": "Target: 80% accuracy"
+        }
+      ]
+    },
+    {
+      "id": "claim_057_comprehension_mastery_criterion",
+      "evidenceRefs": [
+        {
+          "id": "e_claim_057",
+          "sourceDocumentId": "b28484c7-29b1-43cf-a484-52f961cd5f23",
+          "page": 2,
+          "extractionId": "line:2",
+          "snippet": "Mastery Criterion: on three consecutive weekly probes"
+        }
+      ]
+    },
+    {
+      "id": "claim_058_comprehension_measurement_method",
+      "evidenceRefs": [
+        {
+          "id": "e_claim_058",
+          "sourceDocumentId": "b28484c7-29b1-43cf-a484-52f961cd5f23",
+          "page": 2,
+          "extractionId": "line:5",
+          "snippet": "Progress will be measured using grade-level passage comprehension probes. This IEP does not include an"
+        }
+      ]
+    },
+    {
+      "id": "claim_059_orf_goal_in_current_iep",
+      "evidenceRefs": [
+        {
+          "id": "e_claim_059",
+          "sourceDocumentId": "b28484c7-29b1-43cf-a484-52f961cd5f23",
+          "page": 2,
+          "extractionId": "line:6",
+          "snippet": "oral-reading-fluency annual goal."
+        }
+      ]
+    },
+    {
+      "id": "claim_060_current_service_frequency",
+      "evidenceRefs": [
+        {
+          "id": "e_claim_060",
+          "sourceDocumentId": "b28484c7-29b1-43cf-a484-52f961cd5f23",
+          "page": 2,
+          "extractionId": "line:12",
+          "snippet": "Specialized reading instruction continues five times per week for 45 minutes per session in the special education"
+        }
+      ]
+    },
+    {
+      "id": "claim_061_current_service_session_length",
+      "evidenceRefs": [
+        {
+          "id": "e_claim_061",
+          "sourceDocumentId": "b28484c7-29b1-43cf-a484-52f961cd5f23",
+          "page": 2,
+          "extractionId": "line:12",
+          "snippet": "Specialized reading instruction continues five times per week for 45 minutes per session in the special education"
+        }
+      ]
+    },
+    {
+      "id": "claim_062_current_service_location",
+      "evidenceRefs": [
+        {
+          "id": "e_claim_062",
+          "sourceDocumentId": "b28484c7-29b1-43cf-a484-52f961cd5f23",
+          "page": 2,
+          "extractionId": "line:13",
+          "snippet": "setting."
+        }
+      ]
+    },
+    {
+      "id": "claim_063_current_extended_time",
+      "evidenceRefs": [
+        {
+          "id": "e_claim_063",
+          "sourceDocumentId": "b28484c7-29b1-43cf-a484-52f961cd5f23",
+          "page": 2,
+          "extractionId": "line:15",
+          "snippet": "• Extended time (1.5x) on classroom and district assessments."
+        }
+      ]
+    },
+    {
+      "id": "claim_064_text_to_speech_accommodation",
+      "evidenceRefs": [
+        {
+          "id": "e_claim_064",
+          "sourceDocumentId": "b28484c7-29b1-43cf-a484-52f961cd5f23",
+          "page": 2,
+          "extractionId": "line:16",
+          "snippet": "• Text-to-speech for lengthy content-area passages."
+        }
+      ]
+    },
+    {
+      "id": "claim_065_current_progress_reporting",
+      "evidenceRefs": [
+        {
+          "id": "e_claim_065",
+          "sourceDocumentId": "b28484c7-29b1-43cf-a484-52f961cd5f23",
+          "page": 2,
+          "extractionId": "line:21",
+          "snippet": "reported quarterly, concurrent with report periods."
+        }
+      ]
+    }
+  ]
+}
