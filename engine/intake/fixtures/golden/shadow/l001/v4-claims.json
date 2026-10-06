@@ -1,0 +1,478 @@
+{
+  "studyRunId": "l001-replay-baseline",
+  "totalClaims": 37,
+  "claims": [
+    {
+      "id": "claim-dob",
+      "evidenceRefs": [
+        {
+          "id": "ev-dob",
+          "sourceDocumentId": "l001-src-8",
+          "page": 1,
+          "extractionId": "line:4",
+          "snippet": "Date of Birth: 2017-04-18"
+        }
+      ]
+    },
+    {
+      "id": "claim-grade",
+      "evidenceRefs": [
+        {
+          "id": "ev-grade",
+          "sourceDocumentId": "l001-src-8",
+          "page": 1,
+          "extractionId": "line:5",
+          "snippet": "Grade: 2"
+        }
+      ]
+    },
+    {
+      "id": "claim-school",
+      "evidenceRefs": [
+        {
+          "id": "ev-school-rel",
+          "sourceDocumentId": "l001-src-8",
+          "page": 1,
+          "extractionId": "line:6",
+          "snippet": "School: Synthetic Elementary School"
+        }
+      ]
+    },
+    {
+      "id": "claim-district",
+      "evidenceRefs": [
+        {
+          "id": "ev-district-rel",
+          "sourceDocumentId": "l001-src-8",
+          "page": 1,
+          "extractionId": "line:7",
+          "snippet": "District: Synthetic District"
+        }
+      ]
+    },
+    {
+      "id": "claim-referral-date",
+      "evidenceRefs": [
+        {
+          "id": "ev-referral-date",
+          "sourceDocumentId": "l001-src-1",
+          "page": 1,
+          "extractionId": "line:9",
+          "snippet": "Referral Date: 2024-08-20"
+        }
+      ]
+    },
+    {
+      "id": "claim-referral-source",
+      "evidenceRefs": [
+        {
+          "id": "ev-referral-source",
+          "sourceDocumentId": "l001-src-1",
+          "page": 1,
+          "extractionId": "line:10",
+          "snippet": "Referred By: Teacher"
+        }
+      ]
+    },
+    {
+      "id": "claim-referral-concern",
+      "evidenceRefs": [
+        {
+          "id": "ev-referral-concern",
+          "sourceDocumentId": "l001-src-1",
+          "page": 1,
+          "extractionId": "line:15",
+          "snippet": "Classroom performance and teacher observation indicate persistent difficulty reading connected grade-level text"
+        }
+      ]
+    },
+    {
+      "id": "claim-independent-access-impact",
+      "evidenceRefs": [
+        {
+          "id": "ev-access-impact",
+          "sourceDocumentId": "l001-src-1",
+          "page": 1,
+          "extractionId": "line:17",
+          "snippet": "independently."
+        },
+        {
+          "id": "ev-access-impact-context",
+          "sourceDocumentId": "l001-src-1",
+          "page": 1,
+          "extractionId": "line:16",
+          "snippet": "accurately and fluently. The concern is affecting Maya's ability to access grade-level reading activities"
+        }
+      ]
+    },
+    {
+      "id": "claim-evaluation-plan-date",
+      "evidenceRefs": [
+        {
+          "id": "ev-plan-date",
+          "sourceDocumentId": "l001-src-2",
+          "page": 1,
+          "extractionId": "line:3",
+          "snippet": "Planning Date: 2024-08-28"
+        }
+      ]
+    },
+    {
+      "id": "claim-evaluation-areas",
+      "evidenceRefs": [
+        {
+          "id": "ev-area-reading",
+          "sourceDocumentId": "l001-src-2",
+          "page": 1,
+          "extractionId": "line:23",
+          "snippet": "[X] Academic achievement / reading"
+        },
+        {
+          "id": "ev-area-fluency",
+          "sourceDocumentId": "l001-src-2",
+          "page": 1,
+          "extractionId": "line:24",
+          "snippet": "[X] Reading fluency"
+        },
+        {
+          "id": "ev-area-performance",
+          "sourceDocumentId": "l001-src-2",
+          "page": 1,
+          "extractionId": "line:25",
+          "snippet": "[X] Review of educational performance"
+        }
+      ]
+    },
+    {
+      "id": "claim-parent-consent",
+      "evidenceRefs": [
+        {
+          "id": "ev-consent",
+          "sourceDocumentId": "l001-src-3",
+          "page": 1,
+          "extractionId": "line:19",
+          "snippet": "[X] I consent to the proposed initial evaluation."
+        },
+        {
+          "id": "ev-consent-date",
+          "sourceDocumentId": "l001-src-3",
+          "page": 1,
+          "extractionId": "line:23",
+          "snippet": "Date: 2024-09-04"
+        }
+      ]
+    },
+    {
+      "id": "claim-cognitive-functioning",
+      "evidenceRefs": [
+        {
+          "id": "ev-cognitive",
+          "sourceDocumentId": "l001-src-4",
+          "page": 2,
+          "extractionId": "line:2",
+          "snippet": "the expected range for age. No global cognitive limitation is identified as the primary explanation for the"
+        }
+      ]
+    },
+    {
+      "id": "claim-oral-reading-fluency",
+      "evidenceRefs": [
+        {
+          "id": "ev-fluency-42",
+          "sourceDocumentId": "l001-src-5",
+          "page": 1,
+          "extractionId": "line:18",
+          "snippet": "Oral Reading Fluency 42 WCPM"
+        }
+      ]
+    },
+    {
+      "id": "claim-reading-accuracy",
+      "evidenceRefs": [
+        {
+          "id": "ev-accuracy-86",
+          "sourceDocumentId": "l001-src-5",
+          "page": 1,
+          "extractionId": "line:19",
+          "snippet": "Oral Reading Accuracy 86%"
+        }
+      ]
+    },
+    {
+      "id": "claim-reading-comprehension",
+      "evidenceRefs": [
+        {
+          "id": "ev-comprehension",
+          "sourceDocumentId": "l001-src-5",
+          "page": 1,
+          "extractionId": "line:20",
+          "snippet": "Reading Comprehension Below expected classroom level"
+        }
+      ]
+    },
+    {
+      "id": "claim-reading-observation",
+      "evidenceRefs": [
+        {
+          "id": "ev-reading-observation",
+          "sourceDocumentId": "l001-src-5",
+          "page": 1,
+          "extractionId": "line:22",
+          "snippet": "Connected-text reading is slow and effortful. Frequent pauses were observed. Isolated word reading is stronger than"
+        }
+      ]
+    },
+    {
+      "id": "claim-speech-intelligibility",
+      "evidenceRefs": [
+        {
+          "id": "ev-speech-intelligibility",
+          "sourceDocumentId": "l001-src-6",
+          "page": 1,
+          "extractionId": "line:16",
+          "snippet": "adequate for classroom participation. Receptive and expressive language observed during the evaluation are"
+        }
+      ]
+    },
+    {
+      "id": "claim-speech-language-need",
+      "evidenceRefs": [
+        {
+          "id": "ev-no-speech-need",
+          "sourceDocumentId": "l001-src-6",
+          "page": 1,
+          "extractionId": "line:20",
+          "snippet": "the evaluation are broadly functional for classroom communication. No separate speech-language educational need"
+        }
+      ]
+    },
+    {
+      "id": "claim-speech-service-recommendation",
+      "evidenceRefs": [
+        {
+          "id": "ev-no-speech-service",
+          "sourceDocumentId": "l001-src-6",
+          "page": 1,
+          "extractionId": "line:25",
+          "snippet": "speech-language service is recommended."
+        }
+      ]
+    },
+    {
+      "id": "claim-eligibility-date",
+      "evidenceRefs": [
+        {
+          "id": "ev-eligibility-date",
+          "sourceDocumentId": "l001-src-7",
+          "page": 1,
+          "extractionId": "line:9",
+          "snippet": "Determination Date: 2024-11-01"
+        }
+      ]
+    },
+    {
+      "id": "claim-eligible",
+      "evidenceRefs": [
+        {
+          "id": "ev-eligible",
+          "sourceDocumentId": "l001-src-7",
+          "page": 1,
+          "extractionId": "line:26",
+          "snippet": "[X] Eligible for special education"
+        }
+      ]
+    },
+    {
+      "id": "claim-eligibility-category",
+      "evidenceRefs": [
+        {
+          "id": "ev-eligibility-category",
+          "sourceDocumentId": "l001-src-7",
+          "page": 1,
+          "extractionId": "line:28",
+          "snippet": "Eligibility Category: Specific Learning Disability (SLD) - Reading"
+        }
+      ]
+    },
+    {
+      "id": "claim-primary-need",
+      "evidenceRefs": [
+        {
+          "id": "ev-primary-need",
+          "sourceDocumentId": "l001-src-7",
+          "page": 1,
+          "extractionId": "line:32",
+          "snippet": "category: Specific Learning Disability (SLD) - Reading. Primary educational need: Reading Fluency."
+        }
+      ]
+    },
+    {
+      "id": "claim-sdi-required",
+      "evidenceRefs": [
+        {
+          "id": "ev-sdi-required",
+          "sourceDocumentId": "l001-src-7",
+          "page": 1,
+          "extractionId": "line:34",
+          "snippet": "The team determined that Maya requires specially designed instruction targeting the documented reading fluency"
+        }
+      ]
+    },
+    {
+      "id": "claim-iep-period",
+      "evidenceRefs": [
+        {
+          "id": "ev-iep-period",
+          "sourceDocumentId": "l001-src-8",
+          "page": 1,
+          "extractionId": "line:9",
+          "snippet": "IEP Period: 2024-11-12 through 2025-11-11"
+        }
+      ]
+    },
+    {
+      "id": "claim-goal-id",
+      "evidenceRefs": [
+        {
+          "id": "ev-goal-id",
+          "sourceDocumentId": "l001-src-8",
+          "page": 1,
+          "extractionId": "line:29",
+          "snippet": "Goal ID: GOAL_READING_FLUENCY"
+        }
+      ]
+    },
+    {
+      "id": "claim-goal-baseline",
+      "evidenceRefs": [
+        {
+          "id": "ev-goal-baseline",
+          "sourceDocumentId": "l001-src-8",
+          "page": 2,
+          "extractionId": "line:0",
+          "snippet": "Baseline: 42 WCPM"
+        }
+      ]
+    },
+    {
+      "id": "claim-goal-target",
+      "evidenceRefs": [
+        {
+          "id": "ev-goal-target",
+          "sourceDocumentId": "l001-src-8",
+          "page": 2,
+          "extractionId": "line:1",
+          "snippet": "Target: 75 WCPM"
+        }
+      ]
+    },
+    {
+      "id": "claim-goal-accuracy",
+      "evidenceRefs": [
+        {
+          "id": "ev-goal-accuracy",
+          "sourceDocumentId": "l001-src-8",
+          "page": 2,
+          "extractionId": "line:2",
+          "snippet": "Accuracy Criterion: at least 95% accuracy"
+        }
+      ]
+    },
+    {
+      "id": "claim-goal-mastery",
+      "evidenceRefs": [
+        {
+          "id": "ev-goal-mastery",
+          "sourceDocumentId": "l001-src-8",
+          "page": 2,
+          "extractionId": "line:3",
+          "snippet": "Mastery Criterion: across three consecutive probes"
+        }
+      ]
+    },
+    {
+      "id": "claim-progress-measurement",
+      "evidenceRefs": [
+        {
+          "id": "ev-progress-method",
+          "sourceDocumentId": "l001-src-8",
+          "page": 2,
+          "extractionId": "line:6",
+          "snippet": "Progress will be measured using curriculum-based oral reading fluency probes."
+        }
+      ]
+    },
+    {
+      "id": "claim-service-frequency",
+      "evidenceRefs": [
+        {
+          "id": "ev-service-frequency",
+          "sourceDocumentId": "l001-src-8",
+          "page": 2,
+          "extractionId": "line:10",
+          "snippet": "Weekly 150 minutes 2024-11-12"
+        }
+      ]
+    },
+    {
+      "id": "claim-service-minutes",
+      "evidenceRefs": [
+        {
+          "id": "ev-service-minutes",
+          "sourceDocumentId": "l001-src-8",
+          "page": 2,
+          "extractionId": "line:12",
+          "snippet": "Specialized reading instruction is provided 150 minutes weekly in the special education setting."
+        }
+      ]
+    },
+    {
+      "id": "claim-service-location",
+      "evidenceRefs": [
+        {
+          "id": "ev-service-location",
+          "sourceDocumentId": "l001-src-8",
+          "page": 2,
+          "extractionId": "line:12",
+          "snippet": "Specialized reading instruction is provided 150 minutes weekly in the special education setting."
+        }
+      ]
+    },
+    {
+      "id": "claim-accommodation-time",
+      "evidenceRefs": [
+        {
+          "id": "ev-accommodation-time",
+          "sourceDocumentId": "l001-src-8",
+          "page": 2,
+          "extractionId": "line:14",
+          "snippet": "• Extended time for classroom reading assessments."
+        }
+      ]
+    },
+    {
+      "id": "claim-accommodation-directions",
+      "evidenceRefs": [
+        {
+          "id": "ev-accommodation-directions",
+          "sourceDocumentId": "l001-src-8",
+          "page": 2,
+          "extractionId": "line:15",
+          "snippet": "• Directions read aloud when reading ability is not being assessed."
+        }
+      ]
+    },
+    {
+      "id": "claim-progress-reporting",
+      "evidenceRefs": [
+        {
+          "id": "ev-progress-reporting",
+          "sourceDocumentId": "l001-src-8",
+          "page": 2,
+          "extractionId": "line:17",
+          "snippet": "Progress toward the annual goal will be measured using oral-reading-fluency probes and reported quarterly,"
+        }
+      ]
+    }
+  ]
+}
