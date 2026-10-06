@@ -60,7 +60,7 @@ export const ASSEMBLY_CONFIG = {
   furnitureTopBandPt: 60,
   furnitureBottomBandPt: 80,
   furnitureMinPages: 3,
-  tableMinHeaderSegments: 3,
+  tableMinHeaderSegments: 2,
   tableRowContinuationGapPt: 8,
   headingFontSizeRatio: 1.15,
   smallItalicMaxFontSize: 10,
@@ -101,25 +101,21 @@ export function assembleDocument(pages: DocumentPages): AssembledDocument {
 
   for (const page of pages.pages) {
     const lines = builtByPage.get(page.pageNumber) ?? [];
-    const headerLine = lines.reduce<BuiltLine | null>((best, line) => {
-      if (lineHasMoney(line)) {
-        return best;
-      }
-      if (line.segments.length < ASSEMBLY_CONFIG.tableMinHeaderSegments) {
-        return best;
-      }
-      if (!best || line.segments.length > best.segments.length) {
-        return line;
-      }
-      return best;
-    }, null);
-    if (headerLine) {
-      for (const wi of headerLine.wordIndices) {
-        consumedWords.add(`${page.pageNumber}:${wi}`);
-      }
-    }
     const tablesOnPage = detectTablesOnPage(page, lines, pages.documentId);
     for (const table of tablesOnPage) {
+      const headerLine = lines.find(
+        (line) =>
+          isTableHeaderCandidate(line) &&
+          line.segments.length === table.headerCols.length &&
+          line.segments.every(
+            (seg, col) => Math.abs(seg.bbox[0] - table.headerCols[col]!.xLeft) < 2,
+          ),
+      );
+      if (headerLine) {
+        for (const wi of headerLine.wordIndices) {
+          consumedWords.add(`${page.pageNumber}:${wi}`);
+        }
+      }
       for (const row of table.rows) {
         for (const cell of row.cells) {
           for (const wi of cell.wordIndices) {
@@ -134,8 +130,14 @@ export function assembleDocument(pages: DocumentPages): AssembledDocument {
   for (const table of tableDrafts) {
     seq += 1;
     const tableBlockId = `${pages.documentId}:p${table.pageNumber}:b${seq}`;
-    const headerLine = (builtByPage.get(table.pageNumber) ?? []).find((line) =>
-      line.segments.length >= ASSEMBLY_CONFIG.tableMinHeaderSegments,
+    const pageLines = builtByPage.get(table.pageNumber) ?? [];
+    const headerLine = pageLines.find(
+      (line) =>
+        isTableHeaderCandidate(line) &&
+        line.segments.length === table.headerCols.length &&
+        line.segments.every(
+          (seg, col) => Math.abs(seg.bbox[0] - table.headerCols[col]!.xLeft) < 2,
+        ),
     );
     blocks.push({
       id: tableBlockId,
@@ -424,6 +426,22 @@ function splitTwoColumnLine(
     ];
   }
 
+  if (segments.length === 2) {
+    const gap = segments[1]!.bbox[0] - segments[0]!.bbox[2];
+    const moneyAfterGap = isMoneyText(segments[1]!.text);
+    if (gap > ASSEMBLY_CONFIG.twoColumnGapPt && !moneyAfterGap) {
+      return [
+        {
+          pageNumber,
+          segments,
+          bbox,
+          wordIndices: expandWordRange(segments),
+          splitFromTwoColumn: false,
+        },
+      ];
+    }
+  }
+
   const parts: { segments: Segment[]; split: boolean }[] = [{ segments: [segments[0]!], split: false }];
   for (let i = 1; i < segments.length; i += 1) {
     const prev = segments[i - 1]!;
@@ -516,33 +534,72 @@ function detectFurnitureTexts(
   return furniture;
 }
 
-function detectTablesOnPage(
-  page: PageModel,
-  lines: BuiltLine[],
-  documentId: string,
-): TableDraft[] {
-  const headerLine = lines.reduce<BuiltLine | null>((best, line) => {
-    if (lineHasMoney(line)) {
-      return best;
-    }
-    if (line.segments.length < ASSEMBLY_CONFIG.tableMinHeaderSegments) {
-      return best;
-    }
-    if (!best || line.segments.length > best.segments.length) {
-      return line;
-    }
-    return best;
-  }, null);
-  if (!headerLine) {
-    return [];
+function isCheckboxMarkerText(text: string): boolean {
+  return /^\[(X|x| )\]$/.test(text.trim());
+}
+
+function isLikelyFieldLine(line: BuiltLine): boolean {
+  return line.segments.some((seg) => {
+    const t = seg.text.trim();
+    return /^[^:]+:\s*(.*)$/.test(t) && t.includes(":");
+  });
+}
+
+function isTableHeaderCandidate(line: BuiltLine): boolean {
+  if (line.segments.length < ASSEMBLY_CONFIG.tableMinHeaderSegments) {
+    return false;
   }
+  if (lineHasMoney(line) || isLikelyFieldLine(line)) {
+    return false;
+  }
+  if (line.segments.some((seg) => isCheckboxMarkerText(seg.text))) {
+    return false;
+  }
+  return true;
+}
 
-  const headerCols = headerLine.segments.map((seg, col) => ({
-    xLeft: seg.bbox[0],
-    xRight: seg.bbox[2],
-    headerCellId: `${documentId}:p${page.pageNumber}:h${col}`,
-  }));
+function lineAlignsToTableColumns(line: BuiltLine, headerCols: TableDraft["headerCols"]): boolean {
+  if (line.segments.length === 0 || isLikelyFieldLine(line)) {
+    return false;
+  }
+  if (line.segments.some((seg) => isCheckboxMarkerText(seg.text))) {
+    return false;
+  }
+  const col0 = headerCols[0];
+  const firstSeg = line.segments[0];
+  if (!col0 || !firstSeg) {
+    return false;
+  }
+  return Math.abs(firstSeg.bbox[0] - col0.xLeft) < 24;
+}
 
+function isWideProseTableLine(line: BuiltLine): boolean {
+  if (line.segments.length !== 1) {
+    return false;
+  }
+  const words = line.segments[0]!.text.trim().split(/\s+/).filter(Boolean);
+  return words.length > 6;
+}
+
+function isTableRowContinuationLine(
+  line: BuiltLine,
+  headerCols: TableDraft["headerCols"],
+): boolean {
+  if (!lineAlignsToTableColumns(line, headerCols)) {
+    return false;
+  }
+  if (isWideProseTableLine(line)) {
+    return false;
+  }
+  return true;
+}
+
+function buildTableRows(
+  headerLine: BuiltLine,
+  headerCols: TableDraft["headerCols"],
+  lines: BuiltLine[],
+): TableDraft["rows"] {
+  const twoColumnTable = headerCols.length === 2;
   const headerY = headerLine.bbox[3];
   const candidateLines = lines.filter(
     (line) => line.bbox[1] > headerY + 1 && line !== headerLine && line.segments.length > 0,
@@ -556,6 +613,25 @@ function detectTablesOnPage(
     if (sectionBreak) {
       break;
     }
+    if (twoColumnTable && !lineAlignsToTableColumns(line, headerCols)) {
+      if (dataLines.length > 0) {
+        break;
+      }
+      continue;
+    }
+    if (
+      twoColumnTable &&
+      line.segments.length === 1 &&
+      line.segments[0]!.text.trim().split(/\s+/).length > 6
+    ) {
+      if (dataLines.length > 0) {
+        break;
+      }
+      continue;
+    }
+    if (!twoColumnTable && isWideProseTableLine(line) && dataLines.length > 0) {
+      break;
+    }
     dataLines.push(line);
   }
 
@@ -565,12 +641,43 @@ function detectTablesOnPage(
   let currentRow: (TableDraft["rows"][number] & { lastBottom: number }) | null = null;
 
   for (const line of dataLines) {
+    if (
+      twoColumnTable &&
+      currentRow &&
+      rowHasAllColumns(currentRow, headerCols.length) &&
+      line.segments.length === 1
+    ) {
+      rows.push(currentRow);
+      currentRow = null;
+      break;
+    }
+
     const startNewRow =
       currentRow === null ||
       (lineStartsTableRow(line, headerCols, currentRow) &&
         rowHasAllColumns(currentRow, headerCols.length));
 
     if (startNewRow) {
+      if (
+        !twoColumnTable &&
+        currentRow &&
+        isTableRowContinuationLine(line, headerCols)
+      ) {
+        mergeRowContinuation(currentRow, line, headerCols);
+        currentRow.lastBottom = line.bbox[3];
+        usedDataLines.add(line);
+        continue;
+      }
+      if (
+        !twoColumnTable &&
+        rows.length > 0 &&
+        isTableRowContinuationLine(line, headerCols) &&
+        rowHasAllColumns(rows[rows.length - 1]!, headerCols.length)
+      ) {
+        mergeRowContinuation(rows[rows.length - 1]!, line, headerCols);
+        usedDataLines.add(line);
+        continue;
+      }
       if (currentRow) {
         rows.push(currentRow);
       }
@@ -594,10 +701,13 @@ function detectTablesOnPage(
     rows.push(currentRow);
   }
 
-  if (rows.length > 0) {
+  if (!twoColumnTable && rows.length > 0) {
     const lastRow = rows[rows.length - 1]!;
     for (const line of dataLines) {
       if (usedDataLines.has(line)) {
+        continue;
+      }
+      if (!isTableRowContinuationLine(line, headerCols)) {
         continue;
       }
       mergeRowContinuation(lastRow, line, headerCols);
@@ -605,10 +715,38 @@ function detectTablesOnPage(
     }
   }
 
+  return rows;
+}
+
+function detectWideTablesOnPage(
+  page: PageModel,
+  lines: BuiltLine[],
+  documentId: string,
+): TableDraft[] {
+  const headerLine = lines.reduce<BuiltLine | null>((best, line) => {
+    if (lineHasMoney(line) || isLikelyFieldLine(line)) {
+      return best;
+    }
+    if (line.segments.length < 3) {
+      return best;
+    }
+    if (!best || line.segments.length > best.segments.length) {
+      return line;
+    }
+    return best;
+  }, null);
+  if (!headerLine) {
+    return [];
+  }
+  const headerCols = headerLine.segments.map((seg, col) => ({
+    xLeft: seg.bbox[0],
+    xRight: seg.bbox[2],
+    headerCellId: `${documentId}:p${page.pageNumber}:h${col}`,
+  }));
+  const rows = buildTableRows(headerLine, headerCols, lines);
   if (rows.length === 0) {
     return [];
   }
-
   return [
     {
       id: `${documentId}:p${page.pageNumber}:table0`,
@@ -618,6 +756,47 @@ function detectTablesOnPage(
       rows,
     },
   ];
+}
+
+function detectTablesOnPage(
+  page: PageModel,
+  lines: BuiltLine[],
+  documentId: string,
+): TableDraft[] {
+  const headerCandidates = lines.filter(
+    (line) => isTableHeaderCandidate(line) && line.segments.length === 2,
+  );
+  for (const headerLine of headerCandidates.sort(
+    (a, b) => b.segments.length - a.segments.length,
+  )) {
+    const headerCols = headerLine.segments.map((seg, col) => ({
+      xLeft: seg.bbox[0],
+      xRight: seg.bbox[2],
+      headerCellId: `${documentId}:p${page.pageNumber}:h${col}`,
+    }));
+    const rows = buildTableRows(headerLine, headerCols, lines);
+    const alignedRows = rows.filter((row) => {
+      if (headerCols.length > 2) {
+        return row.cells.length >= 2;
+      }
+      const cols = new Set(row.cells.map((cell) => cell.col));
+      return cols.has(0) && cols.has(1) && row.cells.length >= 2;
+    });
+    const minRows = headerCols.length > 2 ? 1 : 2;
+    if (alignedRows.length >= minRows) {
+      return [
+        {
+          id: `${documentId}:p${page.pageNumber}:table0`,
+          pageNumber: page.pageNumber,
+          headerBlockId: "",
+          headerCols,
+          rows: alignedRows,
+        },
+      ];
+    }
+  }
+
+  return detectWideTablesOnPage(page, lines, documentId);
 }
 
 function assignCellsToColumns(
@@ -831,7 +1010,29 @@ function parseOptions(
   segments: Segment[],
   _words: PageWord[],
 ): { label: string; checked: boolean | null } | null {
+  const first = segments[0]?.text.trim() ?? "";
+  const bracketOnly = first.match(/^\[(X|x| )\]$/);
+  if (bracketOnly) {
+    const label = segments
+      .slice(1)
+      .map((s) => s.text)
+      .join(" ")
+      .trim();
+    if (label.length > 0) {
+      const mark = bracketOnly[1];
+      return { label, checked: mark === "X" || mark === "x" };
+    }
+  }
+
   const text = segments.map((s) => s.text).join(" ").trim();
+  const bracketInline = text.match(/^\[(X|x)\]\s+(.+)$/);
+  if (bracketInline) {
+    return { label: bracketInline[2]!.trim(), checked: true };
+  }
+  const uncheckedInline = text.match(/^\[ \]\s+(.+)$/);
+  if (uncheckedInline) {
+    return { label: uncheckedInline[1]!.trim(), checked: false };
+  }
   if (/^☑/.test(text)) {
     return { label: text.replace(/^☑\s*/, ""), checked: true };
   }

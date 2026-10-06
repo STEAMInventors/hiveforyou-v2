@@ -86,7 +86,7 @@ function makeWord(text: string, x: number, y: number, seq: number): PageWord {
 }
 
 describe("assembleDocument", () => {
-  it("L001 08_initial_iep page 2 services table row", () => {
+  it("L001 08_initial_iep page 2 services table row and prose sentence", () => {
     const snap = loadSnapshot("08_initial_iep.json");
     const assembled = assembleDocument(snap.documentPages);
     const tableBlocks = assembled.blocks.filter(
@@ -102,6 +102,19 @@ describe("assembleDocument", () => {
     expect(joined).toBe(
       "Specialized reading instruction | Weekly | 150 minutes | special education setting | 2024-11-12",
     );
+    const prose = assembled.blocks.find(
+      (b) =>
+        b.pageNumber === 2 &&
+        b.kind === "line" &&
+        b.text.includes(
+          "Specialized reading instruction is provided 150 minutes weekly in the special education setting.",
+        ),
+    );
+    expect(prose).toBeDefined();
+    const tableRow = assembled.blocks.find(
+      (b) => b.pageNumber === 2 && b.parentBlockId === tableBlocks[0]!.id,
+    );
+    expect(tableRow?.id).not.toBe(prose?.id);
   });
 
   it("L001 Goal ID field value GOAL_READING_FLUENCY", () => {
@@ -116,7 +129,7 @@ describe("assembleDocument", () => {
     const assembled = assembleDocument(snap.documentPages);
     const footers = assembled.blocks.filter((b) => b.kind === "furniture");
     const footerText = footers.map((b) => b.text).join(" ");
-    expect(/SYNTHETIC DEVELOPMENT RECORD.*NestIEP Corpus.*L001 Page/i.test(footerText)).toBe(
+    expect(/SYNTHETIC DEVELOPMENT RECORD.*NestIEP Corpus.*L001\s*\|\s*Page/i.test(footerText)).toBe(
       true,
     );
   });
@@ -187,6 +200,35 @@ describe("assembleDocument", () => {
     const texts = assembled.blocks.map((b) => b.text);
     expect(texts.some((t) => /Left/i.test(t))).toBe(true);
     expect(texts.some((t) => /Right/i.test(t))).toBe(true);
+  });
+
+  it("L001 eligibility [X] options and evaluation plan areas", () => {
+    const snap = loadSnapshot("07_eligibility_determination.json");
+    const assembled = assembleDocument(snap.documentPages);
+    const eligible = assembled.blocks.find(
+      (b) => b.kind === "option" && b.option?.label === "Eligible for special education",
+    );
+    expect(eligible?.option?.checked).toBe(true);
+    const evalOptions = assembled.blocks.filter(
+      (b) =>
+        b.kind === "option" &&
+        b.option?.checked === true &&
+        /Evaluation - 2024/.test(b.option.label),
+    );
+    expect(evalOptions.length).toBeGreaterThanOrEqual(3);
+  });
+
+  it("L001 academic evaluation Measure | Result table has 3 rows", () => {
+    const snap = loadSnapshot("05_academic_evaluation.json");
+    const assembled = assembleDocument(snap.documentPages);
+    const table = assembled.blocks.find((b) => b.kind === "table" && /Measure/i.test(b.text));
+    expect(table).toBeDefined();
+    const rows = assembled.blocks.filter((b) => b.parentBlockId === table!.id);
+    expect(rows).toHaveLength(3);
+    const joined = rows.map((r) => r.text).join("\n");
+    expect(joined).toContain("Oral Reading Fluency | 42 WCPM");
+    expect(joined).toContain("Oral Reading Accuracy | 86%");
+    expect(joined).toContain("Reading Comprehension | Below expected classroom level");
   });
 
   it("synthetic repeated-form instances", () => {
