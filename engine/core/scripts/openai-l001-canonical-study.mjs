@@ -11,8 +11,8 @@
  * - L001_CORPUS_PATHS (comma-separated local PDF paths)
  */
 
-import { createHash } from "node:crypto";
-import { existsSync, readdirSync, readFileSync } from "node:fs";
+import { createHash, randomUUID } from "node:crypto";
+import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { performance } from "node:perf_hooks";
@@ -33,7 +33,11 @@ import {
   loadCanonicalStudyPrompt,
   resolveEvidenceReference,
   runCanonicalStudy,
+  validateCanonicalStudyProposalV3,
+  validateCanonicalStudyProposalV4,
 } from "@hiveforyou/core";
+import { enrichValidationWithExtractionReadiness } from "../src/study/apply-extraction-readiness.ts";
+import { buildExtractionReadiness } from "../src/study/build-extraction-readiness.ts";
 import {
   createCallModelFromEnv,
   isCanonicalStudyFixtureMode,
@@ -43,6 +47,26 @@ import { resolveDomainPackFromDiscoveryLabel } from "@hiveforyou/domain-packs";
 
 const scriptDir = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(scriptDir, "../../..");
+
+function parseCliArgs(argv) {
+  let replayPath = null;
+  let proposalOut = null;
+  for (let index = 0; index < argv.length; index += 1) {
+    const token = argv[index];
+    if (token === "--replay") {
+      replayPath = argv[index + 1] ?? null;
+      index += 1;
+      continue;
+    }
+    if (token === "--proposal-out") {
+      proposalOut = argv[index + 1] ?? null;
+      index += 1;
+    }
+  }
+  return { replayPath, proposalOut };
+}
+
+const cli = parseCliArgs(process.argv.slice(2));
 
 function loadRepoDotEnv() {
   const envPath = join(repoRoot, ".env");
@@ -103,8 +127,7 @@ console.error(
 );
 
 const defaultCorpusDir =
-  process.env.L001_CORPUS_DIR ??
-  "C:/Users/abhattacharyya/nestiep-corpus/cases/L001/clean";
+  process.env.L001_CORPUS_DIR ?? join(repoRoot, "engine/intake/fixtures/l001");
 
 function resolveCorpusPaths() {
   const explicit = (process.env.L001_CORPUS_PATHS ?? "")
@@ -373,63 +396,142 @@ const engineConfig = createCanonicalStudyEngineFromEnv(
   },
 );
 
+function loadReplayProposal(replayPath) {
+  const raw = JSON.parse(readFileSync(replayPath, "utf8"));
+  if (raw && typeof raw === "object" && raw.proposal && typeof raw.proposal === "object") {
+    return raw.proposal;
+  }
+  if (raw && typeof raw === "object" && Array.isArray(raw.claims)) {
+    return raw;
+  }
+  throw new Error(`REPLAY_FILE_UNRECOGNIZED:${replayPath}`);
+}
+
+function validateReplayProposal(context, proposalJson, promptVersion) {
+  let validation =
+    promptVersion === "v4"
+      ? validateCanonicalStudyProposalV4(context, proposalJson)
+      : validateCanonicalStudyProposalV3(context, proposalJson);
+  const extractionReadiness = buildExtractionReadiness({
+    context,
+    extractionsBySourceId: extractionsBySourceId,
+  });
+  return enrichValidationWithExtractionReadiness(validation, extractionReadiness, context);
+}
+
 const artifactRepo = new InMemoryStudyArtifactRepository();
 const projectionRepo = new InMemoryCaseProjectionRepository();
 const intelligenceRepo = new InMemoryCaseIntelligenceRepository();
 
 const wallClockStart = performance.now();
 let outcome;
-try {
-  outcome = await runCanonicalStudy(request, {
-    engine: engineConfig.engine,
-    providerId: engineConfig.providerId,
-    providerMode: engineConfig.mode,
-    modelId: engineConfig.modelId,
-    prompt,
-    sessionUserId: userId,
-    contextRepo: new InMemoryStudyContextRepository(),
-    runRepo: new InMemoryStudyRunRepository(),
-    eventRepo: new InMemoryStudyRunEventRepository(),
-    intelligenceRepo,
-    projectionRepo,
-    studyArtifactRepo: artifactRepo,
-    loadStructureMap: async () => structureMap,
-    loadSourceDocumentBytes: async (ref) => {
-      const key =
-        bytesById.get(ref.stagedDocumentId) ??
-        bytesById.get(ref.sourceDocumentId ?? "") ??
-        bytesById.get(ref.discoveryDocumentId ?? "");
-      if (!key) {
-        throw new Error("MISSING_BYTES");
-      }
-      return key;
-    },
-    loadNormalizedExtractionsForStudy: async () => extractionsBySourceId,
-  });
-} catch (error) {
-  const wallClockMs = Math.round(performance.now() - wallClockStart);
-  console.log(
-    JSON.stringify(
-      {
-        runStatus: "FAILED",
-        errorKind: "exception",
-        errorMessage: error instanceof Error ? error.message : String(error),
-        wallClockMs,
-        modelProvider: provider,
-        modelName,
-        usage: { ...usageTotals },
+let proposal;
+let validation;
+let artifact;
+let replayMode = false;
+
+if (cli.replayPath) {
+  replayMode = true;
+  try {
+    proposal = loadReplayProposal(cli.replayPath);
+    const studyRunId = randomUUID();
+    const frozen = freezeCanonicalStudyContext({
+      request,
+      studyRunId,
+      resolvedPack: pack,
+      idempotencyKey: `l001-replay-${studyRunId}`,
+      providerId: engineConfig.providerId,
+      providerMode: engineConfig.mode,
+      prompt,
+    });
+    const context = enrichStudyContextWithStructureMap({
+      context: frozen,
+      structureMap,
+      engine1Result,
+    });
+    validation = validateReplayProposal(context, proposal, prompt.version);
+    outcome = {
+      run: {
+        studyRunId,
+        status: validation.status === "SUCCEEDED" ? "SUCCEEDED" : "NEEDS_REVIEW",
+        errorCode: null,
+        errorMessage: null,
+        idempotencyKey: `l001-replay-${studyRunId}`,
       },
-      null,
-      2,
-    ),
-  );
-  process.exit(1);
+    };
+    artifact = { rawProposalJson: proposal, validationResultJson: validation };
+  } catch (error) {
+    const wallClockMs = Math.round(performance.now() - wallClockStart);
+    console.log(
+      JSON.stringify(
+        {
+          runStatus: "FAILED",
+          errorKind: "exception",
+          errorMessage: error instanceof Error ? error.message : String(error),
+          replayMode: true,
+          wallClockMs,
+          modelProvider: provider,
+          modelName,
+          usage: { ...usageTotals },
+        },
+        null,
+        2,
+      ),
+    );
+    process.exit(1);
+  }
+} else {
+  try {
+    outcome = await runCanonicalStudy(request, {
+      engine: engineConfig.engine,
+      providerId: engineConfig.providerId,
+      providerMode: engineConfig.mode,
+      modelId: engineConfig.modelId,
+      prompt,
+      sessionUserId: userId,
+      contextRepo: new InMemoryStudyContextRepository(),
+      runRepo: new InMemoryStudyRunRepository(),
+      eventRepo: new InMemoryStudyRunEventRepository(),
+      intelligenceRepo,
+      projectionRepo,
+      studyArtifactRepo: artifactRepo,
+      loadStructureMap: async () => structureMap,
+      loadSourceDocumentBytes: async (ref) => {
+        const key =
+          bytesById.get(ref.stagedDocumentId) ??
+          bytesById.get(ref.sourceDocumentId ?? "") ??
+          bytesById.get(ref.discoveryDocumentId ?? "");
+        if (!key) {
+          throw new Error("MISSING_BYTES");
+        }
+        return key;
+      },
+      loadNormalizedExtractionsForStudy: async () => extractionsBySourceId,
+    });
+  } catch (error) {
+    const wallClockMs = Math.round(performance.now() - wallClockStart);
+    console.log(
+      JSON.stringify(
+        {
+          runStatus: "FAILED",
+          errorKind: "exception",
+          errorMessage: error instanceof Error ? error.message : String(error),
+          wallClockMs,
+          modelProvider: provider,
+          modelName,
+          usage: { ...usageTotals },
+        },
+        null,
+        2,
+      ),
+    );
+    process.exit(1);
+  }
+  artifact = await artifactRepo.getByStudyRunId(outcome.run.studyRunId);
+  validation = artifact?.validationResultJson ?? null;
+  proposal = artifact?.rawProposalJson ?? null;
 }
 const wallClockMs = Math.round(performance.now() - wallClockStart);
-
-const artifact = await artifactRepo.getByStudyRunId(outcome.run.studyRunId);
-const validation = artifact?.validationResultJson ?? null;
-const proposal = artifact?.rawProposalJson ?? null;
 
 function inferErrorKind(run) {
   if (run.status !== "FAILED") {
@@ -547,6 +649,7 @@ const claimsProposed = Array.isArray(proposal?.claims) ? proposal.claims.length 
 const claimsPassingValidation = validation?.accepted?.claims?.length ?? 0;
 
 const summary = {
+  replayMode,
   runStatus: outcome.run.status,
   errorKind: inferErrorKind(outcome.run),
   errorCode: outcome.run.errorCode ?? null,
@@ -590,3 +693,12 @@ const summary = {
 };
 
 console.log(JSON.stringify(summary, null, 2));
+
+if (cli.proposalOut && proposal && validation) {
+  writeFileSync(
+    cli.proposalOut,
+    JSON.stringify({ proposal, validation, summary }, null, 2),
+    "utf8",
+  );
+  console.error(`Wrote proposal bundle to ${cli.proposalOut}`);
+}
