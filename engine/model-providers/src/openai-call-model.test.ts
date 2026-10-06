@@ -134,6 +134,55 @@ describe("OpenAI Responses API error diagnostics", () => {
 
     expect(errorSpy).not.toHaveBeenCalled();
   });
+
+  it("logs tier-1 atom failures with the hive-atoms label", async () => {
+    vi.stubEnv("NODE_ENV", "development");
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => ({
+        ok: false,
+        status: 400,
+        json: async () => ({
+          error: {
+            type: "invalid_request_error",
+            code: "invalid_json_schema",
+            param: "text.format.schema",
+            message: "Missing 'appliesFrom'",
+          },
+        }),
+      })),
+    );
+
+    const callModel = createOpenAICallModel({ apiKey: "test-key" });
+    await expect(
+      callModel({
+        model: "gpt-test",
+        userContent: "section",
+        logLabel: "hive-atoms",
+        textFormat: {
+          type: "json_schema",
+          name: "atom_prose_statements",
+          strict: true,
+          schema: {
+            type: "object",
+            additionalProperties: false,
+            properties: {},
+            required: [],
+          },
+        },
+      }),
+    ).rejects.toThrow("invalid_json_schema");
+
+    expect(errorSpy).toHaveBeenCalledWith(
+      "[hive-atoms/openai] OpenAI Responses API request failed",
+      expect.objectContaining({
+        httpStatus: 400,
+        openAIErrorCode: "invalid_json_schema",
+      }),
+    );
+  });
 });
 
 describe("extractOpenAIResponseOutputText", () => {

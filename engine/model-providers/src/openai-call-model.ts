@@ -52,14 +52,20 @@ export function formatOpenAIResponseFailedErrorMessage(
   return parts.join(" ");
 }
 
+function openAIErrorLogPrefix(logLabel: string | undefined): string {
+  const label = logLabel?.trim() || "hive-discover";
+  return `[${label}/openai]`;
+}
+
 function logOpenAIResponseErrorDiagnostic(
   httpStatus: number,
   fields: OpenAIResponseErrorFields,
+  logLabel?: string,
 ): void {
   if (process.env.NODE_ENV === "production") {
     return;
   }
-  console.error("[hive-discover/openai] OpenAI Responses API request failed", {
+  console.error(`${openAIErrorLogPrefix(logLabel)} OpenAI Responses API request failed`, {
     httpStatus,
     openAIErrorType: fields.type ?? null,
     openAIErrorCode: fields.code ?? null,
@@ -114,6 +120,7 @@ export async function defaultOpenAICreateResponse(input: {
   model: string;
   reasoningEffort: string;
   body: unknown;
+  logLabel?: string;
 }): Promise<unknown> {
   const response = await fetch("https://api.openai.com/v1/responses", {
     method: "POST",
@@ -130,7 +137,7 @@ export async function defaultOpenAICreateResponse(input: {
     } catch {
       // Ignore non-JSON error bodies; status-only message is still persisted.
     }
-    logOpenAIResponseErrorDiagnostic(response.status, fields);
+    logOpenAIResponseErrorDiagnostic(response.status, fields, input.logLabel);
     throw new ModelCallError(
       "response_failed",
       response.status,
@@ -229,6 +236,7 @@ export function createOpenAICallModel(input: OpenAICallModelOptions): CallModel 
       model: req.model,
       reasoningEffort: req.reasoningEffort ?? "medium",
       body,
+      logLabel: req.logLabel,
     });
 
     const usage =

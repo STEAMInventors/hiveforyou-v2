@@ -30,6 +30,11 @@ export type ModelRequest = {
   /** When true, omit system role (e.g. discover resolution). */
   userOnly?: boolean;
   textFormat: ModelTextFormat;
+  /**
+   * Diagnostic prefix for provider error logs.
+   * `"hive-atoms"` logs as `[hive-atoms/openai]`. Defaults to `hive-discover`.
+   */
+  logLabel?: string;
 };
 
 export type ModelResponse = {
