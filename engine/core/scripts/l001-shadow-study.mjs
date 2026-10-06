@@ -3,28 +3,16 @@
  * Recovered pages come from @hiveforyou/intake (same path as study:l001 extraction).
  */
 
-import { createHash, randomUUID } from "node:crypto";
-import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { runShadowStudy } from "../src/study/shadow/run-shadow-study.ts";
-import { extractDocument } from "@hiveforyou/intake";
-import { recoverNormalizedDocument } from "@hiveforyou/intake/server-extraction";
 import { createCallModelFromEnv } from "@hiveforyou/model-providers/env";
-
-async function buildIntakeExtractDeps() {
-  const { createCanvasPageRasterizer } = await import("@hiveforyou/intake-node/canvas-rasterize");
-  return {
-    recover: recoverNormalizedDocument,
-    resolvePageRasterizer: async () => createCanvasPageRasterizer(),
-  };
-}
+import { loadShadowCase } from "./shadow-golden/load-case.ts";
 
 const scriptDir = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(scriptDir, "../../..");
-const corpusDir = process.env.L001_CORPUS_DIR ?? join(repoRoot, "engine/intake/fixtures/l001");
-const snapshotDir = join(corpusDir, "document-pages");
 const baselinePath =
   process.env.L001_V4_BASELINE ??
   join(repoRoot, "engine/core/fixtures/l001-study-replay-baseline.json");
@@ -63,49 +51,13 @@ function loadRepoDotEnv() {
 
 loadRepoDotEnv();
 
-const pdfFiles = readdirSync(corpusDir)
-  .filter((name) => name.toLowerCase().endsWith(".pdf"))
-  .sort();
-
-const sourceIdToDocumentId = new Map(
-  pdfFiles.map((file, index) => [`l001-src-${index + 1}`, file]),
-);
-
-async function loadDocumentInputs() {
-  const documents = [];
-  for (const pdf of pdfFiles) {
-    const snapshotPath = join(snapshotDir, pdf.replace(/\.pdf$/i, ".json"));
-    if (!existsSync(snapshotPath)) {
-      throw new Error(`Missing document-pages snapshot: ${snapshotPath}`);
-    }
-    const snapshot = JSON.parse(readFileSync(snapshotPath, "utf8"));
-    const pages = snapshot.documentPages;
-
-    const bytes = readFileSync(join(corpusDir, pdf));
-    const sourceHash = createHash("sha256").update(bytes).digest("hex");
-    const deps = await buildIntakeExtractDeps();
-    const extracted = await extractDocument(
-      {
-        runId: randomUUID(),
-        documentId: pdf,
-        mimeType: "application/pdf",
-        bytes: new Uint8Array(bytes),
-        sourceHash,
-      },
-      deps,
-    );
-    const normalized = extracted.normalizedExtraction;
-    if (!normalized) {
-      throw new Error(`EXTRACTION_FAILED:${pdf}`);
-    }
-
-    documents.push({
-      pages,
-      recoveredPages: normalized.pages,
-    });
-  }
-  return documents;
-}
+const loadedCase = await loadShadowCase("l001");
+const pdfFiles = loadedCase.documents.map((d) => d.filename);
+const sourceIdToDocumentId = loadedCase.sourceIdToDocumentId;
+const documents = loadedCase.documents.map((d) => ({
+  pages: d.pages,
+  recoveredPages: d.recoveredPages,
+}));
 
 function printReport(result, baseline) {
   const claims = baseline.validation?.accepted?.claims ?? [];
@@ -154,19 +106,9 @@ function printReport(result, baseline) {
 }
 
 const baseline = JSON.parse(readFileSync(baselinePath, "utf8"));
-const v4Claims = baseline.validation.accepted.claims.map((claim) => ({
-  id: claim.id,
-  evidenceRefs: claim.evidenceRefs.map((ref) => ({
-    id: ref.id,
-    sourceDocumentId: ref.sourceDocumentId,
-    page: ref.page,
-    extractionId: ref.extractionId,
-    snippet: ref.snippet,
-  })),
-}));
+const v4Claims = loadedCase.v4Claims;
 
 const { callModel, modelName } = createCallModelFromEnv();
-const documents = await loadDocumentInputs();
 
 const result = await runShadowStudy({
   documents,

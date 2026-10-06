@@ -167,6 +167,9 @@ importers:
       '@hiveforyou/model-providers':
         specifier: workspace:*
         version: link:../model-providers
+      '@supabase/supabase-js':
+        specifier: ^2.49.4
+        version: 2.117.2(@opentelemetry/api@1.9.1)
       '@types/node':
         specifier: ^22.10.2
         version: 22.20.4

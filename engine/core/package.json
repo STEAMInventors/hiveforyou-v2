@@ -33,7 +33,10 @@
     "test": "node scripts/generate-prompts.mjs && node scripts/check-utf8-text.mjs && vitest run",
     "study:l001-v3": "tsx --env-file=../../.env scripts/openai-l001-canonical-study-v3.mjs",
     "study:l001": "tsx scripts/openai-l001-canonical-study.mjs",
-    "study:l001:shadow": "tsx --env-file=../../.env scripts/l001-shadow-study.mjs"
+    "study:l001:shadow": "tsx --env-file=../../.env scripts/l001-shadow-study.mjs",
+    "golden:shadow": "tsx --env-file=../../.env scripts/golden-shadow-study.mjs",
+    "golden:shadow:export-v4": "tsx --env-file=../../.env scripts/shadow-golden/export-v4-claims.mjs",
+    "golden:shadow:seed-l001-v4": "node scripts/shadow-golden/seed-l001-v4-claims.mjs"
   },
   "dependencies": {
     "@hiveforyou/canonical": "workspace:*",
@@ -46,6 +49,7 @@
     "@hiveforyou/intake": "workspace:*",
     "@hiveforyou/intake-node": "workspace:*",
     "@hiveforyou/model-providers": "workspace:*",
+    "@supabase/supabase-js": "^2.49.4",
     "@types/node": "^22.10.2",
     "tsx": "^4.19.2",
     "typescript": "^5.7.2",

@@ -14,7 +14,8 @@
     "test": "pnpm -r --if-present test",
     "rulebook:audit": "tsx scripts/rulebook-audit.ts",
     "rulebook:scaffold": "tsx scripts/rulebook-scaffold.ts",
-    "rulebook:report": "tsx scripts/rulebook-report.ts"
+    "rulebook:report": "tsx scripts/rulebook-report.ts",
+    "golden:shadow": "pnpm --filter @hiveforyou/core golden:shadow"
   },
   "devDependencies": {
     "@hiveforyou/domain-pack": "workspace:*",
