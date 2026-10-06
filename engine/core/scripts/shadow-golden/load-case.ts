@@ -17,6 +17,7 @@ export type ShadowCaseId = "l001" | "caleb9";
 export type CaseManifestFile = {
   filename: string;
   sha256: string;
+  sourceDocumentId?: string;
 };
 
 export type CaseManifest = {
@@ -95,7 +96,8 @@ export async function loadShadowCase(caseId: ShadowCaseId): Promise<LoadedShadow
 
   for (let index = 0; index < pdfFiles.length; index += 1) {
     const pdf = pdfFiles[index]!;
-    const sourceId = `${sourcePrefix}-${index + 1}`;
+    const manifestEntry = manifest?.files.find((f) => f.filename === pdf);
+    const sourceId = manifestEntry?.sourceDocumentId ?? `${sourcePrefix}-${index + 1}`;
     sourceIdToDocumentId.set(sourceId, pdf);
 
     const bytes = readFileSync(join(corpusDir, pdf));
