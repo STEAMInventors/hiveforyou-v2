@@ -20,6 +20,28 @@ registerDomainPack(bankruptcyDomainPack);
 export { classifyIepDocumentLocally } from "@hiveforyou/domain-pack-iep";
 
 export {
+  clearPackFileCacheForTests,
+  loadAllPacks,
+  loadCoreDefaults,
+  loadPack,
+  packsV2Directory,
+} from "./packs-v2/load.ts";
+export { PACK_STUDY_PRIMITIVES } from "./packs-v2/primitives.ts";
+export type { PackValidationError } from "./packs-v2/errors.ts";
+export { PackValidationFailedError } from "./packs-v2/errors.ts";
+export {
+  validateCoreDefaultsDocument,
+} from "./packs-v2/validate-core-defaults.ts";
+export { validateDomainPackDocument } from "./packs-v2/validate-domain-pack.ts";
+export { validateLayersDocument } from "./packs-v2/validate-layers.ts";
+export type {
+  CoreDefaultsV2,
+  DomainPackV2,
+  LayersV2,
+  PackQuestion,
+} from "./packs-v2/types.ts";
+
+export {
   audienceResolutionFromDiscovery,
   discoverPackForDomain,
   domainPackRecordId,
