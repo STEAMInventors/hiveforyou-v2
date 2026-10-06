@@ -20,6 +20,7 @@
     "./intake/extraction-readiness": "./src/intake/extraction-readiness.ts",
     "./pack-study": "./src/pack-study/index.ts",
     "./events": "./src/events/index.ts",
+    "./hive-artifact-paths": "./src/hive-artifact-paths.ts",
     "./model/call-model": "./src/model/call-model.ts"
   },
   "scripts": {
