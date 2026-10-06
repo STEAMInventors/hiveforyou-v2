@@ -18,15 +18,19 @@
     "./study": "./src/study/index.ts",
     "./story/prefer-pack-narrative": "./src/study/story/prefer-pack-narrative.ts",
     "./document/page-model": "./src/document/page-model.ts",
-    "./document/assembly": "./src/document/assembly.ts"
+    "./document/assembly": "./src/document/assembly.ts",
+    "./document/find-consecutive-word-quote": "./src/document/find-consecutive-word-quote.ts",
+    "./atoms/run-atoms": "./src/atoms/run-atoms.ts",
+    "./study/shadow/run-shadow-study": "./src/study/shadow/run-shadow-study.ts"
   },
   "scripts": {
     "generate:prompts": "node scripts/generate-prompts.mjs",
     "typecheck": "tsc --noEmit",
     "lint": "node -e \"process.exit(0)\"",
-    "test": "node scripts/generate-prompts.mjs && vitest run",
+    "test": "node scripts/generate-prompts.mjs && node scripts/check-utf8-text.mjs && vitest run",
     "study:l001-v3": "tsx --env-file=../../.env scripts/openai-l001-canonical-study-v3.mjs",
-    "study:l001": "tsx scripts/openai-l001-canonical-study.mjs"
+    "study:l001": "tsx scripts/openai-l001-canonical-study.mjs",
+    "study:l001:shadow": "tsx --env-file=../../.env scripts/l001-shadow-study.mjs"
   },
   "dependencies": {
     "@hiveforyou/canonical": "workspace:*",
