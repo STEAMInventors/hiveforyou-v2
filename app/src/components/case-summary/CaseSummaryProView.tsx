@@ -28,6 +28,7 @@ import { buildStudyFromBundle } from "@/lib/case-summary/pro-study-from-bundle";
 
 import { HfyChipButton, HfyChipStatic } from "@/components/hfy/HfyChip";
 
+import { ShadowFindingsPanel } from "./ShadowFindingsPanel";
 import { ProExportBuilder } from "./ProExportBuilder";
 import { ProRankMark, ProViewIcon } from "./pro-view-icons";
 import "./pro-workspace.css";
@@ -321,6 +322,7 @@ export function CaseSummaryProView({
                   </div>
                 ) : null}
               </section>
+              <ShadowFindingsPanel caseId={caseId} studyRunId={studyRunId} />
               <nav aria-label="Views">
                 <p className="railhead">Read this case as</p>
                 <div className="views">

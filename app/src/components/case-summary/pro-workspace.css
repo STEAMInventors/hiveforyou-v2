@@ -789,3 +789,54 @@
     padding: 28px 18px 80px;
   }
 }
+
+.pro-shadow-panel {
+  margin: 1rem 0;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--line, #e3e3e3);
+  border-radius: 12px;
+  background: var(--paper, #fff);
+  font-size: 0.8125rem;
+}
+
+.pro-shadow-title {
+  margin: 0 0 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.pro-shadow-subtitle {
+  margin: 0.75rem 0 0.35rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.pro-shadow-muted {
+  margin: 0;
+  color: var(--muted, #6b7280);
+}
+
+.pro-shadow-meta {
+  margin: 0.25rem 0;
+}
+
+.pro-shadow-list {
+  margin: 0;
+  padding-left: 1.1rem;
+}
+
+.pro-shadow-quote {
+  color: var(--muted, #6b7280);
+  font-size: 0.75rem;
+}
+
+.pro-shadow-id {
+  font-family: ui-monospace, monospace;
+  font-size: 0.75rem;
+}
+
+.pro-shadow-kind {
+  text-transform: uppercase;
+  font-size: 0.6875rem;
+  letter-spacing: 0.04em;
+}
