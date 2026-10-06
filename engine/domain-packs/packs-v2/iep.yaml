@@ -1,5 +1,6 @@
 pack: iep
-version: 0.4
+version: 0.5
+# 0.5: document_types added for pack selection (distinctive types choose the pack; shared never do)
 # 0.3: transition-plan age moved to the overlay (was a hardcoded 16)
 # 0.4: questions sharpened from due-process review patterns, rewritten as document checks:
 #      goal baselines, repeated goals vs progress, service specificity, delivered vs required minutes,
@@ -12,6 +13,12 @@ anchor:                       # the date relative windows are measured from
 jurisdiction_overlay: required   # state timelines, ages, response windows and forms differ; overlay supplies them
 
 # 1. QUESTIONS — what an advocate asks of a case. Each points at study primitives, never at free model judgment.
+document_types:
+  distinctive: [individualized_education_program, iep_draft, iep_amendment, evaluation_report, eligibility_determination,
+                reevaluation_plan, iep_progress_report, prior_written_notice, consent_for_evaluation,
+                functional_behavioral_assessment, behavior_intervention_plan, service_log]
+  shared: [meeting_notes, correspondence]
+
 questions:
   - id: q.operative_iep
     ask: Which IEP is in effect now, including amendments?

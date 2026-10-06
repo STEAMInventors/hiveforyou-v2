@@ -1,5 +1,6 @@
 pack: bankruptcy
-version: 0.4
+version: 0.5
+# 0.5: document_types added for pack selection (distinctive types choose the pack; shared never do)
 # 0.3: income look-back moved to the overlay (was a hardcoded 6 months)
 # 0.4: covers Chapters 7, 13, 11 (small business / Subchapter V) and 12 in one pack.
 #      Chapter is a case attribute; chapter-only questions carry `applies_when`. Questions with no
@@ -25,6 +26,13 @@ jurisdiction_overlay: required
 # Keys this pack reads: income_lookback, creditor_payment_window, insider_window, transfer_window,
 #   credit_counseling_window, tax_return_years, prior_filing_windows, median_income_by_household_size,
 #   ch13_debt_limits, small_business_debt_limit, ch12_debt_limit, ch12_income_share, review_threshold
+
+document_types:
+  distinctive: [voluntary_petition, bankruptcy_schedules, means_test_form, credit_counseling_certificate,
+                bankruptcy_questionnaire, proof_of_claim, chapter_13_plan, monthly_operating_report,
+                collection_letter, credit_report]
+  shared: [bank_statement, pay_stub, tax_return, creditor_statement, mortgage_statement, vehicle_title,
+           property_tax_statement, engagement_letter, correspondence]
 
 questions:
   # ---------- all chapters ----------

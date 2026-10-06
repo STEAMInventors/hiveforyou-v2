@@ -1,5 +1,6 @@
 pack: long_term_care_medicaid
-version: 0.3
+version: 0.4
+# 0.4: document_types added for pack selection (distinctive types choose the pack; shared never do)
 # 0.3: built around where applications actually fail: agency verification requests answered late or incomplete,
 #      gaps in the look-back statements, and unexplained money movement. Adds case attributes (marital status,
 #      stage, pro type), two dates (application and snapshot), stage-specific questions (denial, renewal, fair hearing),
@@ -32,6 +33,12 @@ jurisdiction_overlay: required
 # Every number comes from the overlay and must be verified against the state's current rules.
 # Keys this pack reads: lookback_months, review_threshold, fair_hearing_request_window,
 #   renewal_period_months, verification_default_window (used only when a request states no due date)
+
+document_types:
+  distinctive: [medicaid_application, verification_request, notice_of_action, facility_admission_record,
+                facility_ledger, care_agreement, prepaid_funeral_contract, annuity_contract]
+  shared: [bank_statement, award_letter, tax_return, deed, vehicle_title, life_insurance_policy,
+           trust_agreement, power_of_attorney, correspondence]
 
 questions:
   # ---------- every stage ----------
