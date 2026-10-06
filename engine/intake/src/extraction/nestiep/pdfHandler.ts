@@ -26,6 +26,7 @@ export interface PdfRecoveryContext {
   readonly sourceDocumentId: string;
   readonly sourceHash: string;
   readonly documentPages?: DocumentPages;
+  readonly onDocumentPages?: (pages: DocumentPages) => void;
   readonly ocrEngine?: OcrEngine;
   readonly qualityThresholds?: QualityThresholds;
   readonly rasterizer?: PageRasterizer;

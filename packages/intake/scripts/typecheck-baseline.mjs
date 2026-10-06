@@ -1,12 +1,32 @@
 /**
- * Fail only when intake tsc errors exceed the pinned baseline (pre-extraction-series HEAD).
+ * Fail when intake tsc reports an error line not listed in the pinned baseline.
  */
+import { readFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
-const BASELINE_ERROR_COUNT = 11;
 const packageRoot = join(dirname(fileURLToPath(import.meta.url)), "..");
+const baselinePath = join(packageRoot, "scripts", "typecheck-baseline-errors.txt");
+
+/** @param {string} output */
+function extractErrorLines(output) {
+  const lines = [];
+  for (const line of output.split(/\r?\n/)) {
+    if (/error TS\d+:/.test(line)) {
+      lines.push(line.trim());
+    }
+  }
+  return lines;
+}
+
+const baselineText = readFileSync(baselinePath, "utf8");
+const baselineSet = new Set(
+  baselineText
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter((line) => line.length > 0),
+);
 
 const result = spawnSync("pnpm", ["exec", "tsc", "--noEmit"], {
   cwd: packageRoot,
@@ -15,22 +35,30 @@ const result = spawnSync("pnpm", ["exec", "tsc", "--noEmit"], {
 });
 
 const output = `${result.stdout ?? ""}${result.stderr ?? ""}`;
-const errorCount = (output.match(/error TS\d+:/g) ?? []).length;
+const errorLines = extractErrorLines(output);
+const errorSet = new Set(errorLines);
 
-if (errorCount > BASELINE_ERROR_COUNT) {
+const newErrors = errorLines.filter((line) => !baselineSet.has(line));
+
+if (newErrors.length > 0) {
   console.error(
-    `Intake typecheck regression: ${errorCount} errors (baseline allows ≤ ${BASELINE_ERROR_COUNT}).`,
+    `Intake typecheck regression: ${newErrors.length} error line(s) not in baseline (${baselineSet.size} pinned).`,
   );
-  if (output.trim()) {
-    console.error(output.trim());
+  for (const line of newErrors) {
+    console.error(line);
   }
   process.exit(1);
 }
 
-if (errorCount > 0) {
-  console.log(
-    `Intake typecheck: ${errorCount} error(s) within baseline (≤ ${BASELINE_ERROR_COUNT}).`,
-  );
+if (errorLines.length > 0) {
+  const resolved = [...baselineSet].filter((line) => !errorSet.has(line));
+  if (resolved.length > 0) {
+    console.log(
+      `Intake typecheck: ${errorLines.length} known error(s); ${resolved.length} baseline line(s) no longer reported (update baseline when intentional).`,
+    );
+  } else {
+    console.log(`Intake typecheck: ${errorLines.length} known error(s) match baseline.`);
+  }
 }
 
 process.exit(0);
