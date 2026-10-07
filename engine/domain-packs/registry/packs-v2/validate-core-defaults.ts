@@ -1,8 +1,8 @@
-import { pushError, type PackValidationError } from "./errors.ts";
-import type { CoreDefaultsV2 } from "./types.ts";
-import { validateBehaviorsBlock } from "./validate-behaviors.ts";
-import { walkLegalNumbers } from "./validate-legal-numbers.ts";
-import { isRecord } from "./util.ts";
+import { pushError, type PackValidationError } from "./errors";
+import type { CoreDefaultsV2 } from "./types";
+import { validateBehaviorsBlock } from "./validate-behaviors";
+import { walkLegalNumbers } from "./validate-legal-numbers";
+import { isRecord } from "./util";
 
 export function validateCoreDefaultsDocument(
   doc: unknown,

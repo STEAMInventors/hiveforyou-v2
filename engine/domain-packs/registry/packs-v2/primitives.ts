@@ -6,4 +6,4 @@ export {
   type PackPrimitiveMapEntry,
   type PackPrimitiveStatus,
   type PackStudyPrimitive,
-} from "./primitive-map.ts";
+} from "./primitive-map";

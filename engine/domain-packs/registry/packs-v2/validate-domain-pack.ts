@@ -3,21 +3,21 @@ import {
   pushWarning,
   type PackValidationError,
   type PackValidationWarning,
-} from "./errors.ts";
+} from "./errors";
 import {
   isPackStudyPrimitive,
   PACK_PRIMITIVE_MAP,
   type PackStudyPrimitive,
-} from "./primitive-map.ts";
+} from "./primitive-map";
 import type {
   CaseAttributeDefinition,
   DomainPackV2,
   PackDocumentTypes,
   PackQuestion,
   PackViews,
-} from "./types.ts";
-import { validateBehaviorsBlock } from "./validate-behaviors.ts";
-import { walkLegalNumbers } from "./validate-legal-numbers.ts";
+} from "./types";
+import { validateBehaviorsBlock } from "./validate-behaviors";
+import { walkLegalNumbers } from "./validate-legal-numbers";
 import {
   CASE_ATTRIBUTE_DEF_KEYS,
   DOCUMENT_TYPE_KEY_RE,
@@ -25,7 +25,7 @@ import {
   asString,
   isRecord,
   pathJoin,
-} from "./util.ts";
+} from "./util";
 
 const DOMAIN_PACK_TOP_LEVEL = new Set([
   "pack",

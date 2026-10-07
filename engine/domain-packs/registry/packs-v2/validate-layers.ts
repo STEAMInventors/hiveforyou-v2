@@ -1,7 +1,7 @@
-import { pushError, type PackValidationError } from "./errors.ts";
-import type { LayersV2 } from "./types.ts";
-import { walkLegalNumbers } from "./validate-legal-numbers.ts";
-import { isRecord } from "./util.ts";
+import { pushError, type PackValidationError } from "./errors";
+import type { LayersV2 } from "./types";
+import { walkLegalNumbers } from "./validate-legal-numbers";
+import { isRecord } from "./util";
 
 const LAYERS_TOP_LEVEL = new Set(["pro_layer", "case_layer", "merge"]);
 

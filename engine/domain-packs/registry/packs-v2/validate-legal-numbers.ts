@@ -1,5 +1,5 @@
-import { pushError, type PackValidationError } from "./errors.ts";
-import { isRecord, pathJoin } from "./util.ts";
+import { pushError, type PackValidationError } from "./errors";
+import { isRecord, pathJoin } from "./util";
 
 const NUMERIC_STRING_RE = /^-?\d+(\.\d+)?([eE][+-]?\d+)?$/;
 

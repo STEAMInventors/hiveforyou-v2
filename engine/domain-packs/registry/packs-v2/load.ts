@@ -5,10 +5,10 @@ import { fileURLToPath } from "node:url";
 
 import { parse } from "yaml";
 
-import { PackValidationFailedError } from "./errors.ts";
-import type { CoreDefaultsV2, DomainPackV2 } from "./types.ts";
-import { validateCoreDefaultsDocument } from "./validate-core-defaults.ts";
-import { validateDomainPackDocument } from "./validate-domain-pack.ts";
+import { PackValidationFailedError } from "./errors";
+import type { CoreDefaultsV2, DomainPackV2 } from "./types";
+import { validateCoreDefaultsDocument } from "./validate-core-defaults";
+import { validateDomainPackDocument } from "./validate-domain-pack";
 
 /** pack id → YAML filename under packs-v2/ */
 const PACK_ID_TO_FILE: Record<string, string> = {
@@ -65,7 +65,7 @@ export function loadPack(
 /** Domain packs only (excludes core_defaults questions file). Runs global distinctive document_types check. */
 export function loadAllPacks(packsV2Dir: string = defaultPacksV2Dir()): DomainPackV2[] {
   const distinctiveOwner = new Map<string, string>();
-  const errors: import("./errors.ts").PackValidationError[] = [];
+  const errors: import("./errors").PackValidationError[] = [];
   const packs: DomainPackV2[] = [];
 
   for (const packId of DOMAIN_PACK_IDS) {

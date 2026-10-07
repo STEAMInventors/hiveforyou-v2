@@ -25,28 +25,28 @@ export {
   loadCoreDefaults,
   loadPack,
   packsV2Directory,
-} from "./packs-v2/load.ts";
+} from "./packs-v2/load";
 export {
   PACK_PRIMITIVE_MAP,
   PACK_STUDY_PRIMITIVES,
   isPackStudyPrimitive,
   type PackPrimitiveMapEntry,
   type PackStudyPrimitive,
-} from "./packs-v2/primitives.ts";
-export type { PackValidationWarning } from "./packs-v2/errors.ts";
-export type { PackValidationError } from "./packs-v2/errors.ts";
-export { PackValidationFailedError } from "./packs-v2/errors.ts";
+} from "./packs-v2/primitives";
+export type { PackValidationWarning } from "./packs-v2/errors";
+export type { PackValidationError } from "./packs-v2/errors";
+export { PackValidationFailedError } from "./packs-v2/errors";
 export {
   validateCoreDefaultsDocument,
-} from "./packs-v2/validate-core-defaults.ts";
-export { validateDomainPackDocument } from "./packs-v2/validate-domain-pack.ts";
-export { validateLayersDocument } from "./packs-v2/validate-layers.ts";
+} from "./packs-v2/validate-core-defaults";
+export { validateDomainPackDocument } from "./packs-v2/validate-domain-pack";
+export { validateLayersDocument } from "./packs-v2/validate-layers";
 export type {
   CoreDefaultsV2,
   DomainPackV2,
   LayersV2,
   PackQuestion,
-} from "./packs-v2/types.ts";
+} from "./packs-v2/types";
 
 export {
   audienceResolutionFromDiscovery,

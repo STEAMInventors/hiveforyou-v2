@@ -1,5 +1,5 @@
-import { pushError, type PackValidationError } from "./errors.ts";
-import { BEHAVIOR_KEY_RE, isRecord, pathJoin } from "./util.ts";
+import { pushError, type PackValidationError } from "./errors";
+import { BEHAVIOR_KEY_RE, isRecord, pathJoin } from "./util";
 
 const BEHAVIOR_PROPERTY_KEYS = new Set([
   "unique",
