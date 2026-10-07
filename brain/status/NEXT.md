@@ -7,4 +7,17 @@ Branch: **refactor/engine-boundary**. Legacy slice scope: [NEXT-v2-slices.md](NE
 ## Tickets
 
 | Ticket | Scope | Status |
-|--------|------|���������)��P��ā��������������Ց䀨��иĨ���ɽ��н͍�������������ЁݥѠ��������������Ց��ɽ��ͅ��р�ɽ�є��иāѡɽ՝���Ёم����ѥ����չѥ�������X�Aɽ���Y��ͥ�������I���䁙�ȁɕ٥�܁�)��P��ȁ��	�͕����������ɔ�0��Ā��������չ��ȁ�Ё�����иİ�ɕ��ɑ�������������̰����͍�ɥ����������)��P��́��Aɽ��Ё������������ѡɽ�����ɽ٥���쁍��������ѕ���ɽ��Ѐ�����յ��Ё��х������́����ɕ��ɐ�������ɕ����ɥє�ѽ���́��%���ɽ�ɕ�́�((���1��()���є���Q����Ё��M!���9�ѕ́�)𴴴����𴴴����𴴴���𴴴�����)�����ش����܁��P��́���͈����Ё���ѡɽ�����ɽ��Ё����������������хѥ���������є�хɝ�ѕ��ѕ��̀�Լ�ԁ����쁱�ٔ�������ٕɥ����ѥ����������������͔�!%Y}9Q!I=A%}A%}-d��́չ�م���������ɵ�����Ё�ѥ���ɕ�եɕ͕́���������ѥ�����ɕ���������Ѽ�ɕ���Ё������ɕ���ѽ���̀������)�����ش����܁��P��ȁ����ј�ݔ���	�͕����������ɔ�������є�0��ā����������ɕ��ɑ���չ��ȁ�Ё�����и�쁙��ȁ��͕���������́���́ɕ��ɑ���́������ѕ�쁹��͍�ɥ�����ə�ɵ�����)�����ش����܁��P��ȁ���P���A�����ݹ�ȁ�������ѱ䁅�م�������ѡ�ɥ镐�͍����Ѽ�P����չɕ��ѕ��P��ā�������ѕ�Ё������Ȁ��������������չ���䤁ɕ����́��ɭ�����)�����ش����܁��P��ā����՘��؁���иā�ɽ��н͍�������������Ё�����Ё�չѥ���ɽ�ѥ�����������ѕ��хɝ�ѕ��ѕ��́����쁙�ɵ�����Ё��������ɕ���ݥ���ѕ�н�ե����������́����ݽɭ�ȁ�ɽ�Սѥ���ٕɥ����ѥ����)�����ش����܁��P��ā�������Ё��P��ā�չѥ���ٕɥ����ѥ������͕�����=Ʌ�����ɽ���Y��ͥ����иİ���������а���Ց䁱�������ѕ�Ё�Ս���������ɵ���������ѥ���ɕ����́�����������䁉�ѡ��չɕ��ѕ��ɕ���ݥ�����������������չ����ѕ�и��((
+|--------|-------|--------|
+| T0.1 | canonical-study **v4.1** prompt/schema alignment with `canonical-study-proposal/4`; route v4.1 through v4 validation/runtime (`isV4PromptVersion`) | Ready for review |
+| T0.2 | Baseline capture: L001 + caleb9 under v4 and v4.1, recorded model calls, no scoring | Done |
+| T0.3 | Prompt caching in Anthropic provider; cache system prompt + document attachments and record cache read/write tokens | In progress |
+
+## Log
+
+| Date | Ticket | SHA | Notes |
+|------|--------|-----|-------|
+| 2026-10-07 | T0.3 | 73b9244 | Anthropic prompt caching implementation complete; targeted tests 25/25 pass; live cache verification blocked because HIVE_ANTHROPIC_API_KEY is unavailable. Formal exit still requires second identical-prefix call to report cache-read tokens > 0. |
+| 2026-10-07 | T0.2 | f44f77e | Baseline capture complete: L001 and caleb9 recorded under v4 and v4.1; four baseline files plus recordings committed; no scoring performed. |
+| 2026-10-07 | T0.2 | — | Plan owner explicitly advanced authorized scope to T0.2; unrelated T0.1 global-test blocker (domain-pack boundary) remains parked. |
+| 2026-10-07 | T0.1 | ce5f856 | v4.1 prompt/schema alignment and v4 runtime routing implemented; targeted tests pass; formal exit pending repo-wide test/build blockers and worker production verification |
+| 2026-10-07 | T0.1 | 548f124 | T0.1 runtime verification passed on Oracle: promptVersion v4.1, engine v4, study load-context succeeded. Formal completion remains blocked only by the unrelated repo-wide domain-pack boundary test. |
