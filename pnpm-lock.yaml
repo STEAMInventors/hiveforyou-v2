@@ -280,6 +280,9 @@ importers:
       '@hiveforyou/shared':
         specifier: workspace:*
         version: link:../../shared
+      yaml:
+        specifier: ^2.9.1
+        version: 2.9.1
     devDependencies:
       typescript:
         specifier: ^5.7.2
@@ -287,9 +290,6 @@ importers:
       vitest:
         specifier: ^2.1.8
         version: 2.1.9(@types/node@22.20.4)(jsdom@25.0.1)(terser@5.51.2)
-      yaml:
-        specifier: ^2.9.1
-        version: 2.9.1
 
   engine/intake:
     dependencies:
