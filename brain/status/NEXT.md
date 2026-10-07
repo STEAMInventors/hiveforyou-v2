@@ -10,12 +10,13 @@ Branch: **refactor/engine-boundary**. Legacy slice scope: [NEXT-v2-slices.md](NE
 |--------|-------|--------|
 | T0.1 | canonical-study **v4.1** prompt/schema alignment with `canonical-study-proposal/4`; route v4.1 through v4 validation/runtime (`isV4PromptVersion`) | Ready for review |
 | T0.2 | Baseline capture: L001 + caleb9 under v4 and v4.1, recorded model calls, no scoring | Done |
-| T0.3 | Prompt caching in Anthropic provider; cache system prompt + document attachments and record cache read/write tokens | In progress |
+| T0.3 | Prompt caching in Anthropic provider; cache system prompt + document attachments and record cache read/write tokens | Done |
 
 ## Log
 
 | Date | Ticket | SHA | Notes |
 |------|--------|-----|-------|
+| 2026-10-07 | T0.3 | 3da2d88 | Anthropic prompt caching verified live on Oracle. Study propose succeeded with provider anthropic / model claude-opus-5-5 and reported cacheReadInputTokens 10854 and cacheWriteInputTokens 1982. T0.3 complete. |
 | 2026-10-07 | T0.3 | 73b9244 | Anthropic prompt caching implementation complete; targeted tests 25/25 pass; live cache verification blocked because HIVE_ANTHROPIC_API_KEY is unavailable. Formal exit still requires second identical-prefix call to report cache-read tokens > 0. |
 | 2026-10-07 | T0.2 | f44f77e | Baseline capture complete: L001 and caleb9 recorded under v4 and v4.1; four baseline files plus recordings committed; no scoring performed. |
 | 2026-10-07 | T0.2 | — | Plan owner explicitly advanced authorized scope to T0.2; unrelated T0.1 global-test blocker (domain-pack boundary) remains parked. |
