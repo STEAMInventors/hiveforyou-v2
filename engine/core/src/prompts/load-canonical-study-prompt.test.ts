@@ -11,6 +11,7 @@ import type { StartCanonicalStudyRequest } from "@hiveforyou/shared/canonical-st
 import { composeCanonicalStudyPromptInputs } from "./compose-canonical-study-inputs";
 import {
   UnknownPromptVersionError,
+  isV4PromptVersion,
   loadCanonicalStudyPrompt,
 } from "./load-canonical-study-prompt";
 
@@ -65,6 +66,39 @@ describe("loadCanonicalStudyPrompt", () => {
     expect(loaded.version).toBe("v4");
     expect(loaded.content).toContain("canonical-study-proposal/3");
     expect(loaded.content).toContain("Runtime JSON contract");
+  });
+
+  it("loads canonical-study-v4.1 with a stable sha", () => {
+    const a = loadCanonicalStudyPrompt("canonical-study-v4.1");
+    expect(a.version).toBe("v4.1");
+    expect(loadCanonicalStudyPrompt("v4.1").sha256).toBe(a.sha256);
+    expect(a.sha256).toBe(
+      createHash("sha256")
+        .update(loadBundledPromptContent("canonical-study/canonical-study-v4.1.md"))
+        .digest("hex"),
+    );
+  });
+
+  it("v4.1 matches the v4 schema vocabulary", () => {
+    const content = loadCanonicalStudyPrompt("canonical-study-v4.1").content;
+    expect(content).toContain("canonical-study-proposal/4");
+    expect(content).toContain("`modality`");
+    expect(content).toContain("`quote`");
+    expect(content).toContain("gapKind");
+    expect(content).toContain("field_present_but_empty");
+    expect(content).toContain("not_found_in_supplied_documents");
+    expect(content).not.toContain("snippet");
+    expect(content).not.toContain("Do not use `gapKind`");
+    expect(content).not.toContain("canonical-study-proposal/3");
+    expect(content).not.toContain("`role`");
+  });
+
+  it("isV4PromptVersion", () => {
+    expect(isV4PromptVersion("v4")).toBe(true);
+    expect(isV4PromptVersion("v4.1")).toBe(true);
+    expect(isV4PromptVersion("v3")).toBe(false);
+    expect(isV4PromptVersion("v40")).toBe(false);
+    expect(isV4PromptVersion("")).toBe(false);
   });
 
   it("loads canonical-study-v3 methodology prompt", () => {

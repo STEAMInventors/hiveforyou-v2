@@ -6,7 +6,10 @@ import type { CanonicalStudyContext } from "@hiveforyou/shared/canonical-study";
 
 
 
-import type { LoadedCanonicalStudyPrompt } from "./load-canonical-study-prompt";
+import {
+  isV4PromptVersion,
+  type LoadedCanonicalStudyPrompt,
+} from "./load-canonical-study-prompt";
 
 
 
@@ -96,7 +99,7 @@ export function composeCanonicalStudyPromptInputs(
     customerContext: context.customerContext,
 
     outputSchema:
-      prompt.version === "v4"
+      isV4PromptVersion(prompt.version)
         ? CANONICAL_STUDY_PROPOSAL_SCHEMA_V4
         : prompt.version === "v3"
           ? CANONICAL_STUDY_PROPOSAL_SCHEMA_V3

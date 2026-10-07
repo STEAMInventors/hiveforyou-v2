@@ -7,6 +7,7 @@ import {
   queueCanonicalStudyRun,
   intakePackExecutionToStructureMap,
   loadCaseCustomerContextSnapshot,
+  isV4PromptVersion,
   loadCanonicalStudyPrompt,
   requireSessionUserId,
   resolveIntakeStudyDomain,
@@ -212,7 +213,7 @@ async function startIntakeCanonicalStudyFromRunInner(
   const prompt = loadCanonicalStudyPrompt(CANONICAL_STUDY_PROMPT_ID);
   const engineConfig = canonicalStudyEngineFromServerEnv(
     env,
-    prompt.version === "v4" ? "v4" : "v3",
+    isV4PromptVersion(prompt.version) ? "v4" : "v3",
   );
 
   const caseCustomerContextRepo = new SupabaseCaseCustomerContextRepository(

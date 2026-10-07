@@ -7,6 +7,7 @@ import type { CanonicalStudyContext } from "@hiveforyou/shared/canonical-study";
 import { readStatedWorkPurpose } from "@hiveforyou/shared/canonical-study";
 
 import type { CanonicalStudyPromptInputs } from "../prompts/compose-canonical-study-inputs";
+import { isV4PromptVersion } from "../prompts/load-canonical-study-prompt";
 import { ModelCallError, type CallModel } from "../model/call-model";
 import {
   CanonicalStudyEngineUnavailableError,
@@ -201,11 +202,11 @@ export function buildCanonicalStudyUserMessage(
   const structureContext = serializeEngine2StructureContext(context);
 
   const bindingLines =
-    composed.prompt.version === "v4"
+    isV4PromptVersion(composed.prompt.version)
       ? []
       : engine2RuntimeProposalBindingLines(composed.prompt.version);
   const returnSchema =
-    composed.prompt.version === "v4"
+    isV4PromptVersion(composed.prompt.version)
       ? "canonical-study-proposal/4"
       : `canonical-study-proposal/3 for domainId=${context.domainId}`;
 

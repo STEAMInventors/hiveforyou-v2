@@ -28,7 +28,10 @@ import {
   persistCaseProjectionsV3,
 } from "../projections/build-and-persist-projections-v3";
 import { readStatedWorkPurpose } from "@hiveforyou/shared/canonical-study";
-import type { LoadedCanonicalStudyPrompt } from "../prompts/load-canonical-study-prompt";
+import {
+  isV4PromptVersion,
+  type LoadedCanonicalStudyPrompt,
+} from "../prompts/load-canonical-study-prompt";
 import { composeCanonicalStudyPromptInputs } from "../prompts/compose-canonical-study-inputs";
 import type { CanonicalStudyEngine } from "./engine";
 import { enrichStudyContextWithStructureMap } from "./enrich-study-context";
@@ -190,7 +193,7 @@ async function completeValidatedStudyAfterProposal(input: {
       const proposalSchema =
         voiceProposal !== null
           ? CANONICAL_STUDY_PROPOSAL_SCHEMA_V5
-          : deps.prompt?.version === "v4"
+          : isV4PromptVersion(deps.prompt?.version ?? "")
             ? ("canonical-study-proposal/4" as const)
             : ("canonical-study-proposal/3" as const);
       let built = buildCaseProjectionsV3({

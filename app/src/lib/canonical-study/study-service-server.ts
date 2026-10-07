@@ -3,6 +3,7 @@ import "server-only";
 import {
   assemblePersistedStudyRequest,
   loadCaseCustomerContextSnapshot,
+  isV4PromptVersion,
   loadCanonicalStudyPrompt,
   requireSessionUserId,
   runCanonicalStudy,
@@ -55,7 +56,7 @@ export async function startCanonicalStudyFromRequest(
   const prompt = loadCanonicalStudyPrompt(CANONICAL_STUDY_PROMPT_ID);
   const engineConfig = canonicalStudyEngineFromServerEnv(
     env,
-    prompt.version === "v4" ? "v4" : "v3",
+    isV4PromptVersion(prompt.version) ? "v4" : "v3",
   );
   const gateway = createSupabaseHiveGateway(await createServerSupabaseClient());
   const adminGateway = createSupabaseHiveGateway(createAdminSupabaseClient());

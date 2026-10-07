@@ -27,6 +27,8 @@ const VERSION_FILES: Record<string, { version: string; fileName: string }> = {
   "canonical-study-v3": { version: "v3", fileName: "canonical-study-v3.md" },
   v4: { version: "v4", fileName: "canonical-study-v4.md" },
   "canonical-study-v4": { version: "v4", fileName: "canonical-study-v4.md" },
+  "v4.1": { version: "v4.1", fileName: "canonical-study-v4.1.md" },
+  "canonical-study-v4.1": { version: "v4.1", fileName: "canonical-study-v4.1.md" },
 };
 
 function resolvePromptKey(fileName: string): string {
@@ -59,4 +61,9 @@ export function loadCanonicalStudyPrompt(version: string): LoadedCanonicalStudyP
     content,
     sha256,
   };
+}
+
+/** True for v4 and its revisions (v4.1, ...): they run the v4 engine and the /4 schema. */
+export function isV4PromptVersion(version: string): boolean {
+  return version === "v4" || version.startsWith("v4.");
 }

@@ -4,6 +4,7 @@ import {
   enrichCaseViewWithValidatedStory,
   intakePackExecutionToStructureMap,
   loadCaseCustomerContextSnapshot,
+  isV4PromptVersion,
   loadCanonicalStudyPrompt,
   parseStoryWriterEngine,
   resolveIntakeStudyDomain,
@@ -35,7 +36,7 @@ import {
   type ModelCallMetrics,
 } from "@hiveforyou/model-providers/env";
 
-const CANONICAL_STUDY_PROMPT_ID = "canonical-study-v4";
+const CANONICAL_STUDY_PROMPT_ID = "canonical-study-v4.1";
 
 export type WorkerStudyModelMetricsSink = {
   take: () => ModelCallMetrics | undefined;
@@ -96,6 +97,14 @@ export function buildWorkerStudyDeps(
   const callModelBundle = tryCreateCallModelFromEnv(envRecord);
   const passSettings = readCanonicalStudyPassSettings(envRecord);
   const prompt = loadCanonicalStudyPrompt(CANONICAL_STUDY_PROMPT_ID);
+  console.info(
+    "[hive/prompt]",
+    JSON.stringify({
+      promptVersion: prompt.version,
+      promptSha256: prompt.sha256.slice(0, 12),
+      engine: isV4PromptVersion(prompt.version) ? "v4" : "v3",
+    }),
+  );
 
   const studyCallModel = callModelBundle
     ? wrapCallModelWithMetrics(callModelBundle.callModel, callModelBundle.provider, (metrics) =>
@@ -119,7 +128,7 @@ export function buildWorkerStudyDeps(
       maxOutputTokens,
     },
     {
-      promptVersion: prompt.version === "v4" ? "v4" : "v3",
+      promptVersion: isV4PromptVersion(prompt.version) ? "v4" : "v3",
       callModel: studyCallModel,
       modelName: callModelBundle?.modelName,
     },
