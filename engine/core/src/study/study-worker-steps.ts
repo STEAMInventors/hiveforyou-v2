@@ -66,7 +66,7 @@ function validateStudyProposal(
   proposal: CanonicalStudyEngineProposal,
   promptVersion: string | undefined,
 ) {
-  if (promptVersion === "v4") {
+  if (isV4PromptVersion(promptVersion ?? "")) {
     return validateCanonicalStudyProposalV4(context, proposal);
   }
   return validateCanonicalStudyProposalV3(context, proposal as CanonicalStudyProposal);

@@ -242,6 +242,16 @@ describe("runCanonicalStudy", () => {
     expect(outcome.run.promptVersion).toBe("v4");
   });
 
+  it("accepts canonical-study-v4.1 prompt with v4 fixture engine", async () => {
+    const prompt = loadCanonicalStudyPrompt("canonical-study-v4.1");
+    const outcome = await runCanonicalStudy(
+      baseRequest(),
+      createDeps(new FixtureCanonicalStudyEngineV4(), "fixture", undefined, prompt),
+    );
+    expect(outcome.run.status).toBe("SUCCEEDED");
+    expect(outcome.run.promptVersion).toBe("v4.1");
+  });
+
   it("persistence failure prevents SUCCEEDED status", async () => {
     const repo = new InMemoryCaseIntelligenceRepository();
     repo.save = async () => {

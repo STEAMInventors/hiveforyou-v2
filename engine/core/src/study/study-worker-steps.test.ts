@@ -102,7 +102,7 @@ async function seedWorkerStudyDeps(engine: CanonicalStudyEngine): Promise<{
   event: StudyWorkerEvent;
   request: StartCanonicalStudyRequest;
 }> {
-  const prompt = loadCanonicalStudyPrompt("canonical-study-v4");
+  const prompt = loadCanonicalStudyPrompt("canonical-study-v4.1");
   const resolvedPack = resolveDomainPackFromDiscoveryLabel("Special education records");
   if (!resolvedPack) {
     throw new Error("MISSING_PACK");

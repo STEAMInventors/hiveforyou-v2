@@ -139,7 +139,7 @@ function validateStudyProposal(
   proposal: CanonicalStudyEngineProposal,
   promptVersion: string | undefined,
 ) {
-  if (promptVersion === "v4") {
+  if (isV4PromptVersion(promptVersion ?? "")) {
     return validateCanonicalStudyProposalV4(context, proposal);
   }
   return validateCanonicalStudyProposalV3(context, proposal as CanonicalStudyProposal);
@@ -375,7 +375,7 @@ export async function runCanonicalStudy(
 
   if (
     deps.prompt?.version !== "v3" &&
-    deps.prompt?.version !== "v4"
+    !isV4PromptVersion(deps.prompt?.version ?? "")
   ) {
     const stubRun: CanonicalStudyRun = {
       studyRunId: randomUUID(),
