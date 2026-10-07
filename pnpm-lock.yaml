@@ -291,6 +291,22 @@ importers:
         specifier: ^2.1.8
         version: 2.1.9(@types/node@22.20.4)(jsdom@25.0.1)(terser@5.51.2)
 
+  engine/eval:
+    dependencies:
+      '@hiveforyou/core':
+        specifier: workspace:*
+        version: link:../core
+      '@hiveforyou/shared':
+        specifier: workspace:*
+        version: link:../shared
+    devDependencies:
+      typescript:
+        specifier: ^5.7.2
+        version: 5.9.3
+      vitest:
+        specifier: ^2.1.8
+        version: 2.1.9(@types/node@22.20.4)(jsdom@25.0.1)(terser@5.51.2)
+
   engine/intake:
     dependencies:
       '@hiveforyou/core':

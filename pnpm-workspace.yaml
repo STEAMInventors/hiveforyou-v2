@@ -2,6 +2,7 @@ packages:
   - "app"
   - "worker"
   - "engine/core"
+  - "engine/eval"
   - "engine/model-providers"
   - "engine/intake"
   - "engine/intake-node"

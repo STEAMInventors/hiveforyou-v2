@@ -1,0 +1,22 @@
+{
+  "name": "@hiveforyou/eval",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "lint": "node -e \"process.exit(0)\"",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@hiveforyou/core": "workspace:*",
+    "@hiveforyou/shared": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  }
+}
