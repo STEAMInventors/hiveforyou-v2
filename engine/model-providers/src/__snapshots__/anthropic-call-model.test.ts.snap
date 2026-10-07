@@ -3,6 +3,9 @@
 exports[`createAnthropicCallModel > includes PDF document blocks before user text 1`] = `
 [
   {
+    "cache_control": {
+      "type": "ephemeral",
+    },
     "source": {
       "data": "AQID",
       "media_type": "application/pdf",
@@ -50,6 +53,14 @@ exports[`createAnthropicCallModel > maps json_schema requests with system prompt
       "type": "json_schema",
     },
   },
-  "system": "system instructions",
+  "system": [
+    {
+      "cache_control": {
+        "type": "ephemeral",
+      },
+      "text": "system instructions",
+      "type": "text",
+    },
+  ],
 }
 `;

@@ -38,9 +38,15 @@ function normalizeMimeType(mimeType: string | null | undefined): string {
   return (mimeType ?? "").split(";")[0]?.trim().toLowerCase() ?? "";
 }
 
-function attachmentToContentBlock(attachment: ModelFileAttachment): Anthropic.Messages.ContentBlockParam {
+const EPHEMERAL_CACHE_CONTROL = { type: "ephemeral" as const };
+
+function attachmentToContentBlock(
+  attachment: ModelFileAttachment,
+  withCacheBreakpoint?: boolean,
+): Anthropic.Messages.ContentBlockParam {
   const mime = normalizeMimeType(attachment.mimeType);
   const data = bytesToBase64(attachment.bytes);
+  const cacheControl = withCacheBreakpoint ? EPHEMERAL_CACHE_CONTROL : undefined;
 
   if (mime === "application/pdf") {
     return {
@@ -50,6 +56,7 @@ function attachmentToContentBlock(attachment: ModelFileAttachment): Anthropic.Me
         media_type: "application/pdf",
         data,
       },
+      ...(cacheControl ? { cache_control: cacheControl } : {}),
     };
   }
 
@@ -61,6 +68,7 @@ function attachmentToContentBlock(attachment: ModelFileAttachment): Anthropic.Me
         media_type: mime,
         data,
       },
+      ...(cacheControl ? { cache_control: cacheControl } : {}),
     };
   }
 
@@ -81,16 +89,22 @@ function extractTextContent(content: Anthropic.Messages.ContentBlock[]): string 
   return parts.length > 0 ? parts.join("") : null;
 }
 
-function mapAnthropicUsage(usage: Anthropic.Messages.Usage | undefined): {
-  inputTokens: number;
-  outputTokens: number;
-} | undefined {
+function mapAnthropicUsage(usage: Anthropic.Messages.Usage | undefined):
+  | {
+      inputTokens: number;
+      outputTokens: number;
+      cacheReadInputTokens: number;
+      cacheWriteInputTokens: number;
+    }
+  | undefined {
   if (!usage) {
     return undefined;
   }
   return {
     inputTokens: usage.input_tokens,
     outputTokens: usage.output_tokens,
+    cacheReadInputTokens: usage.cache_read_input_tokens ?? 0,
+    cacheWriteInputTokens: usage.cache_creation_input_tokens ?? 0,
   };
 }
 
@@ -168,8 +182,12 @@ export function createAnthropicCallModel(input: AnthropicCallModelOptions): Call
       client.messages.stream(params).finalMessage());
 
   return async (req: ModelRequest) => {
+    const attachments = req.attachments ?? [];
+    const lastAttachmentIndex = attachments.length - 1;
     const userBlocks: Anthropic.Messages.ContentBlockParam[] = [
-      ...(req.attachments ?? []).map(attachmentToContentBlock),
+      ...attachments.map((attachment, index) =>
+        attachmentToContentBlock(attachment, index === lastAttachmentIndex && lastAttachmentIndex >= 0),
+      ),
       { type: "text", text: req.userContent },
     ];
 
@@ -207,7 +225,15 @@ export function createAnthropicCallModel(input: AnthropicCallModelOptions): Call
       ...(req.userOnly
         ? {}
         : systemForRequest
-          ? { system: systemForRequest }
+          ? {
+              system: [
+                {
+                  type: "text",
+                  text: systemForRequest,
+                  cache_control: EPHEMERAL_CACHE_CONTROL,
+                },
+              ],
+            }
           : {}),
       ...(Object.keys(outputConfig).length > 0 ? { output_config: outputConfig } : {}),
       ...(req.temperature != null ? { temperature: req.temperature } : {}),

@@ -6,11 +6,13 @@ import {
   createAnthropicCallModel,
   type AnthropicCallModelOptions,
 } from "./anthropic-call-model.js";
-import { createCallModelFromEnv } from "./create-call-model-from-env.js";
 import {
+  createCallModelFromEnv,
   listLegacyModelEnvVarsToWarn,
+  parseModelUsage,
   resetLegacyModelEnvWarnForTests,
   warnLegacyModelEnvVars,
+  wrapCallModelWithMetrics,
 } from "./create-call-model-from-env.js";
 import { createCanonicalStudyEngineFromEnv } from "@hiveforyou/core";
 import { normalizeJsonEnumCasing } from "./normalize-schema-enum-casing.js";
@@ -122,6 +124,19 @@ function mockStreamFinalMessage(
   impl: AnthropicCallModelOptions["streamFinalMessage"],
 ): AnthropicCallModelOptions["streamFinalMessage"] {
   return impl!;
+}
+
+function anthropicSystemText(system: unknown): string {
+  if (typeof system === "string") {
+    return system;
+  }
+  if (Array.isArray(system)) {
+    return system
+      .filter((block): block is { type: "text"; text: string } => block?.type === "text")
+      .map((block) => block.text)
+      .join("\n");
+  }
+  return "";
 }
 
 describe("createAnthropicCallModel", () => {
@@ -433,9 +448,97 @@ describe("createAnthropicCallModel", () => {
 
     const params = streamFinalMessage.mock.calls[0]?.[0];
     expect(params.output_config).toBeUndefined();
-    expect(params.system).toContain("Return only one JSON object that matches this JSON Schema:");
-    expect(params.system).toContain(JSON.stringify(schema, null, 2));
-    expect(params.system).toContain("base instructions");
+    const systemText = anthropicSystemText(params.system);
+    expect(systemText).toContain("Return only one JSON object that matches this JSON Schema:");
+    expect(systemText).toContain(JSON.stringify(schema, null, 2));
+    expect(systemText).toContain("base instructions");
+    expect(params.system).toEqual([
+      expect.objectContaining({
+        type: "text",
+        cache_control: { type: "ephemeral" },
+      }),
+    ]);
+  });
+
+  it("maps Anthropic cache usage fields on the response", async () => {
+    const streamFinalMessage = vi.fn(async () => ({
+      stop_reason: "end_turn",
+      content: [{ type: "text", text: '{"ok":true}' }],
+      usage: {
+        input_tokens: 100,
+        output_tokens: 20,
+        cache_creation_input_tokens: 700,
+        cache_read_input_tokens: 1200,
+      },
+    }));
+
+    const callModel = createAnthropicCallModel({
+      apiKey: "test-key",
+      model: "claude-opus-5-5",
+      defaultMaxOutputTokens: 16000,
+      streamFinalMessage: mockStreamFinalMessage(streamFinalMessage),
+    });
+
+    const response = await callModel({
+      model: "claude-opus-5-5",
+      userContent: "hello",
+      textFormat: { type: "json_object" },
+    });
+
+    expect(response.usage).toEqual({
+      inputTokens: 100,
+      outputTokens: 20,
+      cacheWriteInputTokens: 700,
+      cacheReadInputTokens: 1200,
+    });
+  });
+
+  it("marks cache_control only on the last attachment, not user text", async () => {
+    const streamFinalMessage = vi.fn(async () => ({
+      stop_reason: "end_turn",
+      content: [{ type: "text", text: '{"ok":true}' }],
+      usage: { input_tokens: 1, output_tokens: 1 },
+    }));
+
+    const callModel = createAnthropicCallModel({
+      apiKey: "test-key",
+      model: "claude-opus-5-5",
+      defaultMaxOutputTokens: 16000,
+      streamFinalMessage: mockStreamFinalMessage(streamFinalMessage),
+    });
+
+    await callModel({
+      model: "claude-opus-5-5",
+      userContent: "case-specific tail",
+      attachments: [
+        {
+          filename: "a.pdf",
+          bytes: new Uint8Array([1]),
+          mimeType: "application/pdf",
+        },
+        {
+          filename: "b.png",
+          bytes: new Uint8Array([2]),
+          mimeType: "image/png",
+        },
+        {
+          filename: "c.pdf",
+          bytes: new Uint8Array([3]),
+          mimeType: "application/pdf",
+        },
+      ],
+      textFormat: { type: "json_object" },
+    });
+
+    const content = streamFinalMessage.mock.calls[0]?.[0].messages[0].content as Array<
+      Record<string, unknown>
+    >;
+    expect(content).toHaveLength(4);
+    expect(content[0]?.cache_control).toBeUndefined();
+    expect(content[1]?.cache_control).toBeUndefined();
+    expect(content[2]?.cache_control).toEqual({ type: "ephemeral" });
+    expect(content[3]).toEqual({ type: "text", text: "case-specific tail" });
+    expect(content[3]?.cache_control).toBeUndefined();
   });
 
   it("prompt mode: garbage reply throws response_failed", async () => {
@@ -469,6 +572,64 @@ describe("createAnthropicCallModel", () => {
         },
       }),
     ).rejects.toMatchObject({ kind: "response_failed" });
+  });
+
+  it("parseModelUsage recognizes camelCase and snake_case cache token fields", () => {
+    expect(
+      parseModelUsage({
+        inputTokens: 1,
+        outputTokens: 2,
+        cacheReadInputTokens: 10,
+        cacheWriteInputTokens: 20,
+      }),
+    ).toEqual({
+      inputTokens: 1,
+      outputTokens: 2,
+      cacheReadInputTokens: 10,
+      cacheWriteInputTokens: 20,
+    });
+    expect(
+      parseModelUsage({
+        input_tokens: 3,
+        output_tokens: 4,
+        cache_read_input_tokens: 30,
+        cache_creation_input_tokens: 40,
+      }),
+    ).toEqual({
+      inputTokens: 3,
+      outputTokens: 4,
+      cacheReadInputTokens: 30,
+      cacheWriteInputTokens: 40,
+    });
+  });
+
+  it("wrapCallModelWithMetrics forwards cache token fields", async () => {
+    const inner = vi.fn(async () => ({
+      outputText: "{}",
+      usage: {
+        inputTokens: 5,
+        outputTokens: 6,
+        cacheReadInputTokens: 50,
+        cacheWriteInputTokens: 60,
+      },
+    }));
+    let captured: unknown;
+    const wrapped = wrapCallModelWithMetrics(inner, "anthropic", (metrics) => {
+      captured = metrics;
+    });
+    await wrapped({
+      model: "claude-opus-5-5",
+      userContent: "x",
+      textFormat: { type: "json_object" },
+    });
+    expect(captured).toEqual({
+      provider: "anthropic",
+      model: "claude-opus-5-5",
+      inputTokens: 5,
+      outputTokens: 6,
+      cacheReadInputTokens: 50,
+      cacheWriteInputTokens: 60,
+    });
   });
 
   it("normalizes enum casing in json_schema responses", async () => {

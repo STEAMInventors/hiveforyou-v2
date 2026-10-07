@@ -80,6 +80,8 @@ export function createCallModelFromEnv(
 export function parseModelUsage(usage: unknown): {
   inputTokens?: number;
   outputTokens?: number;
+  cacheReadInputTokens?: number;
+  cacheWriteInputTokens?: number;
 } {
   if (typeof usage !== "object" || usage === null) {
     return {};
@@ -89,11 +91,22 @@ export function parseModelUsage(usage: unknown): {
     record.input_tokens ?? record.prompt_tokens ?? record.inputTokens ?? record.promptTokens;
   const outputRaw =
     record.output_tokens ?? record.completion_tokens ?? record.outputTokens ?? record.completionTokens;
+  const cacheReadRaw = record.cacheReadInputTokens ?? record.cache_read_input_tokens;
+  const cacheWriteRaw =
+    record.cacheWriteInputTokens ?? record.cache_creation_input_tokens;
   const inputTokens =
     typeof inputRaw === "number" && Number.isFinite(inputRaw) ? Math.round(inputRaw) : undefined;
   const outputTokens =
     typeof outputRaw === "number" && Number.isFinite(outputRaw) ? Math.round(outputRaw) : undefined;
-  return { inputTokens, outputTokens };
+  const cacheReadInputTokens =
+    typeof cacheReadRaw === "number" && Number.isFinite(cacheReadRaw)
+      ? Math.round(cacheReadRaw)
+      : undefined;
+  const cacheWriteInputTokens =
+    typeof cacheWriteRaw === "number" && Number.isFinite(cacheWriteRaw)
+      ? Math.round(cacheWriteRaw)
+      : undefined;
+  return { inputTokens, outputTokens, cacheReadInputTokens, cacheWriteInputTokens };
 }
 
 export const LEGACY_MODEL_ENV_VAR_NAMES = [
@@ -197,6 +210,8 @@ export type ModelCallMetrics = {
   model: string;
   inputTokens?: number;
   outputTokens?: number;
+  cacheReadInputTokens?: number;
+  cacheWriteInputTokens?: number;
 };
 
 export function tryCreateCallModelFromEnv(
