@@ -50,7 +50,7 @@ function elapsedMs(start: number): number {
   return Math.round(performance.now() - start);
 }
 
-function mergeModelMetrics(
+export function mergeModelMetrics(
   payload: Record<string, unknown>,
   metrics: ModelCallMetrics | undefined,
 ): Record<string, unknown> {
@@ -63,6 +63,12 @@ function mergeModelMetrics(
     model: metrics.model,
     ...(metrics.inputTokens != null ? { inputTokens: metrics.inputTokens } : {}),
     ...(metrics.outputTokens != null ? { outputTokens: metrics.outputTokens } : {}),
+    ...(metrics.cacheReadInputTokens != null
+      ? { cacheReadInputTokens: metrics.cacheReadInputTokens }
+      : {}),
+    ...(metrics.cacheWriteInputTokens != null
+      ? { cacheWriteInputTokens: metrics.cacheWriteInputTokens }
+      : {}),
   };
 }
 

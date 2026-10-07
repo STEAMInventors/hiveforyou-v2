@@ -2,7 +2,44 @@ import { describe, expect, it } from "vitest";
 
 import { HIVE_EVENT_STUDY_REQUESTED } from "@hiveforyou/shared/events";
 
-import { parseStudyFailureEvent } from "./hive-study.js";
+import { mergeModelMetrics, parseStudyFailureEvent } from "./hive-study.js";
+
+describe("mergeModelMetrics", () => {
+  it("merges token and cache fields when present", () => {
+    const merged = mergeModelMetrics(
+      { step: "propose", ms: 42, outcome: "ok" },
+      {
+        provider: "anthropic",
+        model: "claude-test",
+        inputTokens: 100,
+        outputTokens: 50,
+        cacheReadInputTokens: 1200,
+        cacheWriteInputTokens: 700,
+      },
+    );
+    expect(merged).toEqual({
+      step: "propose",
+      ms: 42,
+      outcome: "ok",
+      provider: "anthropic",
+      model: "claude-test",
+      inputTokens: 100,
+      outputTokens: 50,
+      cacheReadInputTokens: 1200,
+      cacheWriteInputTokens: 700,
+    });
+  });
+
+  it("omits cache fields when absent", () => {
+    const merged = mergeModelMetrics(
+      { step: "validate" },
+      { provider: "openai", model: "gpt-test", inputTokens: 10 },
+    );
+    expect(merged).not.toHaveProperty("cacheReadInputTokens");
+    expect(merged).not.toHaveProperty("cacheWriteInputTokens");
+    expect(merged.inputTokens).toBe(10);
+  });
+});
 
 describe("parseStudyFailureEvent", () => {
   it("parses study requested payload from inngest/function.failed wrapper", () => {
