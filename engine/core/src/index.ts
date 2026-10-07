@@ -33,3 +33,8 @@ export * from "./projections/project-case-view-v1";
 export * from "./projections/project-case-view-v2-minimal";
 export * from "./projections/build-rulebook-document-explainers";
 export { l001LikeCanonicalSnapshot } from "./projections/fixtures/l001-like-canonical-snapshot";
+export { matchParties } from "./atoms/match";
+export { arithmeticFindings } from "./study/primitives/arithmetic";
+export { requirementCoverageFindings } from "./study/primitives/requirementCoverage";
+export { restatementFindings } from "./study/primitives/restatement";
+export { seriesContinuityFindings } from "./study/primitives/seriesContinuity";

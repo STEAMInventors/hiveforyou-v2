@@ -26,7 +26,14 @@ export {
   loadPack,
   packsV2Directory,
 } from "./packs-v2/load.ts";
-export { PACK_STUDY_PRIMITIVES } from "./packs-v2/primitives.ts";
+export {
+  PACK_PRIMITIVE_MAP,
+  PACK_STUDY_PRIMITIVES,
+  isPackStudyPrimitive,
+  type PackPrimitiveMapEntry,
+  type PackStudyPrimitive,
+} from "./packs-v2/primitives.ts";
+export type { PackValidationWarning } from "./packs-v2/errors.ts";
 export type { PackValidationError } from "./packs-v2/errors.ts";
 export { PackValidationFailedError } from "./packs-v2/errors.ts";
 export {

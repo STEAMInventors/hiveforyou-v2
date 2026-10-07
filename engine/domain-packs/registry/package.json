@@ -5,7 +5,8 @@
   "type": "module",
   "exports": {
     ".": "./index.ts",
-    "./packs-v2/types": "./packs-v2/types.ts"
+    "./packs-v2/types": "./packs-v2/types.ts",
+    "./packs-v2/primitive-map": "./packs-v2/primitive-map.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",

@@ -1,5 +1,14 @@
-import { pushError, type PackValidationError } from "./errors.ts";
-import { isPackStudyPrimitive } from "./primitives.ts";
+import {
+  pushError,
+  pushWarning,
+  type PackValidationError,
+  type PackValidationWarning,
+} from "./errors.ts";
+import {
+  isPackStudyPrimitive,
+  PACK_PRIMITIVE_MAP,
+  type PackStudyPrimitive,
+} from "./primitive-map.ts";
 import type {
   CaseAttributeDefinition,
   DomainPackV2,
@@ -529,7 +538,9 @@ export function validateDomainPackDocument(
   doc: unknown,
   file: string,
   options: ValidateDomainPackOptions = {},
-): { ok: true; pack: DomainPackV2 } | { ok: false; errors: PackValidationError[] } {
+):
+  | { ok: true; pack: DomainPackV2; warnings: PackValidationWarning[] }
+  | { ok: false; errors: PackValidationError[] } {
   const errors: PackValidationError[] = [];
 
   if (!isRecord(doc)) {
@@ -627,5 +638,21 @@ export function validateDomainPackDocument(
     document_types: documentTypes,
   };
 
-  return { ok: true, pack };
+  const warnings: PackValidationWarning[] = [];
+  for (let i = 0; i < questions.length; i += 1) {
+    const q = questions[i]!;
+    const planned = q.primitives.filter(
+      (name) => PACK_PRIMITIVE_MAP[name as PackStudyPrimitive]?.status === "planned",
+    );
+    if (planned.length > 0) {
+      pushWarning(
+        warnings,
+        file,
+        pathJoin(`questions[${i}]`, "primitives"),
+        `question uses planned primitive(s): ${planned.join(", ")}`,
+      );
+    }
+  }
+
+  return { ok: true, pack, warnings };
 }

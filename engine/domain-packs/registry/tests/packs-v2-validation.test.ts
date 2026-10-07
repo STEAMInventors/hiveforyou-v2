@@ -67,6 +67,7 @@ describe("packs-v2 validation", () => {
       "validate-legal-numbers.ts",
       "errors.ts",
       "primitives.ts",
+      "primitive-map.ts",
       "util.ts",
       "types.ts",
     ];
@@ -382,7 +383,36 @@ describe("packs-v2 validation", () => {
     expect(() => loadPack("iep", dir)).toThrow(PackValidationFailedError);
   });
 
-  it("exports primitive catalog", () => {
+  it("P14: planned primitive on a question yields warning not error", () => {
+    const doc = validPackSkeleton();
+    (doc.questions as unknown[])[0] = {
+      id: "q.planned",
+      ask: "Ask?",
+      primitives: ["compose_governing_with_amendments"],
+      weight: 1,
+    };
+    const r = validateDomainPackDocument(doc, "f.yaml");
+    expect(r.ok).toBe(true);
+    if (r.ok) {
+      expect(r.warnings.length).toBeGreaterThan(0);
+      expect(r.warnings[0]?.file).toBe("f.yaml");
+      expect(r.warnings[0]?.path).toBe("questions[0].primitives");
+    }
+  });
+
+  it("P9: four packs load with zero errors; warning counts reported", () => {
+    const files = ["iep.yaml", "medicaid.yaml", "bankruptcy.yaml", "core_default_questions.yaml"];
+    const counts: Record<string, number> = {};
+    for (const file of files) {
+      const r = validateDomainPackDocument(loadYamlFile(file), file);
+      expect(r.ok, file).toBe(true);
+      if (r.ok) counts[file] = r.warnings.length;
+    }
+    expect(counts["iep.yaml"]).toBeGreaterThan(0);
+    expect(counts["core_default_questions.yaml"]).toBeGreaterThan(0);
+  });
+
+  it("exports primitive catalog from PACK_PRIMITIVE_MAP keys", () => {
     expect(PACK_STUDY_PRIMITIVES).toContain("threshold");
     expect(PACK_STUDY_PRIMITIVES.length).toBe(18);
   });
