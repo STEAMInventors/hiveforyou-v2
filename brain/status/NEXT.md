@@ -1,6 +1,6 @@
 # NEXT - authorized agentic scope
 
-Branch: **efactor/engine-boundary**. Legacy slice scope: [NEXT-v2-slices.md](NEXT-v2-slices.md).
+Branch: **refactor/engine-boundary**. Legacy slice scope: [NEXT-v2-slices.md](NEXT-v2-slices.md).
 
 **Current ticket:** T0.1
 
@@ -15,4 +15,4 @@ Branch: **efactor/engine-boundary**. Legacy slice scope: [NEXT-v2-slices.md](NE
 | Date | Ticket | SHA | Notes |
 |------|--------|-----|-------|
 | 2026-10-07 | T0.1 | ce5f856 | v4.1 prompt/schema alignment and v4 runtime routing implemented; targeted tests pass; formal exit pending repo-wide test/build blockers and worker production verification |
-| 2026-10-07 | T0.1 | — | T0.1 runtime verification passed on Oracle: promptVersion v4.1, engine v4, study load-context succeeded. Formal completion remains blocked only by the unrelated repo-wide domain-pack boundary test. |
+| 2026-10-07 | T0.1 | 548f124 | T0.1 runtime verification passed on Oracle: promptVersion v4.1, engine v4, study load-context succeeded. Formal completion remains blocked only by the unrelated repo-wide domain-pack boundary test. |
