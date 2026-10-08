@@ -6,6 +6,8 @@ import type { PageModel, PageWord } from "../document/page-model";
 import { parseExtractionUnitId } from "../provenance/parse-extraction-unit-id";
 import type { PageWordRange } from "./types";
 
+export { wordRangesOverlap, type PageWordRange } from "./types";
+
 export type V4EvidenceRefInput = {
   sourceDocumentId: string;
   page: number;
