@@ -1,4 +1,4 @@
-﻿import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import { createDomainPackRegistry } from "@hiveforyou/domain-pack";
 
@@ -19,6 +19,29 @@ const FORBIDDEN_GUARDRAIL_FRAGMENTS = [
   "sourceType: document",
   "gapKind",
   "character for character",
+];
+
+/** Qualification fixture ids — trainable guidance must stay corpus-agnostic. */
+const FIXTURE_ID_PATTERN = /\bl00[1-7]\b/i;
+
+/** Reader must explicitly guide these IEP study topics (case-insensitive). */
+const READER_TOPIC_MARKERS: { topic: string; pattern: RegExp }[] = [
+  { topic: "goals", pattern: /measurable annual goals/i },
+  { topic: "services", pattern: /related services/i },
+  { topic: "progress", pattern: /progress reports/i },
+  { topic: "chronology", pattern: /occurred-on|effective-period/i },
+  {
+    topic: "cross-document linking",
+    pattern: /cross-document hooks|amendments or notices/i,
+  },
+  {
+    topic: "plan changes vs conflicts",
+    pattern: /historical plan changes|disagree about the same period/i,
+  },
+  {
+    topic: "missing information",
+    pattern: /missing-information items|not as facts the evidence establishes/i,
+  },
 ];
 
 describe("IEP study agents", () => {
@@ -47,5 +70,17 @@ describe("IEP study agents", () => {
     for (const fragment of FORBIDDEN_GUARDRAIL_FRAGMENTS) {
       expect(combined, `forbidden fragment: ${fragment}`).not.toContain(fragment);
     }
+  });
+
+  it("reader instructions cover required IEP study topics", () => {
+    const reader = IEP_STUDY_AGENTS.reader;
+    for (const { topic, pattern } of READER_TOPIC_MARKERS) {
+      expect(reader, `reader missing topic: ${topic}`).toMatch(pattern);
+    }
+  });
+
+  it("does not reference qualification fixture ids L001–L007", () => {
+    const combined = AGENT_ROLES.map((role) => IEP_STUDY_AGENTS[role]).join("\n");
+    expect(combined).not.toMatch(FIXTURE_ID_PATTERN);
   });
 });

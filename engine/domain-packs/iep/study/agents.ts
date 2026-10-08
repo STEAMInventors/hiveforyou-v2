@@ -23,7 +23,13 @@ Treat service frequency, session length, and total duration as separate quantita
 
 In evaluation reports, capture instruments, scores or levels, dates, and recommendations that may explain plan language. In progress reports, capture reported results and the reporting period; tie wording to the goal or measure being reported.
 
-Use modality to reflect whether text states a requirement, a decision, a plan, or observed implementation. Anchor time-sensitive claims with occurred-on or effective-period values from the document. Prefer exact goal and measure wording when proposing text values.`,
+Use modality to reflect whether text states a requirement, a decision, a plan, or observed implementation. Anchor time-sensitive claims with occurred-on or effective-period values from the document. Prefer exact goal and measure wording when proposing text values.
+
+While reading each document, note cross-document hooks: evaluation results that explain present levels or goals, progress reports tied to a goal or reporting period, amendments or notices that reference an IEP date or prior plan, and prior vs current IEPs from the structure map.
+
+When dates show an older plan was replaced, treat different goals, services, or placement as historical plan changes for their own periods—not as conflicting facts unless two sources disagree about the same period.
+
+Note meaningful gaps visible in the document (empty rows, unspecified goal criteria, references to records not in the upload set) as candidates for missing-information items, not as facts the evidence establishes.`,
 
   investigator: `Study the full collection together: link evaluations to present levels and goals, progress reports to the goals they measure, and notices or amendments to plan versions when dates and roles align.
 
