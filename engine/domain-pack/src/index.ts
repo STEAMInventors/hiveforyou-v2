@@ -20,6 +20,7 @@ export type {
   NarrativeCondition,
   NarrativeTemplate,
   StoryPackConfig,
+  StudyAgentInstructions,
 } from "./types";
 export { validateNarrativeBlock, validateNarrativeTemplate } from "./validate-narrative-block";
 export { DOMAIN_PACK_CAPABILITIES } from "./types";

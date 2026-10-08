@@ -114,6 +114,18 @@ export type DiscoverDomainPackSnapshot = {
   audienceRoles?: DomainPackAudienceRole[];
 };
 
+/**
+ * Pack-owned, trainable domain instructions for Engine 2 study agents (`study.agents`).
+ * These strings guide model behavior for a domain; they are not immutable Hive/core guardrails.
+ * When present on a study pack snapshot, all four roles must be populated.
+ */
+export type StudyAgentInstructions = {
+  intake: string;
+  reader: string;
+  investigator: string;
+  writer: string;
+};
+
 export type CanonicalStudyPackSnapshot = {
   domainId: string;
   domainPackId: string;
@@ -124,6 +136,8 @@ export type CanonicalStudyPackSnapshot = {
   studyGuidance?: string;
   /** Construct keys emphasized for case-view layout and client summary selection. */
   focusConstructs?: string[];
+  /** Optional during Phase 2 migration; when set, must include all {@link StudyAgentInstructions} roles. */
+  agents?: StudyAgentInstructions;
 };
 
 /** Deterministic Case Map zone matching — display/grouping only, not validation. */

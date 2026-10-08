@@ -7,7 +7,7 @@ import {
   genericProConfig,
   genericStoryConfig,
 } from "./index";
-import type { DomainPack } from "./types";
+import type { CanonicalStudyPackSnapshot, DomainPack, StudyAgentInstructions } from "./types";
 
 const samplePack: DomainPack = {
   manifest: {
@@ -87,3 +87,49 @@ describe("domain pack registry", () => {
     ).toThrow(/domainId/);
   });
 });
+
+describe("StudyAgentInstructions contract", () => {
+  it("accepts a complete agents block on a study pack snapshot", () => {
+    const agents: StudyAgentInstructions = {
+      intake: "intake instructions",
+      reader: "reader instructions",
+      investigator: "investigator instructions",
+      writer: "writer instructions",
+    };
+
+    const snapshot: CanonicalStudyPackSnapshot = {
+      domainId: "domain",
+      domainPackId: "pack",
+      domainPackVersion: "0.0.0",
+      domainLabel: "Label",
+      vocabulary: {
+        entityTypes: [],
+        claimTypes: [],
+        relationshipTypes: [],
+        eventTypes: [],
+      },
+      agents,
+    };
+
+    expect(snapshot.agents?.reader).toBe("reader instructions");
+  });
+});
+
+// Compile-time: partial agent definitions must not typecheck.
+// @ts-expect-error StudyAgentInstructions requires all four roles
+const _rejectPartialAgents: StudyAgentInstructions = { intake: "only intake" };
+
+const _rejectPartialOnSnapshot: CanonicalStudyPackSnapshot = {
+  domainId: "domain",
+  domainPackId: "pack",
+  domainPackVersion: "0.0.0",
+  domainLabel: "Label",
+  vocabulary: {
+    entityTypes: [],
+    claimTypes: [],
+    relationshipTypes: [],
+    eventTypes: [],
+  },
+  // @ts-expect-error agents on snapshot must be complete when provided
+  agents: { intake: "only intake" },
+};
