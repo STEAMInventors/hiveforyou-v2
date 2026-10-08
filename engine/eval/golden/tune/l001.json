@@ -1,0 +1,2963 @@
+{
+  "caseId": "l001",
+  "split": "tune",
+  "corpusDir": "engine/intake/fixtures/l001",
+  "verifiedBy": "Aryya Bhattacharyya",
+  "draft": false,
+  "facts": [
+    {
+      "id": "clm_student_dob",
+      "documentId": "01_initial_referral.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        28,
+        32
+      ],
+      "valueKind": "date",
+      "value": {
+        "kind": "date",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": "2017-04-18",
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_student_grade",
+      "documentId": "01_initial_referral.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        32,
+        34
+      ],
+      "valueKind": "code",
+      "value": {
+        "kind": "code",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": "2",
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_student_school",
+      "documentId": "01_initial_referral.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        34,
+        38
+      ],
+      "valueKind": "entity_ref",
+      "value": {
+        "kind": "entity_ref",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": "ent_school",
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_student_district",
+      "documentId": "01_initial_referral.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        38,
+        41
+      ],
+      "valueKind": "entity_ref",
+      "value": {
+        "kind": "entity_ref",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": "ent_district",
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_referral_date",
+      "documentId": "01_initial_referral.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        43,
+        46
+      ],
+      "valueKind": "date",
+      "value": {
+        "kind": "date",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": "2024-08-20",
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_referral_student",
+      "documentId": "01_initial_referral.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        25,
+        28
+      ],
+      "valueKind": "entity_ref",
+      "value": {
+        "kind": "entity_ref",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": "ent_student",
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_referral_by",
+      "documentId": "01_initial_referral.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        46,
+        49
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "Teacher",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_referral_area_of_concern",
+      "documentId": "01_initial_referral.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        49,
+        54
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "Reading Fluency",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_referral_area_requested_1",
+      "documentId": "01_initial_referral.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        101,
+        106
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "Academic achievement / reading",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_referral_area_requested_2",
+      "documentId": "01_initial_referral.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        106,
+        109
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "Reading fluency",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_referral_area_requested_3",
+      "documentId": "01_initial_referral.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        109,
+        114
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "Review of educational performance",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_referral_parent_input",
+      "documentId": "01_initial_referral.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        116,
+        127
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "will be requested as part of the evaluation process",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "planned"
+      ]
+    },
+    {
+      "id": "clm_referral_next_step",
+      "documentId": "01_initial_referral.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        129,
+        143
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "review existing information and determine the areas requiring further evaluation",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "planned"
+      ]
+    },
+    {
+      "id": "clm_reading_difficulty",
+      "documentId": "01_initial_referral.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        57,
+        67
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "difficulty reading connected grade-level text accurately and fluently",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_reading_concern_persistent",
+      "documentId": "01_initial_referral.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        70,
+        85
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "persistent",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_reading_access_impact",
+      "documentId": "01_initial_referral.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        85,
+        97
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "affects ability to access grade-level reading activities independently",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_plan_date",
+      "documentId": "02_evaluation_plan.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        25,
+        28
+      ],
+      "valueKind": "date",
+      "value": {
+        "kind": "date",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": "2024-08-28",
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_plan_prepared_by",
+      "documentId": "02_evaluation_plan.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        28,
+        31
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "District",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_plan_type",
+      "documentId": "02_evaluation_plan.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        31,
+        36
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "Initial evaluation plan",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_plan_responds_to_referral",
+      "documentId": "02_evaluation_plan.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        73,
+        90
+      ],
+      "valueKind": "entity_ref",
+      "value": {
+        "kind": "entity_ref",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": "ent_referral",
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_plan_existing_info_1",
+      "documentId": "02_evaluation_plan.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        114,
+        122
+      ],
+      "valueKind": "boolean",
+      "value": {
+        "kind": "boolean",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": true,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_plan_existing_info_2",
+      "documentId": "02_evaluation_plan.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        122,
+        130
+      ],
+      "valueKind": "boolean",
+      "value": {
+        "kind": "boolean",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": true,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_plan_existing_info_3",
+      "documentId": "02_evaluation_plan.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        130,
+        134
+      ],
+      "valueKind": "boolean",
+      "value": {
+        "kind": "boolean",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": true,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_plan_existing_info_4",
+      "documentId": "02_evaluation_plan.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        134,
+        139
+      ],
+      "valueKind": "boolean",
+      "value": {
+        "kind": "boolean",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": false,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_plan_area_proposed_1",
+      "documentId": "02_evaluation_plan.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        143,
+        148
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "Academic achievement / reading",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "planned"
+      ]
+    },
+    {
+      "id": "clm_plan_area_proposed_2",
+      "documentId": "02_evaluation_plan.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        148,
+        151
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "Reading fluency",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "planned"
+      ]
+    },
+    {
+      "id": "clm_plan_area_proposed_3",
+      "documentId": "02_evaluation_plan.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        151,
+        156
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "Review of educational performance",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "planned"
+      ]
+    },
+    {
+      "id": "clm_plan_info_to_gather_1",
+      "documentId": "02_evaluation_plan.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        164,
+        170
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "Review of existing educational records",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "planned"
+      ]
+    },
+    {
+      "id": "clm_plan_info_to_gather_2",
+      "documentId": "02_evaluation_plan.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        170,
+        173
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "Teacher input",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "planned"
+      ]
+    },
+    {
+      "id": "clm_plan_info_to_gather_3",
+      "documentId": "02_evaluation_plan.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        173,
+        176
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "Parent input",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "planned"
+      ]
+    },
+    {
+      "id": "clm_plan_info_to_gather_4",
+      "documentId": "02_evaluation_plan.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        176,
+        182
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "Appropriate assessment of reading performance",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "planned"
+      ]
+    },
+    {
+      "id": "clm_plan_consent_required",
+      "documentId": "02_evaluation_plan.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        184,
+        193
+      ],
+      "valueKind": "boolean",
+      "value": {
+        "kind": "boolean",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": true,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "required"
+      ]
+    },
+    {
+      "id": "clm_consent_given",
+      "documentId": "03_parent_evaluation_consent.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        112,
+        120
+      ],
+      "valueKind": "boolean",
+      "value": {
+        "kind": "boolean",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": true,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "decided"
+      ]
+    },
+    {
+      "id": "clm_consent_given_by",
+      "documentId": "03_parent_evaluation_consent.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        46,
+        60
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "parent/guardian",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_consent_follows_plan",
+      "documentId": "03_parent_evaluation_consent.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        112,
+        120
+      ],
+      "valueKind": "entity_ref",
+      "value": {
+        "kind": "entity_ref",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": "ent_eval_plan",
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_consent_area_1",
+      "documentId": "03_parent_evaluation_consent.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        97,
+        102
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "Academic achievement / reading",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "decided"
+      ]
+    },
+    {
+      "id": "clm_consent_area_2",
+      "documentId": "03_parent_evaluation_consent.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        102,
+        105
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "Reading fluency",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "decided"
+      ]
+    },
+    {
+      "id": "clm_consent_area_3",
+      "documentId": "03_parent_evaluation_consent.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        105,
+        110
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "Review of educational performance",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "decided"
+      ]
+    },
+    {
+      "id": "clm_psych_date",
+      "documentId": "04_psychoeducational_evaluation.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        39,
+        42
+      ],
+      "valueKind": "date",
+      "value": {
+        "kind": "date",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": "2024-10-15",
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_psych_evaluator",
+      "documentId": "04_psychoeducational_evaluation.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        42,
+        45
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "School psychologist",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_psych_source_1",
+      "documentId": "04_psychoeducational_evaluation.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        116,
+        123
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "Initial referral for special education evaluation",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_psych_source_2",
+      "documentId": "04_psychoeducational_evaluation.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        123,
+        130
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "Teacher information regarding classroom reading tasks",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_psych_source_3",
+      "documentId": "04_psychoeducational_evaluation.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        130,
+        137
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "Parent consent for the initial evaluation",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_psych_source_4",
+      "documentId": "04_psychoeducational_evaluation.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        137,
+        144
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "Student observation during the evaluation session",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_psych_verbal_directions",
+      "documentId": "04_psychoeducational_evaluation.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        148,
+        161
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "participated in classroom discussion and understood ordinary verbal directions",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_psych_cooperation",
+      "documentId": "04_psychoeducational_evaluation.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        161,
+        170
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "adequate for completing requested tasks",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_psych_cognitive_range",
+      "documentId": "04_psychoeducational_evaluation.pdf",
+      "pageNumber": 2,
+      "wordRange": [
+        21,
+        34
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "broadly within the expected range for age",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_psych_no_global_cognitive",
+      "documentId": "04_psychoeducational_evaluation.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        170,
+        189
+      ],
+      "valueKind": "boolean",
+      "value": {
+        "kind": "boolean",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": false,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_psych_supports_further_eval",
+      "documentId": "04_psychoeducational_evaluation.pdf",
+      "pageNumber": 2,
+      "wordRange": [
+        75,
+        88
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "supports continued educational evaluation of reading achievement and fluency",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_psych_consistent_concern",
+      "documentId": "04_psychoeducational_evaluation.pdf",
+      "pageNumber": 2,
+      "wordRange": [
+        88,
+        99
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "classroom performance and teacher report consistent with a reading-fluency concern",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_psych_no_category",
+      "documentId": "04_psychoeducational_evaluation.pdf",
+      "pageNumber": 2,
+      "wordRange": [
+        99,
+        107
+      ],
+      "valueKind": "boolean",
+      "value": {
+        "kind": "boolean",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": false,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_psych_no_sped_conclusion",
+      "documentId": "04_psychoeducational_evaluation.pdf",
+      "pageNumber": 2,
+      "wordRange": [
+        108,
+        117
+      ],
+      "valueKind": "boolean",
+      "value": {
+        "kind": "boolean",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": false,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_psych_no_minutes",
+      "documentId": "04_psychoeducational_evaluation.pdf",
+      "pageNumber": 2,
+      "wordRange": [
+        144,
+        150
+      ],
+      "valueKind": "boolean",
+      "value": {
+        "kind": "boolean",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": false,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_psych_recommend_academic",
+      "documentId": "04_psychoeducational_evaluation.pdf",
+      "pageNumber": 2,
+      "wordRange": [
+        118,
+        134
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "academic assessment of reading achievement and fluency next, before the team considers eligibility",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "planned"
+      ]
+    },
+    {
+      "id": "clm_academic_date",
+      "documentId": "05_academic_evaluation.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        67,
+        70
+      ],
+      "valueKind": "date",
+      "value": {
+        "kind": "date",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": "2024-10-18",
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_academic_evaluator",
+      "documentId": "05_academic_evaluation.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        70,
+        73
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "Academic evaluator",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_academic_focus",
+      "documentId": "05_academic_evaluation.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        73,
+        80
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "Reading achievement and oral reading fluency",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_orf_wcpm",
+      "documentId": "05_academic_evaluation.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        96,
+        101
+      ],
+      "valueKind": "quantity",
+      "value": {
+        "kind": "quantity",
+        "numberValue": 42,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": "WCPM"
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_orf_accuracy",
+      "documentId": "05_academic_evaluation.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        101,
+        105
+      ],
+      "valueKind": "quantity",
+      "value": {
+        "kind": "quantity",
+        "numberValue": 86,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": "%"
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_reading_comprehension",
+      "documentId": "05_academic_evaluation.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        105,
+        111
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "Below expected classroom level",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_connected_text_slow",
+      "documentId": "05_academic_evaluation.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        112,
+        118
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "slow and effortful",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_frequent_pauses",
+      "documentId": "05_academic_evaluation.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        118,
+        122
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "frequent pauses",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_isolated_word_stronger",
+      "documentId": "05_academic_evaluation.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        122,
+        130
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "isolated word reading stronger than connected-text reading",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_academic_need",
+      "documentId": "05_academic_evaluation.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        132,
+        141
+      ],
+      "valueKind": "boolean",
+      "value": {
+        "kind": "boolean",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": true,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_academic_recommendation_1",
+      "documentId": "05_academic_evaluation.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        176,
+        181
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "explicit systematic reading instruction",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "planned"
+      ]
+    },
+    {
+      "id": "clm_academic_recommendation_2",
+      "documentId": "05_academic_evaluation.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        181,
+        186
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "repeated oral reading practice",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "planned"
+      ]
+    },
+    {
+      "id": "clm_academic_recommendation_3",
+      "documentId": "05_academic_evaluation.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        186,
+        190
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "regular progress monitoring",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "planned"
+      ]
+    },
+    {
+      "id": "clm_slp_date",
+      "documentId": "06_speech_language_evaluation.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        39,
+        42
+      ],
+      "valueKind": "date",
+      "value": {
+        "kind": "date",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": "2024-10-22",
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_slp_evaluator",
+      "documentId": "06_speech_language_evaluation.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        42,
+        45
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "Speech-language pathologist",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_slp_purpose",
+      "documentId": "06_speech_language_evaluation.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        67,
+        80
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "determine whether a separate speech-language educational need is present",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_slp_intelligibility",
+      "documentId": "06_speech_language_evaluation.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        104,
+        111
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "adequate for classroom participation",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_slp_language",
+      "documentId": "06_speech_language_evaluation.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        111,
+        125
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "broadly functional for classroom communication",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_slp_no_impairment",
+      "documentId": "06_speech_language_evaluation.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        125,
+        133
+      ],
+      "valueKind": "boolean",
+      "value": {
+        "kind": "boolean",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": false,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_slp_no_separate_need",
+      "documentId": "06_speech_language_evaluation.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        156,
+        166
+      ],
+      "valueKind": "boolean",
+      "value": {
+        "kind": "boolean",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": false,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_slp_no_service",
+      "documentId": "06_speech_language_evaluation.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        193,
+        198
+      ],
+      "valueKind": "boolean",
+      "value": {
+        "kind": "boolean",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": false,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_slp_reading_unresolved",
+      "documentId": "06_speech_language_evaluation.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        80,
+        91
+      ],
+      "valueKind": "boolean",
+      "value": {
+        "kind": "boolean",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": false,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_slp_no_eligibility",
+      "documentId": "06_speech_language_evaluation.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        198,
+        206
+      ],
+      "valueKind": "boolean",
+      "value": {
+        "kind": "boolean",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": false,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_elig_date",
+      "documentId": "07_eligibility_determination.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        42,
+        45
+      ],
+      "valueKind": "date",
+      "value": {
+        "kind": "date",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": "2024-11-01",
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_elig_type",
+      "documentId": "07_eligibility_determination.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        45,
+        50
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "Initial Eligibility Determination",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_elig_by",
+      "documentId": "07_eligibility_determination.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        50,
+        54
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "Eligibility team",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_elig_reviewed_1",
+      "documentId": "07_eligibility_determination.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        70,
+        75
+      ],
+      "valueKind": "entity_ref",
+      "value": {
+        "kind": "entity_ref",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": "ent_psych_eval",
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_elig_reviewed_2",
+      "documentId": "07_eligibility_determination.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        75,
+        80
+      ],
+      "valueKind": "entity_ref",
+      "value": {
+        "kind": "entity_ref",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": "ent_academic_eval",
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_elig_reviewed_3",
+      "documentId": "07_eligibility_determination.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        80,
+        85
+      ],
+      "valueKind": "entity_ref",
+      "value": {
+        "kind": "entity_ref",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": "ent_slp_eval",
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_elig_eligible",
+      "documentId": "07_eligibility_determination.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        173,
+        178
+      ],
+      "valueKind": "boolean",
+      "value": {
+        "kind": "boolean",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": true,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "decided"
+      ]
+    },
+    {
+      "id": "clm_elig_category",
+      "documentId": "07_eligibility_determination.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        185,
+        193
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "Specific Learning Disability (SLD) - Reading",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "decided"
+      ]
+    },
+    {
+      "id": "clm_elig_primary_need",
+      "documentId": "07_eligibility_determination.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        220,
+        225
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "Reading Fluency",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "decided"
+      ]
+    },
+    {
+      "id": "clm_elig_not_medical",
+      "documentId": "07_eligibility_determination.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        54,
+        67
+      ],
+      "valueKind": "boolean",
+      "value": {
+        "kind": "boolean",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": false,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_elig_requires_sdi",
+      "documentId": "07_eligibility_determination.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        231,
+        246
+      ],
+      "valueKind": "boolean",
+      "value": {
+        "kind": "boolean",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": true,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "decided"
+      ]
+    },
+    {
+      "id": "clm_iep_date",
+      "documentId": "08_initial_iep.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        44,
+        47
+      ],
+      "valueKind": "date",
+      "value": {
+        "kind": "date",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": "2024-11-12",
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_iep_period",
+      "documentId": "08_initial_iep.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        47,
+        52
+      ],
+      "valueKind": "period",
+      "value": {
+        "kind": "period",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": "2024-11-12",
+        "periodEnd": "2025-11-11",
+        "unit": null
+      },
+      "acceptableModalities": [
+        "planned"
+      ]
+    },
+    {
+      "id": "clm_iep_student",
+      "documentId": "08_initial_iep.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        28,
+        31
+      ],
+      "valueKind": "entity_ref",
+      "value": {
+        "kind": "entity_ref",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": "ent_student",
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_iep_implements_eligibility",
+      "documentId": "08_initial_iep.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        70,
+        77
+      ],
+      "valueKind": "entity_ref",
+      "value": {
+        "kind": "entity_ref",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": "ent_eligibility",
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_iep_addresses",
+      "documentId": "08_initial_iep.pdf",
+      "pageNumber": 3,
+      "wordRange": [
+        13,
+        22
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "Reading Fluency",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "planned"
+      ]
+    },
+    {
+      "id": "clm_iep_has_goal",
+      "documentId": "08_initial_iep.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        220,
+        223
+      ],
+      "valueKind": "entity_ref",
+      "value": {
+        "kind": "entity_ref",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": "ent_goal_reading_fluency",
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "planned"
+      ]
+    },
+    {
+      "id": "clm_iep_has_service",
+      "documentId": "08_initial_iep.pdf",
+      "pageNumber": 2,
+      "wordRange": [
+        64,
+        77
+      ],
+      "valueKind": "entity_ref",
+      "value": {
+        "kind": "entity_ref",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": "ent_service_reading",
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "planned"
+      ]
+    },
+    {
+      "id": "clm_iep_accommodation_1",
+      "documentId": "08_initial_iep.pdf",
+      "pageNumber": 2,
+      "wordRange": [
+        79,
+        86
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "Extended time for classroom reading assessments",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "planned"
+      ]
+    },
+    {
+      "id": "clm_iep_accommodation_2",
+      "documentId": "08_initial_iep.pdf",
+      "pageNumber": 2,
+      "wordRange": [
+        86,
+        97
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "Directions read aloud when reading ability is not being assessed",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "planned"
+      ]
+    },
+    {
+      "id": "clm_iep_team_role_1",
+      "documentId": "08_initial_iep.pdf",
+      "pageNumber": 2,
+      "wordRange": [
+        145,
+        149
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "Parent/Guardian",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_iep_team_role_2",
+      "documentId": "08_initial_iep.pdf",
+      "pageNumber": 2,
+      "wordRange": [
+        149,
+        155
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "General Education Teacher",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_iep_team_role_3",
+      "documentId": "08_initial_iep.pdf",
+      "pageNumber": 2,
+      "wordRange": [
+        155,
+        161
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "Special Education Teacher",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_iep_team_role_4",
+      "documentId": "08_initial_iep.pdf",
+      "pageNumber": 2,
+      "wordRange": [
+        161,
+        166
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "District Representative",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_iep_progress_reporting_frequency",
+      "documentId": "08_initial_iep.pdf",
+      "pageNumber": 2,
+      "wordRange": [
+        112,
+        118
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "quarterly, concurrent with report periods",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "planned"
+      ]
+    },
+    {
+      "id": "clm_iep_progress_reporting_method",
+      "documentId": "08_initial_iep.pdf",
+      "pageNumber": 2,
+      "wordRange": [
+        100,
+        111
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "oral-reading-fluency probes",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "planned"
+      ]
+    },
+    {
+      "id": "clm_goal_area",
+      "documentId": "08_initial_iep.pdf",
+      "pageNumber": 3,
+      "wordRange": [
+        13,
+        22
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "Reading Fluency",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "planned"
+      ]
+    },
+    {
+      "id": "clm_goal_condition",
+      "documentId": "08_initial_iep.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        194,
+        200
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "Given a grade-level connected text passage",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "planned"
+      ]
+    },
+    {
+      "id": "clm_goal_baseline",
+      "documentId": "08_initial_iep.pdf",
+      "pageNumber": 2,
+      "wordRange": [
+        10,
+        13
+      ],
+      "valueKind": "quantity",
+      "value": {
+        "kind": "quantity",
+        "numberValue": 42,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": "WCPM"
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_goal_baseline_source",
+      "documentId": "08_initial_iep.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        113,
+        126
+      ],
+      "valueKind": "entity_ref",
+      "value": {
+        "kind": "entity_ref",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": "ent_academic_eval",
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_goal_target_wcpm",
+      "documentId": "08_initial_iep.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        200,
+        211
+      ],
+      "valueKind": "quantity",
+      "value": {
+        "kind": "quantity",
+        "numberValue": 75,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": "WCPM"
+      },
+      "acceptableModalities": [
+        "planned"
+      ]
+    },
+    {
+      "id": "clm_goal_accuracy",
+      "documentId": "08_initial_iep.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        211,
+        216
+      ],
+      "valueKind": "quantity",
+      "value": {
+        "kind": "quantity",
+        "numberValue": 95,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": "%"
+      },
+      "acceptableModalities": [
+        "planned"
+      ]
+    },
+    {
+      "id": "clm_goal_mastery",
+      "documentId": "08_initial_iep.pdf",
+      "pageNumber": 2,
+      "wordRange": [
+        22,
+        28
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "across three consecutive probes",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "planned"
+      ]
+    },
+    {
+      "id": "clm_goal_start",
+      "documentId": "08_initial_iep.pdf",
+      "pageNumber": 2,
+      "wordRange": [
+        28,
+        31
+      ],
+      "valueKind": "date",
+      "value": {
+        "kind": "date",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": "2024-11-12",
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "planned"
+      ]
+    },
+    {
+      "id": "clm_goal_target_date",
+      "documentId": "08_initial_iep.pdf",
+      "pageNumber": 2,
+      "wordRange": [
+        31,
+        34
+      ],
+      "valueKind": "date",
+      "value": {
+        "kind": "date",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": "2025-11-11",
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "planned"
+      ]
+    },
+    {
+      "id": "clm_goal_measurement",
+      "documentId": "08_initial_iep.pdf",
+      "pageNumber": 2,
+      "wordRange": [
+        34,
+        44
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "curriculum-based oral reading fluency probes",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "planned"
+      ]
+    },
+    {
+      "id": "clm_service_frequency",
+      "documentId": "08_initial_iep.pdf",
+      "pageNumber": 2,
+      "wordRange": [
+        54,
+        58
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "Weekly",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "planned"
+      ]
+    },
+    {
+      "id": "clm_service_minutes",
+      "documentId": "08_initial_iep.pdf",
+      "pageNumber": 2,
+      "wordRange": [
+        57,
+        60
+      ],
+      "valueKind": "quantity",
+      "value": {
+        "kind": "quantity",
+        "numberValue": 150,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": "min/week"
+      },
+      "acceptableModalities": [
+        "planned"
+      ]
+    },
+    {
+      "id": "clm_service_location",
+      "documentId": "08_initial_iep.pdf",
+      "pageNumber": 2,
+      "wordRange": [
+        58,
+        63
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "special education setting",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "planned"
+      ]
+    },
+    {
+      "id": "clm_service_start",
+      "documentId": "08_initial_iep.pdf",
+      "pageNumber": 2,
+      "wordRange": [
+        60,
+        64
+      ],
+      "valueKind": "date",
+      "value": {
+        "kind": "date",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": "2024-11-12",
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "planned"
+      ]
+    }
+  ],
+  "gaps": [
+    {
+      "id": "mi_parent_input_not_documented",
+      "gapKind": "not_found_in_supplied_documents",
+      "description": "The referral says parent input will be requested and the evaluation plan lists parent input as information to be gathered. The psychoeducational sources of information and the eligibility evidence reviewed do not list parent input, and no supplied document records it. A parent input form or a record of parent input in the evaluation would answer this."
+    }
+  ],
+  "tripwires": [
+    {
+      "id": "tw_l001_no_conflicts",
+      "mustNotClaim": "conflict",
+      "description": "L001 is a zero-conflict corpus; grader must not accept any conflict claims."
+    },
+    {
+      "id": "tw_l001_no_false_sld_conflict",
+      "mustNotClaim": "conflict:psychoed_vs_sld_determination",
+      "description": "Psychoed report not assigning disability category vs later SLD determination is not a conflict."
+    },
+    {
+      "id": "tw_l001_no_gap_quarterly_progress_reports",
+      "mustNotClaim": "gap:quarterly_progress_reports",
+      "description": "Future-tense quarterly reporting expectation must not become an expected gap."
+    },
+    {
+      "id": "tw_l001_no_gap_service_frequency_detail",
+      "mustNotClaim": "gap:sessions_per_week_or_session_duration",
+      "description": "Weekly-only service frequency must not force gaps for sessions/week or session length."
+    }
+  ]
+}

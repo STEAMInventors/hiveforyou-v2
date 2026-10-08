@@ -1,0 +1,2290 @@
+{
+  "caseId": "l004",
+  "wordLayer": "document-pages (extractNativeWords via ensure-document-pages.ts)",
+  "wordRangeStatus": "verified",
+  "sourceIds": {
+    "l004-src-1": "01_annual_iep.pdf",
+    "l004-src-2": "02_progress_report_q1.pdf",
+    "l004-src-3": "03_progress_report_q2.pdf",
+    "l004-src-4": "04_progress_report_q3.pdf",
+    "l004-src-5": "05_academic_evaluation.pdf"
+  },
+  "sourceHashes": {
+    "l004-src-1": {
+      "filename": "01_annual_iep.pdf",
+      "sha256": "134c5fbfdfce170b9e9d6df79754668804c0eebadaec0c6180f3c3c8b8a7ce0a",
+      "pages": 2
+    },
+    "l004-src-2": {
+      "filename": "02_progress_report_q1.pdf",
+      "sha256": "c3c1a06bcc02fc9ec4c9764431eec742e9e65ff60dd53048a3975cc98edd643c",
+      "pages": 1
+    },
+    "l004-src-3": {
+      "filename": "03_progress_report_q2.pdf",
+      "sha256": "9001b2912422b2baab4c1ac158a965a876336dc42d5cc61ba39d236648b4a8d3",
+      "pages": 1
+    },
+    "l004-src-4": {
+      "filename": "04_progress_report_q3.pdf",
+      "sha256": "e1c64073300f3b49c2a05f20a07808f45a9f7b6fc384fdafce8b5e62ce91ea84",
+      "pages": 1
+    },
+    "l004-src-5": {
+      "filename": "05_academic_evaluation.pdf",
+      "sha256": "dff8b06a404dfad3b1bb008f04faa255dbfac87ef64c7414e5840718628510cc",
+      "pages": 2
+    }
+  },
+  "refs": [
+    {
+      "evidenceRefId": "ent_student-ev1",
+      "owner": "ent_student",
+      "sourceDocumentId": "l004-src-1",
+      "documentId": "01_annual_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 27,
+        "endSeq": 29
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Student: Daniel Okafor"
+    },
+    {
+      "evidenceRefId": "ent_student-ev2",
+      "owner": "ent_student",
+      "sourceDocumentId": "l004-src-1",
+      "documentId": "01_annual_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 119,
+        "endSeq": 124
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Daniel has a persistent reading concern."
+    },
+    {
+      "evidenceRefId": "ent_school-ev1",
+      "owner": "ent_school",
+      "sourceDocumentId": "l004-src-1",
+      "documentId": "01_annual_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 36,
+        "endSeq": 39
+      },
+      "occurrencesOnPage": 1,
+      "quote": "School: Synthetic Elementary School"
+    },
+    {
+      "evidenceRefId": "ent_district-ev1",
+      "owner": "ent_district",
+      "sourceDocumentId": "l004-src-1",
+      "documentId": "01_annual_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 40,
+        "endSeq": 42
+      },
+      "occurrencesOnPage": 1,
+      "quote": "District: Synthetic District"
+    },
+    {
+      "evidenceRefId": "ent_iep_2025-ev1",
+      "owner": "ent_iep_2025",
+      "sourceDocumentId": "l004-src-1",
+      "documentId": "01_annual_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 10,
+        "endSeq": 13
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Individualized Education Program (IEP)"
+    },
+    {
+      "evidenceRefId": "ent_iep_2025-ev2",
+      "owner": "ent_iep_2025",
+      "sourceDocumentId": "l004-src-1",
+      "documentId": "01_annual_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 43,
+        "endSeq": 45
+      },
+      "occurrencesOnPage": 1,
+      "quote": "IEP Date: 2025-09-10"
+    },
+    {
+      "evidenceRefId": "ent_progress_q1-ev1",
+      "owner": "ent_progress_q1",
+      "sourceDocumentId": "l004-src-2",
+      "documentId": "02_progress_report_q1.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 10,
+        "endSeq": 13
+      },
+      "occurrencesOnPage": 1,
+      "quote": "IEP Progress Report (Q1)"
+    },
+    {
+      "evidenceRefId": "ent_progress_q1-ev2",
+      "owner": "ent_progress_q1",
+      "sourceDocumentId": "l004-src-2",
+      "documentId": "02_progress_report_q1.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 42,
+        "endSeq": 44
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Report Date: 2025-11-14"
+    },
+    {
+      "evidenceRefId": "ent_progress_q2-ev1",
+      "owner": "ent_progress_q2",
+      "sourceDocumentId": "l004-src-3",
+      "documentId": "03_progress_report_q2.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 10,
+        "endSeq": 13
+      },
+      "occurrencesOnPage": 1,
+      "quote": "IEP Progress Report (Q2)"
+    },
+    {
+      "evidenceRefId": "ent_progress_q2-ev2",
+      "owner": "ent_progress_q2",
+      "sourceDocumentId": "l004-src-3",
+      "documentId": "03_progress_report_q2.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 42,
+        "endSeq": 44
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Report Date: 2026-02-13"
+    },
+    {
+      "evidenceRefId": "ent_progress_q3-ev1",
+      "owner": "ent_progress_q3",
+      "sourceDocumentId": "l004-src-4",
+      "documentId": "04_progress_report_q3.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 10,
+        "endSeq": 13
+      },
+      "occurrencesOnPage": 1,
+      "quote": "IEP Progress Report (Q3)"
+    },
+    {
+      "evidenceRefId": "ent_progress_q3-ev2",
+      "owner": "ent_progress_q3",
+      "sourceDocumentId": "l004-src-4",
+      "documentId": "04_progress_report_q3.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 42,
+        "endSeq": 44
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Report Date: 2026-05-15"
+    },
+    {
+      "evidenceRefId": "ent_academic_eval_2026-ev1",
+      "owner": "ent_academic_eval_2026",
+      "sourceDocumentId": "l004-src-5",
+      "documentId": "05_academic_evaluation.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 10,
+        "endSeq": 15
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Academic Evaluation Report SYNTHETIC DEVELOPMENT RECORD"
+    },
+    {
+      "evidenceRefId": "ent_academic_eval_2026-ev2",
+      "owner": "ent_academic_eval_2026",
+      "sourceDocumentId": "l004-src-5",
+      "documentId": "05_academic_evaluation.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 71,
+        "endSeq": 73
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Evaluation Date: 2026-06-05"
+    },
+    {
+      "evidenceRefId": "ent_goal_fluency-ev1",
+      "owner": "ent_goal_fluency",
+      "sourceDocumentId": "l004-src-1",
+      "documentId": "01_annual_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 234,
+        "endSeq": 236
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Goal ID: GOAL_READING_FLUENCY"
+    },
+    {
+      "evidenceRefId": "ent_goal_fluency-ev2",
+      "owner": "ent_goal_fluency",
+      "sourceDocumentId": "l004-src-2",
+      "documentId": "02_progress_report_q1.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 81,
+        "endSeq": 83
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Goal ID: GOAL_READING_FLUENCY"
+    },
+    {
+      "evidenceRefId": "ent_goal_fluency-ev3",
+      "owner": "ent_goal_fluency",
+      "sourceDocumentId": "l004-src-3",
+      "documentId": "03_progress_report_q2.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 81,
+        "endSeq": 83
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Goal ID: GOAL_READING_FLUENCY"
+    },
+    {
+      "evidenceRefId": "ent_goal_fluency-ev4",
+      "owner": "ent_goal_fluency",
+      "sourceDocumentId": "l004-src-4",
+      "documentId": "04_progress_report_q3.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 81,
+        "endSeq": 83
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Goal ID: GOAL_READING_FLUENCY"
+    },
+    {
+      "evidenceRefId": "clm_001-ev1",
+      "owner": "clm_001",
+      "sourceDocumentId": "l004-src-1",
+      "documentId": "01_annual_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 27,
+        "endSeq": 29
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Student: Daniel Okafor"
+    },
+    {
+      "evidenceRefId": "clm_001-ev2",
+      "owner": "clm_001",
+      "sourceDocumentId": "l004-src-2",
+      "documentId": "02_progress_report_q1.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 24,
+        "endSeq": 26
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Student: Daniel Okafor"
+    },
+    {
+      "evidenceRefId": "clm_001-ev3",
+      "owner": "clm_001",
+      "sourceDocumentId": "l004-src-3",
+      "documentId": "03_progress_report_q2.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 24,
+        "endSeq": 26
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Student: Daniel Okafor"
+    },
+    {
+      "evidenceRefId": "clm_001-ev4",
+      "owner": "clm_001",
+      "sourceDocumentId": "l004-src-4",
+      "documentId": "04_progress_report_q3.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 24,
+        "endSeq": 26
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Student: Daniel Okafor"
+    },
+    {
+      "evidenceRefId": "clm_001-ev5",
+      "owner": "clm_001",
+      "sourceDocumentId": "l004-src-5",
+      "documentId": "05_academic_evaluation.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 23,
+        "endSeq": 25
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Student: Daniel Okafor"
+    },
+    {
+      "evidenceRefId": "clm_002-ev1",
+      "owner": "clm_002",
+      "sourceDocumentId": "l004-src-1",
+      "documentId": "01_annual_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 30,
+        "endSeq": 33
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Date of Birth: 2017-03-22"
+    },
+    {
+      "evidenceRefId": "clm_002-ev2",
+      "owner": "clm_002",
+      "sourceDocumentId": "l004-src-2",
+      "documentId": "02_progress_report_q1.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 27,
+        "endSeq": 30
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Date of Birth: 2017-03-22"
+    },
+    {
+      "evidenceRefId": "clm_002-ev3",
+      "owner": "clm_002",
+      "sourceDocumentId": "l004-src-3",
+      "documentId": "03_progress_report_q2.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 27,
+        "endSeq": 30
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Date of Birth: 2017-03-22"
+    },
+    {
+      "evidenceRefId": "clm_002-ev4",
+      "owner": "clm_002",
+      "sourceDocumentId": "l004-src-4",
+      "documentId": "04_progress_report_q3.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 27,
+        "endSeq": 30
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Date of Birth: 2017-03-22"
+    },
+    {
+      "evidenceRefId": "clm_002-ev5",
+      "owner": "clm_002",
+      "sourceDocumentId": "l004-src-5",
+      "documentId": "05_academic_evaluation.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 26,
+        "endSeq": 29
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Date of Birth: 2017-03-22"
+    },
+    {
+      "evidenceRefId": "clm_003-ev1",
+      "owner": "clm_003",
+      "sourceDocumentId": "l004-src-1",
+      "documentId": "01_annual_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 34,
+        "endSeq": 35
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Grade: 3"
+    },
+    {
+      "evidenceRefId": "clm_003-ev2",
+      "owner": "clm_003",
+      "sourceDocumentId": "l004-src-2",
+      "documentId": "02_progress_report_q1.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 31,
+        "endSeq": 32
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Grade: 3"
+    },
+    {
+      "evidenceRefId": "clm_003-ev3",
+      "owner": "clm_003",
+      "sourceDocumentId": "l004-src-3",
+      "documentId": "03_progress_report_q2.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 31,
+        "endSeq": 32
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Grade: 3"
+    },
+    {
+      "evidenceRefId": "clm_003-ev4",
+      "owner": "clm_003",
+      "sourceDocumentId": "l004-src-4",
+      "documentId": "04_progress_report_q3.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 31,
+        "endSeq": 32
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Grade: 3"
+    },
+    {
+      "evidenceRefId": "clm_003-ev5",
+      "owner": "clm_003",
+      "sourceDocumentId": "l004-src-5",
+      "documentId": "05_academic_evaluation.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 30,
+        "endSeq": 31
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Grade: 3"
+    },
+    {
+      "evidenceRefId": "clm_004-ev1",
+      "owner": "clm_004",
+      "sourceDocumentId": "l004-src-1",
+      "documentId": "01_annual_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 36,
+        "endSeq": 39
+      },
+      "occurrencesOnPage": 1,
+      "quote": "School: Synthetic Elementary School"
+    },
+    {
+      "evidenceRefId": "clm_004-ev2",
+      "owner": "clm_004",
+      "sourceDocumentId": "l004-src-2",
+      "documentId": "02_progress_report_q1.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 33,
+        "endSeq": 36
+      },
+      "occurrencesOnPage": 1,
+      "quote": "School: Synthetic Elementary School"
+    },
+    {
+      "evidenceRefId": "clm_004-ev3",
+      "owner": "clm_004",
+      "sourceDocumentId": "l004-src-3",
+      "documentId": "03_progress_report_q2.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 33,
+        "endSeq": 36
+      },
+      "occurrencesOnPage": 1,
+      "quote": "School: Synthetic Elementary School"
+    },
+    {
+      "evidenceRefId": "clm_004-ev4",
+      "owner": "clm_004",
+      "sourceDocumentId": "l004-src-4",
+      "documentId": "04_progress_report_q3.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 33,
+        "endSeq": 36
+      },
+      "occurrencesOnPage": 1,
+      "quote": "School: Synthetic Elementary School"
+    },
+    {
+      "evidenceRefId": "clm_004-ev5",
+      "owner": "clm_004",
+      "sourceDocumentId": "l004-src-5",
+      "documentId": "05_academic_evaluation.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 32,
+        "endSeq": 35
+      },
+      "occurrencesOnPage": 1,
+      "quote": "School: Synthetic Elementary School"
+    },
+    {
+      "evidenceRefId": "clm_005-ev1",
+      "owner": "clm_005",
+      "sourceDocumentId": "l004-src-1",
+      "documentId": "01_annual_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 40,
+        "endSeq": 42
+      },
+      "occurrencesOnPage": 1,
+      "quote": "District: Synthetic District"
+    },
+    {
+      "evidenceRefId": "clm_005-ev2",
+      "owner": "clm_005",
+      "sourceDocumentId": "l004-src-2",
+      "documentId": "02_progress_report_q1.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 37,
+        "endSeq": 39
+      },
+      "occurrencesOnPage": 1,
+      "quote": "District: Synthetic District"
+    },
+    {
+      "evidenceRefId": "clm_005-ev3",
+      "owner": "clm_005",
+      "sourceDocumentId": "l004-src-3",
+      "documentId": "03_progress_report_q2.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 37,
+        "endSeq": 39
+      },
+      "occurrencesOnPage": 1,
+      "quote": "District: Synthetic District"
+    },
+    {
+      "evidenceRefId": "clm_005-ev4",
+      "owner": "clm_005",
+      "sourceDocumentId": "l004-src-4",
+      "documentId": "04_progress_report_q3.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 37,
+        "endSeq": 39
+      },
+      "occurrencesOnPage": 1,
+      "quote": "District: Synthetic District"
+    },
+    {
+      "evidenceRefId": "clm_005-ev5",
+      "owner": "clm_005",
+      "sourceDocumentId": "l004-src-5",
+      "documentId": "05_academic_evaluation.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 36,
+        "endSeq": 38
+      },
+      "occurrencesOnPage": 1,
+      "quote": "District: Synthetic District"
+    },
+    {
+      "evidenceRefId": "clm_006-ev1",
+      "owner": "clm_006",
+      "sourceDocumentId": "l004-src-1",
+      "documentId": "01_annual_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 82,
+        "endSeq": 89
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Eligibility Category: Specific Learning Disability (SLD) - Reading"
+    },
+    {
+      "evidenceRefId": "clm_006-ev2",
+      "owner": "clm_006",
+      "sourceDocumentId": "l004-src-5",
+      "documentId": "05_academic_evaluation.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 86,
+        "endSeq": 95
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Current educational eligibility remains Specific Learning Disability (SLD) - Reading."
+    },
+    {
+      "evidenceRefId": "clm_007-ev1",
+      "owner": "clm_007",
+      "sourceDocumentId": "l004-src-1",
+      "documentId": "01_annual_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 94,
+        "endSeq": 96
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Determination Date: 2025-09-10"
+    },
+    {
+      "evidenceRefId": "clm_008-ev1",
+      "owner": "clm_008",
+      "sourceDocumentId": "l004-src-1",
+      "documentId": "01_annual_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 97,
+        "endSeq": 109
+      },
+      "occurrencesOnPage": 1,
+      "quote": "This IEP implements the educational eligibility determination. It is not a medical diagnosis."
+    },
+    {
+      "evidenceRefId": "clm_009-ev1",
+      "owner": "clm_009",
+      "sourceDocumentId": "l004-src-1",
+      "documentId": "01_annual_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 90,
+        "endSeq": 93
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Primary Educational Need: Reading"
+    },
+    {
+      "evidenceRefId": "clm_009-ev2",
+      "owner": "clm_009",
+      "sourceDocumentId": "l004-src-1",
+      "documentId": "01_annual_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 184,
+        "endSeq": 189
+      },
+      "occurrencesOnPage": 1,
+      "quote": "The primary educational need is Reading."
+    },
+    {
+      "evidenceRefId": "clm_009-ev3",
+      "owner": "clm_009",
+      "sourceDocumentId": "l004-src-1",
+      "documentId": "01_annual_iep.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 246,
+        "endSeq": 252
+      },
+      "occurrencesOnPage": 1,
+      "quote": "This IEP addresses Reading for Daniel Okafor."
+    },
+    {
+      "evidenceRefId": "clm_010-ev1",
+      "owner": "clm_010",
+      "sourceDocumentId": "l004-src-1",
+      "documentId": "01_annual_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 119,
+        "endSeq": 124
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Daniel has a persistent reading concern."
+    },
+    {
+      "evidenceRefId": "clm_011-ev1",
+      "owner": "clm_011",
+      "sourceDocumentId": "l004-src-1",
+      "documentId": "01_annual_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 125,
+        "endSeq": 135
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Classroom performance indicates difficulty reading connected grade-level text with expected fluency."
+    },
+    {
+      "evidenceRefId": "clm_011-ev2",
+      "owner": "clm_011",
+      "sourceDocumentId": "l004-src-1",
+      "documentId": "01_annual_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 190,
+        "endSeq": 199
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Daniel has difficulty reading connected grade-level text with expected fluency."
+    },
+    {
+      "evidenceRefId": "clm_012-ev1",
+      "owner": "clm_012",
+      "sourceDocumentId": "l004-src-1",
+      "documentId": "01_annual_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 200,
+        "endSeq": 210
+      },
+      "occurrencesOnPage": 1,
+      "quote": "This difficulty affects Daniel's ability to access grade-level reading activities independently."
+    },
+    {
+      "evidenceRefId": "clm_013-ev1",
+      "owner": "clm_013",
+      "sourceDocumentId": "l004-src-1",
+      "documentId": "01_annual_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 136,
+        "endSeq": 149
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Baseline measured September 10, 2025: Oral Reading Fluency - 70 words correct per minute."
+    },
+    {
+      "evidenceRefId": "clm_013-ev2",
+      "owner": "clm_013",
+      "sourceDocumentId": "l004-src-1",
+      "documentId": "01_annual_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 150,
+        "endSeq": 155
+      },
+      "occurrencesOnPage": 1,
+      "quote": "The present-levels baseline is 70 WCPM."
+    },
+    {
+      "evidenceRefId": "clm_013-ev3",
+      "owner": "clm_013",
+      "sourceDocumentId": "l004-src-1",
+      "documentId": "01_annual_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 156,
+        "endSeq": 164
+      },
+      "occurrencesOnPage": 1,
+      "quote": "This oral reading fluency baseline was measured on 2025-09-10."
+    },
+    {
+      "evidenceRefId": "clm_013-ev4",
+      "owner": "clm_013",
+      "sourceDocumentId": "l004-src-1",
+      "documentId": "01_annual_iep.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 253,
+        "endSeq": 260
+      },
+      "occurrencesOnPage": 1,
+      "quote": "The oral reading fluency baseline is 70 WCPM."
+    },
+    {
+      "evidenceRefId": "clm_013-ev5",
+      "owner": "clm_013",
+      "sourceDocumentId": "l004-src-5",
+      "documentId": "05_academic_evaluation.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 162,
+        "endSeq": 175
+      },
+      "occurrencesOnPage": 1,
+      "quote": "The 70 WCPM baseline is historical present-level evidence from the September 10, 2025 IEP."
+    },
+    {
+      "evidenceRefId": "clm_014-ev1",
+      "owner": "clm_014",
+      "sourceDocumentId": "l004-src-2",
+      "documentId": "02_progress_report_q1.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 104,
+        "endSeq": 109
+      },
+      "occurrencesOnPage": 1,
+      "quote": "2025-11-14 Oral Reading Fluency 78 WCPM"
+    },
+    {
+      "evidenceRefId": "clm_014-ev2",
+      "owner": "clm_014",
+      "sourceDocumentId": "l004-src-2",
+      "documentId": "02_progress_report_q1.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 110,
+        "endSeq": 123
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Assessment Date: 2025-11-14. On that date, Daniel read grade-level connected text at 78 WCPM."
+    },
+    {
+      "evidenceRefId": "clm_015-ev1",
+      "owner": "clm_015",
+      "sourceDocumentId": "l004-src-3",
+      "documentId": "03_progress_report_q2.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 104,
+        "endSeq": 109
+      },
+      "occurrencesOnPage": 1,
+      "quote": "2026-02-13 Oral Reading Fluency 85 WCPM"
+    },
+    {
+      "evidenceRefId": "clm_015-ev2",
+      "owner": "clm_015",
+      "sourceDocumentId": "l004-src-3",
+      "documentId": "03_progress_report_q2.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 110,
+        "endSeq": 123
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Assessment Date: 2026-02-13. On that date, Daniel read grade-level connected text at 85 WCPM."
+    },
+    {
+      "evidenceRefId": "clm_016-ev1",
+      "owner": "clm_016",
+      "sourceDocumentId": "l004-src-4",
+      "documentId": "04_progress_report_q3.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 104,
+        "endSeq": 109
+      },
+      "occurrencesOnPage": 1,
+      "quote": "2026-05-15 Oral Reading Fluency 92 WCPM"
+    },
+    {
+      "evidenceRefId": "clm_016-ev2",
+      "owner": "clm_016",
+      "sourceDocumentId": "l004-src-4",
+      "documentId": "04_progress_report_q3.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 110,
+        "endSeq": 123
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Assessment Date: 2026-05-15. On that date, Daniel read grade-level connected text at 92 WCPM."
+    },
+    {
+      "evidenceRefId": "clm_017-ev1",
+      "owner": "clm_017",
+      "sourceDocumentId": "l004-src-5",
+      "documentId": "05_academic_evaluation.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 122,
+        "endSeq": 126
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Oral Reading Fluency 96 WCPM"
+    },
+    {
+      "evidenceRefId": "clm_017-ev2",
+      "owner": "clm_017",
+      "sourceDocumentId": "l004-src-5",
+      "documentId": "05_academic_evaluation.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 150,
+        "endSeq": 161
+      },
+      "occurrencesOnPage": 1,
+      "quote": "The 96 WCPM oral reading fluency result is the current evaluation measurement."
+    },
+    {
+      "evidenceRefId": "clm_017-ev3",
+      "owner": "clm_017",
+      "sourceDocumentId": "l004-src-5",
+      "documentId": "05_academic_evaluation.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 209,
+        "endSeq": 225
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Academic evaluation documents oral reading fluency of 96 WCPM and reading accuracy of 94 percent on 2026-06-05."
+    },
+    {
+      "evidenceRefId": "clm_018-ev1",
+      "owner": "clm_018",
+      "sourceDocumentId": "l004-src-5",
+      "documentId": "05_academic_evaluation.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 127,
+        "endSeq": 129
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Reading Accuracy 94%"
+    },
+    {
+      "evidenceRefId": "clm_018-ev2",
+      "owner": "clm_018",
+      "sourceDocumentId": "l004-src-5",
+      "documentId": "05_academic_evaluation.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 145,
+        "endSeq": 149
+      },
+      "occurrencesOnPage": 1,
+      "quote": "while reading accuracy measured 94%."
+    },
+    {
+      "evidenceRefId": "clm_018-ev3",
+      "owner": "clm_018",
+      "sourceDocumentId": "l004-src-5",
+      "documentId": "05_academic_evaluation.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 218,
+        "endSeq": 225
+      },
+      "occurrencesOnPage": 1,
+      "quote": "and reading accuracy of 94 percent on 2026-06-05."
+    },
+    {
+      "evidenceRefId": "clm_019-ev1",
+      "owner": "clm_019",
+      "sourceDocumentId": "l004-src-1",
+      "documentId": "01_annual_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 234,
+        "endSeq": 236
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Goal ID: GOAL_READING_FLUENCY"
+    },
+    {
+      "evidenceRefId": "clm_019-ev2",
+      "owner": "clm_019",
+      "sourceDocumentId": "l004-src-2",
+      "documentId": "02_progress_report_q1.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 81,
+        "endSeq": 83
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Goal ID: GOAL_READING_FLUENCY"
+    },
+    {
+      "evidenceRefId": "clm_019-ev3",
+      "owner": "clm_019",
+      "sourceDocumentId": "l004-src-3",
+      "documentId": "03_progress_report_q2.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 81,
+        "endSeq": 83
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Goal ID: GOAL_READING_FLUENCY"
+    },
+    {
+      "evidenceRefId": "clm_019-ev4",
+      "owner": "clm_019",
+      "sourceDocumentId": "l004-src-4",
+      "documentId": "04_progress_report_q3.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 81,
+        "endSeq": 83
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Goal ID: GOAL_READING_FLUENCY"
+    },
+    {
+      "evidenceRefId": "clm_020-ev1",
+      "owner": "clm_020",
+      "sourceDocumentId": "l004-src-2",
+      "documentId": "02_progress_report_q1.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 84,
+        "endSeq": 85
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Area: reading"
+    },
+    {
+      "evidenceRefId": "clm_020-ev2",
+      "owner": "clm_020",
+      "sourceDocumentId": "l004-src-3",
+      "documentId": "03_progress_report_q2.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 84,
+        "endSeq": 85
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Area: reading"
+    },
+    {
+      "evidenceRefId": "clm_020-ev3",
+      "owner": "clm_020",
+      "sourceDocumentId": "l004-src-4",
+      "documentId": "04_progress_report_q3.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 84,
+        "endSeq": 85
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Area: reading"
+    },
+    {
+      "evidenceRefId": "clm_021-ev1",
+      "owner": "clm_021",
+      "sourceDocumentId": "l004-src-1",
+      "documentId": "01_annual_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 214,
+        "endSeq": 225
+      },
+      "occurrencesOnPage": 1,
+      "quote": "By the annual review date, when given a grade-level oral reading passage,"
+    },
+    {
+      "evidenceRefId": "clm_021-ev2",
+      "owner": "clm_021",
+      "sourceDocumentId": "l004-src-2",
+      "documentId": "02_progress_report_q1.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 61,
+        "endSeq": 72
+      },
+      "occurrencesOnPage": 1,
+      "quote": "By the annual review date, when given a grade-level oral reading passage,"
+    },
+    {
+      "evidenceRefId": "clm_021-ev3",
+      "owner": "clm_021",
+      "sourceDocumentId": "l004-src-3",
+      "documentId": "03_progress_report_q2.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 61,
+        "endSeq": 72
+      },
+      "occurrencesOnPage": 1,
+      "quote": "By the annual review date, when given a grade-level oral reading passage,"
+    },
+    {
+      "evidenceRefId": "clm_021-ev4",
+      "owner": "clm_021",
+      "sourceDocumentId": "l004-src-4",
+      "documentId": "04_progress_report_q3.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 61,
+        "endSeq": 72
+      },
+      "occurrencesOnPage": 1,
+      "quote": "By the annual review date, when given a grade-level oral reading passage,"
+    },
+    {
+      "evidenceRefId": "clm_022-ev1",
+      "owner": "clm_022",
+      "sourceDocumentId": "l004-src-1",
+      "documentId": "01_annual_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 226,
+        "endSeq": 235
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Daniel will read 95 words correct per minute. Goal ID:"
+    },
+    {
+      "evidenceRefId": "clm_022-ev2",
+      "owner": "clm_022",
+      "sourceDocumentId": "l004-src-1",
+      "documentId": "01_annual_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 240,
+        "endSeq": 244
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Target: 95 WCPM Start Date:"
+    },
+    {
+      "evidenceRefId": "clm_022-ev3",
+      "owner": "clm_022",
+      "sourceDocumentId": "l004-src-1",
+      "documentId": "01_annual_iep.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 261,
+        "endSeq": 266
+      },
+      "occurrencesOnPage": 1,
+      "quote": "The annual target is 95 WCPM."
+    },
+    {
+      "evidenceRefId": "clm_022-ev4",
+      "owner": "clm_022",
+      "sourceDocumentId": "l004-src-2",
+      "documentId": "02_progress_report_q1.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 86,
+        "endSeq": 89
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Annual Target: 95 WCPM"
+    },
+    {
+      "evidenceRefId": "clm_022-ev5",
+      "owner": "clm_022",
+      "sourceDocumentId": "l004-src-3",
+      "documentId": "03_progress_report_q2.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 86,
+        "endSeq": 89
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Annual Target: 95 WCPM"
+    },
+    {
+      "evidenceRefId": "clm_022-ev6",
+      "owner": "clm_022",
+      "sourceDocumentId": "l004-src-4",
+      "documentId": "04_progress_report_q3.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 86,
+        "endSeq": 89
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Annual Target: 95 WCPM"
+    },
+    {
+      "evidenceRefId": "clm_023-ev1",
+      "owner": "clm_023",
+      "sourceDocumentId": "l004-src-1",
+      "documentId": "01_annual_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 249,
+        "endSeq": 267
+      },
+      "occurrencesOnPage": 1,
+      "quote": "The annual target of 95 WCPM is a goal reference. It is not a measured oral reading fluency result."
+    },
+    {
+      "evidenceRefId": "clm_024-ev1",
+      "owner": "clm_024",
+      "sourceDocumentId": "l004-src-1",
+      "documentId": "01_annual_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 237,
+        "endSeq": 239
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Baseline: 70 WCPM"
+    },
+    {
+      "evidenceRefId": "clm_025-ev1",
+      "owner": "clm_025",
+      "sourceDocumentId": "l004-src-1",
+      "documentId": "01_annual_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 243,
+        "endSeq": 247
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Start Date: 2025-09-10 Target Date:"
+    },
+    {
+      "evidenceRefId": "clm_025-ev2",
+      "owner": "clm_025",
+      "sourceDocumentId": "l004-src-2",
+      "documentId": "02_progress_report_q1.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 90,
+        "endSeq": 93
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Goal Start Date: 2025-09-10"
+    },
+    {
+      "evidenceRefId": "clm_025-ev3",
+      "owner": "clm_025",
+      "sourceDocumentId": "l004-src-3",
+      "documentId": "03_progress_report_q2.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 90,
+        "endSeq": 93
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Goal Start Date: 2025-09-10"
+    },
+    {
+      "evidenceRefId": "clm_025-ev4",
+      "owner": "clm_025",
+      "sourceDocumentId": "l004-src-4",
+      "documentId": "04_progress_report_q3.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 90,
+        "endSeq": 93
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Goal Start Date: 2025-09-10"
+    },
+    {
+      "evidenceRefId": "clm_026-ev1",
+      "owner": "clm_026",
+      "sourceDocumentId": "l004-src-1",
+      "documentId": "01_annual_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 246,
+        "endSeq": 251
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Target Date: 2026-09-09 The annual target"
+    },
+    {
+      "evidenceRefId": "clm_026-ev2",
+      "owner": "clm_026",
+      "sourceDocumentId": "l004-src-2",
+      "documentId": "02_progress_report_q1.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 94,
+        "endSeq": 97
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Goal Target Date: 2026-09-09"
+    },
+    {
+      "evidenceRefId": "clm_026-ev3",
+      "owner": "clm_026",
+      "sourceDocumentId": "l004-src-3",
+      "documentId": "03_progress_report_q2.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 94,
+        "endSeq": 97
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Goal Target Date: 2026-09-09"
+    },
+    {
+      "evidenceRefId": "clm_026-ev4",
+      "owner": "clm_026",
+      "sourceDocumentId": "l004-src-4",
+      "documentId": "04_progress_report_q3.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 94,
+        "endSeq": 97
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Goal Target Date: 2026-09-09"
+    },
+    {
+      "evidenceRefId": "clm_027-ev1",
+      "owner": "clm_027",
+      "sourceDocumentId": "l004-src-1",
+      "documentId": "01_annual_iep.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 170,
+        "endSeq": 183
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Progress toward the annual goal will be measured using curriculum-based oral reading fluency probes"
+    },
+    {
+      "evidenceRefId": "clm_028-ev1",
+      "owner": "clm_028",
+      "sourceDocumentId": "l004-src-1",
+      "documentId": "01_annual_iep.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 185,
+        "endSeq": 192
+      },
+      "occurrencesOnPage": 1,
+      "quote": "reported at least quarterly, concurrent with report periods."
+    },
+    {
+      "evidenceRefId": "clm_029-ev1",
+      "owner": "clm_029",
+      "sourceDocumentId": "l004-src-1",
+      "documentId": "01_annual_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 43,
+        "endSeq": 45
+      },
+      "occurrencesOnPage": 1,
+      "quote": "IEP Date: 2025-09-10"
+    },
+    {
+      "evidenceRefId": "clm_029-ev2",
+      "owner": "clm_029",
+      "sourceDocumentId": "l004-src-1",
+      "documentId": "01_annual_iep.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 236,
+        "endSeq": 242
+      },
+      "occurrencesOnPage": 1,
+      "quote": "District Representative: [Synthetic signature omitted] Date: 2025-09-10"
+    },
+    {
+      "evidenceRefId": "clm_030-ev1",
+      "owner": "clm_030",
+      "sourceDocumentId": "l004-src-1",
+      "documentId": "01_annual_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 46,
+        "endSeq": 53
+      },
+      "occurrencesOnPage": 1,
+      "quote": "IEP Period Start: 2025-09-10 IEP Period End: 2026-09-09"
+    },
+    {
+      "evidenceRefId": "clm_030-ev2",
+      "owner": "clm_030",
+      "sourceDocumentId": "l004-src-1",
+      "documentId": "01_annual_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 54,
+        "endSeq": 63
+      },
+      "occurrencesOnPage": 1,
+      "quote": "IEP effective period: September 10, 2025 through September 9, 2026."
+    },
+    {
+      "evidenceRefId": "clm_031-ev1",
+      "owner": "clm_031",
+      "sourceDocumentId": "l004-src-1",
+      "documentId": "01_annual_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 165,
+        "endSeq": 180
+      },
+      "occurrencesOnPage": 1,
+      "quote": "The IEP date and the baseline measurement date are recorded separately even though both are 2025-09-10."
+    },
+    {
+      "evidenceRefId": "clm_032-ev1",
+      "owner": "clm_032",
+      "sourceDocumentId": "l004-src-1",
+      "documentId": "01_annual_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 234,
+        "endSeq": 236
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Goal ID: GOAL_READING_FLUENCY"
+    },
+    {
+      "evidenceRefId": "clm_033-ev1",
+      "owner": "clm_033",
+      "sourceDocumentId": "l004-src-1",
+      "documentId": "01_annual_iep.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 21,
+        "endSeq": 27
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Specialized reading instruction 4 sessions per week"
+    },
+    {
+      "evidenceRefId": "clm_033-ev2",
+      "owner": "clm_033",
+      "sourceDocumentId": "l004-src-1",
+      "documentId": "01_annual_iep.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 44,
+        "endSeq": 52
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Specialized reading instruction is provided 4 sessions per week"
+    },
+    {
+      "evidenceRefId": "clm_034-ev1",
+      "owner": "clm_034",
+      "sourceDocumentId": "l004-src-1",
+      "documentId": "01_annual_iep.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 24,
+        "endSeq": 35
+      },
+      "occurrencesOnPage": 1,
+      "quote": "4 sessions per week 30 minutes per session special education setting 2025-09-10"
+    },
+    {
+      "evidenceRefId": "clm_034-ev2",
+      "owner": "clm_034",
+      "sourceDocumentId": "l004-src-1",
+      "documentId": "01_annual_iep.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 63,
+        "endSeq": 69
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Session length is 30 minutes per session."
+    },
+    {
+      "evidenceRefId": "clm_035-ev1",
+      "owner": "clm_035",
+      "sourceDocumentId": "l004-src-1",
+      "documentId": "01_annual_iep.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 70,
+        "endSeq": 77
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Session length is not the overall service period."
+    },
+    {
+      "evidenceRefId": "clm_036-ev1",
+      "owner": "clm_036",
+      "sourceDocumentId": "l004-src-1",
+      "documentId": "01_annual_iep.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 53,
+        "endSeq": 62
+      },
+      "occurrencesOnPage": 1,
+      "quote": "for 30 minutes per session in the special education setting."
+    },
+    {
+      "evidenceRefId": "clm_037-ev1",
+      "owner": "clm_037",
+      "sourceDocumentId": "l004-src-1",
+      "documentId": "01_annual_iep.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 36,
+        "endSeq": 39
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Service Start Date: 2025-09-10"
+    },
+    {
+      "evidenceRefId": "clm_037-ev2",
+      "owner": "clm_037",
+      "sourceDocumentId": "l004-src-1",
+      "documentId": "01_annual_iep.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 78,
+        "endSeq": 88
+      },
+      "occurrencesOnPage": 1,
+      "quote": "The projected date for the beginning of these services is 2025-09-10."
+    },
+    {
+      "evidenceRefId": "clm_038-ev1",
+      "owner": "clm_038",
+      "sourceDocumentId": "l004-src-1",
+      "documentId": "01_annual_iep.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 40,
+        "endSeq": 43
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Service Period End: 2026-09-09"
+    },
+    {
+      "evidenceRefId": "clm_038-ev2",
+      "owner": "clm_038",
+      "sourceDocumentId": "l004-src-1",
+      "documentId": "01_annual_iep.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 89,
+        "endSeq": 94
+      },
+      "occurrencesOnPage": 1,
+      "quote": "The IEP/service period continues through 2026-09-09."
+    },
+    {
+      "evidenceRefId": "clm_039-ev1",
+      "owner": "clm_039",
+      "sourceDocumentId": "l004-src-1",
+      "documentId": "01_annual_iep.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 99,
+        "endSeq": 123
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Daniel will participate with nondisabled peers throughout the school day except during the four weekly 30-minute specialized reading sessions provided in the special education setting."
+    },
+    {
+      "evidenceRefId": "clm_040-ev1",
+      "owner": "clm_040",
+      "sourceDocumentId": "l004-src-1",
+      "documentId": "01_annual_iep.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 129,
+        "endSeq": 140
+      },
+      "occurrencesOnPage": 1,
+      "quote": "• Daniel will receive 1.5x extended time on State and districtwide assessments."
+    },
+    {
+      "evidenceRefId": "clm_041-ev1",
+      "owner": "clm_041",
+      "sourceDocumentId": "l004-src-1",
+      "documentId": "01_annual_iep.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 152,
+        "endSeq": 166
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Daniel will participate in state and districtwide assessments with the accommodations listed in this IEP."
+    },
+    {
+      "evidenceRefId": "clm_042-ev1",
+      "owner": "clm_042",
+      "sourceDocumentId": "l004-src-1",
+      "documentId": "01_annual_iep.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 198,
+        "endSeq": 206
+      },
+      "occurrencesOnPage": 1,
+      "quote": "The following roles participate in development of this IEP."
+    },
+    {
+      "evidenceRefId": "clm_042-ev2",
+      "owner": "clm_042",
+      "sourceDocumentId": "l004-src-1",
+      "documentId": "01_annual_iep.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 220,
+        "endSeq": 223
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Parent/Guardian: [Synthetic signature omitted]"
+    },
+    {
+      "evidenceRefId": "clm_042-ev3",
+      "owner": "clm_042",
+      "sourceDocumentId": "l004-src-1",
+      "documentId": "01_annual_iep.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 224,
+        "endSeq": 229
+      },
+      "occurrencesOnPage": 1,
+      "quote": "General Education Teacher: [Synthetic signature omitted]"
+    },
+    {
+      "evidenceRefId": "clm_042-ev4",
+      "owner": "clm_042",
+      "sourceDocumentId": "l004-src-1",
+      "documentId": "01_annual_iep.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 230,
+        "endSeq": 235
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Special Education Teacher: [Synthetic signature omitted]"
+    },
+    {
+      "evidenceRefId": "clm_042-ev5",
+      "owner": "clm_042",
+      "sourceDocumentId": "l004-src-1",
+      "documentId": "01_annual_iep.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 236,
+        "endSeq": 240
+      },
+      "occurrencesOnPage": 1,
+      "quote": "District Representative: [Synthetic signature omitted]"
+    },
+    {
+      "evidenceRefId": "clm_043-ev1",
+      "owner": "clm_043",
+      "sourceDocumentId": "l004-src-2",
+      "documentId": "02_progress_report_q1.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 42,
+        "endSeq": 44
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Report Date: 2025-11-14"
+    },
+    {
+      "evidenceRefId": "clm_044-ev1",
+      "owner": "clm_044",
+      "sourceDocumentId": "l004-src-2",
+      "documentId": "02_progress_report_q1.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 45,
+        "endSeq": 49
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Prepared By: Special education teacher"
+    },
+    {
+      "evidenceRefId": "clm_045-ev1",
+      "owner": "clm_045",
+      "sourceDocumentId": "l004-src-2",
+      "documentId": "02_progress_report_q1.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 50,
+        "endSeq": 57
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Reporting Period: Q1 progress toward current IEP goal"
+    },
+    {
+      "evidenceRefId": "clm_046-ev1",
+      "owner": "clm_046",
+      "sourceDocumentId": "l004-src-2",
+      "documentId": "02_progress_report_q1.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 58,
+        "endSeq": 60
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Goal Being Monitored"
+    },
+    {
+      "evidenceRefId": "clm_046-ev2",
+      "owner": "clm_046",
+      "sourceDocumentId": "l004-src-2",
+      "documentId": "02_progress_report_q1.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 138,
+        "endSeq": 147
+      },
+      "occurrencesOnPage": 1,
+      "quote": "This report records current progress toward the existing annual goal."
+    },
+    {
+      "evidenceRefId": "clm_047-ev1",
+      "owner": "clm_047",
+      "sourceDocumentId": "l004-src-2",
+      "documentId": "02_progress_report_q1.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 124,
+        "endSeq": 137
+      },
+      "occurrencesOnPage": 1,
+      "quote": "The annual target of 95 WCPM remains the goal reference for this reporting period."
+    },
+    {
+      "evidenceRefId": "clm_048-ev1",
+      "owner": "clm_048",
+      "sourceDocumentId": "l004-src-2",
+      "documentId": "02_progress_report_q1.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 148,
+        "endSeq": 156
+      },
+      "occurrencesOnPage": 1,
+      "quote": "It does not revise present levels, rewrite the IEP,"
+    },
+    {
+      "evidenceRefId": "clm_049-ev1",
+      "owner": "clm_049",
+      "sourceDocumentId": "l004-src-2",
+      "documentId": "02_progress_report_q1.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 157,
+        "endSeq": 164
+      },
+      "occurrencesOnPage": 1,
+      "quote": "or change special education services, accommodations, or eligibility."
+    },
+    {
+      "evidenceRefId": "clm_049-ev2",
+      "owner": "clm_049",
+      "sourceDocumentId": "l004-src-2",
+      "documentId": "02_progress_report_q1.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 179,
+        "endSeq": 190
+      },
+      "occurrencesOnPage": 1,
+      "quote": "No change to services, accommodations, or eligibility is made in this report."
+    },
+    {
+      "evidenceRefId": "clm_050-ev1",
+      "owner": "clm_050",
+      "sourceDocumentId": "l004-src-2",
+      "documentId": "02_progress_report_q1.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 167,
+        "endSeq": 178
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Daniel Okafor continues to receive specialized reading instruction under the current IEP."
+    },
+    {
+      "evidenceRefId": "clm_051-ev1",
+      "owner": "clm_051",
+      "sourceDocumentId": "l004-src-3",
+      "documentId": "03_progress_report_q2.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 42,
+        "endSeq": 44
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Report Date: 2026-02-13"
+    },
+    {
+      "evidenceRefId": "clm_052-ev1",
+      "owner": "clm_052",
+      "sourceDocumentId": "l004-src-3",
+      "documentId": "03_progress_report_q2.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 45,
+        "endSeq": 49
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Prepared By: Special education teacher"
+    },
+    {
+      "evidenceRefId": "clm_053-ev1",
+      "owner": "clm_053",
+      "sourceDocumentId": "l004-src-3",
+      "documentId": "03_progress_report_q2.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 50,
+        "endSeq": 57
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Reporting Period: Q2 progress toward current IEP goal"
+    },
+    {
+      "evidenceRefId": "clm_054-ev1",
+      "owner": "clm_054",
+      "sourceDocumentId": "l004-src-3",
+      "documentId": "03_progress_report_q2.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 58,
+        "endSeq": 60
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Goal Being Monitored"
+    },
+    {
+      "evidenceRefId": "clm_054-ev2",
+      "owner": "clm_054",
+      "sourceDocumentId": "l004-src-3",
+      "documentId": "03_progress_report_q2.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 138,
+        "endSeq": 147
+      },
+      "occurrencesOnPage": 1,
+      "quote": "This report records current progress toward the existing annual goal."
+    },
+    {
+      "evidenceRefId": "clm_055-ev1",
+      "owner": "clm_055",
+      "sourceDocumentId": "l004-src-3",
+      "documentId": "03_progress_report_q2.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 124,
+        "endSeq": 137
+      },
+      "occurrencesOnPage": 1,
+      "quote": "The annual target of 95 WCPM remains the goal reference for this reporting period."
+    },
+    {
+      "evidenceRefId": "clm_056-ev1",
+      "owner": "clm_056",
+      "sourceDocumentId": "l004-src-3",
+      "documentId": "03_progress_report_q2.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 148,
+        "endSeq": 156
+      },
+      "occurrencesOnPage": 1,
+      "quote": "It does not revise present levels, rewrite the IEP,"
+    },
+    {
+      "evidenceRefId": "clm_057-ev1",
+      "owner": "clm_057",
+      "sourceDocumentId": "l004-src-3",
+      "documentId": "03_progress_report_q2.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 157,
+        "endSeq": 164
+      },
+      "occurrencesOnPage": 1,
+      "quote": "or change special education services, accommodations, or eligibility."
+    },
+    {
+      "evidenceRefId": "clm_057-ev2",
+      "owner": "clm_057",
+      "sourceDocumentId": "l004-src-3",
+      "documentId": "03_progress_report_q2.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 179,
+        "endSeq": 190
+      },
+      "occurrencesOnPage": 1,
+      "quote": "No change to services, accommodations, or eligibility is made in this report."
+    },
+    {
+      "evidenceRefId": "clm_058-ev1",
+      "owner": "clm_058",
+      "sourceDocumentId": "l004-src-3",
+      "documentId": "03_progress_report_q2.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 167,
+        "endSeq": 178
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Daniel Okafor continues to receive specialized reading instruction under the current IEP."
+    },
+    {
+      "evidenceRefId": "clm_059-ev1",
+      "owner": "clm_059",
+      "sourceDocumentId": "l004-src-4",
+      "documentId": "04_progress_report_q3.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 42,
+        "endSeq": 44
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Report Date: 2026-05-15"
+    },
+    {
+      "evidenceRefId": "clm_060-ev1",
+      "owner": "clm_060",
+      "sourceDocumentId": "l004-src-4",
+      "documentId": "04_progress_report_q3.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 45,
+        "endSeq": 49
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Prepared By: Special education teacher"
+    },
+    {
+      "evidenceRefId": "clm_061-ev1",
+      "owner": "clm_061",
+      "sourceDocumentId": "l004-src-4",
+      "documentId": "04_progress_report_q3.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 50,
+        "endSeq": 57
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Reporting Period: Q3 progress toward current IEP goal"
+    },
+    {
+      "evidenceRefId": "clm_062-ev1",
+      "owner": "clm_062",
+      "sourceDocumentId": "l004-src-4",
+      "documentId": "04_progress_report_q3.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 58,
+        "endSeq": 60
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Goal Being Monitored"
+    },
+    {
+      "evidenceRefId": "clm_062-ev2",
+      "owner": "clm_062",
+      "sourceDocumentId": "l004-src-4",
+      "documentId": "04_progress_report_q3.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 138,
+        "endSeq": 147
+      },
+      "occurrencesOnPage": 1,
+      "quote": "This report records current progress toward the existing annual goal."
+    },
+    {
+      "evidenceRefId": "clm_063-ev1",
+      "owner": "clm_063",
+      "sourceDocumentId": "l004-src-4",
+      "documentId": "04_progress_report_q3.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 124,
+        "endSeq": 137
+      },
+      "occurrencesOnPage": 1,
+      "quote": "The annual target of 95 WCPM remains the goal reference for this reporting period."
+    },
+    {
+      "evidenceRefId": "clm_064-ev1",
+      "owner": "clm_064",
+      "sourceDocumentId": "l004-src-4",
+      "documentId": "04_progress_report_q3.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 148,
+        "endSeq": 156
+      },
+      "occurrencesOnPage": 1,
+      "quote": "It does not revise present levels, rewrite the IEP,"
+    },
+    {
+      "evidenceRefId": "clm_065-ev1",
+      "owner": "clm_065",
+      "sourceDocumentId": "l004-src-4",
+      "documentId": "04_progress_report_q3.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 157,
+        "endSeq": 164
+      },
+      "occurrencesOnPage": 1,
+      "quote": "or change special education services, accommodations, or eligibility."
+    },
+    {
+      "evidenceRefId": "clm_065-ev2",
+      "owner": "clm_065",
+      "sourceDocumentId": "l004-src-4",
+      "documentId": "04_progress_report_q3.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 179,
+        "endSeq": 190
+      },
+      "occurrencesOnPage": 1,
+      "quote": "No change to services, accommodations, or eligibility is made in this report."
+    },
+    {
+      "evidenceRefId": "clm_066-ev1",
+      "owner": "clm_066",
+      "sourceDocumentId": "l004-src-4",
+      "documentId": "04_progress_report_q3.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 167,
+        "endSeq": 178
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Daniel Okafor continues to receive specialized reading instruction under the current IEP."
+    },
+    {
+      "evidenceRefId": "clm_067-ev1",
+      "owner": "clm_067",
+      "sourceDocumentId": "l004-src-5",
+      "documentId": "05_academic_evaluation.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 71,
+        "endSeq": 73
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Evaluation Date: 2026-06-05"
+    },
+    {
+      "evidenceRefId": "clm_067-ev2",
+      "owner": "clm_067",
+      "sourceDocumentId": "l004-src-5",
+      "documentId": "05_academic_evaluation.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 42,
+        "endSeq": 48
+      },
+      "occurrencesOnPage": 1,
+      "quote": "This academic evaluation was completed on 2026-06-05"
+    },
+    {
+      "evidenceRefId": "clm_068-ev1",
+      "owner": "clm_068",
+      "sourceDocumentId": "l004-src-5",
+      "documentId": "05_academic_evaluation.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 77,
+        "endSeq": 79
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Evaluator: Academic evaluator"
+    },
+    {
+      "evidenceRefId": "clm_069-ev1",
+      "owner": "clm_069",
+      "sourceDocumentId": "l004-src-5",
+      "documentId": "05_academic_evaluation.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 80,
+        "endSeq": 85
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Focus: Reading achievement, fluency, and accuracy"
+    },
+    {
+      "evidenceRefId": "clm_069-ev2",
+      "owner": "clm_069",
+      "sourceDocumentId": "l004-src-5",
+      "documentId": "05_academic_evaluation.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 54,
+        "endSeq": 68
+      },
+      "occurrencesOnPage": 1,
+      "quote": "The evaluation examines oral reading fluency and reading accuracy related to the documented reading need."
+    },
+    {
+      "evidenceRefId": "clm_070-ev1",
+      "owner": "clm_070",
+      "sourceDocumentId": "l004-src-5",
+      "documentId": "05_academic_evaluation.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 49,
+        "endSeq": 53
+      },
+      "occurrencesOnPage": 1,
+      "quote": "to update Daniel's reading achievement."
+    },
+    {
+      "evidenceRefId": "clm_071-ev1",
+      "owner": "clm_071",
+      "sourceDocumentId": "l004-src-5",
+      "documentId": "05_academic_evaluation.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 106,
+        "endSeq": 117
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Results below are limited to information collected on the academic evaluation date."
+    },
+    {
+      "evidenceRefId": "clm_072-ev1",
+      "owner": "clm_072",
+      "sourceDocumentId": "l004-src-5",
+      "documentId": "05_academic_evaluation.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 176,
+        "endSeq": 189
+      },
+      "occurrencesOnPage": 1,
+      "quote": "This report does not create a new 70 WCPM administration on the evaluation date."
+    },
+    {
+      "evidenceRefId": "clm_073-ev1",
+      "owner": "clm_073",
+      "sourceDocumentId": "l004-src-5",
+      "documentId": "05_academic_evaluation.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 190,
+        "endSeq": 208
+      },
+      "occurrencesOnPage": 1,
+      "quote": "The 94% reading accuracy result is a separate construct from oral reading fluency and is not a words-correct-per-minute score."
+    },
+    {
+      "evidenceRefId": "clm_073-ev2",
+      "owner": "clm_073",
+      "sourceDocumentId": "l004-src-5",
+      "documentId": "05_academic_evaluation.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 248,
+        "endSeq": 257
+      },
+      "occurrencesOnPage": 1,
+      "quote": "The 94 percent accuracy result is not an oral-reading-fluency observation."
+    },
+    {
+      "evidenceRefId": "clm_074-ev1",
+      "owner": "clm_074",
+      "sourceDocumentId": "l004-src-5",
+      "documentId": "05_academic_evaluation.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 226,
+        "endSeq": 232
+      },
+      "occurrencesOnPage": 1,
+      "quote": "These are concurrent measures of different constructs."
+    },
+    {
+      "evidenceRefId": "clm_075-ev1",
+      "owner": "clm_075",
+      "sourceDocumentId": "l004-src-5",
+      "documentId": "05_academic_evaluation.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 233,
+        "endSeq": 247
+      },
+      "occurrencesOnPage": 1,
+      "quote": "The 96 WCPM result continues the oral-reading-fluency series that began with the 70 WCPM baseline."
+    },
+    {
+      "evidenceRefId": "clm_076-ev1",
+      "owner": "clm_076",
+      "sourceDocumentId": "l004-src-5",
+      "documentId": "05_academic_evaluation.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 134,
+        "endSeq": 144
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Daniel's fluency rose from a 70 WCPM baseline to 96 WCPM,"
+    },
+    {
+      "evidenceRefId": "clm_077-ev1",
+      "owner": "clm_077",
+      "sourceDocumentId": "l004-src-5",
+      "documentId": "05_academic_evaluation.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 260,
+        "endSeq": 269
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Daniel Okafor continues to require specially designed instruction in reading."
+    },
+    {
+      "evidenceRefId": "clm_078-ev1",
+      "owner": "clm_078",
+      "sourceDocumentId": "l004-src-5",
+      "documentId": "05_academic_evaluation.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 96,
+        "endSeq": 105
+      },
+      "occurrencesOnPage": 1,
+      "quote": "This report does not change eligibility, IEP services, or accommodations."
+    },
+    {
+      "evidenceRefId": "clm_078-ev2",
+      "owner": "clm_078",
+      "sourceDocumentId": "l004-src-5",
+      "documentId": "05_academic_evaluation.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 19,
+        "endSeq": 31
+      },
+      "occurrencesOnPage": 1,
+      "quote": "These results are evaluation findings and are not IEP service or eligibility decisions."
+    },
+    {
+      "evidenceRefId": "clm_079-ev1",
+      "owner": "clm_079",
+      "sourceDocumentId": "l004-src-5",
+      "documentId": "05_academic_evaluation.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 270,
+        "endSeq": 281
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Recommendations in this report are evaluation recommendations and are not IEP decisions."
+    },
+    {
+      "evidenceRefId": "clm_080-ev1",
+      "owner": "clm_080",
+      "sourceDocumentId": "l004-src-5",
+      "documentId": "05_academic_evaluation.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 11,
+        "endSeq": 18
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Continue specialized reading instruction under the current IEP."
+    },
+    {
+      "evidenceRefId": "voice_subject_name-ev1",
+      "owner": "voice_subject_name",
+      "sourceDocumentId": "l004-src-1",
+      "documentId": "01_annual_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 27,
+        "endSeq": 29
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Student: Daniel Okafor"
+    }
+  ]
+}

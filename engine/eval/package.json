@@ -10,7 +10,9 @@
     "typecheck": "tsc --noEmit",
     "lint": "node -e \"process.exit(0)\"",
     "test": "vitest run",
-    "eval": "tsx scripts/eval.ts"
+    "golden:draft": "pnpm --filter @hiveforyou/core exec tsx ../eval/scripts/draft-golden.ts",
+    "eval": "tsx scripts/eval.ts",
+    "eval:serve": "tsx scripts/serve-grader.ts"
   },
   "dependencies": {
     "@hiveforyou/core": "workspace:*",

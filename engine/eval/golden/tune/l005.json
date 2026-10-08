@@ -1,0 +1,3153 @@
+{
+  "caseId": "l005",
+  "split": "tune",
+  "corpusDir": "engine/intake/fixtures/l005",
+  "verifiedBy": "Aryya Bhattacharyya",
+  "draft": false,
+  "facts": [
+    {
+      "id": "clm_001",
+      "documentId": "01_prior_iep.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        27,
+        30
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "Jordan Lee",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_002",
+      "documentId": "01_prior_iep.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        30,
+        34
+      ],
+      "valueKind": "date",
+      "value": {
+        "kind": "date",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": "2015-10-21",
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_003",
+      "documentId": "01_prior_iep.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        34,
+        36
+      ],
+      "valueKind": "code",
+      "value": {
+        "kind": "code",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": "5",
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_004",
+      "documentId": "01_prior_iep.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        36,
+        40
+      ],
+      "valueKind": "entity_ref",
+      "value": {
+        "kind": "entity_ref",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": "ent_school",
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_005",
+      "documentId": "01_prior_iep.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        40,
+        43
+      ],
+      "valueKind": "entity_ref",
+      "value": {
+        "kind": "entity_ref",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": "ent_district",
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_006",
+      "documentId": "01_prior_iep.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        77,
+        86
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "Specific Learning Disability (SLD) - Listening Comprehension",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "decided"
+      ]
+    },
+    {
+      "id": "clm_007",
+      "documentId": "01_prior_iep.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        86,
+        93
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "Following lengthy spoken directions",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "decided"
+      ]
+    },
+    {
+      "id": "clm_008",
+      "documentId": "01_prior_iep.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        96,
+        109
+      ],
+      "valueKind": "boolean",
+      "value": {
+        "kind": "boolean",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": false,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_009",
+      "documentId": "01_prior_iep.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        109,
+        121
+      ],
+      "valueKind": "boolean",
+      "value": {
+        "kind": "boolean",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": false,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_010",
+      "documentId": "01_prior_iep.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        43,
+        46
+      ],
+      "valueKind": "date",
+      "value": {
+        "kind": "date",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": "2025-04-08",
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_011",
+      "documentId": "01_prior_iep.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        46,
+        51
+      ],
+      "valueKind": "period",
+      "value": {
+        "kind": "period",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": "2025-04-08",
+        "periodEnd": "2026-04-07",
+        "unit": null
+      },
+      "acceptableModalities": [
+        "decided"
+      ]
+    },
+    {
+      "id": "clm_012",
+      "documentId": "01_prior_iep.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        93,
+        96
+      ],
+      "valueKind": "date",
+      "value": {
+        "kind": "date",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": "2025-04-08",
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_013",
+      "documentId": "01_prior_iep.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        67,
+        75
+      ],
+      "valueKind": "boolean",
+      "value": {
+        "kind": "boolean",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": false,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_014",
+      "documentId": "01_prior_iep.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        130,
+        138
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "documented following spoken directions concern",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_015",
+      "documentId": "01_prior_iep.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        138,
+        148
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "difficulty following lengthy spoken directions across different settings",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_016",
+      "documentId": "01_prior_iep.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        146,
+        160
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "lengthy spoken directions are more difficult than short, visible directions",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_017",
+      "documentId": "01_prior_iep.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        169,
+        187
+      ],
+      "valueKind": "entity_ref",
+      "value": {
+        "kind": "entity_ref",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": "ent_goal_2025",
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "decided"
+      ]
+    },
+    {
+      "id": "clm_018",
+      "documentId": "01_prior_iep.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        169,
+        173
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "two-step classroom directions",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "planned"
+      ]
+    },
+    {
+      "id": "clm_019",
+      "documentId": "01_prior_iep.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        173,
+        187
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "four of five opportunities",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "planned"
+      ]
+    },
+    {
+      "id": "clm_020",
+      "documentId": "01_prior_iep.pdf",
+      "pageNumber": 2,
+      "wordRange": [
+        117,
+        132
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "at least annually, concurrent with report periods",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "planned"
+      ]
+    },
+    {
+      "id": "clm_021",
+      "documentId": "01_prior_iep.pdf",
+      "pageNumber": 2,
+      "wordRange": [
+        21,
+        27
+      ],
+      "valueKind": "quantity",
+      "value": {
+        "kind": "quantity",
+        "numberValue": 3,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": "sessions/week"
+      },
+      "acceptableModalities": [
+        "decided"
+      ]
+    },
+    {
+      "id": "clm_022",
+      "documentId": "01_prior_iep.pdf",
+      "pageNumber": 2,
+      "wordRange": [
+        23,
+        35
+      ],
+      "valueKind": "quantity",
+      "value": {
+        "kind": "quantity",
+        "numberValue": 30,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": "minutes"
+      },
+      "acceptableModalities": [
+        "decided"
+      ]
+    },
+    {
+      "id": "clm_023",
+      "documentId": "01_prior_iep.pdf",
+      "pageNumber": 2,
+      "wordRange": [
+        27,
+        35
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "special education setting",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "decided"
+      ]
+    },
+    {
+      "id": "clm_024",
+      "documentId": "01_prior_iep.pdf",
+      "pageNumber": 2,
+      "wordRange": [
+        31,
+        36
+      ],
+      "valueKind": "date",
+      "value": {
+        "kind": "date",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": "2025-04-08",
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "decided"
+      ]
+    },
+    {
+      "id": "clm_025",
+      "documentId": "01_prior_iep.pdf",
+      "pageNumber": 2,
+      "wordRange": [
+        45,
+        54
+      ],
+      "valueKind": "boolean",
+      "value": {
+        "kind": "boolean",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": false,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "decided"
+      ]
+    },
+    {
+      "id": "clm_026",
+      "documentId": "01_prior_iep.pdf",
+      "pageNumber": 2,
+      "wordRange": [
+        54,
+        68
+      ],
+      "valueKind": "boolean",
+      "value": {
+        "kind": "boolean",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": false,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_027",
+      "documentId": "01_prior_iep.pdf",
+      "pageNumber": 2,
+      "wordRange": [
+        70,
+        81
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "Extended time (1.5x) on classroom assignments when directions are oral",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "decided"
+      ]
+    },
+    {
+      "id": "clm_028",
+      "documentId": "01_prior_iep.pdf",
+      "pageNumber": 2,
+      "wordRange": [
+        91,
+        114
+      ],
+      "valueKind": "boolean",
+      "value": {
+        "kind": "boolean",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": false,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_029",
+      "documentId": "01_prior_iep.pdf",
+      "pageNumber": 2,
+      "wordRange": [
+        137,
+        141
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "Parent/Guardian; General Education Teacher; Special Education Teacher",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_030",
+      "documentId": "02_reevaluation_plan.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        23,
+        26
+      ],
+      "valueKind": "date",
+      "value": {
+        "kind": "date",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": "2026-02-03",
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_031",
+      "documentId": "02_reevaluation_plan.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        26,
+        29
+      ],
+      "valueKind": "entity_ref",
+      "value": {
+        "kind": "entity_ref",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": "ent_district",
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_032",
+      "documentId": "02_reevaluation_plan.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        29,
+        33
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "Reevaluation plan",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_033",
+      "documentId": "02_reevaluation_plan.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        56,
+        65
+      ],
+      "valueKind": "boolean",
+      "value": {
+        "kind": "boolean",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": true,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_034",
+      "documentId": "02_reevaluation_plan.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        65,
+        80
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "review current educational needs related to following spoken directions",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "planned"
+      ]
+    },
+    {
+      "id": "clm_035",
+      "documentId": "02_reevaluation_plan.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        80,
+        96
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "difficulty following lengthy spoken directions across different settings",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_036",
+      "documentId": "02_reevaluation_plan.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        103,
+        110
+      ],
+      "valueKind": "boolean",
+      "value": {
+        "kind": "boolean",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": false,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_037",
+      "documentId": "02_reevaluation_plan.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        116,
+        122
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "Current IEP and progress information",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_038",
+      "documentId": "02_reevaluation_plan.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        122,
+        128
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "Teacher information regarding classroom direction-following",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_039",
+      "documentId": "02_reevaluation_plan.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        128,
+        134
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "Parent information regarding homework directions",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_040",
+      "documentId": "02_reevaluation_plan.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        143,
+        146
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "Psychoeducational reevaluation",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "planned"
+      ]
+    },
+    {
+      "id": "clm_041",
+      "documentId": "02_reevaluation_plan.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        146,
+        149
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "Speech-language review",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "planned"
+      ]
+    },
+    {
+      "id": "clm_042",
+      "documentId": "02_reevaluation_plan.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        149,
+        155
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "Review of existing educational records",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "planned"
+      ]
+    },
+    {
+      "id": "clm_043",
+      "documentId": "02_reevaluation_plan.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        155,
+        160
+      ],
+      "valueKind": "boolean",
+      "value": {
+        "kind": "boolean",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": false,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_044",
+      "documentId": "02_reevaluation_plan.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        176,
+        187
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "before the reevaluation eligibility meeting",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "planned"
+      ]
+    },
+    {
+      "id": "clm_045",
+      "documentId": "03_psychoeducational_reevaluation.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        39,
+        42
+      ],
+      "valueKind": "date",
+      "value": {
+        "kind": "date",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": "2026-03-04",
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_046",
+      "documentId": "03_psychoeducational_reevaluation.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        42,
+        45
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "School psychologist",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_047",
+      "documentId": "03_psychoeducational_reevaluation.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        48,
+        65
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "part of the required review of special education eligibility and educational need",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_048",
+      "documentId": "03_psychoeducational_reevaluation.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        80,
+        88
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "cognitive and task-performance context",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_049",
+      "documentId": "03_psychoeducational_reevaluation.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        88,
+        103
+      ],
+      "valueKind": "boolean",
+      "value": {
+        "kind": "boolean",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": false,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_050",
+      "documentId": "03_psychoeducational_reevaluation.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        136,
+        141
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "Reevaluation plan dated 2026-02-03",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_051",
+      "documentId": "03_psychoeducational_reevaluation.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        141,
+        147
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "Review of existing educational records",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_052",
+      "documentId": "03_psychoeducational_reevaluation.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        147,
+        153
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "Teacher information from Ms. Green",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_053",
+      "documentId": "03_psychoeducational_reevaluation.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        153,
+        158
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "Parent information regarding homework",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_054",
+      "documentId": "03_psychoeducational_reevaluation.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        158,
+        164
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "Student observation during individual testing",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_055",
+      "documentId": "03_psychoeducational_reevaluation.pdf",
+      "pageNumber": 2,
+      "wordRange": [
+        14,
+        27
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "individual testing in a quiet room with Jordan and the evaluator",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_056",
+      "documentId": "03_psychoeducational_reevaluation.pdf",
+      "pageNumber": 2,
+      "wordRange": [
+        60,
+        77
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "asked for one direction to be repeated on four of twelve multistep tasks",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_057",
+      "documentId": "03_psychoeducational_reevaluation.pdf",
+      "pageNumber": 2,
+      "wordRange": [
+        106,
+        121
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "began tasks without additional prompting",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_058",
+      "documentId": "03_psychoeducational_reevaluation.pdf",
+      "pageNumber": 2,
+      "wordRange": [
+        121,
+        134
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "paused before beginning several items",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_059",
+      "documentId": "03_psychoeducational_reevaluation.pdf",
+      "pageNumber": 4,
+      "wordRange": [
+        39,
+        58
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "less consistent",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_060",
+      "documentId": "03_psychoeducational_reevaluation.pdf",
+      "pageNumber": 4,
+      "wordRange": [
+        85,
+        97
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "within the expected range for age",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_061",
+      "documentId": "03_psychoeducational_reevaluation.pdf",
+      "pageNumber": 4,
+      "wordRange": [
+        70,
+        85
+      ],
+      "valueKind": "boolean",
+      "value": {
+        "kind": "boolean",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": false,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_062",
+      "documentId": "03_psychoeducational_reevaluation.pdf",
+      "pageNumber": 3,
+      "wordRange": [
+        39,
+        53
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "usually completes independent classwork when written directions remain visible",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_063",
+      "documentId": "03_psychoeducational_reevaluation.pdf",
+      "pageNumber": 3,
+      "wordRange": [
+        53,
+        65
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "participates cooperatively during short, familiar routines",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_064",
+      "documentId": "03_psychoeducational_reevaluation.pdf",
+      "pageNumber": 3,
+      "wordRange": [
+        80,
+        95
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "often requires two or three reminders",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_065",
+      "documentId": "03_psychoeducational_reevaluation.pdf",
+      "pageNumber": 5,
+      "wordRange": [
+        108,
+        114
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "setting- and format-specific",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_066",
+      "documentId": "03_psychoeducational_reevaluation.pdf",
+      "pageNumber": 5,
+      "wordRange": [
+        145,
+        162
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "breaking lengthy verbal directions into shorter steps",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_067",
+      "documentId": "03_psychoeducational_reevaluation.pdf",
+      "pageNumber": 5,
+      "wordRange": [
+        198,
+        207
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "checking understanding before independent work begins",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_068",
+      "documentId": "03_psychoeducational_reevaluation.pdf",
+      "pageNumber": 5,
+      "wordRange": [
+        166,
+        179
+      ],
+      "valueKind": "boolean",
+      "value": {
+        "kind": "boolean",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": false,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_069",
+      "documentId": "03_psychoeducational_reevaluation.pdf",
+      "pageNumber": 5,
+      "wordRange": [
+        205,
+        222
+      ],
+      "valueKind": "boolean",
+      "value": {
+        "kind": "boolean",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": false,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_070",
+      "documentId": "04_speech_language_review.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        38,
+        41
+      ],
+      "valueKind": "date",
+      "value": {
+        "kind": "date",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": "2026-03-11",
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_071",
+      "documentId": "04_speech_language_review.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        41,
+        44
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "Speech-language pathologist",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_072",
+      "documentId": "04_speech_language_review.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        65,
+        85
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "determine whether a separate speech-language educational need is present and whether direct speech-language services are recommended",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_073",
+      "documentId": "04_speech_language_review.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        96,
+        109
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "intelligible to an unfamiliar listener throughout the review",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_074",
+      "documentId": "04_speech_language_review.pdf",
+      "pageNumber": 2,
+      "wordRange": [
+        42,
+        53
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "followed two-step oral directions accurately",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_075",
+      "documentId": "04_speech_language_review.pdf",
+      "pageNumber": 2,
+      "wordRange": [
+        76,
+        90
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "accuracy decreased",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_076",
+      "documentId": "04_speech_language_review.pdf",
+      "pageNumber": 2,
+      "wordRange": [
+        90,
+        104
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "completed accurately",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_077",
+      "documentId": "04_speech_language_review.pdf",
+      "pageNumber": 3,
+      "wordRange": [
+        43,
+        62
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "greatest difficulty during whole-group instruction when directions were lengthy and competing noise was present",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_078",
+      "documentId": "04_speech_language_review.pdf",
+      "pageNumber": 3,
+      "wordRange": [
+        101,
+        117
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "within the expected range",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_079",
+      "documentId": "04_speech_language_review.pdf",
+      "pageNumber": 4,
+      "wordRange": [
+        80,
+        93
+      ],
+      "valueKind": "boolean",
+      "value": {
+        "kind": "boolean",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": false,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_080",
+      "documentId": "04_speech_language_review.pdf",
+      "pageNumber": 4,
+      "wordRange": [
+        91,
+        107
+      ],
+      "valueKind": "boolean",
+      "value": {
+        "kind": "boolean",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": false,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_081",
+      "documentId": "04_speech_language_review.pdf",
+      "pageNumber": 4,
+      "wordRange": [
+        118,
+        136
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "classroom strategies that shorten lengthy oral directions and provide a written reference when possible",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_082",
+      "documentId": "04_speech_language_review.pdf",
+      "pageNumber": 4,
+      "wordRange": [
+        135,
+        143
+      ],
+      "valueKind": "boolean",
+      "value": {
+        "kind": "boolean",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": false,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_083",
+      "documentId": "04_speech_language_review.pdf",
+      "pageNumber": 4,
+      "wordRange": [
+        63,
+        80
+      ],
+      "valueKind": "boolean",
+      "value": {
+        "kind": "boolean",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": false,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_084",
+      "documentId": "05_reevaluation_eligibility_determination.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        43,
+        46
+      ],
+      "valueKind": "date",
+      "value": {
+        "kind": "date",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": "2026-03-25",
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_085",
+      "documentId": "05_reevaluation_eligibility_determination.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        46,
+        51
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "Reevaluation Eligibility Determination",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_086",
+      "documentId": "05_reevaluation_eligibility_determination.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        51,
+        55
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "Eligibility team",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_087",
+      "documentId": "05_reevaluation_eligibility_determination.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        55,
+        68
+      ],
+      "valueKind": "boolean",
+      "value": {
+        "kind": "boolean",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": false,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_088",
+      "documentId": "05_reevaluation_eligibility_determination.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        71,
+        76
+      ],
+      "valueKind": "entity_ref",
+      "value": {
+        "kind": "entity_ref",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": "ent_psych_2026",
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_089",
+      "documentId": "05_reevaluation_eligibility_determination.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        76,
+        81
+      ],
+      "valueKind": "entity_ref",
+      "value": {
+        "kind": "entity_ref",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": "ent_sl_2026",
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_090",
+      "documentId": "05_reevaluation_eligibility_determination.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        81,
+        87
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "Review of existing educational records",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_091",
+      "documentId": "05_reevaluation_eligibility_determination.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        87,
+        96
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "Teacher and parent information recorded in the evaluations",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_092",
+      "documentId": "05_reevaluation_eligibility_determination.pdf",
+      "pageNumber": 2,
+      "wordRange": [
+        109,
+        118
+      ],
+      "valueKind": "boolean",
+      "value": {
+        "kind": "boolean",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": true,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "decided"
+      ]
+    },
+    {
+      "id": "clm_093",
+      "documentId": "05_reevaluation_eligibility_determination.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        96,
+        119
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "Specific Learning Disability (SLD) - Listening Comprehension",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "decided"
+      ]
+    },
+    {
+      "id": "clm_094",
+      "documentId": "05_reevaluation_eligibility_determination.pdf",
+      "pageNumber": 2,
+      "wordRange": [
+        144,
+        147
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "None",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "decided"
+      ]
+    },
+    {
+      "id": "clm_095",
+      "documentId": "05_reevaluation_eligibility_determination.pdf",
+      "pageNumber": 2,
+      "wordRange": [
+        137,
+        144
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "Following lengthy spoken directions",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "decided"
+      ]
+    },
+    {
+      "id": "clm_096",
+      "documentId": "05_reevaluation_eligibility_determination.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        118,
+        125
+      ],
+      "valueKind": "boolean",
+      "value": {
+        "kind": "boolean",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": true,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_097",
+      "documentId": "05_reevaluation_eligibility_determination.pdf",
+      "pageNumber": 2,
+      "wordRange": [
+        175,
+        194
+      ],
+      "valueKind": "boolean",
+      "value": {
+        "kind": "boolean",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": true,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "decided"
+      ]
+    },
+    {
+      "id": "clm_098",
+      "documentId": "05_reevaluation_eligibility_determination.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        125,
+        138
+      ],
+      "valueKind": "boolean",
+      "value": {
+        "kind": "boolean",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": false,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_099",
+      "documentId": "06_reevaluation_iep.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        43,
+        46
+      ],
+      "valueKind": "date",
+      "value": {
+        "kind": "date",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": "2026-04-02",
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_100",
+      "documentId": "06_reevaluation_iep.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        46,
+        51
+      ],
+      "valueKind": "period",
+      "value": {
+        "kind": "period",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": "2026-04-02",
+        "periodEnd": "2027-04-01",
+        "unit": null
+      },
+      "acceptableModalities": [
+        "decided"
+      ]
+    },
+    {
+      "id": "clm_101",
+      "documentId": "06_reevaluation_iep.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        51,
+        62
+      ],
+      "valueKind": "entity_ref",
+      "value": {
+        "kind": "entity_ref",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": "ent_elig_2026",
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "decided"
+      ]
+    },
+    {
+      "id": "clm_102",
+      "documentId": "06_reevaluation_iep.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        57,
+        68
+      ],
+      "valueKind": "boolean",
+      "value": {
+        "kind": "boolean",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": false,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_103",
+      "documentId": "06_reevaluation_iep.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        125,
+        135
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "continues to have a documented following spoken directions need",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_104",
+      "documentId": "06_reevaluation_iep.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        135,
+        157
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "stronger performance with one-step or written-visible directions; greater difficulty with lengthy spoken directions, especially during noisy whole-group instruction",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_105",
+      "documentId": "06_reevaluation_iep.pdf",
+      "pageNumber": 1,
+      "wordRange": [
+        157,
+        168
+      ],
+      "valueKind": "boolean",
+      "value": {
+        "kind": "boolean",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": false,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_106",
+      "documentId": "06_reevaluation_iep.pdf",
+      "pageNumber": 2,
+      "wordRange": [
+        21,
+        27
+      ],
+      "valueKind": "quantity",
+      "value": {
+        "kind": "quantity",
+        "numberValue": 3,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": "sessions/week"
+      },
+      "acceptableModalities": [
+        "decided"
+      ]
+    },
+    {
+      "id": "clm_107",
+      "documentId": "06_reevaluation_iep.pdf",
+      "pageNumber": 2,
+      "wordRange": [
+        23,
+        35
+      ],
+      "valueKind": "quantity",
+      "value": {
+        "kind": "quantity",
+        "numberValue": 30,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": "minutes"
+      },
+      "acceptableModalities": [
+        "decided"
+      ]
+    },
+    {
+      "id": "clm_108",
+      "documentId": "06_reevaluation_iep.pdf",
+      "pageNumber": 2,
+      "wordRange": [
+        27,
+        35
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "special education setting",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "decided"
+      ]
+    },
+    {
+      "id": "clm_109",
+      "documentId": "06_reevaluation_iep.pdf",
+      "pageNumber": 2,
+      "wordRange": [
+        31,
+        36
+      ],
+      "valueKind": "date",
+      "value": {
+        "kind": "date",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": "2025-04-08",
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_110",
+      "documentId": "06_reevaluation_iep.pdf",
+      "pageNumber": 2,
+      "wordRange": [
+        45,
+        53
+      ],
+      "valueKind": "boolean",
+      "value": {
+        "kind": "boolean",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": false,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "decided"
+      ]
+    },
+    {
+      "id": "clm_111",
+      "documentId": "06_reevaluation_iep.pdf",
+      "pageNumber": 2,
+      "wordRange": [
+        86,
+        97
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "Extended time (1.5x) on classroom assignments when directions are oral",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "decided"
+      ]
+    },
+    {
+      "id": "clm_112",
+      "documentId": "06_reevaluation_iep.pdf",
+      "pageNumber": 2,
+      "wordRange": [
+        97,
+        113
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "Break lengthy oral directions into shorter steps and provide written directions for multistep classroom tasks",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "decided"
+      ]
+    },
+    {
+      "id": "clm_113",
+      "documentId": "06_reevaluation_iep.pdf",
+      "pageNumber": 2,
+      "wordRange": [
+        152,
+        162
+      ],
+      "valueKind": "boolean",
+      "value": {
+        "kind": "boolean",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": false,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_114",
+      "documentId": "06_reevaluation_iep.pdf",
+      "pageNumber": 2,
+      "wordRange": [
+        162,
+        183
+      ],
+      "valueKind": "boolean",
+      "value": {
+        "kind": "boolean",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": false,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_115",
+      "documentId": "06_reevaluation_iep.pdf",
+      "pageNumber": 3,
+      "wordRange": [
+        36,
+        39
+      ],
+      "valueKind": "entity_ref",
+      "value": {
+        "kind": "entity_ref",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": "ent_goal_reeval",
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "decided"
+      ]
+    },
+    {
+      "id": "clm_116",
+      "documentId": "06_reevaluation_iep.pdf",
+      "pageNumber": 3,
+      "wordRange": [
+        36,
+        39
+      ],
+      "valueKind": "code",
+      "value": {
+        "kind": "code",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": "GOAL_DIRECTIONS_REEVAL",
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    },
+    {
+      "id": "clm_117",
+      "documentId": "06_reevaluation_iep.pdf",
+      "pageNumber": 3,
+      "wordRange": [
+        13,
+        21
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "shortened oral directions with a written reference",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "planned"
+      ]
+    },
+    {
+      "id": "clm_118",
+      "documentId": "06_reevaluation_iep.pdf",
+      "pageNumber": 3,
+      "wordRange": [
+        21,
+        36
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "four of five opportunities",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "planned"
+      ]
+    },
+    {
+      "id": "clm_119",
+      "documentId": "06_reevaluation_iep.pdf",
+      "pageNumber": 3,
+      "wordRange": [
+        39,
+        42
+      ],
+      "valueKind": "date",
+      "value": {
+        "kind": "date",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": "2026-04-02",
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "planned"
+      ]
+    },
+    {
+      "id": "clm_120",
+      "documentId": "06_reevaluation_iep.pdf",
+      "pageNumber": 3,
+      "wordRange": [
+        42,
+        45
+      ],
+      "valueKind": "date",
+      "value": {
+        "kind": "date",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": "2027-04-01",
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "planned"
+      ]
+    },
+    {
+      "id": "clm_121",
+      "documentId": "06_reevaluation_iep.pdf",
+      "pageNumber": 3,
+      "wordRange": [
+        48,
+        63
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "at least annually, concurrent with report periods",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "planned"
+      ]
+    },
+    {
+      "id": "clm_122",
+      "documentId": "06_reevaluation_iep.pdf",
+      "pageNumber": 3,
+      "wordRange": [
+        67,
+        88
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "participates with nondisabled peers throughout the school day except during specialized instruction sessions in the special education setting",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "decided"
+      ]
+    },
+    {
+      "id": "clm_123",
+      "documentId": "06_reevaluation_iep.pdf",
+      "pageNumber": 3,
+      "wordRange": [
+        93,
+        97
+      ],
+      "valueKind": "text",
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "Parent/Guardian; General Education Teacher; Special Education Teacher; District Representative",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "acceptableModalities": [
+        "observed"
+      ]
+    }
+  ],
+  "gaps": [
+    {
+      "id": "gap_001",
+      "gapKind": "not_found_in_supplied_documents",
+      "description": "The 2026-02-03 reevaluation plan lists \"Current IEP and progress information\" as existing information available to the team, and the 2025-04-08 IEP says progress toward its annual goal will be reported at least annually. The 2025 IEP is supplied, but no progress report or other record of progress toward the 2025 goal (begin the requested task within 15 seconds on four of five opportunities) is supplied. A progress report for the 2025-04-08 IEP would answer this."
+    }
+  ],
+  "tripwires": [
+    {
+      "id": "tw_l005_no_conflicts",
+      "mustNotClaim": "conflict",
+      "description": "L005 reviewed reference has zero conflicts; grader must not accept conflict claims."
+    },
+    {
+      "id": "tw_l005_no_distractor_direction_evidence",
+      "mustNotClaim": "distractor_word_repeat_as_direction_following",
+      "description": "Do not use cough repeat, pencil request, or visual-puzzles observation as direction-following evidence."
+    },
+    {
+      "id": "tw_l005_no_cannot_follow_directions",
+      "mustNotClaim": "cannot_follow_directions_mastery",
+      "description": "Do not state cannot follow directions or turn one-to-one accuracy into mastery across settings."
+    },
+    {
+      "id": "tw_l005_no_prior_iep_shorter_steps",
+      "mustNotClaim": "2025_iep_shorter_steps_written_directions",
+      "description": "Do not say the 2025 IEP included shorter steps with written directions."
+    },
+    {
+      "id": "tw_l005_no_checking_understanding_accommodation",
+      "mustNotClaim": "checking_understanding_iep_accommodation",
+      "description": "Do not say checking understanding before independent work is an IEP accommodation."
+    },
+    {
+      "id": "tw_l005_no_eval_rec_as_iep_decision",
+      "mustNotClaim": "evaluation_recommendation_as_iep_decision",
+      "description": "Do not treat evaluation recommendations as IEP decisions or current services."
+    },
+    {
+      "id": "tw_l005_no_adhd_or_disorder_identified",
+      "mustNotClaim": "adhd_working_memory_executive_language_disorder",
+      "description": "Do not report ADHD, working-memory, executive-function, or language impairment as identified."
+    },
+    {
+      "id": "tw_l005_no_speech_rec_as_no_communication_need",
+      "mustNotClaim": "no_speech_services_means_no_communication_need",
+      "description": "Do not read no direct speech-language services as no communication need."
+    },
+    {
+      "id": "tw_l005_no_parent_reminders_as_school_observation",
+      "mustNotClaim": "parent_reminders_as_evaluator_observation",
+      "description": "Do not report parent two-or-three reminders as a school or evaluator observation."
+    },
+    {
+      "id": "tw_l005_no_quiet_vs_whole_group_conflict",
+      "mustNotClaim": "conflict:quiet_one_to_one_vs_whole_group",
+      "description": "Do not report conflict between quiet one-to-one accuracy and whole-group difficulty."
+    },
+    {
+      "id": "tw_l005_no_eligibility_primary_need_change",
+      "mustNotClaim": "changed_eligibility_or_primary_need",
+      "description": "Do not say eligibility category or primary need changed."
+    },
+    {
+      "id": "tw_l005_no_sld_medical_diagnosis",
+      "mustNotClaim": "sld_medical_diagnosis",
+      "description": "Do not call SLD a medical diagnosis."
+    }
+  ]
+}

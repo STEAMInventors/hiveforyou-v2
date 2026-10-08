@@ -1,0 +1,4411 @@
+{
+  "schemaVersion": "canonical-study-proposal/4",
+  "domainId": "iep",
+  "entities": [
+    {
+      "id": "ent_student",
+      "entityType": "student",
+      "label": "Daniel Okafor",
+      "aliases": [
+        "Daniel"
+      ],
+      "evidenceRefs": [
+        {
+          "id": "ent_student-ev1",
+          "sourceDocumentId": "l004-src-1",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Student: Daniel Okafor",
+          "extractionId": null,
+          "sourceType": "document"
+        },
+        {
+          "id": "ent_student-ev2",
+          "sourceDocumentId": "l004-src-1",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Daniel has a persistent reading concern.",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    },
+    {
+      "id": "ent_school",
+      "entityType": "school",
+      "label": "Synthetic Elementary School",
+      "aliases": null,
+      "evidenceRefs": [
+        {
+          "id": "ent_school-ev1",
+          "sourceDocumentId": "l004-src-1",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "School: Synthetic Elementary School",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    },
+    {
+      "id": "ent_district",
+      "entityType": "school_district",
+      "label": "Synthetic District",
+      "aliases": null,
+      "evidenceRefs": [
+        {
+          "id": "ent_district-ev1",
+          "sourceDocumentId": "l004-src-1",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "District: Synthetic District",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    },
+    {
+      "id": "ent_iep_2025",
+      "entityType": "iep",
+      "label": "IEP (2025-09-10)",
+      "aliases": null,
+      "evidenceRefs": [
+        {
+          "id": "ent_iep_2025-ev1",
+          "sourceDocumentId": "l004-src-1",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Individualized Education Program (IEP)",
+          "extractionId": null,
+          "sourceType": "document"
+        },
+        {
+          "id": "ent_iep_2025-ev2",
+          "sourceDocumentId": "l004-src-1",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "IEP Date: 2025-09-10",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    },
+    {
+      "id": "ent_progress_q1",
+      "entityType": "progress_report",
+      "label": "IEP Progress Report Q1 (2025-11-14)",
+      "aliases": null,
+      "evidenceRefs": [
+        {
+          "id": "ent_progress_q1-ev1",
+          "sourceDocumentId": "l004-src-2",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "IEP Progress Report (Q1)",
+          "extractionId": null,
+          "sourceType": "document"
+        },
+        {
+          "id": "ent_progress_q1-ev2",
+          "sourceDocumentId": "l004-src-2",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Report Date: 2025-11-14",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    },
+    {
+      "id": "ent_progress_q2",
+      "entityType": "progress_report",
+      "label": "IEP Progress Report Q2 (2026-02-13)",
+      "aliases": null,
+      "evidenceRefs": [
+        {
+          "id": "ent_progress_q2-ev1",
+          "sourceDocumentId": "l004-src-3",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "IEP Progress Report (Q2)",
+          "extractionId": null,
+          "sourceType": "document"
+        },
+        {
+          "id": "ent_progress_q2-ev2",
+          "sourceDocumentId": "l004-src-3",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Report Date: 2026-02-13",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    },
+    {
+      "id": "ent_progress_q3",
+      "entityType": "progress_report",
+      "label": "IEP Progress Report Q3 (2026-05-15)",
+      "aliases": null,
+      "evidenceRefs": [
+        {
+          "id": "ent_progress_q3-ev1",
+          "sourceDocumentId": "l004-src-4",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "IEP Progress Report (Q3)",
+          "extractionId": null,
+          "sourceType": "document"
+        },
+        {
+          "id": "ent_progress_q3-ev2",
+          "sourceDocumentId": "l004-src-4",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Report Date: 2026-05-15",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    },
+    {
+      "id": "ent_academic_eval_2026",
+      "entityType": "evaluation_report",
+      "label": "Academic Evaluation Report (2026-06-05)",
+      "aliases": null,
+      "evidenceRefs": [
+        {
+          "id": "ent_academic_eval_2026-ev1",
+          "sourceDocumentId": "l004-src-5",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Academic Evaluation Report SYNTHETIC DEVELOPMENT RECORD",
+          "extractionId": null,
+          "sourceType": "document"
+        },
+        {
+          "id": "ent_academic_eval_2026-ev2",
+          "sourceDocumentId": "l004-src-5",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Evaluation Date: 2026-06-05",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    },
+    {
+      "id": "ent_goal_fluency",
+      "entityType": "annual_goal",
+      "label": "Annual goal GOAL_READING_FLUENCY",
+      "aliases": null,
+      "evidenceRefs": [
+        {
+          "id": "ent_goal_fluency-ev1",
+          "sourceDocumentId": "l004-src-1",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Goal ID: GOAL_READING_FLUENCY",
+          "extractionId": null,
+          "sourceType": "document"
+        },
+        {
+          "id": "ent_goal_fluency-ev2",
+          "sourceDocumentId": "l004-src-2",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Goal ID: GOAL_READING_FLUENCY",
+          "extractionId": null,
+          "sourceType": "document"
+        },
+        {
+          "id": "ent_goal_fluency-ev3",
+          "sourceDocumentId": "l004-src-3",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Goal ID: GOAL_READING_FLUENCY",
+          "extractionId": null,
+          "sourceType": "document"
+        },
+        {
+          "id": "ent_goal_fluency-ev4",
+          "sourceDocumentId": "l004-src-4",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Goal ID: GOAL_READING_FLUENCY",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    }
+  ],
+  "claims": [
+    {
+      "id": "clm_001",
+      "subjectEntityId": "ent_student",
+      "construct": {
+        "measure": "student_name",
+        "task": null,
+        "administration": null
+      },
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "Daniel Okafor",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "unit": null,
+      "modality": "observed",
+      "effectivePeriod": null,
+      "occurredOn": null,
+      "evidenceRefs": [
+        {
+          "id": "clm_001-ev1",
+          "sourceDocumentId": "l004-src-1",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Student: Daniel Okafor",
+          "extractionId": null,
+          "sourceType": "document"
+        },
+        {
+          "id": "clm_001-ev2",
+          "sourceDocumentId": "l004-src-2",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Student: Daniel Okafor",
+          "extractionId": null,
+          "sourceType": "document"
+        },
+        {
+          "id": "clm_001-ev3",
+          "sourceDocumentId": "l004-src-3",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Student: Daniel Okafor",
+          "extractionId": null,
+          "sourceType": "document"
+        },
+        {
+          "id": "clm_001-ev4",
+          "sourceDocumentId": "l004-src-4",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Student: Daniel Okafor",
+          "extractionId": null,
+          "sourceType": "document"
+        },
+        {
+          "id": "clm_001-ev5",
+          "sourceDocumentId": "l004-src-5",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Student: Daniel Okafor",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    },
+    {
+      "id": "clm_002",
+      "subjectEntityId": "ent_student",
+      "construct": {
+        "measure": "date_of_birth",
+        "task": null,
+        "administration": null
+      },
+      "value": {
+        "kind": "date",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": "2017-03-22",
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "unit": null,
+      "modality": "observed",
+      "effectivePeriod": null,
+      "occurredOn": null,
+      "evidenceRefs": [
+        {
+          "id": "clm_002-ev1",
+          "sourceDocumentId": "l004-src-1",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Date of Birth: 2017-03-22",
+          "extractionId": null,
+          "sourceType": "document"
+        },
+        {
+          "id": "clm_002-ev2",
+          "sourceDocumentId": "l004-src-2",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Date of Birth: 2017-03-22",
+          "extractionId": null,
+          "sourceType": "document"
+        },
+        {
+          "id": "clm_002-ev3",
+          "sourceDocumentId": "l004-src-3",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Date of Birth: 2017-03-22",
+          "extractionId": null,
+          "sourceType": "document"
+        },
+        {
+          "id": "clm_002-ev4",
+          "sourceDocumentId": "l004-src-4",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Date of Birth: 2017-03-22",
+          "extractionId": null,
+          "sourceType": "document"
+        },
+        {
+          "id": "clm_002-ev5",
+          "sourceDocumentId": "l004-src-5",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Date of Birth: 2017-03-22",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    },
+    {
+      "id": "clm_003",
+      "subjectEntityId": "ent_student",
+      "construct": {
+        "measure": "grade_level",
+        "task": null,
+        "administration": null
+      },
+      "value": {
+        "kind": "code",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": "3",
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "unit": null,
+      "modality": "observed",
+      "effectivePeriod": null,
+      "occurredOn": null,
+      "evidenceRefs": [
+        {
+          "id": "clm_003-ev1",
+          "sourceDocumentId": "l004-src-1",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Grade: 3",
+          "extractionId": null,
+          "sourceType": "document"
+        },
+        {
+          "id": "clm_003-ev2",
+          "sourceDocumentId": "l004-src-2",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Grade: 3",
+          "extractionId": null,
+          "sourceType": "document"
+        },
+        {
+          "id": "clm_003-ev3",
+          "sourceDocumentId": "l004-src-3",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Grade: 3",
+          "extractionId": null,
+          "sourceType": "document"
+        },
+        {
+          "id": "clm_003-ev4",
+          "sourceDocumentId": "l004-src-4",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Grade: 3",
+          "extractionId": null,
+          "sourceType": "document"
+        },
+        {
+          "id": "clm_003-ev5",
+          "sourceDocumentId": "l004-src-5",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Grade: 3",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    },
+    {
+      "id": "clm_004",
+      "subjectEntityId": "ent_student",
+      "construct": {
+        "measure": "school",
+        "task": null,
+        "administration": null
+      },
+      "value": {
+        "kind": "entity_ref",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": "ent_school",
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "unit": null,
+      "modality": "observed",
+      "effectivePeriod": null,
+      "occurredOn": null,
+      "evidenceRefs": [
+        {
+          "id": "clm_004-ev1",
+          "sourceDocumentId": "l004-src-1",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "School: Synthetic Elementary School",
+          "extractionId": null,
+          "sourceType": "document"
+        },
+        {
+          "id": "clm_004-ev2",
+          "sourceDocumentId": "l004-src-2",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "School: Synthetic Elementary School",
+          "extractionId": null,
+          "sourceType": "document"
+        },
+        {
+          "id": "clm_004-ev3",
+          "sourceDocumentId": "l004-src-3",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "School: Synthetic Elementary School",
+          "extractionId": null,
+          "sourceType": "document"
+        },
+        {
+          "id": "clm_004-ev4",
+          "sourceDocumentId": "l004-src-4",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "School: Synthetic Elementary School",
+          "extractionId": null,
+          "sourceType": "document"
+        },
+        {
+          "id": "clm_004-ev5",
+          "sourceDocumentId": "l004-src-5",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "School: Synthetic Elementary School",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    },
+    {
+      "id": "clm_005",
+      "subjectEntityId": "ent_student",
+      "construct": {
+        "measure": "district",
+        "task": null,
+        "administration": null
+      },
+      "value": {
+        "kind": "entity_ref",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": "ent_district",
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "unit": null,
+      "modality": "observed",
+      "effectivePeriod": null,
+      "occurredOn": null,
+      "evidenceRefs": [
+        {
+          "id": "clm_005-ev1",
+          "sourceDocumentId": "l004-src-1",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "District: Synthetic District",
+          "extractionId": null,
+          "sourceType": "document"
+        },
+        {
+          "id": "clm_005-ev2",
+          "sourceDocumentId": "l004-src-2",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "District: Synthetic District",
+          "extractionId": null,
+          "sourceType": "document"
+        },
+        {
+          "id": "clm_005-ev3",
+          "sourceDocumentId": "l004-src-3",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "District: Synthetic District",
+          "extractionId": null,
+          "sourceType": "document"
+        },
+        {
+          "id": "clm_005-ev4",
+          "sourceDocumentId": "l004-src-4",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "District: Synthetic District",
+          "extractionId": null,
+          "sourceType": "document"
+        },
+        {
+          "id": "clm_005-ev5",
+          "sourceDocumentId": "l004-src-5",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "District: Synthetic District",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    },
+    {
+      "id": "clm_006",
+      "subjectEntityId": "ent_student",
+      "construct": {
+        "measure": "eligibility_category",
+        "task": null,
+        "administration": "eligibility_determination"
+      },
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "Specific Learning Disability (SLD) - Reading",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "unit": null,
+      "modality": "decided",
+      "effectivePeriod": null,
+      "occurredOn": "2025-09-10",
+      "evidenceRefs": [
+        {
+          "id": "clm_006-ev1",
+          "sourceDocumentId": "l004-src-1",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Eligibility Category: Specific Learning Disability (SLD) - Reading",
+          "extractionId": null,
+          "sourceType": "document"
+        },
+        {
+          "id": "clm_006-ev2",
+          "sourceDocumentId": "l004-src-5",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Current educational eligibility remains Specific Learning Disability (SLD) - Reading.",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    },
+    {
+      "id": "clm_007",
+      "subjectEntityId": "ent_student",
+      "construct": {
+        "measure": "eligibility_determination_date",
+        "task": null,
+        "administration": "eligibility_determination"
+      },
+      "value": {
+        "kind": "date",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": "2025-09-10",
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "unit": null,
+      "modality": "observed",
+      "effectivePeriod": null,
+      "occurredOn": null,
+      "evidenceRefs": [
+        {
+          "id": "clm_007-ev1",
+          "sourceDocumentId": "l004-src-1",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Determination Date: 2025-09-10",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    },
+    {
+      "id": "clm_008",
+      "subjectEntityId": "ent_student",
+      "construct": {
+        "measure": "eligibility_is_medical_diagnosis",
+        "task": null,
+        "administration": "eligibility_determination"
+      },
+      "value": {
+        "kind": "boolean",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": false,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "unit": null,
+      "modality": "observed",
+      "effectivePeriod": null,
+      "occurredOn": null,
+      "evidenceRefs": [
+        {
+          "id": "clm_008-ev1",
+          "sourceDocumentId": "l004-src-1",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "This IEP implements the educational eligibility determination. It is not a medical diagnosis.",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    },
+    {
+      "id": "clm_009",
+      "subjectEntityId": "ent_student",
+      "construct": {
+        "measure": "primary_educational_need",
+        "task": null,
+        "administration": "eligibility_determination"
+      },
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "Reading",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "unit": null,
+      "modality": "decided",
+      "effectivePeriod": null,
+      "occurredOn": "2025-09-10",
+      "evidenceRefs": [
+        {
+          "id": "clm_009-ev1",
+          "sourceDocumentId": "l004-src-1",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Primary Educational Need: Reading",
+          "extractionId": null,
+          "sourceType": "document"
+        },
+        {
+          "id": "clm_009-ev2",
+          "sourceDocumentId": "l004-src-1",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "The primary educational need is Reading.",
+          "extractionId": null,
+          "sourceType": "document"
+        },
+        {
+          "id": "clm_009-ev3",
+          "sourceDocumentId": "l004-src-1",
+          "logicalDocumentId": null,
+          "page": 2,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "This IEP addresses Reading for Daniel Okafor.",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    },
+    {
+      "id": "clm_010",
+      "subjectEntityId": "ent_student",
+      "construct": {
+        "measure": "reading_concern",
+        "task": "reading",
+        "administration": "present_levels"
+      },
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "persistent reading concern",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "unit": null,
+      "modality": "observed",
+      "effectivePeriod": null,
+      "occurredOn": "2025-09-10",
+      "evidenceRefs": [
+        {
+          "id": "clm_010-ev1",
+          "sourceDocumentId": "l004-src-1",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Daniel has a persistent reading concern.",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    },
+    {
+      "id": "clm_011",
+      "subjectEntityId": "ent_student",
+      "construct": {
+        "measure": "reading_difficulty",
+        "task": "connected_grade_level_text",
+        "administration": "classroom_performance"
+      },
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "difficulty reading connected grade-level text with expected fluency",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "unit": null,
+      "modality": "observed",
+      "effectivePeriod": null,
+      "occurredOn": "2025-09-10",
+      "evidenceRefs": [
+        {
+          "id": "clm_011-ev1",
+          "sourceDocumentId": "l004-src-1",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Classroom performance indicates difficulty reading connected grade-level text with expected fluency.",
+          "extractionId": null,
+          "sourceType": "document"
+        },
+        {
+          "id": "clm_011-ev2",
+          "sourceDocumentId": "l004-src-1",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Daniel has difficulty reading connected grade-level text with expected fluency.",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    },
+    {
+      "id": "clm_012",
+      "subjectEntityId": "ent_student",
+      "construct": {
+        "measure": "educational_need_impact",
+        "task": "grade_level_reading_activities",
+        "administration": null
+      },
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "affects ability to access grade-level reading activities independently",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "unit": null,
+      "modality": "observed",
+      "effectivePeriod": null,
+      "occurredOn": "2025-09-10",
+      "evidenceRefs": [
+        {
+          "id": "clm_012-ev1",
+          "sourceDocumentId": "l004-src-1",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "This difficulty affects Daniel's ability to access grade-level reading activities independently.",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    },
+    {
+      "id": "clm_013",
+      "subjectEntityId": "ent_student",
+      "construct": {
+        "measure": "oral_reading_fluency",
+        "task": "grade_level_connected_text",
+        "administration": "present_levels_baseline"
+      },
+      "value": {
+        "kind": "quantity",
+        "numberValue": 70,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": "WCPM"
+      },
+      "unit": "WCPM",
+      "modality": "observed",
+      "effectivePeriod": null,
+      "occurredOn": "2025-09-10",
+      "evidenceRefs": [
+        {
+          "id": "clm_013-ev1",
+          "sourceDocumentId": "l004-src-1",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Baseline measured September 10, 2025: Oral Reading Fluency - 70 words correct per minute.",
+          "extractionId": null,
+          "sourceType": "document"
+        },
+        {
+          "id": "clm_013-ev2",
+          "sourceDocumentId": "l004-src-1",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "The present-levels baseline is 70 WCPM.",
+          "extractionId": null,
+          "sourceType": "document"
+        },
+        {
+          "id": "clm_013-ev3",
+          "sourceDocumentId": "l004-src-1",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "This oral reading fluency baseline was measured on 2025-09-10.",
+          "extractionId": null,
+          "sourceType": "document"
+        },
+        {
+          "id": "clm_013-ev4",
+          "sourceDocumentId": "l004-src-1",
+          "logicalDocumentId": null,
+          "page": 2,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "The oral reading fluency baseline is 70 WCPM.",
+          "extractionId": null,
+          "sourceType": "document"
+        },
+        {
+          "id": "clm_013-ev5",
+          "sourceDocumentId": "l004-src-5",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "The 70 WCPM baseline is historical present-level evidence from the September 10, 2025 IEP.",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    },
+    {
+      "id": "clm_014",
+      "subjectEntityId": "ent_student",
+      "construct": {
+        "measure": "oral_reading_fluency",
+        "task": "grade_level_connected_text",
+        "administration": "progress_monitoring"
+      },
+      "value": {
+        "kind": "quantity",
+        "numberValue": 78,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": "WCPM"
+      },
+      "unit": "WCPM",
+      "modality": "observed",
+      "effectivePeriod": null,
+      "occurredOn": "2025-11-14",
+      "evidenceRefs": [
+        {
+          "id": "clm_014-ev1",
+          "sourceDocumentId": "l004-src-2",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "2025-11-14 Oral Reading Fluency 78 WCPM",
+          "extractionId": null,
+          "sourceType": "document"
+        },
+        {
+          "id": "clm_014-ev2",
+          "sourceDocumentId": "l004-src-2",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Assessment Date: 2025-11-14. On that date, Daniel read grade-level connected text at 78 WCPM.",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    },
+    {
+      "id": "clm_015",
+      "subjectEntityId": "ent_student",
+      "construct": {
+        "measure": "oral_reading_fluency",
+        "task": "grade_level_connected_text",
+        "administration": "progress_monitoring"
+      },
+      "value": {
+        "kind": "quantity",
+        "numberValue": 85,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": "WCPM"
+      },
+      "unit": "WCPM",
+      "modality": "observed",
+      "effectivePeriod": null,
+      "occurredOn": "2026-02-13",
+      "evidenceRefs": [
+        {
+          "id": "clm_015-ev1",
+          "sourceDocumentId": "l004-src-3",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "2026-02-13 Oral Reading Fluency 85 WCPM",
+          "extractionId": null,
+          "sourceType": "document"
+        },
+        {
+          "id": "clm_015-ev2",
+          "sourceDocumentId": "l004-src-3",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Assessment Date: 2026-02-13. On that date, Daniel read grade-level connected text at 85 WCPM.",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    },
+    {
+      "id": "clm_016",
+      "subjectEntityId": "ent_student",
+      "construct": {
+        "measure": "oral_reading_fluency",
+        "task": "grade_level_connected_text",
+        "administration": "progress_monitoring"
+      },
+      "value": {
+        "kind": "quantity",
+        "numberValue": 92,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": "WCPM"
+      },
+      "unit": "WCPM",
+      "modality": "observed",
+      "effectivePeriod": null,
+      "occurredOn": "2026-05-15",
+      "evidenceRefs": [
+        {
+          "id": "clm_016-ev1",
+          "sourceDocumentId": "l004-src-4",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "2026-05-15 Oral Reading Fluency 92 WCPM",
+          "extractionId": null,
+          "sourceType": "document"
+        },
+        {
+          "id": "clm_016-ev2",
+          "sourceDocumentId": "l004-src-4",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Assessment Date: 2026-05-15. On that date, Daniel read grade-level connected text at 92 WCPM.",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    },
+    {
+      "id": "clm_017",
+      "subjectEntityId": "ent_student",
+      "construct": {
+        "measure": "oral_reading_fluency",
+        "task": "grade_level_connected_text",
+        "administration": "academic_evaluation"
+      },
+      "value": {
+        "kind": "quantity",
+        "numberValue": 96,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": "WCPM"
+      },
+      "unit": "WCPM",
+      "modality": "observed",
+      "effectivePeriod": null,
+      "occurredOn": "2026-06-05",
+      "evidenceRefs": [
+        {
+          "id": "clm_017-ev1",
+          "sourceDocumentId": "l004-src-5",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Oral Reading Fluency 96 WCPM",
+          "extractionId": null,
+          "sourceType": "document"
+        },
+        {
+          "id": "clm_017-ev2",
+          "sourceDocumentId": "l004-src-5",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "The 96 WCPM oral reading fluency result is the current evaluation measurement.",
+          "extractionId": null,
+          "sourceType": "document"
+        },
+        {
+          "id": "clm_017-ev3",
+          "sourceDocumentId": "l004-src-5",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Academic evaluation documents oral reading fluency of 96 WCPM and reading accuracy of 94 percent on 2026-06-05.",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    },
+    {
+      "id": "clm_018",
+      "subjectEntityId": "ent_student",
+      "construct": {
+        "measure": "reading_accuracy",
+        "task": "grade_level_connected_text",
+        "administration": "academic_evaluation"
+      },
+      "value": {
+        "kind": "quantity",
+        "numberValue": 94,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": "%"
+      },
+      "unit": "%",
+      "modality": "observed",
+      "effectivePeriod": null,
+      "occurredOn": "2026-06-05",
+      "evidenceRefs": [
+        {
+          "id": "clm_018-ev1",
+          "sourceDocumentId": "l004-src-5",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Reading Accuracy 94%",
+          "extractionId": null,
+          "sourceType": "document"
+        },
+        {
+          "id": "clm_018-ev2",
+          "sourceDocumentId": "l004-src-5",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "while reading accuracy measured 94%.",
+          "extractionId": null,
+          "sourceType": "document"
+        },
+        {
+          "id": "clm_018-ev3",
+          "sourceDocumentId": "l004-src-5",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "and reading accuracy of 94 percent on 2026-06-05.",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    },
+    {
+      "id": "clm_019",
+      "subjectEntityId": "ent_goal_fluency",
+      "construct": {
+        "measure": "goal_id",
+        "task": null,
+        "administration": null
+      },
+      "value": {
+        "kind": "code",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": "GOAL_READING_FLUENCY",
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "unit": null,
+      "modality": "observed",
+      "effectivePeriod": null,
+      "occurredOn": null,
+      "evidenceRefs": [
+        {
+          "id": "clm_019-ev1",
+          "sourceDocumentId": "l004-src-1",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Goal ID: GOAL_READING_FLUENCY",
+          "extractionId": null,
+          "sourceType": "document"
+        },
+        {
+          "id": "clm_019-ev2",
+          "sourceDocumentId": "l004-src-2",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Goal ID: GOAL_READING_FLUENCY",
+          "extractionId": null,
+          "sourceType": "document"
+        },
+        {
+          "id": "clm_019-ev3",
+          "sourceDocumentId": "l004-src-3",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Goal ID: GOAL_READING_FLUENCY",
+          "extractionId": null,
+          "sourceType": "document"
+        },
+        {
+          "id": "clm_019-ev4",
+          "sourceDocumentId": "l004-src-4",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Goal ID: GOAL_READING_FLUENCY",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    },
+    {
+      "id": "clm_020",
+      "subjectEntityId": "ent_goal_fluency",
+      "construct": {
+        "measure": "goal_area",
+        "task": null,
+        "administration": null
+      },
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "reading",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "unit": null,
+      "modality": "observed",
+      "effectivePeriod": null,
+      "occurredOn": null,
+      "evidenceRefs": [
+        {
+          "id": "clm_020-ev1",
+          "sourceDocumentId": "l004-src-2",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Area: reading",
+          "extractionId": null,
+          "sourceType": "document"
+        },
+        {
+          "id": "clm_020-ev2",
+          "sourceDocumentId": "l004-src-3",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Area: reading",
+          "extractionId": null,
+          "sourceType": "document"
+        },
+        {
+          "id": "clm_020-ev3",
+          "sourceDocumentId": "l004-src-4",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Area: reading",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    },
+    {
+      "id": "clm_021",
+      "subjectEntityId": "ent_goal_fluency",
+      "construct": {
+        "measure": "goal_condition",
+        "task": null,
+        "administration": null
+      },
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "when given a grade-level oral reading passage, by the annual review date",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "unit": null,
+      "modality": "planned",
+      "effectivePeriod": {
+        "start": "2025-09-10",
+        "end": "2026-09-09",
+        "precision": "day"
+      },
+      "occurredOn": null,
+      "evidenceRefs": [
+        {
+          "id": "clm_021-ev1",
+          "sourceDocumentId": "l004-src-1",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "By the annual review date, when given a grade-level oral reading passage,",
+          "extractionId": null,
+          "sourceType": "document"
+        },
+        {
+          "id": "clm_021-ev2",
+          "sourceDocumentId": "l004-src-2",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "By the annual review date, when given a grade-level oral reading passage,",
+          "extractionId": null,
+          "sourceType": "document"
+        },
+        {
+          "id": "clm_021-ev3",
+          "sourceDocumentId": "l004-src-3",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "By the annual review date, when given a grade-level oral reading passage,",
+          "extractionId": null,
+          "sourceType": "document"
+        },
+        {
+          "id": "clm_021-ev4",
+          "sourceDocumentId": "l004-src-4",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "By the annual review date, when given a grade-level oral reading passage,",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    },
+    {
+      "id": "clm_022",
+      "subjectEntityId": "ent_goal_fluency",
+      "construct": {
+        "measure": "goal_target",
+        "task": "oral_reading_fluency",
+        "administration": null
+      },
+      "value": {
+        "kind": "quantity",
+        "numberValue": 95,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": "WCPM"
+      },
+      "unit": "WCPM",
+      "modality": "planned",
+      "effectivePeriod": {
+        "start": "2025-09-10",
+        "end": "2026-09-09",
+        "precision": "day"
+      },
+      "occurredOn": null,
+      "evidenceRefs": [
+        {
+          "id": "clm_022-ev1",
+          "sourceDocumentId": "l004-src-1",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Daniel will read 95 words correct per minute. Goal ID:",
+          "extractionId": null,
+          "sourceType": "document"
+        },
+        {
+          "id": "clm_022-ev2",
+          "sourceDocumentId": "l004-src-1",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Target: 95 WCPM Start Date:",
+          "extractionId": null,
+          "sourceType": "document"
+        },
+        {
+          "id": "clm_022-ev3",
+          "sourceDocumentId": "l004-src-1",
+          "logicalDocumentId": null,
+          "page": 2,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "The annual target is 95 WCPM.",
+          "extractionId": null,
+          "sourceType": "document"
+        },
+        {
+          "id": "clm_022-ev4",
+          "sourceDocumentId": "l004-src-2",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Annual Target: 95 WCPM",
+          "extractionId": null,
+          "sourceType": "document"
+        },
+        {
+          "id": "clm_022-ev5",
+          "sourceDocumentId": "l004-src-3",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Annual Target: 95 WCPM",
+          "extractionId": null,
+          "sourceType": "document"
+        },
+        {
+          "id": "clm_022-ev6",
+          "sourceDocumentId": "l004-src-4",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Annual Target: 95 WCPM",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    },
+    {
+      "id": "clm_023",
+      "subjectEntityId": "ent_goal_fluency",
+      "construct": {
+        "measure": "goal_target_is_measured_result",
+        "task": "oral_reading_fluency",
+        "administration": null
+      },
+      "value": {
+        "kind": "boolean",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": false,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "unit": null,
+      "modality": "observed",
+      "effectivePeriod": null,
+      "occurredOn": null,
+      "evidenceRefs": [
+        {
+          "id": "clm_023-ev1",
+          "sourceDocumentId": "l004-src-1",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "The annual target of 95 WCPM is a goal reference. It is not a measured oral reading fluency result.",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    },
+    {
+      "id": "clm_024",
+      "subjectEntityId": "ent_goal_fluency",
+      "construct": {
+        "measure": "goal_baseline",
+        "task": "oral_reading_fluency",
+        "administration": null
+      },
+      "value": {
+        "kind": "quantity",
+        "numberValue": 70,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": "WCPM"
+      },
+      "unit": "WCPM",
+      "modality": "observed",
+      "effectivePeriod": null,
+      "occurredOn": "2025-09-10",
+      "evidenceRefs": [
+        {
+          "id": "clm_024-ev1",
+          "sourceDocumentId": "l004-src-1",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Baseline: 70 WCPM",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    },
+    {
+      "id": "clm_025",
+      "subjectEntityId": "ent_goal_fluency",
+      "construct": {
+        "measure": "goal_start_date",
+        "task": null,
+        "administration": null
+      },
+      "value": {
+        "kind": "date",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": "2025-09-10",
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "unit": null,
+      "modality": "planned",
+      "effectivePeriod": null,
+      "occurredOn": null,
+      "evidenceRefs": [
+        {
+          "id": "clm_025-ev1",
+          "sourceDocumentId": "l004-src-1",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Start Date: 2025-09-10 Target Date:",
+          "extractionId": null,
+          "sourceType": "document"
+        },
+        {
+          "id": "clm_025-ev2",
+          "sourceDocumentId": "l004-src-2",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Goal Start Date: 2025-09-10",
+          "extractionId": null,
+          "sourceType": "document"
+        },
+        {
+          "id": "clm_025-ev3",
+          "sourceDocumentId": "l004-src-3",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Goal Start Date: 2025-09-10",
+          "extractionId": null,
+          "sourceType": "document"
+        },
+        {
+          "id": "clm_025-ev4",
+          "sourceDocumentId": "l004-src-4",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Goal Start Date: 2025-09-10",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    },
+    {
+      "id": "clm_026",
+      "subjectEntityId": "ent_goal_fluency",
+      "construct": {
+        "measure": "goal_target_date",
+        "task": null,
+        "administration": null
+      },
+      "value": {
+        "kind": "date",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": "2026-09-09",
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "unit": null,
+      "modality": "planned",
+      "effectivePeriod": null,
+      "occurredOn": null,
+      "evidenceRefs": [
+        {
+          "id": "clm_026-ev1",
+          "sourceDocumentId": "l004-src-1",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Target Date: 2026-09-09 The annual target",
+          "extractionId": null,
+          "sourceType": "document"
+        },
+        {
+          "id": "clm_026-ev2",
+          "sourceDocumentId": "l004-src-2",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Goal Target Date: 2026-09-09",
+          "extractionId": null,
+          "sourceType": "document"
+        },
+        {
+          "id": "clm_026-ev3",
+          "sourceDocumentId": "l004-src-3",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Goal Target Date: 2026-09-09",
+          "extractionId": null,
+          "sourceType": "document"
+        },
+        {
+          "id": "clm_026-ev4",
+          "sourceDocumentId": "l004-src-4",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Goal Target Date: 2026-09-09",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    },
+    {
+      "id": "clm_027",
+      "subjectEntityId": "ent_goal_fluency",
+      "construct": {
+        "measure": "progress_measurement_method",
+        "task": null,
+        "administration": null
+      },
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "curriculum-based oral reading fluency probes",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "unit": null,
+      "modality": "planned",
+      "effectivePeriod": {
+        "start": "2025-09-10",
+        "end": "2026-09-09",
+        "precision": "day"
+      },
+      "occurredOn": null,
+      "evidenceRefs": [
+        {
+          "id": "clm_027-ev1",
+          "sourceDocumentId": "l004-src-1",
+          "logicalDocumentId": null,
+          "page": 2,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Progress toward the annual goal will be measured using curriculum-based oral reading fluency probes",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    },
+    {
+      "id": "clm_028",
+      "subjectEntityId": "ent_goal_fluency",
+      "construct": {
+        "measure": "progress_reporting_frequency",
+        "task": null,
+        "administration": null
+      },
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "at least quarterly, concurrent with report periods",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "unit": null,
+      "modality": "planned",
+      "effectivePeriod": {
+        "start": "2025-09-10",
+        "end": "2026-09-09",
+        "precision": "day"
+      },
+      "occurredOn": null,
+      "evidenceRefs": [
+        {
+          "id": "clm_028-ev1",
+          "sourceDocumentId": "l004-src-1",
+          "logicalDocumentId": null,
+          "page": 2,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "reported at least quarterly, concurrent with report periods.",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    },
+    {
+      "id": "clm_029",
+      "subjectEntityId": "ent_iep_2025",
+      "construct": {
+        "measure": "iep_date",
+        "task": null,
+        "administration": null
+      },
+      "value": {
+        "kind": "date",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": "2025-09-10",
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "unit": null,
+      "modality": "observed",
+      "effectivePeriod": null,
+      "occurredOn": null,
+      "evidenceRefs": [
+        {
+          "id": "clm_029-ev1",
+          "sourceDocumentId": "l004-src-1",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "IEP Date: 2025-09-10",
+          "extractionId": null,
+          "sourceType": "document"
+        },
+        {
+          "id": "clm_029-ev2",
+          "sourceDocumentId": "l004-src-1",
+          "logicalDocumentId": null,
+          "page": 2,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "District Representative: [Synthetic signature omitted] Date: 2025-09-10",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    },
+    {
+      "id": "clm_030",
+      "subjectEntityId": "ent_iep_2025",
+      "construct": {
+        "measure": "iep_period",
+        "task": null,
+        "administration": null
+      },
+      "value": {
+        "kind": "period",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": "2025-09-10",
+        "periodEnd": "2026-09-09",
+        "unit": null
+      },
+      "unit": null,
+      "modality": "decided",
+      "effectivePeriod": null,
+      "occurredOn": null,
+      "evidenceRefs": [
+        {
+          "id": "clm_030-ev1",
+          "sourceDocumentId": "l004-src-1",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "IEP Period Start: 2025-09-10 IEP Period End: 2026-09-09",
+          "extractionId": null,
+          "sourceType": "document"
+        },
+        {
+          "id": "clm_030-ev2",
+          "sourceDocumentId": "l004-src-1",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "IEP effective period: September 10, 2025 through September 9, 2026.",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    },
+    {
+      "id": "clm_031",
+      "subjectEntityId": "ent_iep_2025",
+      "construct": {
+        "measure": "iep_date_and_baseline_date_recorded_separately",
+        "task": null,
+        "administration": null
+      },
+      "value": {
+        "kind": "boolean",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": true,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "unit": null,
+      "modality": "observed",
+      "effectivePeriod": null,
+      "occurredOn": null,
+      "evidenceRefs": [
+        {
+          "id": "clm_031-ev1",
+          "sourceDocumentId": "l004-src-1",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "The IEP date and the baseline measurement date are recorded separately even though both are 2025-09-10.",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    },
+    {
+      "id": "clm_032",
+      "subjectEntityId": "ent_iep_2025",
+      "construct": {
+        "measure": "annual_goal",
+        "task": null,
+        "administration": null
+      },
+      "value": {
+        "kind": "entity_ref",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": "ent_goal_fluency",
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "unit": null,
+      "modality": "decided",
+      "effectivePeriod": {
+        "start": "2025-09-10",
+        "end": "2026-09-09",
+        "precision": "day"
+      },
+      "occurredOn": null,
+      "evidenceRefs": [
+        {
+          "id": "clm_032-ev1",
+          "sourceDocumentId": "l004-src-1",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Goal ID: GOAL_READING_FLUENCY",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    },
+    {
+      "id": "clm_033",
+      "subjectEntityId": "ent_iep_2025",
+      "construct": {
+        "measure": "service_frequency",
+        "task": "specialized_reading_instruction",
+        "administration": "special_education"
+      },
+      "value": {
+        "kind": "quantity",
+        "numberValue": 4,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": "sessions/week"
+      },
+      "unit": "sessions/week",
+      "modality": "decided",
+      "effectivePeriod": {
+        "start": "2025-09-10",
+        "end": "2026-09-09",
+        "precision": "day"
+      },
+      "occurredOn": null,
+      "evidenceRefs": [
+        {
+          "id": "clm_033-ev1",
+          "sourceDocumentId": "l004-src-1",
+          "logicalDocumentId": null,
+          "page": 2,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Specialized reading instruction 4 sessions per week",
+          "extractionId": null,
+          "sourceType": "document"
+        },
+        {
+          "id": "clm_033-ev2",
+          "sourceDocumentId": "l004-src-1",
+          "logicalDocumentId": null,
+          "page": 2,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Specialized reading instruction is provided 4 sessions per week",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    },
+    {
+      "id": "clm_034",
+      "subjectEntityId": "ent_iep_2025",
+      "construct": {
+        "measure": "service_session_length",
+        "task": "specialized_reading_instruction",
+        "administration": "special_education"
+      },
+      "value": {
+        "kind": "quantity",
+        "numberValue": 30,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": "minutes"
+      },
+      "unit": "minutes",
+      "modality": "decided",
+      "effectivePeriod": {
+        "start": "2025-09-10",
+        "end": "2026-09-09",
+        "precision": "day"
+      },
+      "occurredOn": null,
+      "evidenceRefs": [
+        {
+          "id": "clm_034-ev1",
+          "sourceDocumentId": "l004-src-1",
+          "logicalDocumentId": null,
+          "page": 2,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "4 sessions per week 30 minutes per session special education setting 2025-09-10",
+          "extractionId": null,
+          "sourceType": "document"
+        },
+        {
+          "id": "clm_034-ev2",
+          "sourceDocumentId": "l004-src-1",
+          "logicalDocumentId": null,
+          "page": 2,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Session length is 30 minutes per session.",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    },
+    {
+      "id": "clm_035",
+      "subjectEntityId": "ent_iep_2025",
+      "construct": {
+        "measure": "session_length_is_service_period",
+        "task": "specialized_reading_instruction",
+        "administration": "special_education"
+      },
+      "value": {
+        "kind": "boolean",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": false,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "unit": null,
+      "modality": "observed",
+      "effectivePeriod": null,
+      "occurredOn": null,
+      "evidenceRefs": [
+        {
+          "id": "clm_035-ev1",
+          "sourceDocumentId": "l004-src-1",
+          "logicalDocumentId": null,
+          "page": 2,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Session length is not the overall service period.",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    },
+    {
+      "id": "clm_036",
+      "subjectEntityId": "ent_iep_2025",
+      "construct": {
+        "measure": "service_location",
+        "task": "specialized_reading_instruction",
+        "administration": "special_education"
+      },
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "special education setting",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "unit": null,
+      "modality": "decided",
+      "effectivePeriod": {
+        "start": "2025-09-10",
+        "end": "2026-09-09",
+        "precision": "day"
+      },
+      "occurredOn": null,
+      "evidenceRefs": [
+        {
+          "id": "clm_036-ev1",
+          "sourceDocumentId": "l004-src-1",
+          "logicalDocumentId": null,
+          "page": 2,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "for 30 minutes per session in the special education setting.",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    },
+    {
+      "id": "clm_037",
+      "subjectEntityId": "ent_iep_2025",
+      "construct": {
+        "measure": "service_start_date",
+        "task": "specialized_reading_instruction",
+        "administration": "special_education"
+      },
+      "value": {
+        "kind": "date",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": "2025-09-10",
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "unit": null,
+      "modality": "decided",
+      "effectivePeriod": null,
+      "occurredOn": null,
+      "evidenceRefs": [
+        {
+          "id": "clm_037-ev1",
+          "sourceDocumentId": "l004-src-1",
+          "logicalDocumentId": null,
+          "page": 2,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Service Start Date: 2025-09-10",
+          "extractionId": null,
+          "sourceType": "document"
+        },
+        {
+          "id": "clm_037-ev2",
+          "sourceDocumentId": "l004-src-1",
+          "logicalDocumentId": null,
+          "page": 2,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "The projected date for the beginning of these services is 2025-09-10.",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    },
+    {
+      "id": "clm_038",
+      "subjectEntityId": "ent_iep_2025",
+      "construct": {
+        "measure": "service_period_end",
+        "task": "specialized_reading_instruction",
+        "administration": "special_education"
+      },
+      "value": {
+        "kind": "date",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": "2026-09-09",
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "unit": null,
+      "modality": "decided",
+      "effectivePeriod": null,
+      "occurredOn": null,
+      "evidenceRefs": [
+        {
+          "id": "clm_038-ev1",
+          "sourceDocumentId": "l004-src-1",
+          "logicalDocumentId": null,
+          "page": 2,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Service Period End: 2026-09-09",
+          "extractionId": null,
+          "sourceType": "document"
+        },
+        {
+          "id": "clm_038-ev2",
+          "sourceDocumentId": "l004-src-1",
+          "logicalDocumentId": null,
+          "page": 2,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "The IEP/service period continues through 2026-09-09.",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    },
+    {
+      "id": "clm_039",
+      "subjectEntityId": "ent_iep_2025",
+      "construct": {
+        "measure": "extent_of_nonparticipation",
+        "task": "specialized_reading_instruction",
+        "administration": null
+      },
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "participates with nondisabled peers throughout the school day except during the four weekly 30-minute specialized reading sessions in the special education setting",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "unit": null,
+      "modality": "decided",
+      "effectivePeriod": {
+        "start": "2025-09-10",
+        "end": "2026-09-09",
+        "precision": "day"
+      },
+      "occurredOn": null,
+      "evidenceRefs": [
+        {
+          "id": "clm_039-ev1",
+          "sourceDocumentId": "l004-src-1",
+          "logicalDocumentId": null,
+          "page": 2,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Daniel will participate with nondisabled peers throughout the school day except during the four weekly 30-minute specialized reading sessions provided in the special education setting.",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    },
+    {
+      "id": "clm_040",
+      "subjectEntityId": "ent_iep_2025",
+      "construct": {
+        "measure": "accommodation",
+        "task": "extended_time",
+        "administration": null
+      },
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "1.5x extended time on State and districtwide assessments",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "unit": null,
+      "modality": "decided",
+      "effectivePeriod": {
+        "start": "2025-09-10",
+        "end": "2026-09-09",
+        "precision": "day"
+      },
+      "occurredOn": null,
+      "evidenceRefs": [
+        {
+          "id": "clm_040-ev1",
+          "sourceDocumentId": "l004-src-1",
+          "logicalDocumentId": null,
+          "page": 2,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "• Daniel will receive 1.5x extended time on State and districtwide assessments.",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    },
+    {
+      "id": "clm_041",
+      "subjectEntityId": "ent_iep_2025",
+      "construct": {
+        "measure": "assessment_participation",
+        "task": "state_and_districtwide_assessments",
+        "administration": null
+      },
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "participates with the accommodations listed in this IEP",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "unit": null,
+      "modality": "decided",
+      "effectivePeriod": {
+        "start": "2025-09-10",
+        "end": "2026-09-09",
+        "precision": "day"
+      },
+      "occurredOn": null,
+      "evidenceRefs": [
+        {
+          "id": "clm_041-ev1",
+          "sourceDocumentId": "l004-src-1",
+          "logicalDocumentId": null,
+          "page": 2,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Daniel will participate in state and districtwide assessments with the accommodations listed in this IEP.",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    },
+    {
+      "id": "clm_042",
+      "subjectEntityId": "ent_iep_2025",
+      "construct": {
+        "measure": "iep_team_roles",
+        "task": null,
+        "administration": null
+      },
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "Parent/Guardian; General Education Teacher; Special Education Teacher; District Representative",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "unit": null,
+      "modality": "observed",
+      "effectivePeriod": null,
+      "occurredOn": "2025-09-10",
+      "evidenceRefs": [
+        {
+          "id": "clm_042-ev1",
+          "sourceDocumentId": "l004-src-1",
+          "logicalDocumentId": null,
+          "page": 2,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "The following roles participate in development of this IEP.",
+          "extractionId": null,
+          "sourceType": "document"
+        },
+        {
+          "id": "clm_042-ev2",
+          "sourceDocumentId": "l004-src-1",
+          "logicalDocumentId": null,
+          "page": 2,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Parent/Guardian: [Synthetic signature omitted]",
+          "extractionId": null,
+          "sourceType": "document"
+        },
+        {
+          "id": "clm_042-ev3",
+          "sourceDocumentId": "l004-src-1",
+          "logicalDocumentId": null,
+          "page": 2,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "General Education Teacher: [Synthetic signature omitted]",
+          "extractionId": null,
+          "sourceType": "document"
+        },
+        {
+          "id": "clm_042-ev4",
+          "sourceDocumentId": "l004-src-1",
+          "logicalDocumentId": null,
+          "page": 2,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Special Education Teacher: [Synthetic signature omitted]",
+          "extractionId": null,
+          "sourceType": "document"
+        },
+        {
+          "id": "clm_042-ev5",
+          "sourceDocumentId": "l004-src-1",
+          "logicalDocumentId": null,
+          "page": 2,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "District Representative: [Synthetic signature omitted]",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    },
+    {
+      "id": "clm_043",
+      "subjectEntityId": "ent_progress_q1",
+      "construct": {
+        "measure": "report_date",
+        "task": null,
+        "administration": null
+      },
+      "value": {
+        "kind": "date",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": "2025-11-14",
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "unit": null,
+      "modality": "observed",
+      "effectivePeriod": null,
+      "occurredOn": null,
+      "evidenceRefs": [
+        {
+          "id": "clm_043-ev1",
+          "sourceDocumentId": "l004-src-2",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Report Date: 2025-11-14",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    },
+    {
+      "id": "clm_044",
+      "subjectEntityId": "ent_progress_q1",
+      "construct": {
+        "measure": "prepared_by",
+        "task": null,
+        "administration": null
+      },
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "Special education teacher",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "unit": null,
+      "modality": "observed",
+      "effectivePeriod": null,
+      "occurredOn": null,
+      "evidenceRefs": [
+        {
+          "id": "clm_044-ev1",
+          "sourceDocumentId": "l004-src-2",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Prepared By: Special education teacher",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    },
+    {
+      "id": "clm_045",
+      "subjectEntityId": "ent_progress_q1",
+      "construct": {
+        "measure": "reporting_period",
+        "task": null,
+        "administration": null
+      },
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "Q1 progress toward current IEP goal",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "unit": null,
+      "modality": "observed",
+      "effectivePeriod": null,
+      "occurredOn": null,
+      "evidenceRefs": [
+        {
+          "id": "clm_045-ev1",
+          "sourceDocumentId": "l004-src-2",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Reporting Period: Q1 progress toward current IEP goal",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    },
+    {
+      "id": "clm_046",
+      "subjectEntityId": "ent_progress_q1",
+      "construct": {
+        "measure": "goal_monitored",
+        "task": null,
+        "administration": null
+      },
+      "value": {
+        "kind": "entity_ref",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": "ent_goal_fluency",
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "unit": null,
+      "modality": "observed",
+      "effectivePeriod": null,
+      "occurredOn": null,
+      "evidenceRefs": [
+        {
+          "id": "clm_046-ev1",
+          "sourceDocumentId": "l004-src-2",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Goal Being Monitored",
+          "extractionId": null,
+          "sourceType": "document"
+        },
+        {
+          "id": "clm_046-ev2",
+          "sourceDocumentId": "l004-src-2",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "This report records current progress toward the existing annual goal.",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    },
+    {
+      "id": "clm_047",
+      "subjectEntityId": "ent_progress_q1",
+      "construct": {
+        "measure": "goal_target_remains_reference",
+        "task": null,
+        "administration": null
+      },
+      "value": {
+        "kind": "boolean",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": true,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "unit": null,
+      "modality": "observed",
+      "effectivePeriod": null,
+      "occurredOn": "2025-11-14",
+      "evidenceRefs": [
+        {
+          "id": "clm_047-ev1",
+          "sourceDocumentId": "l004-src-2",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "The annual target of 95 WCPM remains the goal reference for this reporting period.",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    },
+    {
+      "id": "clm_048",
+      "subjectEntityId": "ent_progress_q1",
+      "construct": {
+        "measure": "revises_present_levels_or_iep",
+        "task": null,
+        "administration": null
+      },
+      "value": {
+        "kind": "boolean",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": false,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "unit": null,
+      "modality": "observed",
+      "effectivePeriod": null,
+      "occurredOn": null,
+      "evidenceRefs": [
+        {
+          "id": "clm_048-ev1",
+          "sourceDocumentId": "l004-src-2",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "It does not revise present levels, rewrite the IEP,",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    },
+    {
+      "id": "clm_049",
+      "subjectEntityId": "ent_progress_q1",
+      "construct": {
+        "measure": "changes_eligibility_services_or_accommodations",
+        "task": null,
+        "administration": null
+      },
+      "value": {
+        "kind": "boolean",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": false,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "unit": null,
+      "modality": "observed",
+      "effectivePeriod": null,
+      "occurredOn": null,
+      "evidenceRefs": [
+        {
+          "id": "clm_049-ev1",
+          "sourceDocumentId": "l004-src-2",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "or change special education services, accommodations, or eligibility.",
+          "extractionId": null,
+          "sourceType": "document"
+        },
+        {
+          "id": "clm_049-ev2",
+          "sourceDocumentId": "l004-src-2",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "No change to services, accommodations, or eligibility is made in this report.",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    },
+    {
+      "id": "clm_050",
+      "subjectEntityId": "ent_student",
+      "construct": {
+        "measure": "receives_service",
+        "task": "specialized_reading_instruction",
+        "administration": "current_iep_q1_report"
+      },
+      "value": {
+        "kind": "boolean",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": true,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "unit": null,
+      "modality": "observed",
+      "effectivePeriod": null,
+      "occurredOn": "2025-11-14",
+      "evidenceRefs": [
+        {
+          "id": "clm_050-ev1",
+          "sourceDocumentId": "l004-src-2",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Daniel Okafor continues to receive specialized reading instruction under the current IEP.",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    },
+    {
+      "id": "clm_051",
+      "subjectEntityId": "ent_progress_q2",
+      "construct": {
+        "measure": "report_date",
+        "task": null,
+        "administration": null
+      },
+      "value": {
+        "kind": "date",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": "2026-02-13",
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "unit": null,
+      "modality": "observed",
+      "effectivePeriod": null,
+      "occurredOn": null,
+      "evidenceRefs": [
+        {
+          "id": "clm_051-ev1",
+          "sourceDocumentId": "l004-src-3",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Report Date: 2026-02-13",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    },
+    {
+      "id": "clm_052",
+      "subjectEntityId": "ent_progress_q2",
+      "construct": {
+        "measure": "prepared_by",
+        "task": null,
+        "administration": null
+      },
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "Special education teacher",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "unit": null,
+      "modality": "observed",
+      "effectivePeriod": null,
+      "occurredOn": null,
+      "evidenceRefs": [
+        {
+          "id": "clm_052-ev1",
+          "sourceDocumentId": "l004-src-3",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Prepared By: Special education teacher",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    },
+    {
+      "id": "clm_053",
+      "subjectEntityId": "ent_progress_q2",
+      "construct": {
+        "measure": "reporting_period",
+        "task": null,
+        "administration": null
+      },
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "Q2 progress toward current IEP goal",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "unit": null,
+      "modality": "observed",
+      "effectivePeriod": null,
+      "occurredOn": null,
+      "evidenceRefs": [
+        {
+          "id": "clm_053-ev1",
+          "sourceDocumentId": "l004-src-3",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Reporting Period: Q2 progress toward current IEP goal",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    },
+    {
+      "id": "clm_054",
+      "subjectEntityId": "ent_progress_q2",
+      "construct": {
+        "measure": "goal_monitored",
+        "task": null,
+        "administration": null
+      },
+      "value": {
+        "kind": "entity_ref",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": "ent_goal_fluency",
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "unit": null,
+      "modality": "observed",
+      "effectivePeriod": null,
+      "occurredOn": null,
+      "evidenceRefs": [
+        {
+          "id": "clm_054-ev1",
+          "sourceDocumentId": "l004-src-3",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Goal Being Monitored",
+          "extractionId": null,
+          "sourceType": "document"
+        },
+        {
+          "id": "clm_054-ev2",
+          "sourceDocumentId": "l004-src-3",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "This report records current progress toward the existing annual goal.",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    },
+    {
+      "id": "clm_055",
+      "subjectEntityId": "ent_progress_q2",
+      "construct": {
+        "measure": "goal_target_remains_reference",
+        "task": null,
+        "administration": null
+      },
+      "value": {
+        "kind": "boolean",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": true,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "unit": null,
+      "modality": "observed",
+      "effectivePeriod": null,
+      "occurredOn": "2026-02-13",
+      "evidenceRefs": [
+        {
+          "id": "clm_055-ev1",
+          "sourceDocumentId": "l004-src-3",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "The annual target of 95 WCPM remains the goal reference for this reporting period.",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    },
+    {
+      "id": "clm_056",
+      "subjectEntityId": "ent_progress_q2",
+      "construct": {
+        "measure": "revises_present_levels_or_iep",
+        "task": null,
+        "administration": null
+      },
+      "value": {
+        "kind": "boolean",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": false,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "unit": null,
+      "modality": "observed",
+      "effectivePeriod": null,
+      "occurredOn": null,
+      "evidenceRefs": [
+        {
+          "id": "clm_056-ev1",
+          "sourceDocumentId": "l004-src-3",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "It does not revise present levels, rewrite the IEP,",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    },
+    {
+      "id": "clm_057",
+      "subjectEntityId": "ent_progress_q2",
+      "construct": {
+        "measure": "changes_eligibility_services_or_accommodations",
+        "task": null,
+        "administration": null
+      },
+      "value": {
+        "kind": "boolean",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": false,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "unit": null,
+      "modality": "observed",
+      "effectivePeriod": null,
+      "occurredOn": null,
+      "evidenceRefs": [
+        {
+          "id": "clm_057-ev1",
+          "sourceDocumentId": "l004-src-3",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "or change special education services, accommodations, or eligibility.",
+          "extractionId": null,
+          "sourceType": "document"
+        },
+        {
+          "id": "clm_057-ev2",
+          "sourceDocumentId": "l004-src-3",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "No change to services, accommodations, or eligibility is made in this report.",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    },
+    {
+      "id": "clm_058",
+      "subjectEntityId": "ent_student",
+      "construct": {
+        "measure": "receives_service",
+        "task": "specialized_reading_instruction",
+        "administration": "current_iep_q2_report"
+      },
+      "value": {
+        "kind": "boolean",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": true,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "unit": null,
+      "modality": "observed",
+      "effectivePeriod": null,
+      "occurredOn": "2026-02-13",
+      "evidenceRefs": [
+        {
+          "id": "clm_058-ev1",
+          "sourceDocumentId": "l004-src-3",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Daniel Okafor continues to receive specialized reading instruction under the current IEP.",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    },
+    {
+      "id": "clm_059",
+      "subjectEntityId": "ent_progress_q3",
+      "construct": {
+        "measure": "report_date",
+        "task": null,
+        "administration": null
+      },
+      "value": {
+        "kind": "date",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": "2026-05-15",
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "unit": null,
+      "modality": "observed",
+      "effectivePeriod": null,
+      "occurredOn": null,
+      "evidenceRefs": [
+        {
+          "id": "clm_059-ev1",
+          "sourceDocumentId": "l004-src-4",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Report Date: 2026-05-15",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    },
+    {
+      "id": "clm_060",
+      "subjectEntityId": "ent_progress_q3",
+      "construct": {
+        "measure": "prepared_by",
+        "task": null,
+        "administration": null
+      },
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "Special education teacher",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "unit": null,
+      "modality": "observed",
+      "effectivePeriod": null,
+      "occurredOn": null,
+      "evidenceRefs": [
+        {
+          "id": "clm_060-ev1",
+          "sourceDocumentId": "l004-src-4",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Prepared By: Special education teacher",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    },
+    {
+      "id": "clm_061",
+      "subjectEntityId": "ent_progress_q3",
+      "construct": {
+        "measure": "reporting_period",
+        "task": null,
+        "administration": null
+      },
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "Q3 progress toward current IEP goal",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "unit": null,
+      "modality": "observed",
+      "effectivePeriod": null,
+      "occurredOn": null,
+      "evidenceRefs": [
+        {
+          "id": "clm_061-ev1",
+          "sourceDocumentId": "l004-src-4",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Reporting Period: Q3 progress toward current IEP goal",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    },
+    {
+      "id": "clm_062",
+      "subjectEntityId": "ent_progress_q3",
+      "construct": {
+        "measure": "goal_monitored",
+        "task": null,
+        "administration": null
+      },
+      "value": {
+        "kind": "entity_ref",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": "ent_goal_fluency",
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "unit": null,
+      "modality": "observed",
+      "effectivePeriod": null,
+      "occurredOn": null,
+      "evidenceRefs": [
+        {
+          "id": "clm_062-ev1",
+          "sourceDocumentId": "l004-src-4",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Goal Being Monitored",
+          "extractionId": null,
+          "sourceType": "document"
+        },
+        {
+          "id": "clm_062-ev2",
+          "sourceDocumentId": "l004-src-4",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "This report records current progress toward the existing annual goal.",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    },
+    {
+      "id": "clm_063",
+      "subjectEntityId": "ent_progress_q3",
+      "construct": {
+        "measure": "goal_target_remains_reference",
+        "task": null,
+        "administration": null
+      },
+      "value": {
+        "kind": "boolean",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": true,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "unit": null,
+      "modality": "observed",
+      "effectivePeriod": null,
+      "occurredOn": "2026-05-15",
+      "evidenceRefs": [
+        {
+          "id": "clm_063-ev1",
+          "sourceDocumentId": "l004-src-4",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "The annual target of 95 WCPM remains the goal reference for this reporting period.",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    },
+    {
+      "id": "clm_064",
+      "subjectEntityId": "ent_progress_q3",
+      "construct": {
+        "measure": "revises_present_levels_or_iep",
+        "task": null,
+        "administration": null
+      },
+      "value": {
+        "kind": "boolean",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": false,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "unit": null,
+      "modality": "observed",
+      "effectivePeriod": null,
+      "occurredOn": null,
+      "evidenceRefs": [
+        {
+          "id": "clm_064-ev1",
+          "sourceDocumentId": "l004-src-4",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "It does not revise present levels, rewrite the IEP,",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    },
+    {
+      "id": "clm_065",
+      "subjectEntityId": "ent_progress_q3",
+      "construct": {
+        "measure": "changes_eligibility_services_or_accommodations",
+        "task": null,
+        "administration": null
+      },
+      "value": {
+        "kind": "boolean",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": false,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "unit": null,
+      "modality": "observed",
+      "effectivePeriod": null,
+      "occurredOn": null,
+      "evidenceRefs": [
+        {
+          "id": "clm_065-ev1",
+          "sourceDocumentId": "l004-src-4",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "or change special education services, accommodations, or eligibility.",
+          "extractionId": null,
+          "sourceType": "document"
+        },
+        {
+          "id": "clm_065-ev2",
+          "sourceDocumentId": "l004-src-4",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "No change to services, accommodations, or eligibility is made in this report.",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    },
+    {
+      "id": "clm_066",
+      "subjectEntityId": "ent_student",
+      "construct": {
+        "measure": "receives_service",
+        "task": "specialized_reading_instruction",
+        "administration": "current_iep_q3_report"
+      },
+      "value": {
+        "kind": "boolean",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": true,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "unit": null,
+      "modality": "observed",
+      "effectivePeriod": null,
+      "occurredOn": "2026-05-15",
+      "evidenceRefs": [
+        {
+          "id": "clm_066-ev1",
+          "sourceDocumentId": "l004-src-4",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Daniel Okafor continues to receive specialized reading instruction under the current IEP.",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    },
+    {
+      "id": "clm_067",
+      "subjectEntityId": "ent_academic_eval_2026",
+      "construct": {
+        "measure": "evaluation_date",
+        "task": null,
+        "administration": null
+      },
+      "value": {
+        "kind": "date",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": "2026-06-05",
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "unit": null,
+      "modality": "observed",
+      "effectivePeriod": null,
+      "occurredOn": null,
+      "evidenceRefs": [
+        {
+          "id": "clm_067-ev1",
+          "sourceDocumentId": "l004-src-5",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Evaluation Date: 2026-06-05",
+          "extractionId": null,
+          "sourceType": "document"
+        },
+        {
+          "id": "clm_067-ev2",
+          "sourceDocumentId": "l004-src-5",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "This academic evaluation was completed on 2026-06-05",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    },
+    {
+      "id": "clm_068",
+      "subjectEntityId": "ent_academic_eval_2026",
+      "construct": {
+        "measure": "evaluator",
+        "task": null,
+        "administration": null
+      },
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "Academic evaluator",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "unit": null,
+      "modality": "observed",
+      "effectivePeriod": null,
+      "occurredOn": null,
+      "evidenceRefs": [
+        {
+          "id": "clm_068-ev1",
+          "sourceDocumentId": "l004-src-5",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Evaluator: Academic evaluator",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    },
+    {
+      "id": "clm_069",
+      "subjectEntityId": "ent_academic_eval_2026",
+      "construct": {
+        "measure": "evaluation_focus",
+        "task": null,
+        "administration": null
+      },
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "Reading achievement, fluency, and accuracy",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "unit": null,
+      "modality": "observed",
+      "effectivePeriod": null,
+      "occurredOn": null,
+      "evidenceRefs": [
+        {
+          "id": "clm_069-ev1",
+          "sourceDocumentId": "l004-src-5",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Focus: Reading achievement, fluency, and accuracy",
+          "extractionId": null,
+          "sourceType": "document"
+        },
+        {
+          "id": "clm_069-ev2",
+          "sourceDocumentId": "l004-src-5",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "The evaluation examines oral reading fluency and reading accuracy related to the documented reading need.",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    },
+    {
+      "id": "clm_070",
+      "subjectEntityId": "ent_academic_eval_2026",
+      "construct": {
+        "measure": "evaluation_reason",
+        "task": null,
+        "administration": null
+      },
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "update Daniel's reading achievement",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "unit": null,
+      "modality": "observed",
+      "effectivePeriod": null,
+      "occurredOn": null,
+      "evidenceRefs": [
+        {
+          "id": "clm_070-ev1",
+          "sourceDocumentId": "l004-src-5",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "to update Daniel's reading achievement.",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    },
+    {
+      "id": "clm_071",
+      "subjectEntityId": "ent_academic_eval_2026",
+      "construct": {
+        "measure": "results_limited_to_evaluation_date",
+        "task": null,
+        "administration": null
+      },
+      "value": {
+        "kind": "boolean",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": true,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "unit": null,
+      "modality": "observed",
+      "effectivePeriod": null,
+      "occurredOn": null,
+      "evidenceRefs": [
+        {
+          "id": "clm_071-ev1",
+          "sourceDocumentId": "l004-src-5",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Results below are limited to information collected on the academic evaluation date.",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    },
+    {
+      "id": "clm_072",
+      "subjectEntityId": "ent_academic_eval_2026",
+      "construct": {
+        "measure": "creates_new_baseline_administration",
+        "task": "oral_reading_fluency",
+        "administration": null
+      },
+      "value": {
+        "kind": "boolean",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": false,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "unit": null,
+      "modality": "observed",
+      "effectivePeriod": null,
+      "occurredOn": null,
+      "evidenceRefs": [
+        {
+          "id": "clm_072-ev1",
+          "sourceDocumentId": "l004-src-5",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "This report does not create a new 70 WCPM administration on the evaluation date.",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    },
+    {
+      "id": "clm_073",
+      "subjectEntityId": "ent_academic_eval_2026",
+      "construct": {
+        "measure": "accuracy_is_oral_reading_fluency_observation",
+        "task": "reading_accuracy",
+        "administration": null
+      },
+      "value": {
+        "kind": "boolean",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": false,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "unit": null,
+      "modality": "observed",
+      "effectivePeriod": null,
+      "occurredOn": null,
+      "evidenceRefs": [
+        {
+          "id": "clm_073-ev1",
+          "sourceDocumentId": "l004-src-5",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "The 94% reading accuracy result is a separate construct from oral reading fluency and is not a words-correct-per-minute score.",
+          "extractionId": null,
+          "sourceType": "document"
+        },
+        {
+          "id": "clm_073-ev2",
+          "sourceDocumentId": "l004-src-5",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "The 94 percent accuracy result is not an oral-reading-fluency observation.",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    },
+    {
+      "id": "clm_074",
+      "subjectEntityId": "ent_academic_eval_2026",
+      "construct": {
+        "measure": "measures_relationship",
+        "task": null,
+        "administration": null
+      },
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "concurrent measures of different constructs",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "unit": null,
+      "modality": "observed",
+      "effectivePeriod": null,
+      "occurredOn": null,
+      "evidenceRefs": [
+        {
+          "id": "clm_074-ev1",
+          "sourceDocumentId": "l004-src-5",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "These are concurrent measures of different constructs.",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    },
+    {
+      "id": "clm_075",
+      "subjectEntityId": "ent_academic_eval_2026",
+      "construct": {
+        "measure": "continues_series",
+        "task": "oral_reading_fluency",
+        "administration": null
+      },
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "96 WCPM continues the oral-reading-fluency series that began with the 70 WCPM baseline",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "unit": null,
+      "modality": "observed",
+      "effectivePeriod": null,
+      "occurredOn": null,
+      "evidenceRefs": [
+        {
+          "id": "clm_075-ev1",
+          "sourceDocumentId": "l004-src-5",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "The 96 WCPM result continues the oral-reading-fluency series that began with the 70 WCPM baseline.",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    },
+    {
+      "id": "clm_076",
+      "subjectEntityId": "ent_academic_eval_2026",
+      "construct": {
+        "measure": "interpretation",
+        "task": "oral_reading_fluency",
+        "administration": null
+      },
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "fluency rose from a 70 WCPM baseline to 96 WCPM",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "unit": null,
+      "modality": "observed",
+      "effectivePeriod": null,
+      "occurredOn": "2026-06-05",
+      "evidenceRefs": [
+        {
+          "id": "clm_076-ev1",
+          "sourceDocumentId": "l004-src-5",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Daniel's fluency rose from a 70 WCPM baseline to 96 WCPM,",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    },
+    {
+      "id": "clm_077",
+      "subjectEntityId": "ent_student",
+      "construct": {
+        "measure": "requires_specially_designed_instruction",
+        "task": "reading",
+        "administration": "academic_evaluation"
+      },
+      "value": {
+        "kind": "boolean",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": true,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "unit": null,
+      "modality": "observed",
+      "effectivePeriod": null,
+      "occurredOn": "2026-06-05",
+      "evidenceRefs": [
+        {
+          "id": "clm_077-ev1",
+          "sourceDocumentId": "l004-src-5",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Daniel Okafor continues to require specially designed instruction in reading.",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    },
+    {
+      "id": "clm_078",
+      "subjectEntityId": "ent_academic_eval_2026",
+      "construct": {
+        "measure": "changes_eligibility_services_or_accommodations",
+        "task": null,
+        "administration": null
+      },
+      "value": {
+        "kind": "boolean",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": false,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "unit": null,
+      "modality": "observed",
+      "effectivePeriod": null,
+      "occurredOn": null,
+      "evidenceRefs": [
+        {
+          "id": "clm_078-ev1",
+          "sourceDocumentId": "l004-src-5",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "This report does not change eligibility, IEP services, or accommodations.",
+          "extractionId": null,
+          "sourceType": "document"
+        },
+        {
+          "id": "clm_078-ev2",
+          "sourceDocumentId": "l004-src-5",
+          "logicalDocumentId": null,
+          "page": 2,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "These results are evaluation findings and are not IEP service or eligibility decisions.",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    },
+    {
+      "id": "clm_079",
+      "subjectEntityId": "ent_academic_eval_2026",
+      "construct": {
+        "measure": "recommendations_are_iep_decisions",
+        "task": null,
+        "administration": null
+      },
+      "value": {
+        "kind": "boolean",
+        "numberValue": null,
+        "textValue": null,
+        "codeValue": null,
+        "booleanValue": false,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "unit": null,
+      "modality": "observed",
+      "effectivePeriod": null,
+      "occurredOn": null,
+      "evidenceRefs": [
+        {
+          "id": "clm_079-ev1",
+          "sourceDocumentId": "l004-src-5",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Recommendations in this report are evaluation recommendations and are not IEP decisions.",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    },
+    {
+      "id": "clm_080",
+      "subjectEntityId": "ent_academic_eval_2026",
+      "construct": {
+        "measure": "evaluation_recommendation",
+        "task": "specialized_reading_instruction",
+        "administration": null
+      },
+      "value": {
+        "kind": "text",
+        "numberValue": null,
+        "textValue": "Continue specialized reading instruction under the current IEP",
+        "codeValue": null,
+        "booleanValue": null,
+        "entityId": null,
+        "dateValue": null,
+        "periodStart": null,
+        "periodEnd": null,
+        "unit": null
+      },
+      "unit": null,
+      "modality": "observed",
+      "effectivePeriod": null,
+      "occurredOn": "2026-06-05",
+      "evidenceRefs": [
+        {
+          "id": "clm_080-ev1",
+          "sourceDocumentId": "l004-src-5",
+          "logicalDocumentId": null,
+          "page": 2,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Continue specialized reading instruction under the current IEP.",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    }
+  ],
+  "conflicts": [],
+  "missingInformation": [
+    {
+      "id": "gap_001",
+      "description": "The IEP says progress toward GOAL_READING_FLUENCY will be reported at least quarterly, concurrent with report periods, through the IEP period ending 2026-09-09. Progress reports are supplied for Q1 (2025-11-14), Q2 (2026-02-13) and Q3 (2026-05-15). No progress report after 2026-05-15 is supplied, so the record has no goal-progress report covering 2026-05-16 to 2026-09-09. A Q4 progress report, or a record that none was issued, would answer this.",
+      "gapKind": "not_found_in_supplied_documents",
+      "subjectEntityId": "ent_goal_fluency",
+      "relatedConstruct": "progress_reporting_frequency",
+      "evidenceRefs": null,
+      "proposalLineage": {
+        "proposalItemId": "gap_001",
+        "studyRunId": "golden-l004"
+      }
+    }
+  ],
+  "voiceProposal": {
+    "subject": {
+      "value": null,
+      "from": null,
+      "evidenceRefs": null
+    },
+    "eventNoun": {
+      "value": null,
+      "from": null,
+      "evidenceRefs": null
+    },
+    "helperNoun": {
+      "value": null,
+      "from": null,
+      "evidenceRefs": null
+    },
+    "otherPartyNoun": {
+      "value": null,
+      "from": null,
+      "evidenceRefs": null
+    },
+    "subjectName": {
+      "value": "Daniel Okafor",
+      "from": "document",
+      "evidenceRefs": [
+        {
+          "id": "voice_subject_name-ev1",
+          "sourceDocumentId": "l004-src-1",
+          "logicalDocumentId": null,
+          "page": 1,
+          "pageEnd": null,
+          "spanStart": null,
+          "spanEnd": null,
+          "quote": "Student: Daniel Okafor",
+          "extractionId": null,
+          "sourceType": "document"
+        }
+      ]
+    }
+  },
+  "modelMetadata": {
+    "providerId": "golden-reference",
+    "modelId": "claude-opus-5-5",
+    "proposalMode": "fixture"
+  },
+  "proposedAt": "2026-10-08T00:00:00.000Z"
+}

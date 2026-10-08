@@ -1,0 +1,4496 @@
+{
+  "caseId": "iep-e-1",
+  "wordLayer": {
+    "documentId": "iep-e-1.pdf",
+    "sourcePdfSha256": "30f7205cb81e2a2ce19f932a6ccb3175f55401c5bce776070d40303c5d748b27",
+    "producedBy": "extractNativeWords via engine/core/scripts/shadow-golden/ensure-document-pages.ts",
+    "committed": false
+  },
+  "sourceIds": {
+    "iep-e-1-src-1": "iep-e-1.pdf"
+  },
+  "refs": [
+    {
+      "evidenceRefId": "ev_ent_student_1",
+      "owner": "ent_student",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 72,
+        "endSeq": 81
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "a/an IEP meeting has been scheduled for the above student.",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_ent_iep_meeting_1",
+      "owner": "ent_iep_meeting",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 158,
+        "endSeq": 165
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "This meeting has been scheduled for: Date 01/17/2012",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_ent_parent_1",
+      "owner": "ent_parent",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 3,
+      "wordRange": {
+        "startSeq": 231,
+        "endSeq": 235
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Parent Psychologist Special Education Teacher",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_ent_family_therapist_1",
+      "owner": "ent_family_therapist",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 3,
+      "wordRange": {
+        "startSeq": 223,
+        "endSeq": 224
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Family Therapist",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_ent_gen_ed_teacher_1",
+      "owner": "ent_gen_ed_teacher",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 3,
+      "wordRange": {
+        "startSeq": 226,
+        "endSeq": 228
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "General Education Teacher",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_ent_psychologist_1",
+      "owner": "ent_psychologist",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 3,
+      "wordRange": {
+        "startSeq": 231,
+        "endSeq": 235
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Parent Psychologist Special Education Teacher",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_ent_sped_teacher_1",
+      "owner": "ent_sped_teacher",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 3,
+      "wordRange": {
+        "startSeq": 231,
+        "endSeq": 235
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Parent Psychologist Special Education Teacher",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_ent_primary_staff_contact_1",
+      "owner": "ent_primary_staff_contact",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 3,
+      "wordRange": {
+        "startSeq": 187,
+        "endSeq": 190
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "SC Structured Learning Teacher",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_meeting_scheduled_date_1",
+      "owner": "c_meeting_scheduled_date",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 158,
+        "endSeq": 165
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "This meeting has been scheduled for: Date 01/17/2012",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_meeting_scheduled_date_2",
+      "owner": "c_meeting_scheduled_date",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 21,
+        "endSeq": 24
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Meeting Date: 01/17/201 2",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_meeting_scheduled_time_1",
+      "owner": "c_meeting_scheduled_time",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 167,
+        "endSeq": 168
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "8:30 AM",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_meeting_scheduled_time_2",
+      "owner": "c_meeting_scheduled_time",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 26,
+        "endSeq": 28
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "8 :30 AM",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_meeting_purpose_1",
+      "owner": "c_meeting_purpose",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 123,
+        "endSeq": 126
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "X Review CwTent IEP",
+      "layerMatchesPage": false,
+      "pageText": "X Review Current IEP",
+      "valueFromMark": "'X' marks Review Current IEP; no other purpose is marked"
+    },
+    {
+      "evidenceRefId": "ev_c_invitation_date_sent_1",
+      "owner": "c_invitation_date_sent",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 18,
+        "endSeq": 24
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Date Sent to Participants: 01 /12/201 2",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_safeguards_with_invitation_1",
+      "owner": "c_safeguards_with_invitation",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 271,
+        "endSeq": 287
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Notice ofProcedural Saf eguards f or Special Education Students and Their Families has been provided to parents.",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_contact_phone_1",
+      "owner": "c_contact_phone",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 37,
+        "endSeq": 41
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Phone 01/11/2012 01/11/2012 Can Attend",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_contact_letter_1",
+      "owner": "c_contact_letter",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 32,
+        "endSeq": 36
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Leth. •1· 01/12/2012 Can Attend",
+      "layerMatchesPage": false,
+      "pageText": "Letter 01/12/2012 01/12/2012 Can Attend",
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_meeting_held_date_1",
+      "owner": "c_meeting_held_date",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 3,
+      "wordRange": {
+        "startSeq": 158,
+        "endSeq": 163
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Date of Plan meeting 01 /17/2012",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_meeting_held_date_2",
+      "owner": "c_meeting_held_date",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 4,
+      "wordRange": {
+        "startSeq": 11,
+        "endSeq": 13
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Meeting Date: 01/17/2012",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_meeting_held_date_3",
+      "owner": "c_meeting_held_date",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 5,
+      "wordRange": {
+        "startSeq": 14,
+        "endSeq": 16
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Meeting Date: 01/17/2012",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_meeting_held_date_4",
+      "owner": "c_meeting_held_date",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 6,
+      "wordRange": {
+        "startSeq": 17,
+        "endSeq": 20
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Meeting Date: 01 /17/2012",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_meeting_held_date_5",
+      "owner": "c_meeting_held_date",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 7,
+      "wordRange": {
+        "startSeq": 11,
+        "endSeq": 15
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Meeting Date: 01/1 7/201 2",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_meeting_held_date_6",
+      "owner": "c_meeting_held_date",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 8,
+      "wordRange": {
+        "startSeq": 10,
+        "endSeq": 12
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Meeting Date: 01/17/2012",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_meeting_held_date_7",
+      "owner": "c_meeting_held_date",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 11,
+      "wordRange": {
+        "startSeq": 18,
+        "endSeq": 20
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Meeting Date: 01/17/2012",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_meeting_held_date_8",
+      "owner": "c_meeting_held_date",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 13,
+      "wordRange": {
+        "startSeq": 15,
+        "endSeq": 18
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Meeting Date: 01 /17/2012",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_iep_date_1",
+      "owner": "c_iep_date",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 3,
+      "wordRange": {
+        "startSeq": 21,
+        "endSeq": 34
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "IEP Date: ..... 0 '\"\"' 1 .._ /1 ,....7 '\"\" /= 2= 0.... 12",
+      "layerMatchesPage": false,
+      "pageText": "IEP Date: 01/17/2012",
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_grade_1",
+      "owner": "c_grade",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 3,
+      "wordRange": {
+        "startSeq": 37,
+        "endSeq": 38
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Grade: 09",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_age_1",
+      "owner": "c_age",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 3,
+      "wordRange": {
+        "startSeq": 40,
+        "endSeq": 41
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Age* :...1§.",
+      "layerMatchesPage": false,
+      "pageText": "Age* 15",
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_disability_1",
+      "owner": "c_disability",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 3,
+      "wordRange": {
+        "startSeq": 43,
+        "endSeq": 79
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Disability (if identified): ..... E =m ......_ ot .._ io ...n .... a .... l..... B ... e \"\"\" h = a '\"\"' v\"\"' io \"\"\" ra =I ....D ...i = s= a= bi = li..,. ty_",
+      "layerMatchesPage": false,
+      "pageText": "Disability (if identified): Emotional Behavioral Disability",
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_primary_language_1",
+      "owner": "c_primary_language",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 3,
+      "wordRange": {
+        "startSeq": 83,
+        "endSeq": 95
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Primary language at home: ... E =n .... g.,. l= is \"\"' h...______",
+      "layerMatchesPage": false,
+      "pageText": "Primary language at home: English",
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_surrogate_parent_1",
+      "owner": "c_surrogate_parent",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 3,
+      "wordRange": {
+        "startSeq": 103,
+        "endSeq": 108
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Swrngate parent: 0 Yes lx ]No",
+      "layerMatchesPage": false,
+      "pageText": "Surrogate parent: [ ] Yes [X] No",
+      "valueFromMark": "No is marked; Yes is not"
+    },
+    {
+      "evidenceRefId": "ev_c_neighborhood_school_1",
+      "owner": "c_neighborhood_school",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 3,
+      "wordRange": {
+        "startSeq": 125,
+        "endSeq": 129
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Is this student's neighborhood school?",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": "No is marked; Yes is not"
+    },
+    {
+      "evidenceRefId": "ev_c_recent_evaluation_date_1",
+      "owner": "c_recent_evaluation_date",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 3,
+      "wordRange": {
+        "startSeq": 134,
+        "endSeq": 139
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Most recent evaluation date 01 /11/2012",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_reevaluation_due_1",
+      "owner": "c_reevaluation_due",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 3,
+      "wordRange": {
+        "startSeq": 144,
+        "endSeq": 152
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Next re-evaluation must occur before this date 01 /11/2015",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_plan_period_1",
+      "owner": "c_plan_period",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 3,
+      "wordRange": {
+        "startSeq": 140,
+        "endSeq": 143
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Plan staitdate 01 /17/2012",
+      "layerMatchesPage": false,
+      "pageText": "Plan start date 01/17/2012",
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_plan_period_2",
+      "owner": "c_plan_period",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 3,
+      "wordRange": {
+        "startSeq": 153,
+        "endSeq": 157
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Plan end date 01 /11/2013",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_parent_notified_date_1",
+      "owner": "c_parent_notified_date",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 3,
+      "wordRange": {
+        "startSeq": 164,
+        "endSeq": 171
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Date parent notified of Plan meeting 01 /12/2012",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_primary_staff_contact_1",
+      "owner": "c_primary_staff_contact",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 3,
+      "wordRange": {
+        "startSeq": 183,
+        "endSeq": 190
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Primaiy Staff Contact: - SC Structured Learning Teacher",
+      "layerMatchesPage": false,
+      "pageText": "Primary Staff Contact: [redacted] SC Structured Learning Teacher",
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_participated_family_therapist_1",
+      "owner": "c_participated_family_therapist",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 3,
+      "wordRange": {
+        "startSeq": 194,
+        "endSeq": 210
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "The list below indicates that the individual participated in the development ofthis Plan and the placement decision;",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_participated_family_therapist_2",
+      "owner": "c_participated_family_therapist",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 3,
+      "wordRange": {
+        "startSeq": 223,
+        "endSeq": 224
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Family Therapist",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_participated_gen_ed_teacher_1",
+      "owner": "c_participated_gen_ed_teacher",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 3,
+      "wordRange": {
+        "startSeq": 194,
+        "endSeq": 210
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "The list below indicates that the individual participated in the development ofthis Plan and the placement decision;",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_participated_gen_ed_teacher_2",
+      "owner": "c_participated_gen_ed_teacher",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 3,
+      "wordRange": {
+        "startSeq": 226,
+        "endSeq": 228
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "General Education Teacher",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_participated_parent_1",
+      "owner": "c_participated_parent",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 3,
+      "wordRange": {
+        "startSeq": 194,
+        "endSeq": 210
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "The list below indicates that the individual participated in the development ofthis Plan and the placement decision;",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_participated_parent_2",
+      "owner": "c_participated_parent",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 3,
+      "wordRange": {
+        "startSeq": 231,
+        "endSeq": 235
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Parent Psychologist Special Education Teacher",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_participated_psychologist_1",
+      "owner": "c_participated_psychologist",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 3,
+      "wordRange": {
+        "startSeq": 194,
+        "endSeq": 210
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "The list below indicates that the individual participated in the development ofthis Plan and the placement decision;",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_participated_psychologist_2",
+      "owner": "c_participated_psychologist",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 3,
+      "wordRange": {
+        "startSeq": 231,
+        "endSeq": 235
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Parent Psychologist Special Education Teacher",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_participated_sped_teacher_1",
+      "owner": "c_participated_sped_teacher",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 3,
+      "wordRange": {
+        "startSeq": 194,
+        "endSeq": 210
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "The list below indicates that the individual participated in the development ofthis Plan and the placement decision;",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_participated_sped_teacher_2",
+      "owner": "c_participated_sped_teacher",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 3,
+      "wordRange": {
+        "startSeq": 231,
+        "endSeq": 235
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Parent Psychologist Special Education Teacher",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_rights_at_18_informed_1",
+      "owner": "c_rights_at_18_informed",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 3,
+      "wordRange": {
+        "startSeq": 289,
+        "endSeq": 291
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Date informed: 01/17/2012",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_projected_exit_1",
+      "owner": "c_projected_exit",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 3,
+      "wordRange": {
+        "startSeq": 292,
+        "endSeq": 295
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Projected Graduation/Exit Date: 06/20/2015",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_projected_exit_2",
+      "owner": "c_projected_exit",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 7,
+      "wordRange": {
+        "startSeq": 70,
+        "endSeq": 75
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Projected Graduation / Exit Date: 06/20/2015",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_strength_work_quality_1",
+      "owner": "c_strength_work_quality",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 4,
+      "wordRange": {
+        "startSeq": 94,
+        "endSeq": 99
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "works hard and does quality work",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_strength_creative_1",
+      "owner": "c_strength_creative",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 4,
+      "wordRange": {
+        "startSeq": 101,
+        "endSeq": 108
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "is creative and has a good sense of",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_hspe_plan_1",
+      "owner": "c_hspe_plan",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 4,
+      "wordRange": {
+        "startSeq": 140,
+        "endSeq": 148
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "will be taking the HSPE exam his sophomore year.",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_communication_needs_1",
+      "owner": "c_communication_needs",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 4,
+      "wordRange": {
+        "startSeq": 204,
+        "endSeq": 214
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "in the student's language and communication mode. None at this time.",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_assistive_technology_1",
+      "owner": "c_assistive_technology",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 4,
+      "wordRange": {
+        "startSeq": 216,
+        "endSeq": 227
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "The student's assistive technology devices and services needs. None at this time.",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_behavior_strategies_1",
+      "owner": "c_behavior_strategies",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 4,
+      "wordRange": {
+        "startSeq": 261,
+        "endSeq": 270
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "The Structured Learning team develops interventions to address behavioral deficits.",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_lep_needs_1",
+      "owner": "c_lep_needs",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 4,
+      "wordRange": {
+        "startSeq": 292,
+        "endSeq": 300
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "relate to the child's IEP. None at this time.",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_reading_glasses_rx_1",
+      "owner": "c_reading_glasses_rx",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 4,
+      "wordRange": {
+        "startSeq": 379,
+        "endSeq": 384
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "has a prescription for reading glasses.",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_reading_glasses_school_1",
+      "owner": "c_reading_glasses_school",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 4,
+      "wordRange": {
+        "startSeq": 389,
+        "endSeq": 395
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "does not wear reading glasses in school.",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_plep_compliance_1",
+      "owner": "c_plep_compliance",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 5,
+      "wordRange": {
+        "startSeq": 159,
+        "endSeq": 168
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "initial refusal to comply, he complies with staff 5/10 opportunities.",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_plep_refusal_pattern_1",
+      "owner": "c_plep_refusal_pattern",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 5,
+      "wordRange": {
+        "startSeq": 135,
+        "endSeq": 142
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "will almost always say \"no\" or shake his",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_plep_conflict_1",
+      "owner": "c_plep_conflict",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 5,
+      "wordRange": {
+        "startSeq": 227,
+        "endSeq": 234
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "is currently resolving conflict without aggression 9/10 opportunities.",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_plep_chair_incidents_1",
+      "owner": "c_plep_chair_incidents",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 5,
+      "wordRange": {
+        "startSeq": 199,
+        "endSeq": 204
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "On two occasions this school year,",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_plep_chair_incidents_2",
+      "owner": "c_plep_chair_incidents",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 5,
+      "wordRange": {
+        "startSeq": 206,
+        "endSeq": 211
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "pushed a chair over in frustration.",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_plep_chair_apology_1",
+      "owner": "c_plep_chair_apology",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 5,
+      "wordRange": {
+        "startSeq": 216,
+        "endSeq": 222
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "eventually picked the chair up and apologized",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_plep_group_reluctance_1",
+      "owner": "c_plep_group_reluctance",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 5,
+      "wordRange": {
+        "startSeq": 236,
+        "endSeq": 252
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "has been very reluctant to participate in group academic activities. He prefers working independently with staff support.",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_plep_group_participation_1",
+      "owner": "c_plep_group_participation",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 5,
+      "wordRange": {
+        "startSeq": 257,
+        "endSeq": 264
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "participates in group classroom activities 3/1 O opportunities.",
+      "layerMatchesPage": false,
+      "pageText": "participates in group classroom activities 3/10 opportunities.",
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_plep_math_curriculum_1",
+      "owner": "c_plep_math_curriculum",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 5,
+      "wordRange": {
+        "startSeq": 268,
+        "endSeq": 276
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "is completing a 6.0 grade math curriculum this year.",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_plep_calculator_1",
+      "owner": "c_plep_calculator",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 5,
+      "wordRange": {
+        "startSeq": 277,
+        "endSeq": 287
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "He has demonstrated he can use a calculator to solve 6.0",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_plep_calculator_2",
+      "owner": "c_plep_calculator",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 5,
+      "wordRange": {
+        "startSeq": 291,
+        "endSeq": 294
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "problems accurately 8/10 opportunities.",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_plep_math_fluency_1",
+      "owner": "c_plep_math_fluency",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 5,
+      "wordRange": {
+        "startSeq": 295,
+        "endSeq": 309
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Fluency has not been an issue and the IEP team recommends dropping this measurable skill.",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_plep_drop_fluency_skill_1",
+      "owner": "c_plep_drop_fluency_skill",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 5,
+      "wordRange": {
+        "startSeq": 295,
+        "endSeq": 309
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Fluency has not been an issue and the IEP team recommends dropping this measurable skill.",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_plep_word_problems_1",
+      "owner": "c_plep_word_problems",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 5,
+      "wordRange": {
+        "startSeq": 311,
+        "endSeq": 322
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "has been independently completing 6.0 grade level word problems accurately 5/10 opportunities.",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_plep_read_aloud_1",
+      "owner": "c_plep_read_aloud",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 5,
+      "wordRange": {
+        "startSeq": 420,
+        "endSeq": 432
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "but he refuses to read aloud and rarely follows along reading the book",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_plep_reading_rate_1",
+      "owner": "c_plep_reading_rate",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 5,
+      "wordRange": {
+        "startSeq": 437,
+        "endSeq": 446
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "is currently reading 60 WCPM at the 6.0 grade level.",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_plep_comprehension_1",
+      "owner": "c_plep_comprehension",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 5,
+      "wordRange": {
+        "startSeq": 448,
+        "endSeq": 461
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "is able to answer comprehension questions at the 6.0grade level 75% of the time.",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_plep_sentences_1",
+      "owner": "c_plep_sentences",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 5,
+      "wordRange": {
+        "startSeq": 469,
+        "endSeq": 482
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "is able to write sentences using correct punctuation and capitalization 80% of the time.",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_plep_paragraph_1",
+      "owner": "c_plep_paragraph",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 5,
+      "wordRange": {
+        "startSeq": 531,
+        "endSeq": 543
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "to complete a paragraph with proper content and pragmatics 50% of the time",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_plep_writing_support_1",
+      "owner": "c_plep_writing_support",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 5,
+      "wordRange": {
+        "startSeq": 507,
+        "endSeq": 512
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "does best with 1: 1 support,",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_plep_assignments_1",
+      "owner": "c_plep_assignments",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 5,
+      "wordRange": {
+        "startSeq": 605,
+        "endSeq": 609
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "independently completes assignments 3/10 opportunities.",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_postsecondary_education_1",
+      "owner": "c_postsecondary_education",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 7,
+      "wordRange": {
+        "startSeq": 134,
+        "endSeq": 143
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "is interested in going to college to complete a degree",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_postsecondary_employment_1",
+      "owner": "c_postsecondary_employment",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 7,
+      "wordRange": {
+        "startSeq": 164,
+        "endSeq": 172
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Content Area: Employment is interested in law enforcement and",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_course_of_study_1",
+      "owner": "c_course_of_study",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 7,
+      "wordRange": {
+        "startSeq": 205,
+        "endSeq": 215
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "is completing a comprehensive course of study to meet graduation requirements.",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_agency_linkage_1",
+      "owner": "c_agency_linkage",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 7,
+      "wordRange": {
+        "startSeq": 265,
+        "endSeq": 271
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "** Not appropriate at this time **",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_ent_goal_math_calculation_1",
+      "owner": "ent_goal_math_calculation",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 8,
+      "wordRange": {
+        "startSeq": 96,
+        "endSeq": 115
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "will calculate problems using a calculator improving accuracy from 80% at the 6.0 grade level to 80% at the 7.0",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_goal_math_calculation_baseline_1",
+      "owner": "c_goal_math_calculation_baseline",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 8,
+      "wordRange": {
+        "startSeq": 102,
+        "endSeq": 110
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "improving accuracy from 80% at the 6.0 grade level",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_goal_math_calculation_target_1",
+      "owner": "c_goal_math_calculation_target",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 8,
+      "wordRange": {
+        "startSeq": 111,
+        "endSeq": 117
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "to 80% at the 7.0 gra I",
+      "layerMatchesPage": false,
+      "pageText": "to 80% at the 7.0 grade level",
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_goal_math_calculation_target_date_1",
+      "owner": "c_goal_math_calculation_target_date",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 8,
+      "wordRange": {
+        "startSeq": 89,
+        "endSeq": 94
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "By 01/11/2013, when given 7.0 calculation",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_ent_goal_math_word_problems_1",
+      "owner": "ent_goal_math_word_problems",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 8,
+      "wordRange": {
+        "startSeq": 173,
+        "endSeq": 192
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "will independently solve the problem improving accuracy from 50% at the 6.0 grade level to 80% at the 7.0 grade",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_goal_math_word_problems_baseline_1",
+      "owner": "c_goal_math_word_problems_baseline",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 8,
+      "wordRange": {
+        "startSeq": 178,
+        "endSeq": 186
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "improving accuracy from 50% at the 6.0 grade level",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_goal_math_word_problems_target_1",
+      "owner": "c_goal_math_word_problems_target",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 8,
+      "wordRange": {
+        "startSeq": 187,
+        "endSeq": 193
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "to 80% at the 7.0 grade lev",
+      "layerMatchesPage": false,
+      "pageText": "to 80% at the 7.0 grade level",
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_goal_math_word_problems_target_date_1",
+      "owner": "c_goal_math_word_problems_target_date",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 8,
+      "wordRange": {
+        "startSeq": 164,
+        "endSeq": 172
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "By 01/11/2013, when given 7.0 grade level word problems,",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_ent_goal_reading_fluency_1",
+      "owner": "ent_goal_reading_fluency",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 8,
+      "wordRange": {
+        "startSeq": 249,
+        "endSeq": 267
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "will read aloud or silently improving fluency from 60 correct words per minute to 100 correct words per minute",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_goal_reading_fluency_baseline_1",
+      "owner": "c_goal_reading_fluency_baseline",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 8,
+      "wordRange": {
+        "startSeq": 254,
+        "endSeq": 261
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "improving fluency from 60 correct words per minute",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_goal_reading_fluency_target_1",
+      "owner": "c_goal_reading_fluency_target",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 8,
+      "wordRange": {
+        "startSeq": 262,
+        "endSeq": 267
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "to 100 correct words per minute",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_goal_reading_fluency_target_date_1",
+      "owner": "c_goal_reading_fluency_target_date",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 8,
+      "wordRange": {
+        "startSeq": 241,
+        "endSeq": 247
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "By 01/11/2013, when given 6.0 grade level",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_ent_goal_reading_comprehension_1",
+      "owner": "ent_goal_reading_comprehension",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 8,
+      "wordRange": {
+        "startSeq": 324,
+        "endSeq": 342
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "will answer comprehension questions improving accuracy from 75% at the 6.0 grade level to 80% at the 7.0 grade",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_goal_reading_comprehension_baseline_1",
+      "owner": "c_goal_reading_comprehension_baseline",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 8,
+      "wordRange": {
+        "startSeq": 328,
+        "endSeq": 336
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "improving accuracy from 75% at the 6.0 grade level",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_goal_reading_comprehension_target_1",
+      "owner": "c_goal_reading_comprehension_target",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 8,
+      "wordRange": {
+        "startSeq": 337,
+        "endSeq": 343
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "to 80% at the 7.0 grade le~easured",
+      "layerMatchesPage": false,
+      "pageText": "to 80% at the 7.0 grade level as measured",
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_goal_reading_comprehension_target_date_1",
+      "owner": "c_goal_reading_comprehension_target_date",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 8,
+      "wordRange": {
+        "startSeq": 316,
+        "endSeq": 322
+      },
+      "occurrencesOnPage": 2,
+      "occurrenceUsed": 2,
+      "occurrenceReason": "first occurrence is the word-problems goal; the second opens the comprehension goal",
+      "quote": "By 01/11/2013, when given 7.0 grade level",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_ent_goal_compliance_1",
+      "owner": "ent_goal_compliance",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 9,
+      "wordRange": {
+        "startSeq": 62,
+        "endSeq": 77
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "will comply improving success from 50% to 80% of the time as measured by classroom data.",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_goal_compliance_baseline_1",
+      "owner": "c_goal_compliance_baseline",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 9,
+      "wordRange": {
+        "startSeq": 62,
+        "endSeq": 67
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "will comply improving success from 50%",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_goal_compliance_target_1",
+      "owner": "c_goal_compliance_target",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 9,
+      "wordRange": {
+        "startSeq": 68,
+        "endSeq": 77
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "to 80% of the time as measured by classroom data.",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_goal_compliance_target_date_1",
+      "owner": "c_goal_compliance_target_date",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 9,
+      "wordRange": {
+        "startSeq": 51,
+        "endSeq": 60
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "By 01/ 11 /2013, when given a direction from staff,",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_ent_goal_frustration_1",
+      "owner": "ent_goal_frustration",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 9,
+      "wordRange": {
+        "startSeq": 133,
+        "endSeq": 147
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "will resolve his feelings without aggression improving success from 90% to 100% of the time.",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_goal_frustration_baseline_1",
+      "owner": "c_goal_frustration_baseline",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 9,
+      "wordRange": {
+        "startSeq": 137,
+        "endSeq": 142
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "without aggression improving success from 90%",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_goal_frustration_target_1",
+      "owner": "c_goal_frustration_target",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 9,
+      "wordRange": {
+        "startSeq": 143,
+        "endSeq": 147
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "to 100% of the time.",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_goal_frustration_target_date_1",
+      "owner": "c_goal_frustration_target_date",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 9,
+      "wordRange": {
+        "startSeq": 121,
+        "endSeq": 131
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "By 01/ 11 /2013, when given a situation that is frustrating,",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_ent_goal_group_participation_1",
+      "owner": "ent_goal_group_participation",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 9,
+      "wordRange": {
+        "startSeq": 209,
+        "endSeq": 227
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "will appropriately work with staff and peers improving success from 30% to 80% of the time as measured by",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_goal_group_participation_baseline_1",
+      "owner": "c_goal_group_participation_baseline",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 9,
+      "wordRange": {
+        "startSeq": 214,
+        "endSeq": 219
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "and peers improving success from 30%",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_goal_group_participation_target_1",
+      "owner": "c_goal_group_participation_target",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 9,
+      "wordRange": {
+        "startSeq": 214,
+        "endSeq": 224
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "and peers improving success from 30% to 80% of the time",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_goal_group_participation_target_date_1",
+      "owner": "c_goal_group_participation_target_date",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 9,
+      "wordRange": {
+        "startSeq": 195,
+        "endSeq": 207
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "By 01/ 11 /2013, when given an opportunity to participate in group academic",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_ent_goal_assignment_completion_1",
+      "owner": "ent_goal_assignment_completion",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 9,
+      "wordRange": {
+        "startSeq": 289,
+        "endSeq": 297
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "will complete the assignment improving success from 30% to",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_goal_assignment_completion_baseline_1",
+      "owner": "c_goal_assignment_completion_baseline",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 9,
+      "wordRange": {
+        "startSeq": 289,
+        "endSeq": 296
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "will complete the assignment improving success from 30%",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_goal_assignment_completion_target_1",
+      "owner": "c_goal_assignment_completion_target",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 9,
+      "wordRange": {
+        "startSeq": 289,
+        "endSeq": 297
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "will complete the assignment improving success from 30% to",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_goal_assignment_completion_target_2",
+      "owner": "c_goal_assignment_completion_target",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 10,
+      "wordRange": {
+        "startSeq": 11,
+        "endSeq": 19
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "80% of the time as measured by classroom data.",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_goal_assignment_completion_target_date_1",
+      "owner": "c_goal_assignment_completion_target_date",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 9,
+      "wordRange": {
+        "startSeq": 279,
+        "endSeq": 287
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "By 01/ 11 /2013, when given an academic assignment,",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_ent_goal_paragraph_writing_1",
+      "owner": "ent_goal_paragraph_writing",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 10,
+      "wordRange": {
+        "startSeq": 76,
+        "endSeq": 92
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "will write a paragraph with sentences that have correct content and pragmatics improving accuracy from 50% to",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_goal_paragraph_writing_baseline_1",
+      "owner": "c_goal_paragraph_writing_baseline",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 10,
+      "wordRange": {
+        "startSeq": 87,
+        "endSeq": 91
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "pragmatics improving accuracy from 50%",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_goal_paragraph_writing_target_date_1",
+      "owner": "c_goal_paragraph_writing_target_date",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 10,
+      "wordRange": {
+        "startSeq": 67,
+        "endSeq": 74
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "By 01/ 11 /2013, when given a writing",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_ent_goal_sentence_mechanics_1",
+      "owner": "ent_goal_sentence_mechanics",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 10,
+      "wordRange": {
+        "startSeq": 160,
+        "endSeq": 175
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "will write sentences using correct punctuation and capitalization improving accuracy from 80% to 95% of the",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_goal_sentence_mechanics_baseline_1",
+      "owner": "c_goal_sentence_mechanics_baseline",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 10,
+      "wordRange": {
+        "startSeq": 167,
+        "endSeq": 171
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "capitalization improving accuracy from 80%",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_goal_sentence_mechanics_target_1",
+      "owner": "c_goal_sentence_mechanics_target",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 10,
+      "wordRange": {
+        "startSeq": 170,
+        "endSeq": 175
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "from 80% to 95% of the",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_goal_sentence_mechanics_target_date_1",
+      "owner": "c_goal_sentence_mechanics_target_date",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 10,
+      "wordRange": {
+        "startSeq": 148,
+        "endSeq": 159
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "By 01/ 11 /2013, when given a daily reading log to complete,",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_ent_accom_alt_schedule_1",
+      "owner": "ent_accom_alt_schedule",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 11,
+      "wordRange": {
+        "startSeq": 156,
+        "endSeq": 165
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Behaviorally Related:alternative schedule As needed All settings 01/17/2012 to 01/11/2013",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_accom_alt_schedule_frequency_1",
+      "owner": "c_accom_alt_schedule_frequency",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 11,
+      "wordRange": {
+        "startSeq": 156,
+        "endSeq": 165
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Behaviorally Related:alternative schedule As needed All settings 01/17/2012 to 01/11/2013",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_accom_alt_schedule_location_1",
+      "owner": "c_accom_alt_schedule_location",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 11,
+      "wordRange": {
+        "startSeq": 156,
+        "endSeq": 165
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Behaviorally Related:alternative schedule As needed All settings 01/17/2012 to 01/11/2013",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_accom_alt_schedule_period_1",
+      "owner": "c_accom_alt_schedule_period",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 11,
+      "wordRange": {
+        "startSeq": 156,
+        "endSeq": 165
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Behaviorally Related:alternative schedule As needed All settings 01/17/2012 to 01/11/2013",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_ent_accom_breaks_1",
+      "owner": "ent_accom_breaks",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 11,
+      "wordRange": {
+        "startSeq": 166,
+        "endSeq": 179
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Behaviorally Related:breaks available when frustration level escalates As needed All settings 01/17/2012 to 01/11/2013",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_accom_breaks_frequency_1",
+      "owner": "c_accom_breaks_frequency",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 11,
+      "wordRange": {
+        "startSeq": 166,
+        "endSeq": 179
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Behaviorally Related:breaks available when frustration level escalates As needed All settings 01/17/2012 to 01/11/2013",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_accom_breaks_location_1",
+      "owner": "c_accom_breaks_location",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 11,
+      "wordRange": {
+        "startSeq": 166,
+        "endSeq": 179
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Behaviorally Related:breaks available when frustration level escalates As needed All settings 01/17/2012 to 01/11/2013",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_accom_breaks_period_1",
+      "owner": "c_accom_breaks_period",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 11,
+      "wordRange": {
+        "startSeq": 166,
+        "endSeq": 179
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Behaviorally Related:breaks available when frustration level escalates As needed All settings 01/17/2012 to 01/11/2013",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_ent_accom_alt_location_anger_1",
+      "owner": "ent_accom_alt_location_anger",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 11,
+      "wordRange": {
+        "startSeq": 180,
+        "endSeq": 192
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Behaviorally Related:Alternative location to resolve anger/frustration As needed All settings 01/17/2012 to 01/11/2013",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_accom_alt_location_anger_frequency_1",
+      "owner": "c_accom_alt_location_anger_frequency",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 11,
+      "wordRange": {
+        "startSeq": 180,
+        "endSeq": 192
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Behaviorally Related:Alternative location to resolve anger/frustration As needed All settings 01/17/2012 to 01/11/2013",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_accom_alt_location_anger_location_1",
+      "owner": "c_accom_alt_location_anger_location",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 11,
+      "wordRange": {
+        "startSeq": 180,
+        "endSeq": 192
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Behaviorally Related:Alternative location to resolve anger/frustration As needed All settings 01/17/2012 to 01/11/2013",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_accom_alt_location_anger_period_1",
+      "owner": "c_accom_alt_location_anger_period",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 11,
+      "wordRange": {
+        "startSeq": 180,
+        "endSeq": 192
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Behaviorally Related:Alternative location to resolve anger/frustration As needed All settings 01/17/2012 to 01/11/2013",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_ent_accom_alt_location_work_1",
+      "owner": "ent_accom_alt_location_work",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 11,
+      "wordRange": {
+        "startSeq": 193,
+        "endSeq": 205
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Content Area:Alternative location to complete assignments/tests As needed All settings 01/17/2012 to 01/11/2013",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_accom_alt_location_work_frequency_1",
+      "owner": "c_accom_alt_location_work_frequency",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 11,
+      "wordRange": {
+        "startSeq": 193,
+        "endSeq": 205
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Content Area:Alternative location to complete assignments/tests As needed All settings 01/17/2012 to 01/11/2013",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_accom_alt_location_work_location_1",
+      "owner": "c_accom_alt_location_work_location",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 11,
+      "wordRange": {
+        "startSeq": 193,
+        "endSeq": 205
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Content Area:Alternative location to complete assignments/tests As needed All settings 01/17/2012 to 01/11/2013",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_accom_alt_location_work_period_1",
+      "owner": "c_accom_alt_location_work_period",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 11,
+      "wordRange": {
+        "startSeq": 193,
+        "endSeq": 205
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Content Area:Alternative location to complete assignments/tests As needed All settings 01/17/2012 to 01/11/2013",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_ent_accom_alter_weight_1",
+      "owner": "ent_accom_alter_weight",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 11,
+      "wordRange": {
+        "startSeq": 206,
+        "endSeq": 218
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Grading Modifications:alter weight of class/course tests/exams As needed All settings 01/17/2012 to 01/11/2013",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_accom_alter_weight_frequency_1",
+      "owner": "c_accom_alter_weight_frequency",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 11,
+      "wordRange": {
+        "startSeq": 206,
+        "endSeq": 218
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Grading Modifications:alter weight of class/course tests/exams As needed All settings 01/17/2012 to 01/11/2013",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_accom_alter_weight_location_1",
+      "owner": "c_accom_alter_weight_location",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 11,
+      "wordRange": {
+        "startSeq": 206,
+        "endSeq": 218
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Grading Modifications:alter weight of class/course tests/exams As needed All settings 01/17/2012 to 01/11/2013",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_accom_alter_weight_period_1",
+      "owner": "c_accom_alter_weight_period",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 11,
+      "wordRange": {
+        "startSeq": 206,
+        "endSeq": 218
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Grading Modifications:alter weight of class/course tests/exams As needed All settings 01/17/2012 to 01/11/2013",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_ent_accom_modified_assignments_1",
+      "owner": "ent_accom_modified_assignments",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 11,
+      "wordRange": {
+        "startSeq": 219,
+        "endSeq": 232
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Grading Modifications:modified assignments for length and/or content As needed All settings 01/17/2012 to 01/11/2013",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_accom_modified_assignments_frequency_1",
+      "owner": "c_accom_modified_assignments_frequency",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 11,
+      "wordRange": {
+        "startSeq": 219,
+        "endSeq": 232
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Grading Modifications:modified assignments for length and/or content As needed All settings 01/17/2012 to 01/11/2013",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_accom_modified_assignments_location_1",
+      "owner": "c_accom_modified_assignments_location",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 11,
+      "wordRange": {
+        "startSeq": 219,
+        "endSeq": 232
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Grading Modifications:modified assignments for length and/or content As needed All settings 01/17/2012 to 01/11/2013",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_accom_modified_assignments_period_1",
+      "owner": "c_accom_modified_assignments_period",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 11,
+      "wordRange": {
+        "startSeq": 219,
+        "endSeq": 232
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Grading Modifications:modified assignments for length and/or content As needed All settings 01/17/2012 to 01/11/2013",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_ent_accom_extended_time_1",
+      "owner": "ent_accom_extended_time",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 11,
+      "wordRange": {
+        "startSeq": 233,
+        "endSeq": 251
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Grading Modifications:Extended time to complete assignments/tests/projects without penalty if working appropriately As needed All settings 01/17/2012 to 01 /11/2013",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_accom_extended_time_frequency_1",
+      "owner": "c_accom_extended_time_frequency",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 11,
+      "wordRange": {
+        "startSeq": 233,
+        "endSeq": 251
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Grading Modifications:Extended time to complete assignments/tests/projects without penalty if working appropriately As needed All settings 01/17/2012 to 01 /11/2013",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_accom_extended_time_location_1",
+      "owner": "c_accom_extended_time_location",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 11,
+      "wordRange": {
+        "startSeq": 233,
+        "endSeq": 251
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Grading Modifications:Extended time to complete assignments/tests/projects without penalty if working appropriately As needed All settings 01/17/2012 to 01 /11/2013",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_accom_extended_time_period_1",
+      "owner": "c_accom_extended_time_period",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 11,
+      "wordRange": {
+        "startSeq": 233,
+        "endSeq": 251
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Grading Modifications:Extended time to complete assignments/tests/projects without penalty if working appropriately As needed All settings 01/17/2012 to 01 /11/2013",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_ent_accom_writing_tools_1",
+      "owner": "ent_accom_writing_tools",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 11,
+      "wordRange": {
+        "startSeq": 252,
+        "endSeq": 285
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Testing Response:For Writing : Students may use a print or electronic dictionary or thesaurus, spell check and word prediction software with topic specific dictionaries disabled. As needed All settings 01 /17/2012 to 01 /11/2013",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_accom_writing_tools_frequency_1",
+      "owner": "c_accom_writing_tools_frequency",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 11,
+      "wordRange": {
+        "startSeq": 252,
+        "endSeq": 285
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Testing Response:For Writing : Students may use a print or electronic dictionary or thesaurus, spell check and word prediction software with topic specific dictionaries disabled. As needed All settings 01 /17/2012 to 01 /11/2013",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_accom_writing_tools_location_1",
+      "owner": "c_accom_writing_tools_location",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 11,
+      "wordRange": {
+        "startSeq": 252,
+        "endSeq": 285
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Testing Response:For Writing : Students may use a print or electronic dictionary or thesaurus, spell check and word prediction software with topic specific dictionaries disabled. As needed All settings 01 /17/2012 to 01 /11/2013",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_accom_writing_tools_period_1",
+      "owner": "c_accom_writing_tools_period",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 11,
+      "wordRange": {
+        "startSeq": 252,
+        "endSeq": 285
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Testing Response:For Writing : Students may use a print or electronic dictionary or thesaurus, spell check and word prediction software with topic specific dictionaries disabled. As needed All settings 01 /17/2012 to 01 /11/2013",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_ent_accom_math_tools_1",
+      "owner": "ent_accom_math_tools",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 11,
+      "wordRange": {
+        "startSeq": 286,
+        "endSeq": 299
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Testing Response:Mathematics manipulatives and calculator As needed All settings 01 /17/2012 to 01 /11/2013",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_accom_math_tools_frequency_1",
+      "owner": "c_accom_math_tools_frequency",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 11,
+      "wordRange": {
+        "startSeq": 286,
+        "endSeq": 299
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Testing Response:Mathematics manipulatives and calculator As needed All settings 01 /17/2012 to 01 /11/2013",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_accom_math_tools_location_1",
+      "owner": "c_accom_math_tools_location",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 11,
+      "wordRange": {
+        "startSeq": 286,
+        "endSeq": 299
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Testing Response:Mathematics manipulatives and calculator As needed All settings 01 /17/2012 to 01 /11/2013",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_accom_math_tools_period_1",
+      "owner": "c_accom_math_tools_period",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 11,
+      "wordRange": {
+        "startSeq": 286,
+        "endSeq": 299
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Testing Response:Mathematics manipulatives and calculator As needed All settings 01 /17/2012 to 01 /11/2013",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_assess_math_l2_participation_1",
+      "owner": "c_assess_math_l2_participation",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 12,
+      "wordRange": {
+        "startSeq": 128,
+        "endSeq": 134
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "M ath Prof. Lvl. 2 X X",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": "'X' under Participation Yes and Accommodations/Modifications Yes"
+    },
+    {
+      "evidenceRefId": "ev_c_assess_math_l2_accommodations_1",
+      "owner": "c_assess_math_l2_accommodations",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 12,
+      "wordRange": {
+        "startSeq": 128,
+        "endSeq": 139
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "M ath Prof. Lvl. 2 X X M athematics manipulatives and calculator",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": "'X' under Participation Yes and Accommodations/Modifications Yes"
+    },
+    {
+      "evidenceRefId": "ev_c_assess_math_l3_participation_1",
+      "owner": "c_assess_math_l3_participation",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 12,
+      "wordRange": {
+        "startSeq": 140,
+        "endSeq": 145
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "M ath Prof. Lvl. 3 X",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": "'X' under Participation No"
+    },
+    {
+      "evidenceRefId": "ev_c_assess_reading_l2_participation_1",
+      "owner": "c_assess_reading_l2_participation",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 12,
+      "wordRange": {
+        "startSeq": 146,
+        "endSeq": 151
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Reading Prof. Lvl. 2 X X",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": "'X' under Participation Yes and Accommodations/Modifications Yes"
+    },
+    {
+      "evidenceRefId": "ev_c_assess_reading_l2_accommodations_1",
+      "owner": "c_assess_reading_l2_accommodations",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 12,
+      "wordRange": {
+        "startSeq": 146,
+        "endSeq": 176
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Reading Prof. Lvl. 2 X X For Writing : Students may use a print or electronic dictionary or thesaurus, spell check and word prediction software with topic speci fic dictionaries disabled.",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": "'X' under Participation Yes and Accommodations/Modifications Yes"
+    },
+    {
+      "evidenceRefId": "ev_c_assess_reading_l3_participation_1",
+      "owner": "c_assess_reading_l3_participation",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 12,
+      "wordRange": {
+        "startSeq": 177,
+        "endSeq": 181
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Reading Prof. Lvl. 3 X",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": "'X' under Participation No"
+    },
+    {
+      "evidenceRefId": "ev_c_assess_science_l2_participation_1",
+      "owner": "c_assess_science_l2_participation",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 12,
+      "wordRange": {
+        "startSeq": 182,
+        "endSeq": 188
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Science Prof. L vl. 2 X X",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": "'X' under Participation Yes and Accommodations/Modifications Yes"
+    },
+    {
+      "evidenceRefId": "ev_c_assess_science_l2_accommodations_1",
+      "owner": "c_assess_science_l2_accommodations",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 12,
+      "wordRange": {
+        "startSeq": 182,
+        "endSeq": 218
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Science Prof. L vl. 2 X X For Writing : Students may use a print or electronic dictionary or thesaurus, spell check and word prediction software with topic speci fic dictionaries disabled., M athematics manipulatives and calculator",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": "'X' under Participation Yes and Accommodations/Modifications Yes"
+    },
+    {
+      "evidenceRefId": "ev_c_assess_science_l3_participation_1",
+      "owner": "c_assess_science_l3_participation",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 12,
+      "wordRange": {
+        "startSeq": 219,
+        "endSeq": 224
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Science Prof. L vl. 3 X",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": "'X' under Participation No"
+    },
+    {
+      "evidenceRefId": "ev_c_assess_writing_l2_participation_1",
+      "owner": "c_assess_writing_l2_participation",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 12,
+      "wordRange": {
+        "startSeq": 225,
+        "endSeq": 230
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Writing Prof. Lvl. 2 X X",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": "'X' under Participation Yes and Accommodations/Modifications Yes"
+    },
+    {
+      "evidenceRefId": "ev_c_assess_writing_l2_accommodations_1",
+      "owner": "c_assess_writing_l2_accommodations",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 12,
+      "wordRange": {
+        "startSeq": 225,
+        "endSeq": 255
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Writing Prof. Lvl. 2 X X For Writing : Students may use a print or electronic dictionary or thesaurus, spell check and word prediction software with topic speci fic dictionaries disabled.",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": "'X' under Participation Yes and Accommodations/Modifications Yes"
+    },
+    {
+      "evidenceRefId": "ev_c_assess_writing_l3_participation_1",
+      "owner": "c_assess_writing_l3_participation",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 12,
+      "wordRange": {
+        "startSeq": 256,
+        "endSeq": 260
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Writing Prof. Lvl. 3 X",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": "'X' under Participation No"
+    },
+    {
+      "evidenceRefId": "ev_c_assess_waas_1",
+      "owner": "c_assess_waas",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 12,
+      "wordRange": {
+        "startSeq": 266,
+        "endSeq": 276
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "WAAS Po1·tf0Iio M ath X Reading X Science X Writing X",
+      "layerMatchesPage": false,
+      "pageText": "WAAS Portfolio Math X Reading X Science X Writing X",
+      "valueFromMark": "each 'X' is under Participation No"
+    },
+    {
+      "evidenceRefId": "ev_c_assess_local_1",
+      "owner": "c_assess_local",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 12,
+      "wordRange": {
+        "startSeq": 277,
+        "endSeq": 286
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Locallv-Determined A ssessment M ath X Reading X Writing X",
+      "layerMatchesPage": false,
+      "pageText": "Locally-Determined Assessment Math X Reading X Writing X",
+      "valueFromMark": "each 'X' is under Participation No"
+    },
+    {
+      "evidenceRefId": "ev_ent_service_math_1",
+      "owner": "ent_service_math",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 13,
+      "wordRange": {
+        "startSeq": 74,
+        "endSeq": 90
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "No Math SLC Structured 40 Mittutes / 1 Times Special Education 01/17/2012 01/11/2013 Tchr!Paraeducator Learning Daily Tchr",
+      "layerMatchesPage": false,
+      "pageText": "No Math SLC Structured 40 Minutes / 1 Times Special Education 01/17/2012 01/11/2013 Tchr/Paraeducator Learning Daily Tchr",
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_service_math_concurrent_1",
+      "owner": "c_service_math_concurrent",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 13,
+      "wordRange": {
+        "startSeq": 74,
+        "endSeq": 90
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "No Math SLC Structured 40 Mittutes / 1 Times Special Education 01/17/2012 01/11/2013 Tchr!Paraeducator Learning Daily Tchr",
+      "layerMatchesPage": false,
+      "pageText": "No Math SLC Structured 40 Minutes / 1 Times Special Education 01/17/2012 01/11/2013 Tchr/Paraeducator Learning Daily Tchr",
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_service_math_provider_1",
+      "owner": "c_service_math_provider",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 13,
+      "wordRange": {
+        "startSeq": 74,
+        "endSeq": 90
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "No Math SLC Structured 40 Mittutes / 1 Times Special Education 01/17/2012 01/11/2013 Tchr!Paraeducator Learning Daily Tchr",
+      "layerMatchesPage": false,
+      "pageText": "No Math SLC Structured 40 Minutes / 1 Times Special Education 01/17/2012 01/11/2013 Tchr/Paraeducator Learning Daily Tchr",
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_service_math_monitor_1",
+      "owner": "c_service_math_monitor",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 13,
+      "wordRange": {
+        "startSeq": 74,
+        "endSeq": 90
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "No Math SLC Structured 40 Mittutes / 1 Times Special Education 01/17/2012 01/11/2013 Tchr!Paraeducator Learning Daily Tchr",
+      "layerMatchesPage": false,
+      "pageText": "No Math SLC Structured 40 Minutes / 1 Times Special Education 01/17/2012 01/11/2013 Tchr/Paraeducator Learning Daily Tchr",
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_service_math_session_length_1",
+      "owner": "c_service_math_session_length",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 13,
+      "wordRange": {
+        "startSeq": 74,
+        "endSeq": 90
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "No Math SLC Structured 40 Mittutes / 1 Times Special Education 01/17/2012 01/11/2013 Tchr!Paraeducator Learning Daily Tchr",
+      "layerMatchesPage": false,
+      "pageText": "No Math SLC Structured 40 Minutes / 1 Times Special Education 01/17/2012 01/11/2013 Tchr/Paraeducator Learning Daily Tchr",
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_service_math_frequency_1",
+      "owner": "c_service_math_frequency",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 13,
+      "wordRange": {
+        "startSeq": 74,
+        "endSeq": 90
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "No Math SLC Structured 40 Mittutes / 1 Times Special Education 01/17/2012 01/11/2013 Tchr!Paraeducator Learning Daily Tchr",
+      "layerMatchesPage": false,
+      "pageText": "No Math SLC Structured 40 Minutes / 1 Times Special Education 01/17/2012 01/11/2013 Tchr/Paraeducator Learning Daily Tchr",
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_service_math_location_1",
+      "owner": "c_service_math_location",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 13,
+      "wordRange": {
+        "startSeq": 74,
+        "endSeq": 90
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "No Math SLC Structured 40 Mittutes / 1 Times Special Education 01/17/2012 01/11/2013 Tchr!Paraeducator Learning Daily Tchr",
+      "layerMatchesPage": false,
+      "pageText": "No Math SLC Structured 40 Minutes / 1 Times Special Education 01/17/2012 01/11/2013 Tchr/Paraeducator Learning Daily Tchr",
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_service_math_period_1",
+      "owner": "c_service_math_period",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 13,
+      "wordRange": {
+        "startSeq": 74,
+        "endSeq": 90
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "No Math SLC Structured 40 Mittutes / 1 Times Special Education 01/17/2012 01/11/2013 Tchr!Paraeducator Learning Daily Tchr",
+      "layerMatchesPage": false,
+      "pageText": "No Math SLC Structured 40 Minutes / 1 Times Special Education 01/17/2012 01/11/2013 Tchr/Paraeducator Learning Daily Tchr",
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_ent_service_reading_1",
+      "owner": "ent_service_reading",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 13,
+      "wordRange": {
+        "startSeq": 91,
+        "endSeq": 107
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "No Readittg SLC Structured 40 Mittutes / 1 Times Special Education 01/17/2012 01/11/2013 Tchr!Paraeducator Learning Daily Tchr",
+      "layerMatchesPage": false,
+      "pageText": "No Reading SLC Structured 40 Minutes / 1 Times Special Education 01/17/2012 01/11/2013 Tchr/Paraeducator Learning Daily Tchr",
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_service_reading_concurrent_1",
+      "owner": "c_service_reading_concurrent",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 13,
+      "wordRange": {
+        "startSeq": 91,
+        "endSeq": 107
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "No Readittg SLC Structured 40 Mittutes / 1 Times Special Education 01/17/2012 01/11/2013 Tchr!Paraeducator Learning Daily Tchr",
+      "layerMatchesPage": false,
+      "pageText": "No Reading SLC Structured 40 Minutes / 1 Times Special Education 01/17/2012 01/11/2013 Tchr/Paraeducator Learning Daily Tchr",
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_service_reading_provider_1",
+      "owner": "c_service_reading_provider",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 13,
+      "wordRange": {
+        "startSeq": 91,
+        "endSeq": 107
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "No Readittg SLC Structured 40 Mittutes / 1 Times Special Education 01/17/2012 01/11/2013 Tchr!Paraeducator Learning Daily Tchr",
+      "layerMatchesPage": false,
+      "pageText": "No Reading SLC Structured 40 Minutes / 1 Times Special Education 01/17/2012 01/11/2013 Tchr/Paraeducator Learning Daily Tchr",
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_service_reading_monitor_1",
+      "owner": "c_service_reading_monitor",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 13,
+      "wordRange": {
+        "startSeq": 91,
+        "endSeq": 107
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "No Readittg SLC Structured 40 Mittutes / 1 Times Special Education 01/17/2012 01/11/2013 Tchr!Paraeducator Learning Daily Tchr",
+      "layerMatchesPage": false,
+      "pageText": "No Reading SLC Structured 40 Minutes / 1 Times Special Education 01/17/2012 01/11/2013 Tchr/Paraeducator Learning Daily Tchr",
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_service_reading_session_length_1",
+      "owner": "c_service_reading_session_length",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 13,
+      "wordRange": {
+        "startSeq": 91,
+        "endSeq": 107
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "No Readittg SLC Structured 40 Mittutes / 1 Times Special Education 01/17/2012 01/11/2013 Tchr!Paraeducator Learning Daily Tchr",
+      "layerMatchesPage": false,
+      "pageText": "No Reading SLC Structured 40 Minutes / 1 Times Special Education 01/17/2012 01/11/2013 Tchr/Paraeducator Learning Daily Tchr",
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_service_reading_frequency_1",
+      "owner": "c_service_reading_frequency",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 13,
+      "wordRange": {
+        "startSeq": 91,
+        "endSeq": 107
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "No Readittg SLC Structured 40 Mittutes / 1 Times Special Education 01/17/2012 01/11/2013 Tchr!Paraeducator Learning Daily Tchr",
+      "layerMatchesPage": false,
+      "pageText": "No Reading SLC Structured 40 Minutes / 1 Times Special Education 01/17/2012 01/11/2013 Tchr/Paraeducator Learning Daily Tchr",
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_service_reading_location_1",
+      "owner": "c_service_reading_location",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 13,
+      "wordRange": {
+        "startSeq": 91,
+        "endSeq": 107
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "No Readittg SLC Structured 40 Mittutes / 1 Times Special Education 01/17/2012 01/11/2013 Tchr!Paraeducator Learning Daily Tchr",
+      "layerMatchesPage": false,
+      "pageText": "No Reading SLC Structured 40 Minutes / 1 Times Special Education 01/17/2012 01/11/2013 Tchr/Paraeducator Learning Daily Tchr",
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_service_reading_period_1",
+      "owner": "c_service_reading_period",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 13,
+      "wordRange": {
+        "startSeq": 91,
+        "endSeq": 107
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "No Readittg SLC Structured 40 Mittutes / 1 Times Special Education 01/17/2012 01/11/2013 Tchr!Paraeducator Learning Daily Tchr",
+      "layerMatchesPage": false,
+      "pageText": "No Reading SLC Structured 40 Minutes / 1 Times Special Education 01/17/2012 01/11/2013 Tchr/Paraeducator Learning Daily Tchr",
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_ent_service_writing_1",
+      "owner": "ent_service_writing",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 13,
+      "wordRange": {
+        "startSeq": 108,
+        "endSeq": 124
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "No Writittg SLC Structured 40 Mittutes / 1 Times Special Education 01/17/2012 01/11/2013 Tchr!Paraeducator Learning Daily Tchr",
+      "layerMatchesPage": false,
+      "pageText": "No Writing SLC Structured 40 Minutes / 1 Times Special Education 01/17/2012 01/11/2013 Tchr/Paraeducator Learning Daily Tchr",
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_service_writing_concurrent_1",
+      "owner": "c_service_writing_concurrent",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 13,
+      "wordRange": {
+        "startSeq": 108,
+        "endSeq": 124
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "No Writittg SLC Structured 40 Mittutes / 1 Times Special Education 01/17/2012 01/11/2013 Tchr!Paraeducator Learning Daily Tchr",
+      "layerMatchesPage": false,
+      "pageText": "No Writing SLC Structured 40 Minutes / 1 Times Special Education 01/17/2012 01/11/2013 Tchr/Paraeducator Learning Daily Tchr",
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_service_writing_provider_1",
+      "owner": "c_service_writing_provider",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 13,
+      "wordRange": {
+        "startSeq": 108,
+        "endSeq": 124
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "No Writittg SLC Structured 40 Mittutes / 1 Times Special Education 01/17/2012 01/11/2013 Tchr!Paraeducator Learning Daily Tchr",
+      "layerMatchesPage": false,
+      "pageText": "No Writing SLC Structured 40 Minutes / 1 Times Special Education 01/17/2012 01/11/2013 Tchr/Paraeducator Learning Daily Tchr",
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_service_writing_monitor_1",
+      "owner": "c_service_writing_monitor",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 13,
+      "wordRange": {
+        "startSeq": 108,
+        "endSeq": 124
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "No Writittg SLC Structured 40 Mittutes / 1 Times Special Education 01/17/2012 01/11/2013 Tchr!Paraeducator Learning Daily Tchr",
+      "layerMatchesPage": false,
+      "pageText": "No Writing SLC Structured 40 Minutes / 1 Times Special Education 01/17/2012 01/11/2013 Tchr/Paraeducator Learning Daily Tchr",
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_service_writing_session_length_1",
+      "owner": "c_service_writing_session_length",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 13,
+      "wordRange": {
+        "startSeq": 108,
+        "endSeq": 124
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "No Writittg SLC Structured 40 Mittutes / 1 Times Special Education 01/17/2012 01/11/2013 Tchr!Paraeducator Learning Daily Tchr",
+      "layerMatchesPage": false,
+      "pageText": "No Writing SLC Structured 40 Minutes / 1 Times Special Education 01/17/2012 01/11/2013 Tchr/Paraeducator Learning Daily Tchr",
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_service_writing_frequency_1",
+      "owner": "c_service_writing_frequency",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 13,
+      "wordRange": {
+        "startSeq": 108,
+        "endSeq": 124
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "No Writittg SLC Structured 40 Mittutes / 1 Times Special Education 01/17/2012 01/11/2013 Tchr!Paraeducator Learning Daily Tchr",
+      "layerMatchesPage": false,
+      "pageText": "No Writing SLC Structured 40 Minutes / 1 Times Special Education 01/17/2012 01/11/2013 Tchr/Paraeducator Learning Daily Tchr",
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_service_writing_location_1",
+      "owner": "c_service_writing_location",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 13,
+      "wordRange": {
+        "startSeq": 108,
+        "endSeq": 124
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "No Writittg SLC Structured 40 Mittutes / 1 Times Special Education 01/17/2012 01/11/2013 Tchr!Paraeducator Learning Daily Tchr",
+      "layerMatchesPage": false,
+      "pageText": "No Writing SLC Structured 40 Minutes / 1 Times Special Education 01/17/2012 01/11/2013 Tchr/Paraeducator Learning Daily Tchr",
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_service_writing_period_1",
+      "owner": "c_service_writing_period",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 13,
+      "wordRange": {
+        "startSeq": 108,
+        "endSeq": 124
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "No Writittg SLC Structured 40 Mittutes / 1 Times Special Education 01/17/2012 01/11/2013 Tchr!Paraeducator Learning Daily Tchr",
+      "layerMatchesPage": false,
+      "pageText": "No Writing SLC Structured 40 Minutes / 1 Times Special Education 01/17/2012 01/11/2013 Tchr/Paraeducator Learning Daily Tchr",
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_ent_service_social_emotional_behavioral_1",
+      "owner": "ent_service_social_emotional_behavioral",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 13,
+      "wordRange": {
+        "startSeq": 125,
+        "endSeq": 143
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "No Social/Emotio nal/Behaviora 1 SLC Tchr!Paraeducator Structured Learning Tchr 15 Mittutes / 3 Times Daily Special Education 01/17/2012 01/11/2013",
+      "layerMatchesPage": false,
+      "pageText": "No Social/Emotio nal/Behaviora l SLC Tchr/Paraeducator Structured Learning Tchr 15 Minutes / 3 Times Daily Special Education 01/17/2012 01/11/2013",
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_service_social_emotional_behavioral_concurrent_1",
+      "owner": "c_service_social_emotional_behavioral_concurrent",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 13,
+      "wordRange": {
+        "startSeq": 125,
+        "endSeq": 143
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "No Social/Emotio nal/Behaviora 1 SLC Tchr!Paraeducator Structured Learning Tchr 15 Mittutes / 3 Times Daily Special Education 01/17/2012 01/11/2013",
+      "layerMatchesPage": false,
+      "pageText": "No Social/Emotio nal/Behaviora l SLC Tchr/Paraeducator Structured Learning Tchr 15 Minutes / 3 Times Daily Special Education 01/17/2012 01/11/2013",
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_service_social_emotional_behavioral_provider_1",
+      "owner": "c_service_social_emotional_behavioral_provider",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 13,
+      "wordRange": {
+        "startSeq": 125,
+        "endSeq": 143
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "No Social/Emotio nal/Behaviora 1 SLC Tchr!Paraeducator Structured Learning Tchr 15 Mittutes / 3 Times Daily Special Education 01/17/2012 01/11/2013",
+      "layerMatchesPage": false,
+      "pageText": "No Social/Emotio nal/Behaviora l SLC Tchr/Paraeducator Structured Learning Tchr 15 Minutes / 3 Times Daily Special Education 01/17/2012 01/11/2013",
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_service_social_emotional_behavioral_monitor_1",
+      "owner": "c_service_social_emotional_behavioral_monitor",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 13,
+      "wordRange": {
+        "startSeq": 125,
+        "endSeq": 143
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "No Social/Emotio nal/Behaviora 1 SLC Tchr!Paraeducator Structured Learning Tchr 15 Mittutes / 3 Times Daily Special Education 01/17/2012 01/11/2013",
+      "layerMatchesPage": false,
+      "pageText": "No Social/Emotio nal/Behaviora l SLC Tchr/Paraeducator Structured Learning Tchr 15 Minutes / 3 Times Daily Special Education 01/17/2012 01/11/2013",
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_service_social_emotional_behavioral_session_length_1",
+      "owner": "c_service_social_emotional_behavioral_session_length",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 13,
+      "wordRange": {
+        "startSeq": 125,
+        "endSeq": 143
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "No Social/Emotio nal/Behaviora 1 SLC Tchr!Paraeducator Structured Learning Tchr 15 Mittutes / 3 Times Daily Special Education 01/17/2012 01/11/2013",
+      "layerMatchesPage": false,
+      "pageText": "No Social/Emotio nal/Behaviora l SLC Tchr/Paraeducator Structured Learning Tchr 15 Minutes / 3 Times Daily Special Education 01/17/2012 01/11/2013",
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_service_social_emotional_behavioral_frequency_1",
+      "owner": "c_service_social_emotional_behavioral_frequency",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 13,
+      "wordRange": {
+        "startSeq": 125,
+        "endSeq": 143
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "No Social/Emotio nal/Behaviora 1 SLC Tchr!Paraeducator Structured Learning Tchr 15 Mittutes / 3 Times Daily Special Education 01/17/2012 01/11/2013",
+      "layerMatchesPage": false,
+      "pageText": "No Social/Emotio nal/Behaviora l SLC Tchr/Paraeducator Structured Learning Tchr 15 Minutes / 3 Times Daily Special Education 01/17/2012 01/11/2013",
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_service_social_emotional_behavioral_location_1",
+      "owner": "c_service_social_emotional_behavioral_location",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 13,
+      "wordRange": {
+        "startSeq": 125,
+        "endSeq": 143
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "No Social/Emotio nal/Behaviora 1 SLC Tchr!Paraeducator Structured Learning Tchr 15 Mittutes / 3 Times Daily Special Education 01/17/2012 01/11/2013",
+      "layerMatchesPage": false,
+      "pageText": "No Social/Emotio nal/Behaviora l SLC Tchr/Paraeducator Structured Learning Tchr 15 Minutes / 3 Times Daily Special Education 01/17/2012 01/11/2013",
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_service_social_emotional_behavioral_period_1",
+      "owner": "c_service_social_emotional_behavioral_period",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 13,
+      "wordRange": {
+        "startSeq": 125,
+        "endSeq": 143
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "No Social/Emotio nal/Behaviora 1 SLC Tchr!Paraeducator Structured Learning Tchr 15 Mittutes / 3 Times Daily Special Education 01/17/2012 01/11/2013",
+      "layerMatchesPage": false,
+      "pageText": "No Social/Emotio nal/Behaviora l SLC Tchr/Paraeducator Structured Learning Tchr 15 Minutes / 3 Times Daily Special Education 01/17/2012 01/11/2013",
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_ent_service_study_skills_1",
+      "owner": "ent_service_study_skills",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 13,
+      "wordRange": {
+        "startSeq": 144,
+        "endSeq": 162
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "No Study Skills SLC Structured 5 Mitmtes / 3 Times Daily Special Education 01/17/20 12 01/11/2013 Tchr!Paraeducator Learning Tchr",
+      "layerMatchesPage": false,
+      "pageText": "No Study Skills SLC Structured 5 Minutes / 3 Times Daily Special Education 01/17/2012 01/11/2013 Tchr/Paraeducator Learning Tchr",
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_service_study_skills_concurrent_1",
+      "owner": "c_service_study_skills_concurrent",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 13,
+      "wordRange": {
+        "startSeq": 144,
+        "endSeq": 162
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "No Study Skills SLC Structured 5 Mitmtes / 3 Times Daily Special Education 01/17/20 12 01/11/2013 Tchr!Paraeducator Learning Tchr",
+      "layerMatchesPage": false,
+      "pageText": "No Study Skills SLC Structured 5 Minutes / 3 Times Daily Special Education 01/17/2012 01/11/2013 Tchr/Paraeducator Learning Tchr",
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_service_study_skills_provider_1",
+      "owner": "c_service_study_skills_provider",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 13,
+      "wordRange": {
+        "startSeq": 144,
+        "endSeq": 162
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "No Study Skills SLC Structured 5 Mitmtes / 3 Times Daily Special Education 01/17/20 12 01/11/2013 Tchr!Paraeducator Learning Tchr",
+      "layerMatchesPage": false,
+      "pageText": "No Study Skills SLC Structured 5 Minutes / 3 Times Daily Special Education 01/17/2012 01/11/2013 Tchr/Paraeducator Learning Tchr",
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_service_study_skills_monitor_1",
+      "owner": "c_service_study_skills_monitor",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 13,
+      "wordRange": {
+        "startSeq": 144,
+        "endSeq": 162
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "No Study Skills SLC Structured 5 Mitmtes / 3 Times Daily Special Education 01/17/20 12 01/11/2013 Tchr!Paraeducator Learning Tchr",
+      "layerMatchesPage": false,
+      "pageText": "No Study Skills SLC Structured 5 Minutes / 3 Times Daily Special Education 01/17/2012 01/11/2013 Tchr/Paraeducator Learning Tchr",
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_service_study_skills_session_length_1",
+      "owner": "c_service_study_skills_session_length",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 13,
+      "wordRange": {
+        "startSeq": 144,
+        "endSeq": 162
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "No Study Skills SLC Structured 5 Mitmtes / 3 Times Daily Special Education 01/17/20 12 01/11/2013 Tchr!Paraeducator Learning Tchr",
+      "layerMatchesPage": false,
+      "pageText": "No Study Skills SLC Structured 5 Minutes / 3 Times Daily Special Education 01/17/2012 01/11/2013 Tchr/Paraeducator Learning Tchr",
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_service_study_skills_frequency_1",
+      "owner": "c_service_study_skills_frequency",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 13,
+      "wordRange": {
+        "startSeq": 144,
+        "endSeq": 162
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "No Study Skills SLC Structured 5 Mitmtes / 3 Times Daily Special Education 01/17/20 12 01/11/2013 Tchr!Paraeducator Learning Tchr",
+      "layerMatchesPage": false,
+      "pageText": "No Study Skills SLC Structured 5 Minutes / 3 Times Daily Special Education 01/17/2012 01/11/2013 Tchr/Paraeducator Learning Tchr",
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_service_study_skills_location_1",
+      "owner": "c_service_study_skills_location",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 13,
+      "wordRange": {
+        "startSeq": 144,
+        "endSeq": 162
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "No Study Skills SLC Structured 5 Mitmtes / 3 Times Daily Special Education 01/17/20 12 01/11/2013 Tchr!Paraeducator Learning Tchr",
+      "layerMatchesPage": false,
+      "pageText": "No Study Skills SLC Structured 5 Minutes / 3 Times Daily Special Education 01/17/2012 01/11/2013 Tchr/Paraeducator Learning Tchr",
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_service_study_skills_period_1",
+      "owner": "c_service_study_skills_period",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 13,
+      "wordRange": {
+        "startSeq": 144,
+        "endSeq": 162
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "No Study Skills SLC Structured 5 Mitmtes / 3 Times Daily Special Education 01/17/20 12 01/11/2013 Tchr!Paraeducator Learning Tchr",
+      "layerMatchesPage": false,
+      "pageText": "No Study Skills SLC Structured 5 Minutes / 3 Times Daily Special Education 01/17/2012 01/11/2013 Tchr/Paraeducator Learning Tchr",
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_minutes_in_school_1",
+      "owner": "c_minutes_in_school",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 13,
+      "wordRange": {
+        "startSeq": 163,
+        "endSeq": 174
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Total minutes per week student spends in school: 1000 minutes per week",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_minutes_sped_setting_1",
+      "owner": "c_minutes_sped_setting",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 13,
+      "wordRange": {
+        "startSeq": 175,
+        "endSeq": 190
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Total minutes per week student is served in a special education setting: 900 minutes per week",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_percent_gen_ed_1",
+      "owner": "c_percent_gen_ed",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 13,
+      "wordRange": {
+        "startSeq": 191,
+        "endSeq": 202
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Percent of time in general education setting: 10% in General Education Setting",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_lre_selected_1",
+      "owner": "c_lre_selected",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 14,
+      "wordRange": {
+        "startSeq": 292,
+        "endSeq": 297
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "0-39% in Reaular Class X X",
+      "layerMatchesPage": false,
+      "pageText": "0-39% in Regular Class X X",
+      "valueFromMark": "'X' under Considered and under Selected"
+    },
+    {
+      "evidenceRefId": "ev_c_lre_selected_2",
+      "owner": "c_lre_selected",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 14,
+      "wordRange": {
+        "startSeq": 243,
+        "endSeq": 247
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Setting 1: 01/17/2012 - 01/11/2013",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_lre_rejected_80_100_1",
+      "owner": "c_lre_rejected_80_100",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 14,
+      "wordRange": {
+        "startSeq": 280,
+        "endSeq": 285
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "80%-100% in Reaular Class X X",
+      "layerMatchesPage": false,
+      "pageText": "80%-100% in Regular Class X X",
+      "valueFromMark": "'X' under Considered and under 'Academic benefit cannot be satisfactorily achieved'"
+    },
+    {
+      "evidenceRefId": "ev_c_lre_rejected_80_100_2",
+      "owner": "c_lre_rejected_80_100",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 14,
+      "wordRange": {
+        "startSeq": 259,
+        "endSeq": 264
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Academic benefit cannot be satisfactorily achieved",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_lre_rejected_40_79_1",
+      "owner": "c_lre_rejected_40_79",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 14,
+      "wordRange": {
+        "startSeq": 286,
+        "endSeq": 291
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "40%-79% in Reaular Class X X",
+      "layerMatchesPage": false,
+      "pageText": "40%-79% in Regular Class X X",
+      "valueFromMark": "'X' under Considered and under 'Academic benefit cannot be satisfactorily achieved'"
+    },
+    {
+      "evidenceRefId": "ev_c_lre_rejected_40_79_2",
+      "owner": "c_lre_rejected_40_79",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 14,
+      "wordRange": {
+        "startSeq": 259,
+        "endSeq": 264
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Academic benefit cannot be satisfactorily achieved",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_lre_explanation_1",
+      "owner": "c_lre_explanation",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 14,
+      "wordRange": {
+        "startSeq": 352,
+        "endSeq": 366
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "The IEP team recommends placement in Structured Learning with integration into the general education setting.",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_neighborhood_school_explanation_1",
+      "owner": "c_neighborhood_school_explanation",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 14,
+      "wordRange": {
+        "startSeq": 367,
+        "endSeq": 374
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Neighborhood School Explanation: Placement in a specialized program.",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_transportation_1",
+      "owner": "c_transportation",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 14,
+      "wordRange": {
+        "startSeq": 378,
+        "endSeq": 382
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "1. Transpo1 ·tation: (K] Regular",
+      "layerMatchesPage": false,
+      "pageText": "1. Transportation: [X] Regular",
+      "valueFromMark": "Regular is marked; Special is not"
+    },
+    {
+      "evidenceRefId": "ev_c_esy_1",
+      "owner": "c_esy",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 14,
+      "wordRange": {
+        "startSeq": 387,
+        "endSeq": 389
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Extended School Year:",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": "No is marked; Yes is not"
+    },
+    {
+      "evidenceRefId": "ev_c_general_pe_1",
+      "owner": "c_general_pe",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 14,
+      "wordRange": {
+        "startSeq": 401,
+        "endSeq": 402
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "General PE:",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": "Yes is marked; No is not"
+    },
+    {
+      "evidenceRefId": "ev_c_pwn_date_1",
+      "owner": "c_pwn_date",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 15,
+      "wordRange": {
+        "startSeq": 11,
+        "endSeq": 15
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Prior Written Notice Date: 01/17/2012",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_pwn_action_1",
+      "owner": "c_pwn_action",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 15,
+      "wordRange": {
+        "startSeq": 178,
+        "endSeq": 192
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Description of the proposed or refused action: Review of the annual Individualized Education Plan .",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_pwn_reason_1",
+      "owner": "c_pwn_reason",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 15,
+      "wordRange": {
+        "startSeq": 205,
+        "endSeq": 207
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Required by law.",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_pwn_other_options_1",
+      "owner": "c_pwn_other_options",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 15,
+      "wordRange": {
+        "startSeq": 208,
+        "endSeq": 219
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Description of any other options considered and rejected: None at this time.",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_pwn_basis_1",
+      "owner": "c_pwn_basis",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 15,
+      "wordRange": {
+        "startSeq": 254,
+        "endSeq": 259
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Review of academic and behavioral history.",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_half_day_schedule_1",
+      "owner": "c_half_day_schedule",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 15,
+      "wordRange": {
+        "startSeq": 272,
+        "endSeq": 276
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "is on a half-day schedule.",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_full_day_struggle_1",
+      "owner": "c_full_day_struggle",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 15,
+      "wordRange": {
+        "startSeq": 277,
+        "endSeq": 286
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "has struggled behaviorally when trying to complete a full-day schedule.",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_assess_longer_day_1",
+      "owner": "c_assess_longer_day",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 15,
+      "wordRange": {
+        "startSeq": 290,
+        "endSeq": 292
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "continue to assess",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_assess_longer_day_2",
+      "owner": "c_assess_longer_day",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 15,
+      "wordRange": {
+        "startSeq": 293,
+        "endSeq": 299
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "to successfully complete a longer school day.",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_gradual_increase_1",
+      "owner": "c_gradual_increase",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 15,
+      "wordRange": {
+        "startSeq": 300,
+        "endSeq": 307
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "The IEP team recommends a gradual increase in",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_gradual_increase_2",
+      "owner": "c_gradual_increase",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 15,
+      "wordRange": {
+        "startSeq": 309,
+        "endSeq": 316
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "day as he demonstrates he can be successful.",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_c_safeguards_with_pwn_1",
+      "owner": "c_safeguards_with_pwn",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 15,
+      "wordRange": {
+        "startSeq": 437,
+        "endSeq": 453
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Notice ofProcedural Saf eguards f or Special Education Students and Their Families has been provided to parents/guardians.",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_mi_student_notified_blank_1",
+      "owner": "mi_student_notified_blank",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 3,
+      "wordRange": {
+        "startSeq": 172,
+        "endSeq": 182
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Date student notified of Plan meeting (if transition will be discussed)",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_mi_transition_services_blank_1",
+      "owner": "mi_transition_services_blank",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 7,
+      "wordRange": {
+        "startSeq": 157,
+        "endSeq": 162
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Transition Senices I Starr/ Agency Responsible",
+      "layerMatchesPage": false,
+      "pageText": "Transition Services | Staff / Agency Responsible",
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_mi_transition_services_blank_2",
+      "owner": "mi_transition_services_blank",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 7,
+      "wordRange": {
+        "startSeq": 173,
+        "endSeq": 178
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "Transition Senices Starr / Agency Responsible",
+      "layerMatchesPage": false,
+      "pageText": "Transition Services Staff / Agency Responsible",
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_mi_progress_report_method_blank_1",
+      "owner": "mi_progress_report_method_blank",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 8,
+      "wordRange": {
+        "startSeq": 123,
+        "endSeq": 134
+      },
+      "occurrencesOnPage": 3,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "How will progress toward this goal be reported? (check all that apply)",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": "the only option, Written Progress Report, is not marked (all three goals on this page)"
+    },
+    {
+      "evidenceRefId": "ev_mi_progress_report_method_blank_2",
+      "owner": "mi_progress_report_method_blank",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 9,
+      "wordRange": {
+        "startSeq": 9,
+        "endSeq": 20
+      },
+      "occurrencesOnPage": 4,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "How will progress toward this goal be reported? (check all that apply)",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": "not marked for any goal on this page"
+    },
+    {
+      "evidenceRefId": "ev_mi_progress_report_method_blank_3",
+      "owner": "mi_progress_report_method_blank",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 10,
+      "wordRange": {
+        "startSeq": 20,
+        "endSeq": 31
+      },
+      "occurrencesOnPage": 3,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "How will progress toward this goal be reported? (check all that apply)",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": "not marked for any goal on this page"
+    },
+    {
+      "evidenceRefId": "ev_mi_pwn_initiation_date_blank_1",
+      "owner": "mi_pwn_initiation_date_blank",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 15,
+      "wordRange": {
+        "startSeq": 317,
+        "endSeq": 322
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "The action will be initiated on:______________",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    },
+    {
+      "evidenceRefId": "ev_voice_other_party_1",
+      "owner": "voice_other_party",
+      "sourceDocumentId": "iep-e-1-src-1",
+      "documentId": "iep-e-1.pdf",
+      "page": 15,
+      "wordRange": {
+        "startSeq": 31,
+        "endSeq": 42
+      },
+      "occurrencesOnPage": 1,
+      "occurrenceUsed": 1,
+      "occurrenceReason": null,
+      "quote": "the school district is required to provide you with prior written notice",
+      "layerMatchesPage": true,
+      "pageText": null,
+      "valueFromMark": null
+    }
+  ]
+}

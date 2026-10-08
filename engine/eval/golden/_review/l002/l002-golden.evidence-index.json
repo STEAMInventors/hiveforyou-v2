@@ -1,0 +1,4655 @@
+{
+  "caseId": "l002",
+  "wordLayer": "engine/intake/fixtures/caleb9/document-pages",
+  "wordRangeStatus": "verified",
+  "sourceIds": {
+    "l002-src-1": "01_prior_eligibility_determination.pdf",
+    "l002-src-2": "02_prior_iep.pdf",
+    "l002-src-3": "03_annual_progress_report.pdf",
+    "l002-src-4": "04_reevaluation_plan.pdf",
+    "l002-src-5": "05_psychoeducational_reevaluation.pdf",
+    "l002-src-6": "06_academic_reevaluation.pdf",
+    "l002-src-7": "07_speech_language_review.pdf",
+    "l002-src-8": "08_reevaluation_eligibility_determination.pdf",
+    "l002-src-9": "09_reevaluation_iep.pdf"
+  },
+  "sourceHashes": {
+    "l002-src-1": {
+      "filename": "01_prior_eligibility_determination.pdf",
+      "manifest": "ed37598ba612bdfdb5b3f9af3f49008519a2a9879bd5b7054ea6e43e5c9cae2e",
+      "snapshot": "ed37598ba612bdfdb5b3f9af3f49008519a2a9879bd5b7054ea6e43e5c9cae2e",
+      "corpusPdf": "ed37598ba612bdfdb5b3f9af3f49008519a2a9879bd5b7054ea6e43e5c9cae2e",
+      "uploadedPdf": "ed37598ba612bdfdb5b3f9af3f49008519a2a9879bd5b7054ea6e43e5c9cae2e",
+      "productionSourceDocumentId": "d37f2730-ae42-4ae4-93e3-dfa8f11f5591"
+    },
+    "l002-src-2": {
+      "filename": "02_prior_iep.pdf",
+      "manifest": "b64f14b7e3ff6aba73bf97c6cbe28d2ae5235ff5f925c4f00dedaae052ce083d",
+      "snapshot": "b64f14b7e3ff6aba73bf97c6cbe28d2ae5235ff5f925c4f00dedaae052ce083d",
+      "corpusPdf": "b64f14b7e3ff6aba73bf97c6cbe28d2ae5235ff5f925c4f00dedaae052ce083d",
+      "uploadedPdf": "b64f14b7e3ff6aba73bf97c6cbe28d2ae5235ff5f925c4f00dedaae052ce083d",
+      "productionSourceDocumentId": "4914a2eb-fe7c-41d1-9988-e268927255e8"
+    },
+    "l002-src-3": {
+      "filename": "03_annual_progress_report.pdf",
+      "manifest": "07d2ffa1af2b615c2cf3bb15c65cce9eaf5a3eadbfda1ca40cc988eb63e1e4e5",
+      "snapshot": "07d2ffa1af2b615c2cf3bb15c65cce9eaf5a3eadbfda1ca40cc988eb63e1e4e5",
+      "corpusPdf": "07d2ffa1af2b615c2cf3bb15c65cce9eaf5a3eadbfda1ca40cc988eb63e1e4e5",
+      "uploadedPdf": "07d2ffa1af2b615c2cf3bb15c65cce9eaf5a3eadbfda1ca40cc988eb63e1e4e5",
+      "productionSourceDocumentId": "0ef52e40-1613-4de7-8bed-a6d6ca4fd81e"
+    },
+    "l002-src-4": {
+      "filename": "04_reevaluation_plan.pdf",
+      "manifest": "4a6b779a1c096a516e5c6799a6c73211d0b575e56e070775989f0183e6f7d9f6",
+      "snapshot": "4a6b779a1c096a516e5c6799a6c73211d0b575e56e070775989f0183e6f7d9f6",
+      "corpusPdf": "4a6b779a1c096a516e5c6799a6c73211d0b575e56e070775989f0183e6f7d9f6",
+      "uploadedPdf": "4a6b779a1c096a516e5c6799a6c73211d0b575e56e070775989f0183e6f7d9f6",
+      "productionSourceDocumentId": "37bdd53b-bc1f-4571-855e-5606e98145cd"
+    },
+    "l002-src-5": {
+      "filename": "05_psychoeducational_reevaluation.pdf",
+      "manifest": "04eee4fbfa4c6617607dab1ed20f64793b1deaa65360a2c67794898407b3338a",
+      "snapshot": "04eee4fbfa4c6617607dab1ed20f64793b1deaa65360a2c67794898407b3338a",
+      "corpusPdf": "04eee4fbfa4c6617607dab1ed20f64793b1deaa65360a2c67794898407b3338a",
+      "uploadedPdf": "04eee4fbfa4c6617607dab1ed20f64793b1deaa65360a2c67794898407b3338a",
+      "productionSourceDocumentId": "97d24116-ad8b-4b2c-b1c0-f51da4abb974"
+    },
+    "l002-src-6": {
+      "filename": "06_academic_reevaluation.pdf",
+      "manifest": "cb2a41d6d5cf6b19b9f10fe4aa57b55b403fd845211f54a6701ac3aad558b8ea",
+      "snapshot": "cb2a41d6d5cf6b19b9f10fe4aa57b55b403fd845211f54a6701ac3aad558b8ea",
+      "corpusPdf": "cb2a41d6d5cf6b19b9f10fe4aa57b55b403fd845211f54a6701ac3aad558b8ea",
+      "uploadedPdf": "cb2a41d6d5cf6b19b9f10fe4aa57b55b403fd845211f54a6701ac3aad558b8ea",
+      "productionSourceDocumentId": "1dcca507-27bd-4623-a984-c3b64a5cb5c9"
+    },
+    "l002-src-7": {
+      "filename": "07_speech_language_review.pdf",
+      "manifest": "08491da2116fe70687cf3e483f6f30d370802865758e7310e1c05cfb51231703",
+      "snapshot": "08491da2116fe70687cf3e483f6f30d370802865758e7310e1c05cfb51231703",
+      "corpusPdf": "08491da2116fe70687cf3e483f6f30d370802865758e7310e1c05cfb51231703",
+      "uploadedPdf": "08491da2116fe70687cf3e483f6f30d370802865758e7310e1c05cfb51231703",
+      "productionSourceDocumentId": "0d10833b-aa10-4fed-bb1e-8676ef943c8a"
+    },
+    "l002-src-8": {
+      "filename": "08_reevaluation_eligibility_determination.pdf",
+      "manifest": "93f52b64a3f9d8007bd4cc2730bc1f17398b51187e7f81c83c24cd594f1f3c95",
+      "snapshot": "93f52b64a3f9d8007bd4cc2730bc1f17398b51187e7f81c83c24cd594f1f3c95",
+      "corpusPdf": "93f52b64a3f9d8007bd4cc2730bc1f17398b51187e7f81c83c24cd594f1f3c95",
+      "uploadedPdf": "93f52b64a3f9d8007bd4cc2730bc1f17398b51187e7f81c83c24cd594f1f3c95",
+      "productionSourceDocumentId": "434a8ce4-5dc0-4d7a-8881-46f3fbce57e0"
+    },
+    "l002-src-9": {
+      "filename": "09_reevaluation_iep.pdf",
+      "manifest": "65719d6518d57ecae8b9e74b3d02e3bd93fc0475367817ee1e4b42e1524556e3",
+      "snapshot": "65719d6518d57ecae8b9e74b3d02e3bd93fc0475367817ee1e4b42e1524556e3",
+      "corpusPdf": "65719d6518d57ecae8b9e74b3d02e3bd93fc0475367817ee1e4b42e1524556e3",
+      "uploadedPdf": "65719d6518d57ecae8b9e74b3d02e3bd93fc0475367817ee1e4b42e1524556e3",
+      "productionSourceDocumentId": "b28484c7-29b1-43cf-a484-52f961cd5f23"
+    }
+  },
+  "refs": [
+    {
+      "evidenceRefId": "ent_student-ev1",
+      "owner": "ent_student",
+      "sourceDocumentId": "l002-src-1",
+      "documentId": "01_prior_eligibility_determination.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 22,
+        "endSeq": 24
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Student: Caleb Nguyen"
+    },
+    {
+      "evidenceRefId": "ent_student-ev2",
+      "owner": "ent_student",
+      "sourceDocumentId": "l002-src-1",
+      "documentId": "01_prior_eligibility_determination.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 106,
+        "endSeq": 110
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Caleb has difficulty reading connected"
+    },
+    {
+      "evidenceRefId": "ent_school-ev1",
+      "owner": "ent_school",
+      "sourceDocumentId": "l002-src-1",
+      "documentId": "01_prior_eligibility_determination.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 31,
+        "endSeq": 34
+      },
+      "occurrencesOnPage": 1,
+      "quote": "School: Synthetic Elementary School"
+    },
+    {
+      "evidenceRefId": "ent_district-ev1",
+      "owner": "ent_district",
+      "sourceDocumentId": "l002-src-1",
+      "documentId": "01_prior_eligibility_determination.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 35,
+        "endSeq": 37
+      },
+      "occurrencesOnPage": 1,
+      "quote": "District: Synthetic District"
+    },
+    {
+      "evidenceRefId": "ent_district-ev2",
+      "owner": "ent_district",
+      "sourceDocumentId": "l002-src-4",
+      "documentId": "04_reevaluation_plan.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 26,
+        "endSeq": 28
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Prepared By: District"
+    },
+    {
+      "evidenceRefId": "ent_elig_2023-ev1",
+      "owner": "ent_elig_2023",
+      "sourceDocumentId": "l002-src-1",
+      "documentId": "01_prior_eligibility_determination.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 10,
+        "endSeq": 14
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Eligibility Determination SYNTHETIC DEVELOPMENT RECORD"
+    },
+    {
+      "evidenceRefId": "ent_elig_2023-ev2",
+      "owner": "ent_elig_2023",
+      "sourceDocumentId": "l002-src-1",
+      "documentId": "01_prior_eligibility_determination.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 42,
+        "endSeq": 44
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Determination Date: 2023-10-12"
+    },
+    {
+      "evidenceRefId": "ent_iep_2023-ev1",
+      "owner": "ent_iep_2023",
+      "sourceDocumentId": "l002-src-2",
+      "documentId": "02_prior_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 10,
+        "endSeq": 13
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Individualized Education Program (IEP)"
+    },
+    {
+      "evidenceRefId": "ent_iep_2023-ev2",
+      "owner": "ent_iep_2023",
+      "sourceDocumentId": "l002-src-2",
+      "documentId": "02_prior_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 43,
+        "endSeq": 45
+      },
+      "occurrencesOnPage": 1,
+      "quote": "IEP Date: 2023-10-24"
+    },
+    {
+      "evidenceRefId": "ent_progress_2024-ev1",
+      "owner": "ent_progress_2024",
+      "sourceDocumentId": "l002-src-3",
+      "documentId": "03_annual_progress_report.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 10,
+        "endSeq": 13
+      },
+      "occurrencesOnPage": 1,
+      "quote": "IEP Annual Progress Report"
+    },
+    {
+      "evidenceRefId": "ent_progress_2024-ev2",
+      "owner": "ent_progress_2024",
+      "sourceDocumentId": "l002-src-3",
+      "documentId": "03_annual_progress_report.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 42,
+        "endSeq": 44
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Report Date: 2024-10-15"
+    },
+    {
+      "evidenceRefId": "ent_reeval_plan-ev1",
+      "owner": "ent_reeval_plan",
+      "sourceDocumentId": "l002-src-4",
+      "documentId": "04_reevaluation_plan.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 20,
+        "endSeq": 22
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Reevaluation Planning Form"
+    },
+    {
+      "evidenceRefId": "ent_reeval_plan-ev2",
+      "owner": "ent_reeval_plan",
+      "sourceDocumentId": "l002-src-4",
+      "documentId": "04_reevaluation_plan.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 23,
+        "endSeq": 25
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Planning Date: 2026-09-08"
+    },
+    {
+      "evidenceRefId": "ent_psych_2026-ev1",
+      "owner": "ent_psych_2026",
+      "sourceDocumentId": "l002-src-5",
+      "documentId": "05_psychoeducational_reevaluation.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 10,
+        "endSeq": 12
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Psychoeducational Reevaluation Report"
+    },
+    {
+      "evidenceRefId": "ent_psych_2026-ev2",
+      "owner": "ent_psych_2026",
+      "sourceDocumentId": "l002-src-5",
+      "documentId": "05_psychoeducational_reevaluation.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 39,
+        "endSeq": 41
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Evaluation Date: 2026-09-22"
+    },
+    {
+      "evidenceRefId": "ent_academic_2026-ev1",
+      "owner": "ent_academic_2026",
+      "sourceDocumentId": "l002-src-6",
+      "documentId": "06_academic_reevaluation.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 10,
+        "endSeq": 12
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Academic Reevaluation Report"
+    },
+    {
+      "evidenceRefId": "ent_academic_2026-ev2",
+      "owner": "ent_academic_2026",
+      "sourceDocumentId": "l002-src-6",
+      "documentId": "06_academic_reevaluation.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 73,
+        "endSeq": 75
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Evaluation Date: 2026-09-29"
+    },
+    {
+      "evidenceRefId": "ent_sl_2026-ev1",
+      "owner": "ent_sl_2026",
+      "sourceDocumentId": "l002-src-7",
+      "documentId": "07_speech_language_review.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 10,
+        "endSeq": 14
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Speech-Language Review SYNTHETIC DEVELOPMENT RECORD"
+    },
+    {
+      "evidenceRefId": "ent_sl_2026-ev2",
+      "owner": "ent_sl_2026",
+      "sourceDocumentId": "l002-src-7",
+      "documentId": "07_speech_language_review.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 38,
+        "endSeq": 40
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Review Date: 2026-10-06"
+    },
+    {
+      "evidenceRefId": "ent_elig_2026-ev1",
+      "owner": "ent_elig_2026",
+      "sourceDocumentId": "l002-src-8",
+      "documentId": "08_reevaluation_eligibility_determination.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 10,
+        "endSeq": 15
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Reevaluation Eligibility Determination SYNTHETIC DEVELOPMENT RECORD"
+    },
+    {
+      "evidenceRefId": "ent_elig_2026-ev2",
+      "owner": "ent_elig_2026",
+      "sourceDocumentId": "l002-src-8",
+      "documentId": "08_reevaluation_eligibility_determination.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 43,
+        "endSeq": 45
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Determination Date: 2026-10-14"
+    },
+    {
+      "evidenceRefId": "ent_iep_2026-ev1",
+      "owner": "ent_iep_2026",
+      "sourceDocumentId": "l002-src-9",
+      "documentId": "09_reevaluation_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 10,
+        "endSeq": 13
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Individualized Education Program (IEP)"
+    },
+    {
+      "evidenceRefId": "ent_iep_2026-ev2",
+      "owner": "ent_iep_2026",
+      "sourceDocumentId": "l002-src-9",
+      "documentId": "09_reevaluation_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 43,
+        "endSeq": 45
+      },
+      "occurrencesOnPage": 1,
+      "quote": "IEP Date: 2026-10-21"
+    },
+    {
+      "evidenceRefId": "ent_goal_orf-ev1",
+      "owner": "ent_goal_orf",
+      "sourceDocumentId": "l002-src-2",
+      "documentId": "02_prior_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 202,
+        "endSeq": 204
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Goal ID: GOAL_ORF_FLUENCY"
+    },
+    {
+      "evidenceRefId": "ent_goal_orf-ev2",
+      "owner": "ent_goal_orf",
+      "sourceDocumentId": "l002-src-3",
+      "documentId": "03_annual_progress_report.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 82,
+        "endSeq": 84
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Goal ID: GOAL_ORF_FLUENCY"
+    },
+    {
+      "evidenceRefId": "ent_goal_rc-ev1",
+      "owner": "ent_goal_rc",
+      "sourceDocumentId": "l002-src-9",
+      "documentId": "09_reevaluation_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 228,
+        "endSeq": 230
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Goal ID: GOAL_READING_COMPREHENSION"
+    },
+    {
+      "evidenceRefId": "clm_001-ev1",
+      "owner": "clm_001",
+      "sourceDocumentId": "l002-src-1",
+      "documentId": "01_prior_eligibility_determination.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 22,
+        "endSeq": 24
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Student: Caleb Nguyen"
+    },
+    {
+      "evidenceRefId": "clm_001-ev2",
+      "owner": "clm_001",
+      "sourceDocumentId": "l002-src-2",
+      "documentId": "02_prior_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 27,
+        "endSeq": 29
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Student: Caleb Nguyen"
+    },
+    {
+      "evidenceRefId": "clm_001-ev3",
+      "owner": "clm_001",
+      "sourceDocumentId": "l002-src-3",
+      "documentId": "03_annual_progress_report.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 24,
+        "endSeq": 26
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Student: Caleb Nguyen"
+    },
+    {
+      "evidenceRefId": "clm_001-ev4",
+      "owner": "clm_001",
+      "sourceDocumentId": "l002-src-4",
+      "documentId": "04_reevaluation_plan.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 35,
+        "endSeq": 37
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Student: Caleb Nguyen"
+    },
+    {
+      "evidenceRefId": "clm_001-ev5",
+      "owner": "clm_001",
+      "sourceDocumentId": "l002-src-5",
+      "documentId": "05_psychoeducational_reevaluation.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 23,
+        "endSeq": 25
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Student: Caleb Nguyen"
+    },
+    {
+      "evidenceRefId": "clm_001-ev6",
+      "owner": "clm_001",
+      "sourceDocumentId": "l002-src-6",
+      "documentId": "06_academic_reevaluation.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 23,
+        "endSeq": 25
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Student: Caleb Nguyen"
+    },
+    {
+      "evidenceRefId": "clm_001-ev7",
+      "owner": "clm_001",
+      "sourceDocumentId": "l002-src-7",
+      "documentId": "07_speech_language_review.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 22,
+        "endSeq": 24
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Student: Caleb Nguyen"
+    },
+    {
+      "evidenceRefId": "clm_001-ev8",
+      "owner": "clm_001",
+      "sourceDocumentId": "l002-src-8",
+      "documentId": "08_reevaluation_eligibility_determination.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 23,
+        "endSeq": 25
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Student: Caleb Nguyen"
+    },
+    {
+      "evidenceRefId": "clm_001-ev9",
+      "owner": "clm_001",
+      "sourceDocumentId": "l002-src-9",
+      "documentId": "09_reevaluation_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 27,
+        "endSeq": 29
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Student: Caleb Nguyen"
+    },
+    {
+      "evidenceRefId": "clm_002-ev1",
+      "owner": "clm_002",
+      "sourceDocumentId": "l002-src-1",
+      "documentId": "01_prior_eligibility_determination.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 25,
+        "endSeq": 28
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Date of Birth: 2016-03-09"
+    },
+    {
+      "evidenceRefId": "clm_002-ev2",
+      "owner": "clm_002",
+      "sourceDocumentId": "l002-src-2",
+      "documentId": "02_prior_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 30,
+        "endSeq": 33
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Date of Birth: 2016-03-09"
+    },
+    {
+      "evidenceRefId": "clm_002-ev3",
+      "owner": "clm_002",
+      "sourceDocumentId": "l002-src-3",
+      "documentId": "03_annual_progress_report.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 27,
+        "endSeq": 30
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Date of Birth: 2016-03-09"
+    },
+    {
+      "evidenceRefId": "clm_002-ev4",
+      "owner": "clm_002",
+      "sourceDocumentId": "l002-src-4",
+      "documentId": "04_reevaluation_plan.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 38,
+        "endSeq": 41
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Date of Birth: 2016-03-09"
+    },
+    {
+      "evidenceRefId": "clm_002-ev5",
+      "owner": "clm_002",
+      "sourceDocumentId": "l002-src-5",
+      "documentId": "05_psychoeducational_reevaluation.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 26,
+        "endSeq": 29
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Date of Birth: 2016-03-09"
+    },
+    {
+      "evidenceRefId": "clm_002-ev6",
+      "owner": "clm_002",
+      "sourceDocumentId": "l002-src-6",
+      "documentId": "06_academic_reevaluation.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 26,
+        "endSeq": 29
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Date of Birth: 2016-03-09"
+    },
+    {
+      "evidenceRefId": "clm_002-ev7",
+      "owner": "clm_002",
+      "sourceDocumentId": "l002-src-7",
+      "documentId": "07_speech_language_review.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 25,
+        "endSeq": 28
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Date of Birth: 2016-03-09"
+    },
+    {
+      "evidenceRefId": "clm_002-ev8",
+      "owner": "clm_002",
+      "sourceDocumentId": "l002-src-8",
+      "documentId": "08_reevaluation_eligibility_determination.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 26,
+        "endSeq": 29
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Date of Birth: 2016-03-09"
+    },
+    {
+      "evidenceRefId": "clm_002-ev9",
+      "owner": "clm_002",
+      "sourceDocumentId": "l002-src-9",
+      "documentId": "09_reevaluation_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 30,
+        "endSeq": 33
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Date of Birth: 2016-03-09"
+    },
+    {
+      "evidenceRefId": "clm_003-ev1",
+      "owner": "clm_003",
+      "sourceDocumentId": "l002-src-1",
+      "documentId": "01_prior_eligibility_determination.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 29,
+        "endSeq": 30
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Grade: 2"
+    },
+    {
+      "evidenceRefId": "clm_003-ev2",
+      "owner": "clm_003",
+      "sourceDocumentId": "l002-src-2",
+      "documentId": "02_prior_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 34,
+        "endSeq": 35
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Grade: 2"
+    },
+    {
+      "evidenceRefId": "clm_004-ev1",
+      "owner": "clm_004",
+      "sourceDocumentId": "l002-src-3",
+      "documentId": "03_annual_progress_report.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 31,
+        "endSeq": 32
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Grade: 3"
+    },
+    {
+      "evidenceRefId": "clm_005-ev1",
+      "owner": "clm_005",
+      "sourceDocumentId": "l002-src-4",
+      "documentId": "04_reevaluation_plan.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 42,
+        "endSeq": 43
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Grade: 5"
+    },
+    {
+      "evidenceRefId": "clm_005-ev2",
+      "owner": "clm_005",
+      "sourceDocumentId": "l002-src-5",
+      "documentId": "05_psychoeducational_reevaluation.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 30,
+        "endSeq": 31
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Grade: 5"
+    },
+    {
+      "evidenceRefId": "clm_005-ev3",
+      "owner": "clm_005",
+      "sourceDocumentId": "l002-src-6",
+      "documentId": "06_academic_reevaluation.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 30,
+        "endSeq": 31
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Grade: 5"
+    },
+    {
+      "evidenceRefId": "clm_005-ev4",
+      "owner": "clm_005",
+      "sourceDocumentId": "l002-src-7",
+      "documentId": "07_speech_language_review.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 29,
+        "endSeq": 30
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Grade: 5"
+    },
+    {
+      "evidenceRefId": "clm_005-ev5",
+      "owner": "clm_005",
+      "sourceDocumentId": "l002-src-8",
+      "documentId": "08_reevaluation_eligibility_determination.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 30,
+        "endSeq": 31
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Grade: 5"
+    },
+    {
+      "evidenceRefId": "clm_005-ev6",
+      "owner": "clm_005",
+      "sourceDocumentId": "l002-src-9",
+      "documentId": "09_reevaluation_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 34,
+        "endSeq": 35
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Grade: 5"
+    },
+    {
+      "evidenceRefId": "clm_006-ev1",
+      "owner": "clm_006",
+      "sourceDocumentId": "l002-src-1",
+      "documentId": "01_prior_eligibility_determination.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 31,
+        "endSeq": 34
+      },
+      "occurrencesOnPage": 1,
+      "quote": "School: Synthetic Elementary School"
+    },
+    {
+      "evidenceRefId": "clm_006-ev2",
+      "owner": "clm_006",
+      "sourceDocumentId": "l002-src-2",
+      "documentId": "02_prior_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 36,
+        "endSeq": 39
+      },
+      "occurrencesOnPage": 1,
+      "quote": "School: Synthetic Elementary School"
+    },
+    {
+      "evidenceRefId": "clm_006-ev3",
+      "owner": "clm_006",
+      "sourceDocumentId": "l002-src-3",
+      "documentId": "03_annual_progress_report.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 33,
+        "endSeq": 36
+      },
+      "occurrencesOnPage": 1,
+      "quote": "School: Synthetic Elementary School"
+    },
+    {
+      "evidenceRefId": "clm_006-ev4",
+      "owner": "clm_006",
+      "sourceDocumentId": "l002-src-4",
+      "documentId": "04_reevaluation_plan.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 44,
+        "endSeq": 47
+      },
+      "occurrencesOnPage": 1,
+      "quote": "School: Synthetic Elementary School"
+    },
+    {
+      "evidenceRefId": "clm_006-ev5",
+      "owner": "clm_006",
+      "sourceDocumentId": "l002-src-5",
+      "documentId": "05_psychoeducational_reevaluation.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 32,
+        "endSeq": 35
+      },
+      "occurrencesOnPage": 1,
+      "quote": "School: Synthetic Elementary School"
+    },
+    {
+      "evidenceRefId": "clm_006-ev6",
+      "owner": "clm_006",
+      "sourceDocumentId": "l002-src-6",
+      "documentId": "06_academic_reevaluation.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 32,
+        "endSeq": 35
+      },
+      "occurrencesOnPage": 1,
+      "quote": "School: Synthetic Elementary School"
+    },
+    {
+      "evidenceRefId": "clm_006-ev7",
+      "owner": "clm_006",
+      "sourceDocumentId": "l002-src-7",
+      "documentId": "07_speech_language_review.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 31,
+        "endSeq": 34
+      },
+      "occurrencesOnPage": 1,
+      "quote": "School: Synthetic Elementary School"
+    },
+    {
+      "evidenceRefId": "clm_006-ev8",
+      "owner": "clm_006",
+      "sourceDocumentId": "l002-src-8",
+      "documentId": "08_reevaluation_eligibility_determination.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 32,
+        "endSeq": 35
+      },
+      "occurrencesOnPage": 1,
+      "quote": "School: Synthetic Elementary School"
+    },
+    {
+      "evidenceRefId": "clm_006-ev9",
+      "owner": "clm_006",
+      "sourceDocumentId": "l002-src-9",
+      "documentId": "09_reevaluation_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 36,
+        "endSeq": 39
+      },
+      "occurrencesOnPage": 1,
+      "quote": "School: Synthetic Elementary School"
+    },
+    {
+      "evidenceRefId": "clm_007-ev1",
+      "owner": "clm_007",
+      "sourceDocumentId": "l002-src-1",
+      "documentId": "01_prior_eligibility_determination.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 35,
+        "endSeq": 37
+      },
+      "occurrencesOnPage": 1,
+      "quote": "District: Synthetic District"
+    },
+    {
+      "evidenceRefId": "clm_007-ev2",
+      "owner": "clm_007",
+      "sourceDocumentId": "l002-src-2",
+      "documentId": "02_prior_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 40,
+        "endSeq": 42
+      },
+      "occurrencesOnPage": 1,
+      "quote": "District: Synthetic District"
+    },
+    {
+      "evidenceRefId": "clm_007-ev3",
+      "owner": "clm_007",
+      "sourceDocumentId": "l002-src-3",
+      "documentId": "03_annual_progress_report.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 37,
+        "endSeq": 39
+      },
+      "occurrencesOnPage": 1,
+      "quote": "District: Synthetic District"
+    },
+    {
+      "evidenceRefId": "clm_007-ev4",
+      "owner": "clm_007",
+      "sourceDocumentId": "l002-src-4",
+      "documentId": "04_reevaluation_plan.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 48,
+        "endSeq": 50
+      },
+      "occurrencesOnPage": 1,
+      "quote": "District: Synthetic District"
+    },
+    {
+      "evidenceRefId": "clm_007-ev5",
+      "owner": "clm_007",
+      "sourceDocumentId": "l002-src-5",
+      "documentId": "05_psychoeducational_reevaluation.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 36,
+        "endSeq": 38
+      },
+      "occurrencesOnPage": 1,
+      "quote": "District: Synthetic District"
+    },
+    {
+      "evidenceRefId": "clm_007-ev6",
+      "owner": "clm_007",
+      "sourceDocumentId": "l002-src-6",
+      "documentId": "06_academic_reevaluation.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 36,
+        "endSeq": 38
+      },
+      "occurrencesOnPage": 1,
+      "quote": "District: Synthetic District"
+    },
+    {
+      "evidenceRefId": "clm_007-ev7",
+      "owner": "clm_007",
+      "sourceDocumentId": "l002-src-7",
+      "documentId": "07_speech_language_review.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 35,
+        "endSeq": 37
+      },
+      "occurrencesOnPage": 1,
+      "quote": "District: Synthetic District"
+    },
+    {
+      "evidenceRefId": "clm_007-ev8",
+      "owner": "clm_007",
+      "sourceDocumentId": "l002-src-8",
+      "documentId": "08_reevaluation_eligibility_determination.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 36,
+        "endSeq": 38
+      },
+      "occurrencesOnPage": 1,
+      "quote": "District: Synthetic District"
+    },
+    {
+      "evidenceRefId": "clm_007-ev9",
+      "owner": "clm_007",
+      "sourceDocumentId": "l002-src-9",
+      "documentId": "09_reevaluation_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 40,
+        "endSeq": 42
+      },
+      "occurrencesOnPage": 1,
+      "quote": "District: Synthetic District"
+    },
+    {
+      "evidenceRefId": "clm_008-ev1",
+      "owner": "clm_008",
+      "sourceDocumentId": "l002-src-1",
+      "documentId": "01_prior_eligibility_determination.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 42,
+        "endSeq": 44
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Determination Date: 2023-10-12"
+    },
+    {
+      "evidenceRefId": "clm_008-ev2",
+      "owner": "clm_008",
+      "sourceDocumentId": "l002-src-2",
+      "documentId": "02_prior_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 66,
+        "endSeq": 68
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Determination Date: 2023-10-12"
+    },
+    {
+      "evidenceRefId": "clm_009-ev1",
+      "owner": "clm_009",
+      "sourceDocumentId": "l002-src-1",
+      "documentId": "01_prior_eligibility_determination.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 45,
+        "endSeq": 48
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Determination Type: Eligibility Determination"
+    },
+    {
+      "evidenceRefId": "clm_010-ev1",
+      "owner": "clm_010",
+      "sourceDocumentId": "l002-src-1",
+      "documentId": "01_prior_eligibility_determination.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 49,
+        "endSeq": 52
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Determination By: Eligibility team"
+    },
+    {
+      "evidenceRefId": "clm_011-ev1",
+      "owner": "clm_011",
+      "sourceDocumentId": "l002-src-1",
+      "documentId": "01_prior_eligibility_determination.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 53,
+        "endSeq": 65
+      },
+      "occurrencesOnPage": 1,
+      "quote": "This document records an educational eligibility determination. It is not a medical diagnosis."
+    },
+    {
+      "evidenceRefId": "clm_011-ev2",
+      "owner": "clm_011",
+      "sourceDocumentId": "l002-src-1",
+      "documentId": "01_prior_eligibility_determination.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 201,
+        "endSeq": 210
+      },
+      "occurrencesOnPage": 1,
+      "quote": "This is an educational eligibility determination, not a medical diagnosis."
+    },
+    {
+      "evidenceRefId": "clm_011-ev3",
+      "owner": "clm_011",
+      "sourceDocumentId": "l002-src-2",
+      "documentId": "02_prior_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 69,
+        "endSeq": 81
+      },
+      "occurrencesOnPage": 1,
+      "quote": "This IEP implements the educational eligibility determination. It is not a medical diagnosis."
+    },
+    {
+      "evidenceRefId": "clm_012-ev1",
+      "owner": "clm_012",
+      "sourceDocumentId": "l002-src-1",
+      "documentId": "01_prior_eligibility_determination.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 68,
+        "endSeq": 74
+      },
+      "occurrencesOnPage": 1,
+      "quote": "[X] Teacher information regarding classroom reading performance"
+    },
+    {
+      "evidenceRefId": "clm_013-ev1",
+      "owner": "clm_013",
+      "sourceDocumentId": "l002-src-1",
+      "documentId": "01_prior_eligibility_determination.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 75,
+        "endSeq": 80
+      },
+      "occurrencesOnPage": 1,
+      "quote": "[X] Review of existing educational records"
+    },
+    {
+      "evidenceRefId": "clm_014-ev1",
+      "owner": "clm_014",
+      "sourceDocumentId": "l002-src-1",
+      "documentId": "01_prior_eligibility_determination.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 81,
+        "endSeq": 88
+      },
+      "occurrencesOnPage": 1,
+      "quote": "[X] Classroom work samples related to connected-text reading"
+    },
+    {
+      "evidenceRefId": "clm_015-ev1",
+      "owner": "clm_015",
+      "sourceDocumentId": "l002-src-1",
+      "documentId": "01_prior_eligibility_determination.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 172,
+        "endSeq": 176
+      },
+      "occurrencesOnPage": 1,
+      "quote": "[X] Eligible for special education"
+    },
+    {
+      "evidenceRefId": "clm_015-ev2",
+      "owner": "clm_015",
+      "sourceDocumentId": "l002-src-1",
+      "documentId": "01_prior_eligibility_determination.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 197,
+        "endSeq": 204
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Eligible for special education. This is an educational"
+    },
+    {
+      "evidenceRefId": "clm_016-ev1",
+      "owner": "clm_016",
+      "sourceDocumentId": "l002-src-1",
+      "documentId": "01_prior_eligibility_determination.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 184,
+        "endSeq": 191
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Eligibility Category: Specific Learning Disability (SLD) - Reading"
+    },
+    {
+      "evidenceRefId": "clm_016-ev2",
+      "owner": "clm_016",
+      "sourceDocumentId": "l002-src-1",
+      "documentId": "01_prior_eligibility_determination.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 211,
+        "endSeq": 218
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Eligibility category: Specific Learning Disability (SLD) - Reading."
+    },
+    {
+      "evidenceRefId": "clm_016-ev3",
+      "owner": "clm_016",
+      "sourceDocumentId": "l002-src-2",
+      "documentId": "02_prior_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 53,
+        "endSeq": 60
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Eligibility Category: Specific Learning Disability (SLD) - Reading"
+    },
+    {
+      "evidenceRefId": "clm_017-ev1",
+      "owner": "clm_017",
+      "sourceDocumentId": "l002-src-1",
+      "documentId": "01_prior_eligibility_determination.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 192,
+        "endSeq": 196
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Primary Educational Need: Reading Fluency"
+    },
+    {
+      "evidenceRefId": "clm_017-ev2",
+      "owner": "clm_017",
+      "sourceDocumentId": "l002-src-1",
+      "documentId": "01_prior_eligibility_determination.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 219,
+        "endSeq": 223
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Primary educational need: Reading Fluency."
+    },
+    {
+      "evidenceRefId": "clm_017-ev3",
+      "owner": "clm_017",
+      "sourceDocumentId": "l002-src-2",
+      "documentId": "02_prior_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 61,
+        "endSeq": 65
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Primary Educational Need: Reading Fluency"
+    },
+    {
+      "evidenceRefId": "clm_017-ev4",
+      "owner": "clm_017",
+      "sourceDocumentId": "l002-src-2",
+      "documentId": "02_prior_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 149,
+        "endSeq": 155
+      },
+      "occurrencesOnPage": 1,
+      "quote": "The primary educational need is Reading Fluency."
+    },
+    {
+      "evidenceRefId": "clm_017-ev5",
+      "owner": "clm_017",
+      "sourceDocumentId": "l002-src-2",
+      "documentId": "02_prior_iep.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 167,
+        "endSeq": 174
+      },
+      "occurrencesOnPage": 1,
+      "quote": "This IEP addresses Reading Fluency for Caleb Nguyen."
+    },
+    {
+      "evidenceRefId": "clm_018-ev1",
+      "owner": "clm_018",
+      "sourceDocumentId": "l002-src-1",
+      "documentId": "01_prior_eligibility_determination.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 230,
+        "endSeq": 244
+      },
+      "occurrencesOnPage": 1,
+      "quote": "The team determined that Caleb requires specially designed instruction targeting the documented reading fluency need."
+    },
+    {
+      "evidenceRefId": "clm_018-ev2",
+      "owner": "clm_018",
+      "sourceDocumentId": "l002-src-1",
+      "documentId": "01_prior_eligibility_determination.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 55,
+        "endSeq": 69
+      },
+      "occurrencesOnPage": 1,
+      "quote": "The team determined that Caleb requires specially designed instruction to address the documented reading-fluency need."
+    },
+    {
+      "evidenceRefId": "clm_019-ev1",
+      "owner": "clm_019",
+      "sourceDocumentId": "l002-src-1",
+      "documentId": "01_prior_eligibility_determination.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 98,
+        "endSeq": 105
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Classroom information documents a persistent reading fluency concern."
+    },
+    {
+      "evidenceRefId": "clm_019-ev2",
+      "owner": "clm_019",
+      "sourceDocumentId": "l002-src-2",
+      "documentId": "02_prior_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 91,
+        "endSeq": 97
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Caleb has a persistent reading fluency concern."
+    },
+    {
+      "evidenceRefId": "clm_020-ev1",
+      "owner": "clm_020",
+      "sourceDocumentId": "l002-src-1",
+      "documentId": "01_prior_eligibility_determination.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 106,
+        "endSeq": 116
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Caleb has difficulty reading connected grade-level text at an expected rate."
+    },
+    {
+      "evidenceRefId": "clm_020-ev2",
+      "owner": "clm_020",
+      "sourceDocumentId": "l002-src-1",
+      "documentId": "01_prior_eligibility_determination.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 12,
+        "endSeq": 28
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Teacher information and classroom performance document a persistent difficulty reading connected grade-level text at an expected rate."
+    },
+    {
+      "evidenceRefId": "clm_020-ev3",
+      "owner": "clm_020",
+      "sourceDocumentId": "l002-src-2",
+      "documentId": "02_prior_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 98,
+        "endSeq": 109
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Classroom performance indicates difficulty reading connected grade-level text at an expected rate."
+    },
+    {
+      "evidenceRefId": "clm_020-ev4",
+      "owner": "clm_020",
+      "sourceDocumentId": "l002-src-2",
+      "documentId": "02_prior_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 156,
+        "endSeq": 166
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Caleb has difficulty reading connected grade-level text at an expected rate."
+    },
+    {
+      "evidenceRefId": "clm_021-ev1",
+      "owner": "clm_021",
+      "sourceDocumentId": "l002-src-1",
+      "documentId": "01_prior_eligibility_determination.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 117,
+        "endSeq": 126
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Connected-text reading is slow and effortful during classroom reading tasks."
+    },
+    {
+      "evidenceRefId": "clm_021-ev2",
+      "owner": "clm_021",
+      "sourceDocumentId": "l002-src-2",
+      "documentId": "02_prior_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 121,
+        "endSeq": 133
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Connected-text reading is slow and effortful, with frequent pauses during classroom reading tasks."
+    },
+    {
+      "evidenceRefId": "clm_022-ev1",
+      "owner": "clm_022",
+      "sourceDocumentId": "l002-src-1",
+      "documentId": "01_prior_eligibility_determination.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 127,
+        "endSeq": 136
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Isolated word reading appears stronger than reading of connected passages."
+    },
+    {
+      "evidenceRefId": "clm_022-ev2",
+      "owner": "clm_022",
+      "sourceDocumentId": "l002-src-2",
+      "documentId": "02_prior_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 134,
+        "endSeq": 145
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Word reading of isolated items is stronger than reading of connected passages."
+    },
+    {
+      "evidenceRefId": "clm_023-ev1",
+      "owner": "clm_023",
+      "sourceDocumentId": "l002-src-1",
+      "documentId": "01_prior_eligibility_determination.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 142,
+        "endSeq": 154
+      },
+      "occurrencesOnPage": 1,
+      "quote": "general reasoning and cognitive functioning are broadly within the expected range for age."
+    },
+    {
+      "evidenceRefId": "clm_023-ev2",
+      "owner": "clm_023",
+      "sourceDocumentId": "l002-src-1",
+      "documentId": "01_prior_eligibility_determination.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 29,
+        "endSeq": 43
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Existing evaluation information indicates that general reasoning is broadly within the expected range for age."
+    },
+    {
+      "evidenceRefId": "clm_024-ev1",
+      "owner": "clm_024",
+      "sourceDocumentId": "l002-src-1",
+      "documentId": "01_prior_eligibility_determination.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 155,
+        "endSeq": 169
+      },
+      "occurrencesOnPage": 1,
+      "quote": "A global cognitive limitation is not identified as the primary explanation for the reading concern."
+    },
+    {
+      "evidenceRefId": "clm_024-ev2",
+      "owner": "clm_024",
+      "sourceDocumentId": "l002-src-1",
+      "documentId": "01_prior_eligibility_determination.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 44,
+        "endSeq": 54
+      },
+      "occurrencesOnPage": 1,
+      "quote": "A global cognitive limitation is not identified as the primary explanation."
+    },
+    {
+      "evidenceRefId": "clm_025-ev1",
+      "owner": "clm_025",
+      "sourceDocumentId": "l002-src-2",
+      "documentId": "02_prior_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 43,
+        "endSeq": 45
+      },
+      "occurrencesOnPage": 1,
+      "quote": "IEP Date: 2023-10-24"
+    },
+    {
+      "evidenceRefId": "clm_025-ev2",
+      "owner": "clm_025",
+      "sourceDocumentId": "l002-src-2",
+      "documentId": "02_prior_iep.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 157,
+        "endSeq": 163
+      },
+      "occurrencesOnPage": 1,
+      "quote": "District Representative: [Synthetic signature omitted] Date: 2023-10-24"
+    },
+    {
+      "evidenceRefId": "clm_026-ev1",
+      "owner": "clm_026",
+      "sourceDocumentId": "l002-src-2",
+      "documentId": "02_prior_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 46,
+        "endSeq": 50
+      },
+      "occurrencesOnPage": 1,
+      "quote": "IEP Period: 2023-10-24 through 2024-10-23"
+    },
+    {
+      "evidenceRefId": "clm_027-ev1",
+      "owner": "clm_027",
+      "sourceDocumentId": "l002-src-2",
+      "documentId": "02_prior_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 69,
+        "endSeq": 75
+      },
+      "occurrencesOnPage": 1,
+      "quote": "This IEP implements the educational eligibility determination."
+    },
+    {
+      "evidenceRefId": "clm_027-ev2",
+      "owner": "clm_027",
+      "sourceDocumentId": "l002-src-2",
+      "documentId": "02_prior_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 66,
+        "endSeq": 68
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Determination Date: 2023-10-12"
+    },
+    {
+      "evidenceRefId": "clm_028-ev1",
+      "owner": "clm_028",
+      "sourceDocumentId": "l002-src-2",
+      "documentId": "02_prior_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 110,
+        "endSeq": 120
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Present levels document an oral reading fluency baseline of 62 WCPM."
+    },
+    {
+      "evidenceRefId": "clm_028-ev2",
+      "owner": "clm_028",
+      "sourceDocumentId": "l002-src-2",
+      "documentId": "02_prior_iep.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 175,
+        "endSeq": 180
+      },
+      "occurrencesOnPage": 1,
+      "quote": "The documented baseline is 62 WCPM."
+    },
+    {
+      "evidenceRefId": "clm_029-ev1",
+      "owner": "clm_029",
+      "sourceDocumentId": "l002-src-2",
+      "documentId": "02_prior_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 167,
+        "endSeq": 177
+      },
+      "occurrencesOnPage": 1,
+      "quote": "This difficulty affects Caleb's ability to access grade-level reading activities independently."
+    },
+    {
+      "evidenceRefId": "clm_030-ev1",
+      "owner": "clm_030",
+      "sourceDocumentId": "l002-src-2",
+      "documentId": "02_prior_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 202,
+        "endSeq": 204
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Goal ID: GOAL_ORF_FLUENCY"
+    },
+    {
+      "evidenceRefId": "clm_031-ev1",
+      "owner": "clm_031",
+      "sourceDocumentId": "l002-src-2",
+      "documentId": "02_prior_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 202,
+        "endSeq": 204
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Goal ID: GOAL_ORF_FLUENCY"
+    },
+    {
+      "evidenceRefId": "clm_031-ev2",
+      "owner": "clm_031",
+      "sourceDocumentId": "l002-src-3",
+      "documentId": "03_annual_progress_report.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 82,
+        "endSeq": 84
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Goal ID: GOAL_ORF_FLUENCY"
+    },
+    {
+      "evidenceRefId": "clm_032-ev1",
+      "owner": "clm_032",
+      "sourceDocumentId": "l002-src-3",
+      "documentId": "03_annual_progress_report.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 85,
+        "endSeq": 87
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Area: reading fluency"
+    },
+    {
+      "evidenceRefId": "clm_033-ev1",
+      "owner": "clm_033",
+      "sourceDocumentId": "l002-src-2",
+      "documentId": "02_prior_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 181,
+        "endSeq": 186
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Given a grade-level connected text passage,"
+    },
+    {
+      "evidenceRefId": "clm_033-ev2",
+      "owner": "clm_033",
+      "sourceDocumentId": "l002-src-3",
+      "documentId": "03_annual_progress_report.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 61,
+        "endSeq": 66
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Given a grade-level connected text passage,"
+    },
+    {
+      "evidenceRefId": "clm_034-ev1",
+      "owner": "clm_034",
+      "sourceDocumentId": "l002-src-2",
+      "documentId": "02_prior_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 187,
+        "endSeq": 201
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Caleb will read at least 95 words correct per minute (WCPM) across three consecutive probes."
+    },
+    {
+      "evidenceRefId": "clm_034-ev2",
+      "owner": "clm_034",
+      "sourceDocumentId": "l002-src-2",
+      "documentId": "02_prior_iep.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 10,
+        "endSeq": 12
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Target: 95 WCPM"
+    },
+    {
+      "evidenceRefId": "clm_034-ev3",
+      "owner": "clm_034",
+      "sourceDocumentId": "l002-src-2",
+      "documentId": "02_prior_iep.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 181,
+        "endSeq": 192
+      },
+      "occurrencesOnPage": 1,
+      "quote": "The annual goal targets 95 WCPM across three consecutive probes by 2024-10-23."
+    },
+    {
+      "evidenceRefId": "clm_034-ev4",
+      "owner": "clm_034",
+      "sourceDocumentId": "l002-src-3",
+      "documentId": "03_annual_progress_report.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 67,
+        "endSeq": 81
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Caleb will read at least 95 words correct per minute (WCPM) across three consecutive probes."
+    },
+    {
+      "evidenceRefId": "clm_034-ev5",
+      "owner": "clm_034",
+      "sourceDocumentId": "l002-src-3",
+      "documentId": "03_annual_progress_report.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 88,
+        "endSeq": 91
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Annual Target: 95 WCPM"
+    },
+    {
+      "evidenceRefId": "clm_035-ev1",
+      "owner": "clm_035",
+      "sourceDocumentId": "l002-src-2",
+      "documentId": "02_prior_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 205,
+        "endSeq": 207
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Baseline: 62 WCPM"
+    },
+    {
+      "evidenceRefId": "clm_036-ev1",
+      "owner": "clm_036",
+      "sourceDocumentId": "l002-src-2",
+      "documentId": "02_prior_iep.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 13,
+        "endSeq": 18
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Mastery Criterion: across three consecutive probes"
+    },
+    {
+      "evidenceRefId": "clm_037-ev1",
+      "owner": "clm_037",
+      "sourceDocumentId": "l002-src-2",
+      "documentId": "02_prior_iep.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 19,
+        "endSeq": 21
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Start Date: 2023-10-24"
+    },
+    {
+      "evidenceRefId": "clm_037-ev2",
+      "owner": "clm_037",
+      "sourceDocumentId": "l002-src-3",
+      "documentId": "03_annual_progress_report.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 92,
+        "endSeq": 95
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Goal Start Date: 2023-10-24"
+    },
+    {
+      "evidenceRefId": "clm_038-ev1",
+      "owner": "clm_038",
+      "sourceDocumentId": "l002-src-2",
+      "documentId": "02_prior_iep.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 22,
+        "endSeq": 24
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Target Date: 2024-10-23"
+    },
+    {
+      "evidenceRefId": "clm_038-ev2",
+      "owner": "clm_038",
+      "sourceDocumentId": "l002-src-3",
+      "documentId": "03_annual_progress_report.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 96,
+        "endSeq": 99
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Goal Target Date: 2024-10-23"
+    },
+    {
+      "evidenceRefId": "clm_039-ev1",
+      "owner": "clm_039",
+      "sourceDocumentId": "l002-src-2",
+      "documentId": "02_prior_iep.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 25,
+        "endSeq": 34
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Progress will be measured using curriculum-based oral reading fluency probes."
+    },
+    {
+      "evidenceRefId": "clm_039-ev2",
+      "owner": "clm_039",
+      "sourceDocumentId": "l002-src-3",
+      "documentId": "03_annual_progress_report.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 203,
+        "endSeq": 214
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Progress will continue to be monitored using curriculum-based oral reading fluency probes."
+    },
+    {
+      "evidenceRefId": "clm_040-ev1",
+      "owner": "clm_040",
+      "sourceDocumentId": "l002-src-2",
+      "documentId": "02_prior_iep.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 94,
+        "endSeq": 113
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Progress toward the annual goal will be measured using oral-reading-fluency probes and reported at least annually, concurrent with report periods."
+    },
+    {
+      "evidenceRefId": "clm_041-ev1",
+      "owner": "clm_041",
+      "sourceDocumentId": "l002-src-2",
+      "documentId": "02_prior_iep.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 46,
+        "endSeq": 52
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Specialized reading instruction 5 sessions per week"
+    },
+    {
+      "evidenceRefId": "clm_041-ev2",
+      "owner": "clm_041",
+      "sourceDocumentId": "l002-src-2",
+      "documentId": "02_prior_iep.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 61,
+        "endSeq": 69
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Specialized reading instruction is provided 5 sessions per week"
+    },
+    {
+      "evidenceRefId": "clm_042-ev1",
+      "owner": "clm_042",
+      "sourceDocumentId": "l002-src-2",
+      "documentId": "02_prior_iep.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 49,
+        "endSeq": 60
+      },
+      "occurrencesOnPage": 1,
+      "quote": "5 sessions per week 45 minutes per session special education setting 2023-10-24"
+    },
+    {
+      "evidenceRefId": "clm_042-ev2",
+      "owner": "clm_042",
+      "sourceDocumentId": "l002-src-2",
+      "documentId": "02_prior_iep.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 70,
+        "endSeq": 79
+      },
+      "occurrencesOnPage": 1,
+      "quote": "for 45 minutes per session in the special education setting."
+    },
+    {
+      "evidenceRefId": "clm_043-ev1",
+      "owner": "clm_043",
+      "sourceDocumentId": "l002-src-2",
+      "documentId": "02_prior_iep.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 53,
+        "endSeq": 60
+      },
+      "occurrencesOnPage": 1,
+      "quote": "45 minutes per session special education setting 2023-10-24"
+    },
+    {
+      "evidenceRefId": "clm_043-ev2",
+      "owner": "clm_043",
+      "sourceDocumentId": "l002-src-2",
+      "documentId": "02_prior_iep.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 75,
+        "endSeq": 79
+      },
+      "occurrencesOnPage": 1,
+      "quote": "in the special education setting."
+    },
+    {
+      "evidenceRefId": "clm_044-ev1",
+      "owner": "clm_044",
+      "sourceDocumentId": "l002-src-2",
+      "documentId": "02_prior_iep.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 57,
+        "endSeq": 60
+      },
+      "occurrencesOnPage": 1,
+      "quote": "special education setting 2023-10-24"
+    },
+    {
+      "evidenceRefId": "clm_045-ev1",
+      "owner": "clm_045",
+      "sourceDocumentId": "l002-src-2",
+      "documentId": "02_prior_iep.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 82,
+        "endSeq": 90
+      },
+      "occurrencesOnPage": 1,
+      "quote": "• Extended time (1.5x) on classroom and district assessments."
+    },
+    {
+      "evidenceRefId": "clm_046-ev1",
+      "owner": "clm_046",
+      "sourceDocumentId": "l002-src-2",
+      "documentId": "02_prior_iep.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 119,
+        "endSeq": 127
+      },
+      "occurrencesOnPage": 1,
+      "quote": "The following roles participate in development of this IEP."
+    },
+    {
+      "evidenceRefId": "clm_046-ev2",
+      "owner": "clm_046",
+      "sourceDocumentId": "l002-src-2",
+      "documentId": "02_prior_iep.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 141,
+        "endSeq": 144
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Parent/Guardian: [Synthetic signature omitted]"
+    },
+    {
+      "evidenceRefId": "clm_046-ev3",
+      "owner": "clm_046",
+      "sourceDocumentId": "l002-src-2",
+      "documentId": "02_prior_iep.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 145,
+        "endSeq": 150
+      },
+      "occurrencesOnPage": 1,
+      "quote": "General Education Teacher: [Synthetic signature omitted]"
+    },
+    {
+      "evidenceRefId": "clm_046-ev4",
+      "owner": "clm_046",
+      "sourceDocumentId": "l002-src-2",
+      "documentId": "02_prior_iep.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 151,
+        "endSeq": 156
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Special Education Teacher: [Synthetic signature omitted]"
+    },
+    {
+      "evidenceRefId": "clm_046-ev5",
+      "owner": "clm_046",
+      "sourceDocumentId": "l002-src-2",
+      "documentId": "02_prior_iep.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 157,
+        "endSeq": 161
+      },
+      "occurrencesOnPage": 1,
+      "quote": "District Representative: [Synthetic signature omitted]"
+    },
+    {
+      "evidenceRefId": "clm_047-ev1",
+      "owner": "clm_047",
+      "sourceDocumentId": "l002-src-3",
+      "documentId": "03_annual_progress_report.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 42,
+        "endSeq": 44
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Report Date: 2024-10-15"
+    },
+    {
+      "evidenceRefId": "clm_048-ev1",
+      "owner": "clm_048",
+      "sourceDocumentId": "l002-src-3",
+      "documentId": "03_annual_progress_report.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 45,
+        "endSeq": 49
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Prepared By: Special education teacher"
+    },
+    {
+      "evidenceRefId": "clm_049-ev1",
+      "owner": "clm_049",
+      "sourceDocumentId": "l002-src-3",
+      "documentId": "03_annual_progress_report.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 50,
+        "endSeq": 57
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Reporting Period: Annual progress toward current IEP goal"
+    },
+    {
+      "evidenceRefId": "clm_050-ev1",
+      "owner": "clm_050",
+      "sourceDocumentId": "l002-src-3",
+      "documentId": "03_annual_progress_report.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 58,
+        "endSeq": 60
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Goal Being Monitored"
+    },
+    {
+      "evidenceRefId": "clm_050-ev2",
+      "owner": "clm_050",
+      "sourceDocumentId": "l002-src-3",
+      "documentId": "03_annual_progress_report.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 82,
+        "endSeq": 84
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Goal ID: GOAL_ORF_FLUENCY"
+    },
+    {
+      "evidenceRefId": "clm_051-ev1",
+      "owner": "clm_051",
+      "sourceDocumentId": "l002-src-3",
+      "documentId": "03_annual_progress_report.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 107,
+        "endSeq": 113
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Oral reading fluency 91 WCPM 95 WCPM"
+    },
+    {
+      "evidenceRefId": "clm_051-ev2",
+      "owner": "clm_051",
+      "sourceDocumentId": "l002-src-3",
+      "documentId": "03_annual_progress_report.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 114,
+        "endSeq": 123
+      },
+      "occurrencesOnPage": 1,
+      "quote": "On 2024-10-15, Caleb read grade-level connected text at 91 WCPM."
+    },
+    {
+      "evidenceRefId": "clm_052-ev1",
+      "owner": "clm_052",
+      "sourceDocumentId": "l002-src-3",
+      "documentId": "03_annual_progress_report.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 124,
+        "endSeq": 135
+      },
+      "occurrencesOnPage": 1,
+      "quote": "This result shows meaningful progress toward the annual target of 95 WCPM."
+    },
+    {
+      "evidenceRefId": "clm_053-ev1",
+      "owner": "clm_053",
+      "sourceDocumentId": "l002-src-3",
+      "documentId": "03_annual_progress_report.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 136,
+        "endSeq": 143
+      },
+      "occurrencesOnPage": 1,
+      "quote": "The annual target has not yet been met."
+    },
+    {
+      "evidenceRefId": "clm_054-ev1",
+      "owner": "clm_054",
+      "sourceDocumentId": "l002-src-3",
+      "documentId": "03_annual_progress_report.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 165,
+        "endSeq": 176
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Caleb Nguyen continues to receive specialized reading instruction under the current IEP."
+    },
+    {
+      "evidenceRefId": "clm_055-ev1",
+      "owner": "clm_055",
+      "sourceDocumentId": "l002-src-3",
+      "documentId": "03_annual_progress_report.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 177,
+        "endSeq": 186
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Oral reading rate has improved relative to earlier instructional performance."
+    },
+    {
+      "evidenceRefId": "clm_056-ev1",
+      "owner": "clm_056",
+      "sourceDocumentId": "l002-src-3",
+      "documentId": "03_annual_progress_report.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 187,
+        "endSeq": 200
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Additional practice with connected text remains appropriate during the remainder of the goal period."
+    },
+    {
+      "evidenceRefId": "clm_057-ev1",
+      "owner": "clm_057",
+      "sourceDocumentId": "l002-src-3",
+      "documentId": "03_annual_progress_report.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 144,
+        "endSeq": 162
+      },
+      "occurrencesOnPage": 1,
+      "quote": "This report records current progress toward the existing goal and does not revise present levels or rewrite the IEP."
+    },
+    {
+      "evidenceRefId": "clm_058-ev1",
+      "owner": "clm_058",
+      "sourceDocumentId": "l002-src-3",
+      "documentId": "03_annual_progress_report.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 215,
+        "endSeq": 226
+      },
+      "occurrencesOnPage": 1,
+      "quote": "No change to eligibility, services, or accommodations is made in this report."
+    },
+    {
+      "evidenceRefId": "clm_059-ev1",
+      "owner": "clm_059",
+      "sourceDocumentId": "l002-src-4",
+      "documentId": "04_reevaluation_plan.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 23,
+        "endSeq": 25
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Planning Date: 2026-09-08"
+    },
+    {
+      "evidenceRefId": "clm_060-ev1",
+      "owner": "clm_060",
+      "sourceDocumentId": "l002-src-4",
+      "documentId": "04_reevaluation_plan.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 26,
+        "endSeq": 28
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Prepared By: District"
+    },
+    {
+      "evidenceRefId": "clm_061-ev1",
+      "owner": "clm_061",
+      "sourceDocumentId": "l002-src-4",
+      "documentId": "04_reevaluation_plan.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 29,
+        "endSeq": 32
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Document Type: Reevaluation plan"
+    },
+    {
+      "evidenceRefId": "clm_062-ev1",
+      "owner": "clm_062",
+      "sourceDocumentId": "l002-src-4",
+      "documentId": "04_reevaluation_plan.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 56,
+        "endSeq": 64
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Caleb currently receives special education services under an IEP."
+    },
+    {
+      "evidenceRefId": "clm_063-ev1",
+      "owner": "clm_063",
+      "sourceDocumentId": "l002-src-4",
+      "documentId": "04_reevaluation_plan.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 97,
+        "endSeq": 105
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Caleb Nguyen has an existing eligibility determination in reading."
+    },
+    {
+      "evidenceRefId": "clm_064-ev1",
+      "owner": "clm_064",
+      "sourceDocumentId": "l002-src-4",
+      "documentId": "04_reevaluation_plan.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 65,
+        "endSeq": 82
+      },
+      "occurrencesOnPage": 1,
+      "quote": "A reevaluation is being planned to review current educational needs related to reading fluency and other reading performance."
+    },
+    {
+      "evidenceRefId": "clm_065-ev1",
+      "owner": "clm_065",
+      "sourceDocumentId": "l002-src-4",
+      "documentId": "04_reevaluation_plan.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 106,
+        "endSeq": 131
+      },
+      "occurrencesOnPage": 1,
+      "quote": "The team will review existing data and obtain current information needed to determine whether the student continues to have an educational need for specially designed instruction."
+    },
+    {
+      "evidenceRefId": "clm_066-ev1",
+      "owner": "clm_066",
+      "sourceDocumentId": "l002-src-4",
+      "documentId": "04_reevaluation_plan.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 90,
+        "endSeq": 96
+      },
+      "occurrencesOnPage": 1,
+      "quote": "It does not report completed evaluation results."
+    },
+    {
+      "evidenceRefId": "clm_066-ev2",
+      "owner": "clm_066",
+      "sourceDocumentId": "l002-src-4",
+      "documentId": "04_reevaluation_plan.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 155,
+        "endSeq": 159
+      },
+      "occurrencesOnPage": 1,
+      "quote": "[ ] Completed reevaluation scores"
+    },
+    {
+      "evidenceRefId": "clm_066-ev3",
+      "owner": "clm_066",
+      "sourceDocumentId": "l002-src-4",
+      "documentId": "04_reevaluation_plan.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 19,
+        "endSeq": 25
+      },
+      "occurrencesOnPage": 1,
+      "quote": "No new evaluation results are reported here."
+    },
+    {
+      "evidenceRefId": "clm_067-ev1",
+      "owner": "clm_067",
+      "sourceDocumentId": "l002-src-4",
+      "documentId": "04_reevaluation_plan.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 138,
+        "endSeq": 143
+      },
+      "occurrencesOnPage": 1,
+      "quote": "[X] Current IEP and progress information"
+    },
+    {
+      "evidenceRefId": "clm_068-ev1",
+      "owner": "clm_068",
+      "sourceDocumentId": "l002-src-4",
+      "documentId": "04_reevaluation_plan.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 144,
+        "endSeq": 147
+      },
+      "occurrencesOnPage": 1,
+      "quote": "[X] Prior eligibility determination"
+    },
+    {
+      "evidenceRefId": "clm_069-ev1",
+      "owner": "clm_069",
+      "sourceDocumentId": "l002-src-4",
+      "documentId": "04_reevaluation_plan.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 148,
+        "endSeq": 154
+      },
+      "occurrencesOnPage": 1,
+      "quote": "[X] Teacher information regarding classroom reading performance"
+    },
+    {
+      "evidenceRefId": "clm_070-ev1",
+      "owner": "clm_070",
+      "sourceDocumentId": "l002-src-4",
+      "documentId": "04_reevaluation_plan.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 164,
+        "endSeq": 167
+      },
+      "occurrencesOnPage": 1,
+      "quote": "[X] Current reading achievement"
+    },
+    {
+      "evidenceRefId": "clm_071-ev1",
+      "owner": "clm_071",
+      "sourceDocumentId": "l002-src-4",
+      "documentId": "04_reevaluation_plan.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 168,
+        "endSeq": 170
+      },
+      "occurrencesOnPage": 1,
+      "quote": "[X] Reading comprehension"
+    },
+    {
+      "evidenceRefId": "clm_072-ev1",
+      "owner": "clm_072",
+      "sourceDocumentId": "l002-src-4",
+      "documentId": "04_reevaluation_plan.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 171,
+        "endSeq": 174
+      },
+      "occurrencesOnPage": 1,
+      "quote": "[X] Oral reading fluency"
+    },
+    {
+      "evidenceRefId": "clm_073-ev1",
+      "owner": "clm_073",
+      "sourceDocumentId": "l002-src-4",
+      "documentId": "04_reevaluation_plan.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 175,
+        "endSeq": 179
+      },
+      "occurrencesOnPage": 1,
+      "quote": "[X] Cognitive / processing context"
+    },
+    {
+      "evidenceRefId": "clm_074-ev1",
+      "owner": "clm_074",
+      "sourceDocumentId": "l002-src-4",
+      "documentId": "04_reevaluation_plan.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 180,
+        "endSeq": 182
+      },
+      "occurrencesOnPage": 1,
+      "quote": "[X] Speech-language review"
+    },
+    {
+      "evidenceRefId": "clm_075-ev1",
+      "owner": "clm_075",
+      "sourceDocumentId": "l002-src-4",
+      "documentId": "04_reevaluation_plan.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 183,
+        "endSeq": 187
+      },
+      "occurrencesOnPage": 1,
+      "quote": "[X] Review of existing data"
+    },
+    {
+      "evidenceRefId": "clm_076-ev1",
+      "owner": "clm_076",
+      "sourceDocumentId": "l002-src-4",
+      "documentId": "04_reevaluation_plan.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 192,
+        "endSeq": 197
+      },
+      "occurrencesOnPage": 1,
+      "quote": "[X] Review of existing educational records"
+    },
+    {
+      "evidenceRefId": "clm_077-ev1",
+      "owner": "clm_077",
+      "sourceDocumentId": "l002-src-4",
+      "documentId": "04_reevaluation_plan.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 198,
+        "endSeq": 200
+      },
+      "occurrencesOnPage": 1,
+      "quote": "[X] Teacher input"
+    },
+    {
+      "evidenceRefId": "clm_078-ev1",
+      "owner": "clm_078",
+      "sourceDocumentId": "l002-src-4",
+      "documentId": "04_reevaluation_plan.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 201,
+        "endSeq": 203
+      },
+      "occurrencesOnPage": 1,
+      "quote": "[X] Parent input"
+    },
+    {
+      "evidenceRefId": "clm_079-ev1",
+      "owner": "clm_079",
+      "sourceDocumentId": "l002-src-4",
+      "documentId": "04_reevaluation_plan.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 204,
+        "endSeq": 209
+      },
+      "occurrencesOnPage": 1,
+      "quote": "[X] Current academic assessment of reading"
+    },
+    {
+      "evidenceRefId": "clm_080-ev1",
+      "owner": "clm_080",
+      "sourceDocumentId": "l002-src-4",
+      "documentId": "04_reevaluation_plan.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 210,
+        "endSeq": 216
+      },
+      "occurrencesOnPage": 1,
+      "quote": "[X] Psychoeducational information as needed for reevaluation"
+    },
+    {
+      "evidenceRefId": "clm_081-ev1",
+      "owner": "clm_081",
+      "sourceDocumentId": "l002-src-4",
+      "documentId": "04_reevaluation_plan.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 26,
+        "endSeq": 36
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Assessments listed above will be completed before the reevaluation eligibility meeting."
+    },
+    {
+      "evidenceRefId": "clm_082-ev1",
+      "owner": "clm_082",
+      "sourceDocumentId": "l002-src-5",
+      "documentId": "05_psychoeducational_reevaluation.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 39,
+        "endSeq": 41
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Evaluation Date: 2026-09-22"
+    },
+    {
+      "evidenceRefId": "clm_082-ev2",
+      "owner": "clm_082",
+      "sourceDocumentId": "l002-src-8",
+      "documentId": "08_reevaluation_eligibility_determination.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 71,
+        "endSeq": 75
+      },
+      "occurrencesOnPage": 1,
+      "quote": "[X] Psychoeducational Reevaluation - 2026-09-22"
+    },
+    {
+      "evidenceRefId": "clm_083-ev1",
+      "owner": "clm_083",
+      "sourceDocumentId": "l002-src-5",
+      "documentId": "05_psychoeducational_reevaluation.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 42,
+        "endSeq": 44
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Evaluator: School psychologist"
+    },
+    {
+      "evidenceRefId": "clm_084-ev1",
+      "owner": "clm_084",
+      "sourceDocumentId": "l002-src-5",
+      "documentId": "05_psychoeducational_reevaluation.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 48,
+        "endSeq": 64
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Caleb is being reevaluated as part of the required review of special education eligibility and educational need."
+    },
+    {
+      "evidenceRefId": "clm_085-ev1",
+      "owner": "clm_085",
+      "sourceDocumentId": "l002-src-5",
+      "documentId": "05_psychoeducational_reevaluation.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 65,
+        "endSeq": 72
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Caleb Nguyen currently has an IEP addressing reading."
+    },
+    {
+      "evidenceRefId": "clm_086-ev1",
+      "owner": "clm_086",
+      "sourceDocumentId": "l002-src-5",
+      "documentId": "05_psychoeducational_reevaluation.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 73,
+        "endSeq": 80
+      },
+      "occurrencesOnPage": 1,
+      "quote": "This psychoeducational reevaluation provides cognitive and processing context."
+    },
+    {
+      "evidenceRefId": "clm_087-ev1",
+      "owner": "clm_087",
+      "sourceDocumentId": "l002-src-5",
+      "documentId": "05_psychoeducational_reevaluation.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 81,
+        "endSeq": 89
+      },
+      "occurrencesOnPage": 1,
+      "quote": "It is not a substitute for academic achievement testing."
+    },
+    {
+      "evidenceRefId": "clm_087-ev2",
+      "owner": "clm_087",
+      "sourceDocumentId": "l002-src-5",
+      "documentId": "05_psychoeducational_reevaluation.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 66,
+        "endSeq": 73
+      },
+      "occurrencesOnPage": 1,
+      "quote": "This report does not replace academic achievement testing."
+    },
+    {
+      "evidenceRefId": "clm_088-ev1",
+      "owner": "clm_088",
+      "sourceDocumentId": "l002-src-5",
+      "documentId": "05_psychoeducational_reevaluation.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 122,
+        "endSeq": 124
+      },
+      "occurrencesOnPage": 1,
+      "quote": "• Reevaluation plan"
+    },
+    {
+      "evidenceRefId": "clm_089-ev1",
+      "owner": "clm_089",
+      "sourceDocumentId": "l002-src-5",
+      "documentId": "05_psychoeducational_reevaluation.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 125,
+        "endSeq": 130
+      },
+      "occurrencesOnPage": 1,
+      "quote": "• Review of existing educational records"
+    },
+    {
+      "evidenceRefId": "clm_090-ev1",
+      "owner": "clm_090",
+      "sourceDocumentId": "l002-src-5",
+      "documentId": "05_psychoeducational_reevaluation.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 131,
+        "endSeq": 137
+      },
+      "occurrencesOnPage": 1,
+      "quote": "• Teacher information regarding classroom reading tasks"
+    },
+    {
+      "evidenceRefId": "clm_091-ev1",
+      "owner": "clm_091",
+      "sourceDocumentId": "l002-src-5",
+      "documentId": "05_psychoeducational_reevaluation.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 138,
+        "endSeq": 144
+      },
+      "occurrencesOnPage": 1,
+      "quote": "• Student observation during the evaluation session"
+    },
+    {
+      "evidenceRefId": "clm_092-ev1",
+      "owner": "clm_092",
+      "sourceDocumentId": "l002-src-5",
+      "documentId": "05_psychoeducational_reevaluation.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 149,
+        "endSeq": 156
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Cognitive ability is broadly within the average range."
+    },
+    {
+      "evidenceRefId": "clm_092-ev2",
+      "owner": "clm_092",
+      "sourceDocumentId": "l002-src-5",
+      "documentId": "05_psychoeducational_reevaluation.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 12,
+        "endSeq": 19
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Cognitive ability is broadly within the average range."
+    },
+    {
+      "evidenceRefId": "clm_092-ev3",
+      "owner": "clm_092",
+      "sourceDocumentId": "l002-src-8",
+      "documentId": "08_reevaluation_eligibility_determination.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 141,
+        "endSeq": 151
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Psychoeducational evidence indicates cognitive ability is broadly within the average range."
+    },
+    {
+      "evidenceRefId": "clm_092-ev4",
+      "owner": "clm_092",
+      "sourceDocumentId": "l002-src-8",
+      "documentId": "08_reevaluation_eligibility_determination.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 78,
+        "endSeq": 88
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Psychoeducational evidence indicates cognitive ability is broadly within the average range."
+    },
+    {
+      "evidenceRefId": "clm_093-ev1",
+      "owner": "clm_093",
+      "sourceDocumentId": "l002-src-5",
+      "documentId": "05_psychoeducational_reevaluation.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 157,
+        "endSeq": 170
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Performance across verbal reasoning, visual-spatial reasoning, and working-memory tasks was consistent with age expectations."
+    },
+    {
+      "evidenceRefId": "clm_093-ev2",
+      "owner": "clm_093",
+      "sourceDocumentId": "l002-src-5",
+      "documentId": "05_psychoeducational_reevaluation.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 20,
+        "endSeq": 35
+      },
+      "occurrencesOnPage": 1,
+      "quote": "General reasoning, working memory, and verbal comprehension observed during this reevaluation are consistent with age expectations."
+    },
+    {
+      "evidenceRefId": "clm_094-ev1",
+      "owner": "clm_094",
+      "sourceDocumentId": "l002-src-5",
+      "documentId": "05_psychoeducational_reevaluation.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 171,
+        "endSeq": 183
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Processing speed observed during structured tasks was not identified as a global limitation."
+    },
+    {
+      "evidenceRefId": "clm_095-ev1",
+      "owner": "clm_095",
+      "sourceDocumentId": "l002-src-5",
+      "documentId": "05_psychoeducational_reevaluation.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 184,
+        "endSeq": 191
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Caleb participated cooperatively and understood ordinary verbal directions."
+    },
+    {
+      "evidenceRefId": "clm_096-ev1",
+      "owner": "clm_096",
+      "sourceDocumentId": "l002-src-5",
+      "documentId": "05_psychoeducational_reevaluation.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 192,
+        "endSeq": 206
+      },
+      "occurrencesOnPage": 1,
+      "quote": "No global cognitive limitation is identified as the primary explanation for the documented reading concern."
+    },
+    {
+      "evidenceRefId": "clm_096-ev2",
+      "owner": "clm_096",
+      "sourceDocumentId": "l002-src-5",
+      "documentId": "05_psychoeducational_reevaluation.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 36,
+        "endSeq": 50
+      },
+      "occurrencesOnPage": 1,
+      "quote": "No global cognitive limitation is identified as the primary explanation for the documented reading concern."
+    },
+    {
+      "evidenceRefId": "clm_096-ev3",
+      "owner": "clm_096",
+      "sourceDocumentId": "l002-src-8",
+      "documentId": "08_reevaluation_eligibility_determination.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 152,
+        "endSeq": 162
+      },
+      "occurrencesOnPage": 1,
+      "quote": "A global cognitive limitation is not identified as the primary explanation."
+    },
+    {
+      "evidenceRefId": "clm_097-ev1",
+      "owner": "clm_097",
+      "sourceDocumentId": "l002-src-5",
+      "documentId": "05_psychoeducational_reevaluation.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 207,
+        "endSeq": 219
+      },
+      "occurrencesOnPage": 1,
+      "quote": "General reasoning is adequate to benefit from classroom instruction when material is accessible."
+    },
+    {
+      "evidenceRefId": "clm_098-ev1",
+      "owner": "clm_098",
+      "sourceDocumentId": "l002-src-5",
+      "documentId": "05_psychoeducational_reevaluation.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 51,
+        "endSeq": 65
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Classroom information indicates that reading remains an area of instructional attention under the current IEP."
+    },
+    {
+      "evidenceRefId": "clm_099-ev1",
+      "owner": "clm_099",
+      "sourceDocumentId": "l002-src-5",
+      "documentId": "05_psychoeducational_reevaluation.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 75,
+        "endSeq": 89
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Complete current academic achievement assessment, including reading comprehension and fluency, before the reevaluation eligibility meeting."
+    },
+    {
+      "evidenceRefId": "clm_100-ev1",
+      "owner": "clm_100",
+      "sourceDocumentId": "l002-src-5",
+      "documentId": "05_psychoeducational_reevaluation.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 90,
+        "endSeq": 97
+      },
+      "occurrencesOnPage": 1,
+      "quote": "This report does not determine special education eligibility"
+    },
+    {
+      "evidenceRefId": "clm_101-ev1",
+      "owner": "clm_101",
+      "sourceDocumentId": "l002-src-5",
+      "documentId": "05_psychoeducational_reevaluation.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 99,
+        "endSeq": 106
+      },
+      "occurrencesOnPage": 1,
+      "quote": "does not assign IEP services or annual goals."
+    },
+    {
+      "evidenceRefId": "clm_102-ev1",
+      "owner": "clm_102",
+      "sourceDocumentId": "l002-src-6",
+      "documentId": "06_academic_reevaluation.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 73,
+        "endSeq": 75
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Evaluation Date: 2026-09-29"
+    },
+    {
+      "evidenceRefId": "clm_102-ev2",
+      "owner": "clm_102",
+      "sourceDocumentId": "l002-src-6",
+      "documentId": "06_academic_reevaluation.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 42,
+        "endSeq": 48
+      },
+      "occurrencesOnPage": 1,
+      "quote": "This academic reevaluation was completed on 2026-09-29"
+    },
+    {
+      "evidenceRefId": "clm_102-ev3",
+      "owner": "clm_102",
+      "sourceDocumentId": "l002-src-8",
+      "documentId": "08_reevaluation_eligibility_determination.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 76,
+        "endSeq": 80
+      },
+      "occurrencesOnPage": 1,
+      "quote": "[X] Academic Reevaluation - 2026-09-29"
+    },
+    {
+      "evidenceRefId": "clm_103-ev1",
+      "owner": "clm_103",
+      "sourceDocumentId": "l002-src-6",
+      "documentId": "06_academic_reevaluation.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 76,
+        "endSeq": 78
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Evaluator: Academic evaluator"
+    },
+    {
+      "evidenceRefId": "clm_104-ev1",
+      "owner": "clm_104",
+      "sourceDocumentId": "l002-src-6",
+      "documentId": "06_academic_reevaluation.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 79,
+        "endSeq": 85
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Focus: Reading achievement, fluency, accuracy, and comprehension"
+    },
+    {
+      "evidenceRefId": "clm_104-ev2",
+      "owner": "clm_104",
+      "sourceDocumentId": "l002-src-6",
+      "documentId": "06_academic_reevaluation.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 60,
+        "endSeq": 70
+      },
+      "occurrencesOnPage": 1,
+      "quote": "The evaluation examines oral reading fluency, reading accuracy, and reading comprehension."
+    },
+    {
+      "evidenceRefId": "clm_105-ev1",
+      "owner": "clm_105",
+      "sourceDocumentId": "l002-src-6",
+      "documentId": "06_academic_reevaluation.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 114,
+        "endSeq": 118
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Oral Reading Fluency 104 WCPM"
+    },
+    {
+      "evidenceRefId": "clm_105-ev2",
+      "owner": "clm_105",
+      "sourceDocumentId": "l002-src-6",
+      "documentId": "06_academic_reevaluation.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 129,
+        "endSeq": 136
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Caleb read grade-level connected text at 104 WCPM,"
+    },
+    {
+      "evidenceRefId": "clm_105-ev3",
+      "owner": "clm_105",
+      "sourceDocumentId": "l002-src-6",
+      "documentId": "06_academic_reevaluation.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 202,
+        "endSeq": 213
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Academic reevaluation documents oral reading fluency of 104 WCPM on grade-level passages,"
+    },
+    {
+      "evidenceRefId": "clm_105-ev4",
+      "owner": "clm_105",
+      "sourceDocumentId": "l002-src-8",
+      "documentId": "08_reevaluation_eligibility_determination.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 96,
+        "endSeq": 106
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Current academic reevaluation results include oral reading fluency of 104 WCPM"
+    },
+    {
+      "evidenceRefId": "clm_105-ev5",
+      "owner": "clm_105",
+      "sourceDocumentId": "l002-src-8",
+      "documentId": "08_reevaluation_eligibility_determination.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 36,
+        "endSeq": 45
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Current academic reevaluation documents oral reading fluency of 104 WCPM"
+    },
+    {
+      "evidenceRefId": "clm_105-ev6",
+      "owner": "clm_105",
+      "sourceDocumentId": "l002-src-9",
+      "documentId": "09_reevaluation_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 128,
+        "endSeq": 140
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Recent academic reevaluation documented oral reading fluency of 104 WCPM on grade-level passages."
+    },
+    {
+      "evidenceRefId": "clm_106-ev1",
+      "owner": "clm_106",
+      "sourceDocumentId": "l002-src-6",
+      "documentId": "06_academic_reevaluation.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 119,
+        "endSeq": 121
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Reading accuracy 97%"
+    },
+    {
+      "evidenceRefId": "clm_106-ev2",
+      "owner": "clm_106",
+      "sourceDocumentId": "l002-src-6",
+      "documentId": "06_academic_reevaluation.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 137,
+        "endSeq": 141
+      },
+      "occurrencesOnPage": 1,
+      "quote": "with reading accuracy of 97%."
+    },
+    {
+      "evidenceRefId": "clm_106-ev3",
+      "owner": "clm_106",
+      "sourceDocumentId": "l002-src-6",
+      "documentId": "06_academic_reevaluation.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 214,
+        "endSeq": 219
+      },
+      "occurrencesOnPage": 1,
+      "quote": "with reading accuracy of 97 percent."
+    },
+    {
+      "evidenceRefId": "clm_106-ev4",
+      "owner": "clm_106",
+      "sourceDocumentId": "l002-src-8",
+      "documentId": "08_reevaluation_eligibility_determination.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 108,
+        "endSeq": 111
+      },
+      "occurrencesOnPage": 1,
+      "quote": "reading accuracy of 97%."
+    },
+    {
+      "evidenceRefId": "clm_106-ev5",
+      "owner": "clm_106",
+      "sourceDocumentId": "l002-src-8",
+      "documentId": "08_reevaluation_eligibility_determination.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 47,
+        "endSeq": 51
+      },
+      "occurrencesOnPage": 1,
+      "quote": "reading accuracy of 97 percent,"
+    },
+    {
+      "evidenceRefId": "clm_107-ev1",
+      "owner": "clm_107",
+      "sourceDocumentId": "l002-src-6",
+      "documentId": "06_academic_reevaluation.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 122,
+        "endSeq": 127
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Reading comprehension standard score of 78"
+    },
+    {
+      "evidenceRefId": "clm_107-ev2",
+      "owner": "clm_107",
+      "sourceDocumentId": "l002-src-6",
+      "documentId": "06_academic_reevaluation.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 230,
+        "endSeq": 243
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Reading comprehension, measured with a standardized achievement subtest, yielded a standard score of 78,"
+    },
+    {
+      "evidenceRefId": "clm_107-ev3",
+      "owner": "clm_107",
+      "sourceDocumentId": "l002-src-8",
+      "documentId": "08_reevaluation_eligibility_determination.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 122,
+        "endSeq": 135
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Reading comprehension, measured with a standardized achievement subtest, yielded a standard score of 78,"
+    },
+    {
+      "evidenceRefId": "clm_107-ev4",
+      "owner": "clm_107",
+      "sourceDocumentId": "l002-src-8",
+      "documentId": "08_reevaluation_eligibility_determination.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 52,
+        "endSeq": 59
+      },
+      "occurrencesOnPage": 1,
+      "quote": "with a reading comprehension standard score of 78."
+    },
+    {
+      "evidenceRefId": "clm_108-ev1",
+      "owner": "clm_108",
+      "sourceDocumentId": "l002-src-6",
+      "documentId": "06_academic_reevaluation.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 153,
+        "endSeq": 163
+      },
+      "occurrencesOnPage": 1,
+      "quote": "The reading comprehension standard score of 78 is below age-based expectations"
+    },
+    {
+      "evidenceRefId": "clm_108-ev2",
+      "owner": "clm_108",
+      "sourceDocumentId": "l002-src-6",
+      "documentId": "06_academic_reevaluation.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 238,
+        "endSeq": 248
+      },
+      "occurrencesOnPage": 1,
+      "quote": "yielded a standard score of 78, which is below age-based expectations."
+    },
+    {
+      "evidenceRefId": "clm_108-ev3",
+      "owner": "clm_108",
+      "sourceDocumentId": "l002-src-8",
+      "documentId": "08_reevaluation_eligibility_determination.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 130,
+        "endSeq": 140
+      },
+      "occurrencesOnPage": 1,
+      "quote": "yielded a standard score of 78, which is below age-based expectations."
+    },
+    {
+      "evidenceRefId": "clm_109-ev1",
+      "owner": "clm_109",
+      "sourceDocumentId": "l002-src-6",
+      "documentId": "06_academic_reevaluation.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 165,
+        "endSeq": 169
+      },
+      "occurrencesOnPage": 1,
+      "quote": "is not a percentage score."
+    },
+    {
+      "evidenceRefId": "clm_110-ev1",
+      "owner": "clm_110",
+      "sourceDocumentId": "l002-src-6",
+      "documentId": "06_academic_reevaluation.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 142,
+        "endSeq": 152
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Oral reading rate and accuracy are stronger than earlier instructional records."
+    },
+    {
+      "evidenceRefId": "clm_110-ev2",
+      "owner": "clm_110",
+      "sourceDocumentId": "l002-src-6",
+      "documentId": "06_academic_reevaluation.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 220,
+        "endSeq": 229
+      },
+      "occurrencesOnPage": 1,
+      "quote": "These oral reading results are stronger than earlier instructional records."
+    },
+    {
+      "evidenceRefId": "clm_110-ev3",
+      "owner": "clm_110",
+      "sourceDocumentId": "l002-src-8",
+      "documentId": "08_reevaluation_eligibility_determination.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 112,
+        "endSeq": 121
+      },
+      "occurrencesOnPage": 1,
+      "quote": "These oral reading results are stronger than earlier instructional records."
+    },
+    {
+      "evidenceRefId": "clm_110-ev4",
+      "owner": "clm_110",
+      "sourceDocumentId": "l002-src-8",
+      "documentId": "08_reevaluation_eligibility_determination.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 60,
+        "endSeq": 68
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Fluency and accuracy are stronger than earlier instructional records."
+    },
+    {
+      "evidenceRefId": "clm_110-ev5",
+      "owner": "clm_110",
+      "sourceDocumentId": "l002-src-9",
+      "documentId": "09_reevaluation_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 141,
+        "endSeq": 151
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Oral reading rate and accuracy are stronger than earlier instructional records."
+    },
+    {
+      "evidenceRefId": "clm_111-ev1",
+      "owner": "clm_111",
+      "sourceDocumentId": "l002-src-6",
+      "documentId": "06_academic_reevaluation.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 170,
+        "endSeq": 189
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Caleb Nguyen reads connected text with improved rate and accuracy but continues to have difficulty constructing meaning from grade-level passages."
+    },
+    {
+      "evidenceRefId": "clm_111-ev2",
+      "owner": "clm_111",
+      "sourceDocumentId": "l002-src-6",
+      "documentId": "06_academic_reevaluation.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 249,
+        "endSeq": 267
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Caleb reads connected text with improved rate and accuracy but continues to have difficulty constructing meaning from grade-level passages."
+    },
+    {
+      "evidenceRefId": "clm_111-ev3",
+      "owner": "clm_111",
+      "sourceDocumentId": "l002-src-8",
+      "documentId": "08_reevaluation_eligibility_determination.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 183,
+        "endSeq": 201
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Caleb continues to have difficulty constructing meaning from grade-level passages even when oral reading rate and accuracy are stronger."
+    },
+    {
+      "evidenceRefId": "clm_112-ev1",
+      "owner": "clm_112",
+      "sourceDocumentId": "l002-src-6",
+      "documentId": "06_academic_reevaluation.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 190,
+        "endSeq": 199
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Comprehension of grade-level text remains an area of educational concern."
+    },
+    {
+      "evidenceRefId": "clm_112-ev2",
+      "owner": "clm_112",
+      "sourceDocumentId": "l002-src-8",
+      "documentId": "08_reevaluation_eligibility_determination.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 173,
+        "endSeq": 182
+      },
+      "occurrencesOnPage": 1,
+      "quote": "The educational concern that remains most evident is reading comprehension."
+    },
+    {
+      "evidenceRefId": "clm_112-ev3",
+      "owner": "clm_112",
+      "sourceDocumentId": "l002-src-8",
+      "documentId": "08_reevaluation_eligibility_determination.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 69,
+        "endSeq": 77
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Persistent weakness is now most evident in reading comprehension."
+    },
+    {
+      "evidenceRefId": "clm_112-ev4",
+      "owner": "clm_112",
+      "sourceDocumentId": "l002-src-9",
+      "documentId": "09_reevaluation_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 152,
+        "endSeq": 165
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Persistent difficulty is now most evident when Caleb must construct meaning from grade-level text."
+    },
+    {
+      "evidenceRefId": "clm_113-ev1",
+      "owner": "clm_113",
+      "sourceDocumentId": "l002-src-6",
+      "documentId": "06_academic_reevaluation.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 11,
+        "endSeq": 20
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Instructional planning should emphasize reading comprehension of connected grade-level text."
+    },
+    {
+      "evidenceRefId": "clm_114-ev1",
+      "owner": "clm_114",
+      "sourceDocumentId": "l002-src-6",
+      "documentId": "06_academic_reevaluation.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 35,
+        "endSeq": 43
+      },
+      "occurrencesOnPage": 1,
+      "quote": "• explicit instruction in constructing meaning from connected text"
+    },
+    {
+      "evidenceRefId": "clm_115-ev1",
+      "owner": "clm_115",
+      "sourceDocumentId": "l002-src-6",
+      "documentId": "06_academic_reevaluation.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 44,
+        "endSeq": 51
+      },
+      "occurrencesOnPage": 1,
+      "quote": "• guided practice with literal and inferential questions"
+    },
+    {
+      "evidenceRefId": "clm_116-ev1",
+      "owner": "clm_116",
+      "sourceDocumentId": "l002-src-6",
+      "documentId": "06_academic_reevaluation.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 52,
+        "endSeq": 58
+      },
+      "occurrencesOnPage": 1,
+      "quote": "• continued progress monitoring of reading comprehension"
+    },
+    {
+      "evidenceRefId": "clm_117-ev1",
+      "owner": "clm_117",
+      "sourceDocumentId": "l002-src-6",
+      "documentId": "06_academic_reevaluation.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 98,
+        "endSeq": 109
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Recommendations in this report are evaluation recommendations and are not IEP decisions."
+    },
+    {
+      "evidenceRefId": "clm_117-ev2",
+      "owner": "clm_117",
+      "sourceDocumentId": "l002-src-6",
+      "documentId": "06_academic_reevaluation.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 21,
+        "endSeq": 34
+      },
+      "occurrencesOnPage": 1,
+      "quote": "These results are evaluation findings and are not an IEP service or goal decision."
+    },
+    {
+      "evidenceRefId": "clm_117-ev3",
+      "owner": "clm_117",
+      "sourceDocumentId": "l002-src-6",
+      "documentId": "06_academic_reevaluation.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 59,
+        "endSeq": 68
+      },
+      "occurrencesOnPage": 1,
+      "quote": "These recommendations are not mandated services or adopted annual goals."
+    },
+    {
+      "evidenceRefId": "clm_118-ev1",
+      "owner": "clm_118",
+      "sourceDocumentId": "l002-src-7",
+      "documentId": "07_speech_language_review.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 38,
+        "endSeq": 40
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Review Date: 2026-10-06"
+    },
+    {
+      "evidenceRefId": "clm_118-ev2",
+      "owner": "clm_118",
+      "sourceDocumentId": "l002-src-7",
+      "documentId": "07_speech_language_review.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 47,
+        "endSeq": 53
+      },
+      "occurrencesOnPage": 1,
+      "quote": "This speech-language review was completed on 2026-10-06"
+    },
+    {
+      "evidenceRefId": "clm_118-ev3",
+      "owner": "clm_118",
+      "sourceDocumentId": "l002-src-8",
+      "documentId": "08_reevaluation_eligibility_determination.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 81,
+        "endSeq": 85
+      },
+      "occurrencesOnPage": 1,
+      "quote": "[X] Speech-Language Review - 2026-10-06"
+    },
+    {
+      "evidenceRefId": "clm_119-ev1",
+      "owner": "clm_119",
+      "sourceDocumentId": "l002-src-7",
+      "documentId": "07_speech_language_review.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 41,
+        "endSeq": 43
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Evaluator: Speech-language pathologist"
+    },
+    {
+      "evidenceRefId": "clm_120-ev1",
+      "owner": "clm_120",
+      "sourceDocumentId": "l002-src-7",
+      "documentId": "07_speech_language_review.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 54,
+        "endSeq": 64
+      },
+      "occurrencesOnPage": 1,
+      "quote": "as part of the reevaluation scope identified in the reevaluation plan."
+    },
+    {
+      "evidenceRefId": "clm_121-ev1",
+      "owner": "clm_121",
+      "sourceDocumentId": "l002-src-7",
+      "documentId": "07_speech_language_review.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 65,
+        "endSeq": 77
+      },
+      "occurrencesOnPage": 1,
+      "quote": "The purpose is to determine whether a separate speech-language educational need is present."
+    },
+    {
+      "evidenceRefId": "clm_122-ev1",
+      "owner": "clm_122",
+      "sourceDocumentId": "l002-src-7",
+      "documentId": "07_speech_language_review.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 78,
+        "endSeq": 85
+      },
+      "occurrencesOnPage": 1,
+      "quote": "This review is limited to the speech-language domain."
+    },
+    {
+      "evidenceRefId": "clm_123-ev1",
+      "owner": "clm_123",
+      "sourceDocumentId": "l002-src-7",
+      "documentId": "07_speech_language_review.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 88,
+        "endSeq": 98
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Caleb participated in conversational and structured language tasks during the review."
+    },
+    {
+      "evidenceRefId": "clm_124-ev1",
+      "owner": "clm_124",
+      "sourceDocumentId": "l002-src-7",
+      "documentId": "07_speech_language_review.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 94,
+        "endSeq": 105
+      },
+      "occurrencesOnPage": 1,
+      "quote": "language tasks during the review. Speech intelligibility is adequate for classroom participation."
+    },
+    {
+      "evidenceRefId": "clm_124-ev2",
+      "owner": "clm_124",
+      "sourceDocumentId": "l002-src-7",
+      "documentId": "07_speech_language_review.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 128,
+        "endSeq": 136
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Educational Interpretation Speech intelligibility is adequate for classroom participation."
+    },
+    {
+      "evidenceRefId": "clm_125-ev1",
+      "owner": "clm_125",
+      "sourceDocumentId": "l002-src-7",
+      "documentId": "07_speech_language_review.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 106,
+        "endSeq": 119
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Receptive and expressive language observed during the review are broadly functional for classroom communication."
+    },
+    {
+      "evidenceRefId": "clm_125-ev2",
+      "owner": "clm_125",
+      "sourceDocumentId": "l002-src-7",
+      "documentId": "07_speech_language_review.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 137,
+        "endSeq": 150
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Receptive and expressive language observed during this review are broadly functional for classroom communication."
+    },
+    {
+      "evidenceRefId": "clm_126-ev1",
+      "owner": "clm_126",
+      "sourceDocumentId": "l002-src-7",
+      "documentId": "07_speech_language_review.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 120,
+        "endSeq": 127
+      },
+      "occurrencesOnPage": 1,
+      "quote": "No speech-language impairment is diagnosed in this report."
+    },
+    {
+      "evidenceRefId": "clm_127-ev1",
+      "owner": "clm_127",
+      "sourceDocumentId": "l002-src-7",
+      "documentId": "07_speech_language_review.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 151,
+        "endSeq": 160
+      },
+      "occurrencesOnPage": 1,
+      "quote": "No separate speech-language educational need is identified from this review."
+    },
+    {
+      "evidenceRefId": "clm_127-ev2",
+      "owner": "clm_127",
+      "sourceDocumentId": "l002-src-8",
+      "documentId": "08_reevaluation_eligibility_determination.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 163,
+        "endSeq": 172
+      },
+      "occurrencesOnPage": 1,
+      "quote": "No separate speech-language educational need is identified from this review."
+    },
+    {
+      "evidenceRefId": "clm_127-ev3",
+      "owner": "clm_127",
+      "sourceDocumentId": "l002-src-8",
+      "documentId": "08_reevaluation_eligibility_determination.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 89,
+        "endSeq": 97
+      },
+      "occurrencesOnPage": 1,
+      "quote": "The speech-language review identifies no separate speech-language educational need"
+    },
+    {
+      "evidenceRefId": "clm_128-ev1",
+      "owner": "clm_128",
+      "sourceDocumentId": "l002-src-7",
+      "documentId": "07_speech_language_review.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 161,
+        "endSeq": 173
+      },
+      "occurrencesOnPage": 1,
+      "quote": "The documented reading comprehension concern remains an educational issue outside the speech-language domain."
+    },
+    {
+      "evidenceRefId": "clm_129-ev1",
+      "owner": "clm_129",
+      "sourceDocumentId": "l002-src-7",
+      "documentId": "07_speech_language_review.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 187,
+        "endSeq": 201
+      },
+      "occurrencesOnPage": 1,
+      "quote": "The documented reading concern for Caleb Nguyen is not treated as resolved by this review."
+    },
+    {
+      "evidenceRefId": "clm_130-ev1",
+      "owner": "clm_130",
+      "sourceDocumentId": "l002-src-7",
+      "documentId": "07_speech_language_review.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 202,
+        "endSeq": 213
+      },
+      "occurrencesOnPage": 1,
+      "quote": "A speech-language review does not determine whether a reading disability is present."
+    },
+    {
+      "evidenceRefId": "clm_131-ev1",
+      "owner": "clm_131",
+      "sourceDocumentId": "l002-src-7",
+      "documentId": "07_speech_language_review.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 215,
+        "endSeq": 219
+      },
+      "occurrencesOnPage": 1,
+      "quote": "No speech-language service is recommended."
+    },
+    {
+      "evidenceRefId": "clm_131-ev2",
+      "owner": "clm_131",
+      "sourceDocumentId": "l002-src-8",
+      "documentId": "08_reevaluation_eligibility_determination.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 99,
+        "endSeq": 104
+      },
+      "occurrencesOnPage": 1,
+      "quote": "does not recommend a speech-language service."
+    },
+    {
+      "evidenceRefId": "clm_132-ev1",
+      "owner": "clm_132",
+      "sourceDocumentId": "l002-src-7",
+      "documentId": "07_speech_language_review.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 220,
+        "endSeq": 231
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Continue to address the documented reading concern through the educational reevaluation process."
+    },
+    {
+      "evidenceRefId": "clm_133-ev1",
+      "owner": "clm_133",
+      "sourceDocumentId": "l002-src-7",
+      "documentId": "07_speech_language_review.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 174,
+        "endSeq": 186
+      },
+      "occurrencesOnPage": 1,
+      "quote": "This review does not determine whether the student meets special education eligibility criteria."
+    },
+    {
+      "evidenceRefId": "clm_133-ev2",
+      "owner": "clm_133",
+      "sourceDocumentId": "l002-src-7",
+      "documentId": "07_speech_language_review.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 232,
+        "endSeq": 239
+      },
+      "occurrencesOnPage": 1,
+      "quote": "This report does not determine special education eligibility."
+    },
+    {
+      "evidenceRefId": "clm_134-ev1",
+      "owner": "clm_134",
+      "sourceDocumentId": "l002-src-8",
+      "documentId": "08_reevaluation_eligibility_determination.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 43,
+        "endSeq": 45
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Determination Date: 2026-10-14"
+    },
+    {
+      "evidenceRefId": "clm_134-ev2",
+      "owner": "clm_134",
+      "sourceDocumentId": "l002-src-9",
+      "documentId": "09_reevaluation_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 66,
+        "endSeq": 68
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Determination Date: 2026-10-14"
+    },
+    {
+      "evidenceRefId": "clm_135-ev1",
+      "owner": "clm_135",
+      "sourceDocumentId": "l002-src-8",
+      "documentId": "08_reevaluation_eligibility_determination.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 46,
+        "endSeq": 50
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Determination Type: Reevaluation Eligibility Determination"
+    },
+    {
+      "evidenceRefId": "clm_136-ev1",
+      "owner": "clm_136",
+      "sourceDocumentId": "l002-src-8",
+      "documentId": "08_reevaluation_eligibility_determination.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 51,
+        "endSeq": 54
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Determination By: Eligibility team"
+    },
+    {
+      "evidenceRefId": "clm_137-ev1",
+      "owner": "clm_137",
+      "sourceDocumentId": "l002-src-8",
+      "documentId": "08_reevaluation_eligibility_determination.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 55,
+        "endSeq": 67
+      },
+      "occurrencesOnPage": 1,
+      "quote": "This document records an educational eligibility determination. It is not a medical diagnosis."
+    },
+    {
+      "evidenceRefId": "clm_137-ev2",
+      "owner": "clm_137",
+      "sourceDocumentId": "l002-src-8",
+      "documentId": "08_reevaluation_eligibility_determination.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 256,
+        "endSeq": 265
+      },
+      "occurrencesOnPage": 1,
+      "quote": "This is an educational eligibility determination, not a medical diagnosis."
+    },
+    {
+      "evidenceRefId": "clm_137-ev3",
+      "owner": "clm_137",
+      "sourceDocumentId": "l002-src-9",
+      "documentId": "09_reevaluation_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 69,
+        "endSeq": 82
+      },
+      "occurrencesOnPage": 1,
+      "quote": "This IEP implements the current educational eligibility determination. It is not a medical diagnosis."
+    },
+    {
+      "evidenceRefId": "clm_138-ev1",
+      "owner": "clm_138",
+      "sourceDocumentId": "l002-src-8",
+      "documentId": "08_reevaluation_eligibility_determination.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 71,
+        "endSeq": 75
+      },
+      "occurrencesOnPage": 1,
+      "quote": "[X] Psychoeducational Reevaluation - 2026-09-22"
+    },
+    {
+      "evidenceRefId": "clm_139-ev1",
+      "owner": "clm_139",
+      "sourceDocumentId": "l002-src-8",
+      "documentId": "08_reevaluation_eligibility_determination.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 76,
+        "endSeq": 80
+      },
+      "occurrencesOnPage": 1,
+      "quote": "[X] Academic Reevaluation - 2026-09-29"
+    },
+    {
+      "evidenceRefId": "clm_140-ev1",
+      "owner": "clm_140",
+      "sourceDocumentId": "l002-src-8",
+      "documentId": "08_reevaluation_eligibility_determination.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 81,
+        "endSeq": 85
+      },
+      "occurrencesOnPage": 1,
+      "quote": "[X] Speech-Language Review - 2026-10-06"
+    },
+    {
+      "evidenceRefId": "clm_141-ev1",
+      "owner": "clm_141",
+      "sourceDocumentId": "l002-src-8",
+      "documentId": "08_reevaluation_eligibility_determination.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 86,
+        "endSeq": 91
+      },
+      "occurrencesOnPage": 1,
+      "quote": "[X] Review of existing educational records"
+    },
+    {
+      "evidenceRefId": "clm_142-ev1",
+      "owner": "clm_142",
+      "sourceDocumentId": "l002-src-8",
+      "documentId": "08_reevaluation_eligibility_determination.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 204,
+        "endSeq": 212
+      },
+      "occurrencesOnPage": 1,
+      "quote": "[X] Student continues to meet criteria for special education"
+    },
+    {
+      "evidenceRefId": "clm_142-ev2",
+      "owner": "clm_142",
+      "sourceDocumentId": "l002-src-8",
+      "documentId": "08_reevaluation_eligibility_determination.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 243,
+        "endSeq": 255
+      },
+      "occurrencesOnPage": 1,
+      "quote": "The student continues to meet criteria for Specific Learning Disability (SLD) - Reading."
+    },
+    {
+      "evidenceRefId": "clm_143-ev1",
+      "owner": "clm_143",
+      "sourceDocumentId": "l002-src-8",
+      "documentId": "08_reevaluation_eligibility_determination.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 223,
+        "endSeq": 230
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Eligibility Category: Specific Learning Disability (SLD) - Reading"
+    },
+    {
+      "evidenceRefId": "clm_143-ev2",
+      "owner": "clm_143",
+      "sourceDocumentId": "l002-src-9",
+      "documentId": "09_reevaluation_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 53,
+        "endSeq": 60
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Eligibility Category: Specific Learning Disability (SLD) - Reading"
+    },
+    {
+      "evidenceRefId": "clm_143-ev3",
+      "owner": "clm_143",
+      "sourceDocumentId": "l002-src-9",
+      "documentId": "09_reevaluation_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 83,
+        "endSeq": 92
+      },
+      "occurrencesOnPage": 1,
+      "quote": "The eligibility category remains Specific Learning Disability (SLD) - Reading."
+    },
+    {
+      "evidenceRefId": "clm_144-ev1",
+      "owner": "clm_144",
+      "sourceDocumentId": "l002-src-8",
+      "documentId": "08_reevaluation_eligibility_determination.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 236,
+        "endSeq": 242
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Category Change: None. Eligibility category is unchanged."
+    },
+    {
+      "evidenceRefId": "clm_144-ev2",
+      "owner": "clm_144",
+      "sourceDocumentId": "l002-src-8",
+      "documentId": "08_reevaluation_eligibility_determination.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 123,
+        "endSeq": 128
+      },
+      "occurrencesOnPage": 1,
+      "quote": "The eligibility category has not changed."
+    },
+    {
+      "evidenceRefId": "clm_145-ev1",
+      "owner": "clm_145",
+      "sourceDocumentId": "l002-src-8",
+      "documentId": "08_reevaluation_eligibility_determination.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 231,
+        "endSeq": 235
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Primary Educational Need: Reading Comprehension"
+    },
+    {
+      "evidenceRefId": "clm_145-ev2",
+      "owner": "clm_145",
+      "sourceDocumentId": "l002-src-8",
+      "documentId": "08_reevaluation_eligibility_determination.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 270,
+        "endSeq": 274
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Primary educational need: Reading Comprehension."
+    },
+    {
+      "evidenceRefId": "clm_145-ev3",
+      "owner": "clm_145",
+      "sourceDocumentId": "l002-src-9",
+      "documentId": "09_reevaluation_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 61,
+        "endSeq": 65
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Primary Educational Need: Reading Comprehension"
+    },
+    {
+      "evidenceRefId": "clm_145-ev4",
+      "owner": "clm_145",
+      "sourceDocumentId": "l002-src-9",
+      "documentId": "09_reevaluation_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 169,
+        "endSeq": 175
+      },
+      "occurrencesOnPage": 1,
+      "quote": "The primary educational need is Reading Comprehension."
+    },
+    {
+      "evidenceRefId": "clm_145-ev5",
+      "owner": "clm_145",
+      "sourceDocumentId": "l002-src-9",
+      "documentId": "09_reevaluation_iep.pdf",
+      "page": 3,
+      "wordRange": {
+        "startSeq": 13,
+        "endSeq": 20
+      },
+      "occurrencesOnPage": 1,
+      "quote": "This IEP addresses Reading Comprehension for Caleb Nguyen."
+    },
+    {
+      "evidenceRefId": "clm_146-ev1",
+      "owner": "clm_146",
+      "sourceDocumentId": "l002-src-8",
+      "documentId": "08_reevaluation_eligibility_determination.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 16,
+        "endSeq": 33
+      },
+      "occurrencesOnPage": 1,
+      "quote": "The team determined that Caleb Nguyen continues to require specially designed instruction targeting the documented reading comprehension need."
+    },
+    {
+      "evidenceRefId": "clm_146-ev2",
+      "owner": "clm_146",
+      "sourceDocumentId": "l002-src-8",
+      "documentId": "08_reevaluation_eligibility_determination.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 105,
+        "endSeq": 122
+      },
+      "occurrencesOnPage": 1,
+      "quote": "The team determined that Caleb continues to require specially designed instruction to address the documented reading comprehension need."
+    },
+    {
+      "evidenceRefId": "clm_147-ev1",
+      "owner": "clm_147",
+      "sourceDocumentId": "l002-src-9",
+      "documentId": "09_reevaluation_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 43,
+        "endSeq": 45
+      },
+      "occurrencesOnPage": 1,
+      "quote": "IEP Date: 2026-10-21"
+    },
+    {
+      "evidenceRefId": "clm_147-ev2",
+      "owner": "clm_147",
+      "sourceDocumentId": "l002-src-9",
+      "documentId": "09_reevaluation_iep.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 199,
+        "endSeq": 205
+      },
+      "occurrencesOnPage": 1,
+      "quote": "District Representative: [Synthetic signature omitted] Date: 2026-10-21"
+    },
+    {
+      "evidenceRefId": "clm_148-ev1",
+      "owner": "clm_148",
+      "sourceDocumentId": "l002-src-9",
+      "documentId": "09_reevaluation_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 46,
+        "endSeq": 50
+      },
+      "occurrencesOnPage": 1,
+      "quote": "IEP Period: 2026-10-21 through 2027-10-20"
+    },
+    {
+      "evidenceRefId": "clm_149-ev1",
+      "owner": "clm_149",
+      "sourceDocumentId": "l002-src-9",
+      "documentId": "09_reevaluation_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 69,
+        "endSeq": 76
+      },
+      "occurrencesOnPage": 1,
+      "quote": "This IEP implements the current educational eligibility determination."
+    },
+    {
+      "evidenceRefId": "clm_149-ev2",
+      "owner": "clm_149",
+      "sourceDocumentId": "l002-src-9",
+      "documentId": "09_reevaluation_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 66,
+        "endSeq": 68
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Determination Date: 2026-10-14"
+    },
+    {
+      "evidenceRefId": "clm_150-ev1",
+      "owner": "clm_150",
+      "sourceDocumentId": "l002-src-9",
+      "documentId": "09_reevaluation_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 102,
+        "endSeq": 112
+      },
+      "occurrencesOnPage": 1,
+      "quote": "On grade-level reading passages, Caleb answers comprehension questions with 60% accuracy."
+    },
+    {
+      "evidenceRefId": "clm_150-ev2",
+      "owner": "clm_150",
+      "sourceDocumentId": "l002-src-9",
+      "documentId": "09_reevaluation_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 113,
+        "endSeq": 127
+      },
+      "occurrencesOnPage": 1,
+      "quote": "This classroom instructional measure is the present-levels baseline for the annual goal in this IEP."
+    },
+    {
+      "evidenceRefId": "clm_150-ev3",
+      "owner": "clm_150",
+      "sourceDocumentId": "l002-src-9",
+      "documentId": "09_reevaluation_iep.pdf",
+      "page": 3,
+      "wordRange": {
+        "startSeq": 21,
+        "endSeq": 31
+      },
+      "occurrencesOnPage": 1,
+      "quote": "The instructional baseline is 60% accuracy on grade-level passage comprehension questions."
+    },
+    {
+      "evidenceRefId": "clm_151-ev1",
+      "owner": "clm_151",
+      "sourceDocumentId": "l002-src-9",
+      "documentId": "09_reevaluation_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 176,
+        "endSeq": 186
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Caleb has difficulty understanding and answering questions about grade-level connected text."
+    },
+    {
+      "evidenceRefId": "clm_152-ev1",
+      "owner": "clm_152",
+      "sourceDocumentId": "l002-src-9",
+      "documentId": "09_reevaluation_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 187,
+        "endSeq": 199
+      },
+      "occurrencesOnPage": 1,
+      "quote": "This difficulty affects Caleb's ability to learn from grade-level reading in content-area classes."
+    },
+    {
+      "evidenceRefId": "clm_153-ev1",
+      "owner": "clm_153",
+      "sourceDocumentId": "l002-src-9",
+      "documentId": "09_reevaluation_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 228,
+        "endSeq": 230
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Goal ID: GOAL_READING_COMPREHENSION"
+    },
+    {
+      "evidenceRefId": "clm_154-ev1",
+      "owner": "clm_154",
+      "sourceDocumentId": "l002-src-9",
+      "documentId": "09_reevaluation_iep.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 38,
+        "endSeq": 46
+      },
+      "occurrencesOnPage": 1,
+      "quote": "This IEP does not include an oral-reading-fluency annual goal."
+    },
+    {
+      "evidenceRefId": "clm_155-ev1",
+      "owner": "clm_155",
+      "sourceDocumentId": "l002-src-9",
+      "documentId": "09_reevaluation_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 228,
+        "endSeq": 230
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Goal ID: GOAL_READING_COMPREHENSION"
+    },
+    {
+      "evidenceRefId": "clm_156-ev1",
+      "owner": "clm_156",
+      "sourceDocumentId": "l002-src-9",
+      "documentId": "09_reevaluation_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 203,
+        "endSeq": 209
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Given a grade-level informational or literary passage,"
+    },
+    {
+      "evidenceRefId": "clm_157-ev1",
+      "owner": "clm_157",
+      "sourceDocumentId": "l002-src-9",
+      "documentId": "09_reevaluation_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 210,
+        "endSeq": 217
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Caleb will answer comprehension questions (literal and inferential)"
+    },
+    {
+      "evidenceRefId": "clm_158-ev1",
+      "owner": "clm_158",
+      "sourceDocumentId": "l002-src-9",
+      "documentId": "09_reevaluation_iep.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 218,
+        "endSeq": 227
+      },
+      "occurrencesOnPage": 1,
+      "quote": "with at least 80% accuracy on three consecutive weekly probes."
+    },
+    {
+      "evidenceRefId": "clm_158-ev2",
+      "owner": "clm_158",
+      "sourceDocumentId": "l002-src-9",
+      "documentId": "09_reevaluation_iep.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 13,
+        "endSeq": 15
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Target: 80% accuracy"
+    },
+    {
+      "evidenceRefId": "clm_158-ev3",
+      "owner": "clm_158",
+      "sourceDocumentId": "l002-src-9",
+      "documentId": "09_reevaluation_iep.pdf",
+      "page": 3,
+      "wordRange": {
+        "startSeq": 32,
+        "endSeq": 44
+      },
+      "occurrencesOnPage": 1,
+      "quote": "The annual goal targets 80% accuracy on three consecutive weekly probes by 2027-10-20."
+    },
+    {
+      "evidenceRefId": "clm_159-ev1",
+      "owner": "clm_159",
+      "sourceDocumentId": "l002-src-9",
+      "documentId": "09_reevaluation_iep.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 10,
+        "endSeq": 12
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Baseline: 60% accuracy"
+    },
+    {
+      "evidenceRefId": "clm_160-ev1",
+      "owner": "clm_160",
+      "sourceDocumentId": "l002-src-9",
+      "documentId": "09_reevaluation_iep.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 16,
+        "endSeq": 22
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Mastery Criterion: on three consecutive weekly probes"
+    },
+    {
+      "evidenceRefId": "clm_161-ev1",
+      "owner": "clm_161",
+      "sourceDocumentId": "l002-src-9",
+      "documentId": "09_reevaluation_iep.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 23,
+        "endSeq": 25
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Start Date: 2026-10-21"
+    },
+    {
+      "evidenceRefId": "clm_162-ev1",
+      "owner": "clm_162",
+      "sourceDocumentId": "l002-src-9",
+      "documentId": "09_reevaluation_iep.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 26,
+        "endSeq": 28
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Target Date: 2027-10-20"
+    },
+    {
+      "evidenceRefId": "clm_163-ev1",
+      "owner": "clm_163",
+      "sourceDocumentId": "l002-src-9",
+      "documentId": "09_reevaluation_iep.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 29,
+        "endSeq": 37
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Progress will be measured using grade-level passage comprehension probes."
+    },
+    {
+      "evidenceRefId": "clm_163-ev2",
+      "owner": "clm_163",
+      "sourceDocumentId": "l002-src-9",
+      "documentId": "09_reevaluation_iep.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 136,
+        "endSeq": 148
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Progress toward the annual comprehension goal will be measured using grade-level passage questions"
+    },
+    {
+      "evidenceRefId": "clm_164-ev1",
+      "owner": "clm_164",
+      "sourceDocumentId": "l002-src-9",
+      "documentId": "09_reevaluation_iep.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 150,
+        "endSeq": 155
+      },
+      "occurrencesOnPage": 1,
+      "quote": "reported quarterly, concurrent with report periods."
+    },
+    {
+      "evidenceRefId": "clm_165-ev1",
+      "owner": "clm_165",
+      "sourceDocumentId": "l002-src-9",
+      "documentId": "09_reevaluation_iep.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 58,
+        "endSeq": 61
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Specialized reading instruction 5x/week"
+    },
+    {
+      "evidenceRefId": "clm_165-ev2",
+      "owner": "clm_165",
+      "sourceDocumentId": "l002-src-9",
+      "documentId": "09_reevaluation_iep.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 70,
+        "endSeq": 77
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Specialized reading instruction continues five times per week"
+    },
+    {
+      "evidenceRefId": "clm_166-ev1",
+      "owner": "clm_166",
+      "sourceDocumentId": "l002-src-9",
+      "documentId": "09_reevaluation_iep.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 61,
+        "endSeq": 69
+      },
+      "occurrencesOnPage": 1,
+      "quote": "5x/week 45 minutes per session special education setting 2026-10-21"
+    },
+    {
+      "evidenceRefId": "clm_166-ev2",
+      "owner": "clm_166",
+      "sourceDocumentId": "l002-src-9",
+      "documentId": "09_reevaluation_iep.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 78,
+        "endSeq": 87
+      },
+      "occurrencesOnPage": 1,
+      "quote": "for 45 minutes per session in the special education setting."
+    },
+    {
+      "evidenceRefId": "clm_167-ev1",
+      "owner": "clm_167",
+      "sourceDocumentId": "l002-src-9",
+      "documentId": "09_reevaluation_iep.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 62,
+        "endSeq": 69
+      },
+      "occurrencesOnPage": 1,
+      "quote": "45 minutes per session special education setting 2026-10-21"
+    },
+    {
+      "evidenceRefId": "clm_167-ev2",
+      "owner": "clm_167",
+      "sourceDocumentId": "l002-src-9",
+      "documentId": "09_reevaluation_iep.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 83,
+        "endSeq": 87
+      },
+      "occurrencesOnPage": 1,
+      "quote": "in the special education setting."
+    },
+    {
+      "evidenceRefId": "clm_168-ev1",
+      "owner": "clm_168",
+      "sourceDocumentId": "l002-src-9",
+      "documentId": "09_reevaluation_iep.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 66,
+        "endSeq": 69
+      },
+      "occurrencesOnPage": 1,
+      "quote": "special education setting 2026-10-21"
+    },
+    {
+      "evidenceRefId": "clm_169-ev1",
+      "owner": "clm_169",
+      "sourceDocumentId": "l002-src-9",
+      "documentId": "09_reevaluation_iep.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 90,
+        "endSeq": 98
+      },
+      "occurrencesOnPage": 1,
+      "quote": "• Extended time (1.5x) on classroom and district assessments."
+    },
+    {
+      "evidenceRefId": "clm_170-ev1",
+      "owner": "clm_170",
+      "sourceDocumentId": "l002-src-9",
+      "documentId": "09_reevaluation_iep.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 105,
+        "endSeq": 112
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Extended time (1.5x) continues from the prior IEP."
+    },
+    {
+      "evidenceRefId": "clm_171-ev1",
+      "owner": "clm_171",
+      "sourceDocumentId": "l002-src-9",
+      "documentId": "09_reevaluation_iep.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 99,
+        "endSeq": 104
+      },
+      "occurrencesOnPage": 1,
+      "quote": "• Text-to-speech for lengthy content-area passages."
+    },
+    {
+      "evidenceRefId": "clm_172-ev1",
+      "owner": "clm_172",
+      "sourceDocumentId": "l002-src-9",
+      "documentId": "09_reevaluation_iep.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 113,
+        "endSeq": 132
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Text-to-speech for lengthy content-area passages is added so that length of assigned reading does not prevent access to content-area material."
+    },
+    {
+      "evidenceRefId": "clm_173-ev1",
+      "owner": "clm_173",
+      "sourceDocumentId": "l002-src-9",
+      "documentId": "09_reevaluation_iep.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 161,
+        "endSeq": 169
+      },
+      "occurrencesOnPage": 1,
+      "quote": "The following roles participate in development of this IEP."
+    },
+    {
+      "evidenceRefId": "clm_173-ev2",
+      "owner": "clm_173",
+      "sourceDocumentId": "l002-src-9",
+      "documentId": "09_reevaluation_iep.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 183,
+        "endSeq": 186
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Parent/Guardian: [Synthetic signature omitted]"
+    },
+    {
+      "evidenceRefId": "clm_173-ev3",
+      "owner": "clm_173",
+      "sourceDocumentId": "l002-src-9",
+      "documentId": "09_reevaluation_iep.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 187,
+        "endSeq": 192
+      },
+      "occurrencesOnPage": 1,
+      "quote": "General Education Teacher: [Synthetic signature omitted]"
+    },
+    {
+      "evidenceRefId": "clm_173-ev4",
+      "owner": "clm_173",
+      "sourceDocumentId": "l002-src-9",
+      "documentId": "09_reevaluation_iep.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 193,
+        "endSeq": 198
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Special Education Teacher: [Synthetic signature omitted]"
+    },
+    {
+      "evidenceRefId": "clm_173-ev5",
+      "owner": "clm_173",
+      "sourceDocumentId": "l002-src-9",
+      "documentId": "09_reevaluation_iep.pdf",
+      "page": 2,
+      "wordRange": {
+        "startSeq": 199,
+        "endSeq": 203
+      },
+      "occurrencesOnPage": 1,
+      "quote": "District Representative: [Synthetic signature omitted]"
+    },
+    {
+      "evidenceRefId": "voice_other_party-ev1",
+      "owner": "voice_other_party",
+      "sourceDocumentId": "l002-src-4",
+      "documentId": "04_reevaluation_plan.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 26,
+        "endSeq": 28
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Prepared By: District"
+    },
+    {
+      "evidenceRefId": "voice_subject_name-ev1",
+      "owner": "voice_subject_name",
+      "sourceDocumentId": "l002-src-1",
+      "documentId": "01_prior_eligibility_determination.pdf",
+      "page": 1,
+      "wordRange": {
+        "startSeq": 22,
+        "endSeq": 24
+      },
+      "occurrencesOnPage": 1,
+      "quote": "Student: Caleb Nguyen"
+    }
+  ]
+}
