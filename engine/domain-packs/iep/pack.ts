@@ -19,6 +19,7 @@ import { IEP_INTAKE_QUESTIONS } from "./intake/questions";
 import { iepManifest } from "./manifest";
 import { IEP_AUDIENCE_ROLES } from "./vocabulary/audience-roles";
 import { IEP_CASE_MAP_PROJECTION } from "./case-map/projection-guidance";
+import { IEP_STUDY_AGENTS } from "./study/agents";
 import { IEP_FOCUS_CONSTRUCTS } from "./study/focus-constructs";
 import { IEP_NARRATIVE_BLOCK } from "./narrative";
 import { iepRulebook } from "./rulebook/index";
@@ -53,6 +54,7 @@ export const iepDomainPack = {
     domainLabel,
     vocabulary: IEP_STUDY_VOCABULARY,
     focusConstructs: [...IEP_FOCUS_CONSTRUCTS],
+    agents: IEP_STUDY_AGENTS,
   },
   caseMapProjection: IEP_CASE_MAP_PROJECTION,
   narrative: IEP_NARRATIVE_BLOCK,
