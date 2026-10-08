@@ -15,6 +15,7 @@
     "rulebook:audit": "tsx scripts/rulebook-audit.ts",
     "rulebook:scaffold": "tsx scripts/rulebook-scaffold.ts",
     "rulebook:report": "tsx scripts/rulebook-report.ts",
+    "pack:export": "tsx scripts/pack-export.ts",
     "golden:shadow": "pnpm --filter @hiveforyou/core golden:shadow",
     "eval": "pnpm --filter @hiveforyou/eval eval"
   },

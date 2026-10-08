@@ -3,9 +3,8 @@
   "compilerOptions": {
     "noEmit": true,
     "allowImportingTsExtensions": true,
-    "rootDir": ".",
     "module": "ESNext",
     "moduleResolution": "bundler"
   },
-  "include": ["./**/*.ts"]
+  "include": ["./**/*.ts", "../../../scripts/pack-export.ts"]
 }
