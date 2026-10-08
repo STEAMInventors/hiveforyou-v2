@@ -30,7 +30,7 @@ export type GradeFailureKind =
   | "TRIPWIRE_FIRED"
   | "INVARIANT_BROKEN";
 
-const FAILURE_KIND_ORDER: GradeFailureKind[] = [
+export const FAILURE_KIND_ORDER: GradeFailureKind[] = [
   "MISSED_FACT",
   "UNSUPPORTED_CLAIM",
   "VALUE_MISMATCH",
@@ -53,6 +53,7 @@ export type GradeFailure = {
 };
 
 export type GradeMetrics = {
+  /** matchedCandidateClaims / candidateClaimCount; zero candidates + zero golden facts => 1; zero candidates + expected facts => 0 */
   precision: number;
   recall: number;
   abstention: number;
@@ -513,7 +514,15 @@ export function gradeGoldenProposal(input: {
   const totalClaims = proposal.claims.length;
   const totalFacts = golden.facts.length;
   const totalGaps = golden.gaps.length;
-  const precision = totalClaims === 0 ? 1 : matchedClaimIds.size / totalClaims;
+  // score = 0.5 * precision + 0.3 * recall + 0.2 * abstention (tripwire => score 0)
+  let precision;
+  if (totalClaims > 0) {
+    precision = matchedClaimIds.size / totalClaims;
+  } else if (totalFacts === 0) {
+    precision = 1;
+  } else {
+    precision = 0;
+  }
   const recall = totalFacts === 0 ? 1 : matchedFactIds.size / totalFacts;
   const gapsCorrect = golden.gaps.filter((g) => !gapMissingInProposal(g, proposal, corpus)).length;
   const abstention = totalGaps === 0 ? 1 : gapsCorrect / totalGaps;

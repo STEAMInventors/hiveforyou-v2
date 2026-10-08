@@ -614,20 +614,50 @@ describe("gradeGoldenProposal", () => {
     });
   });
 
-  it("smoke: certified L001 empty proposal", () => {
-    const raw = JSON.parse(readFileSync(join(repoRoot, "engine/eval/golden/tune/l001.json"), "utf8")) as unknown;
-    const validated = validateGoldenCase(raw);
-    expect(validated.ok).toBe(true);
-    if (!validated.ok) {
-      return;
-    }
-    assertCertifiedGolden(validated.value);
-    const result = gradeGoldenProposal({
-      golden: validated.value,
-      proposal: baseProposal([]),
-      corpus: { pageModelsByDocumentId: new Map(), recoveredPagesByDocumentId: new Map() },
+  describe("precision zero-denominator", () => {
+    it("zero candidate claims with golden facts => precision 0", () => {
+      const golden = certifiedGolden({
+        caseId: "empty_vs_facts",
+        split: "tune",
+        corpusDir: "x",
+        facts: [goldenFact({ id: "f1", wordRange: [0, 1], value: { kind: "text", textValue: "x" } })],
+        gaps: [],
+        tripwires: [],
+      });
+      const result = gradeGoldenProposal({ golden, proposal: baseProposal([]), corpus: ctx });
+      expect(result.metrics.precision).toBe(0);
     });
-    expect(result.metrics.precision).toBe(1);
-    expect(result.metrics.recall).toBe(0);
+
+    it("zero candidate claims and zero golden facts => precision 1", () => {
+      const golden = certifiedGolden({
+        caseId: "empty_vs_empty",
+        split: "tune",
+        corpusDir: "x",
+        facts: [],
+        gaps: [],
+        tripwires: [],
+      });
+      const result = gradeGoldenProposal({ golden, proposal: baseProposal([]), corpus: ctx });
+      expect(result.metrics.precision).toBe(1);
+    });
+
+    it("L001-like empty candidate does not get 0.5 score from precision alone", () => {
+      const raw = JSON.parse(readFileSync(join(repoRoot, "engine/eval/golden/tune/l001.json"), "utf8")) as unknown;
+      const validated = validateGoldenCase(raw);
+      expect(validated.ok).toBe(true);
+      if (!validated.ok) {
+        return;
+      }
+      assertCertifiedGolden(validated.value);
+      const result = gradeGoldenProposal({
+        golden: validated.value,
+        proposal: baseProposal([]),
+        corpus: { pageModelsByDocumentId: new Map(), recoveredPagesByDocumentId: new Map() },
+      });
+      expect(result.metrics.precision).toBe(0);
+      expect(result.metrics.recall).toBe(0);
+      expect(result.score).not.toBe(0.5);
+      expect(result.score).toBe(0);
+    });
   });
 });
