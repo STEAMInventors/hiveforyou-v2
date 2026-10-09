@@ -14,6 +14,10 @@ import {
 } from "./load-trusted-document-pages.js";
 import type { HiveGateway } from "../persistence/hive-gateway.js";
 import { SupabaseStudyRunRepository } from "../persistence/worker-supabase-repositories.js";
+import {
+  readCompletedDiagnostics,
+  resolveReaderQualificationFailureCode,
+} from './reader-qualification-diagnostics.js';
 
 export type StudyReaderAuditWire = {
   studyRunId: string;
@@ -246,9 +250,16 @@ export async function runAgenticReaderQualification(
     userId,
   });
 
-  if (!correlated || acceptedEvidenceEvents < 1) {
-    const code =
-      acceptedEvidenceEvents < 1 ? "READER_ZERO_ACCEPTED_FACTS" : "READER_TRACE_CORRELATION_FAILED";
+  const diagnostics = readCompletedDiagnostics(traceEvents);
+  const acceptedFromPayload = diagnostics?.acceptedFactCount ?? 0;
+  const acceptedFacts = Math.max(acceptedFromPayload, acceptedEvidenceEvents);
+
+  if (!correlated || acceptedFacts < 1) {
+    const code = resolveReaderQualificationFailureCode({
+      correlated,
+      diagnostics,
+      acceptedEvidenceEvents,
+    });
     const failed = await markRunStatus({
       gateway: input.gateway,
       userId,

@@ -358,7 +358,7 @@ describe("agentic reader qualification worker flow", () => {
   });
 
   it("run fails when audit is not persisted or zero accepted facts", async () => {
-    const { gateway } = createStatefulGateway({
+    const { gateway, traceEvents } = createStatefulGateway({
       caseUserId: USER_A,
       sourceDocuments: l001SourceDocuments(USER_A),
       objects: l001CachedObjects(USER_A),
@@ -404,7 +404,53 @@ describe("agentic reader qualification worker flow", () => {
     if (zeroAccepted.outcome !== "failed") {
       throw new Error("expected failed outcome");
     }
-    expect(zeroAccepted.code).toBe("READER_ZERO_ACCEPTED_FACTS");
+    expect(zeroAccepted.code).toBe("READER_TRACE_CORRELATION_FAILED");
+
+    const withoutEvidence = await runAgenticReaderQualification({
+      env: READER_QUALIFICATION_MODEL_ENV,
+      gateway,
+      documentPagesBucket: "document-pages",
+      caseId: CASE_A,
+      userId: USER_A,
+      readerClient: async (request) => {
+        traceEvents.push(
+          {
+            study_run_id: request.studyRunId,
+            attempt_id: request.attemptId,
+            event_type: "STARTED",
+            case_id: CASE_A,
+            user_id: USER_A,
+            sequence_number: 0,
+            event_payload: {},
+          },
+          {
+            study_run_id: request.studyRunId,
+            attempt_id: request.attemptId,
+            event_type: "COMPLETED",
+            case_id: CASE_A,
+            user_id: USER_A,
+            sequence_number: 1,
+            event_payload: {
+              acceptedFactCount: 0,
+              candidateFactCount: 2,
+              candidatesWithEvidenceCount: 0,
+              readerDiagnosticOutcome: "CANDIDATES_WITHOUT_EVIDENCE",
+            },
+          },
+        );
+        return {
+          schemaVersion: "study-reader/1",
+          candidateFacts: [{ id: "fact-1" }],
+          audit: {
+            studyRunId: request.studyRunId,
+            attemptId: request.attemptId,
+            persisted: true,
+            status: "persisted",
+          },
+        };
+      },
+    });
+    expect(withoutEvidence.code).toBe("READER_CANDIDATES_WITHOUT_EVIDENCE");
   });
 
   it("run succeeds with persisted audit and correlated trace acceptance", async () => {
@@ -447,6 +493,7 @@ describe("agentic reader qualification worker flow", () => {
             case_id: CASE_A,
             user_id: USER_A,
             sequence_number: 2,
+            event_payload: { acceptedFactCount: 1 },
           },
         );
         return {

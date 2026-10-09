@@ -293,11 +293,13 @@ class VerifierBackedReaderTools:
         verifier_client: Any,
         context: ReaderVerifyContext,
         trace: Any | None = None,
+        execution_counts: Any | None = None,
     ) -> None:
         self._inner = InMemoryReaderTools(pages)
         self._verifier_client = verifier_client
         self._context = context
         self._trace = trace
+        self._execution_counts = execution_counts
         self.last_rejection_reasons: list[str] | None = None
 
     @property
@@ -322,6 +324,8 @@ class VerifierBackedReaderTools:
         from hive_agents.verifier_client import ReaderVerifierError
 
         candidate_id = f"reader-candidate-{uuid.uuid4().hex[:12]}"
+        if fact.evidence and self._execution_counts is not None:
+            self._execution_counts.verifier_submission_count += 1
         if self._trace is not None and fact.evidence:
             primary = fact.evidence[0]
             self._trace.emit(
@@ -342,16 +346,30 @@ class VerifierBackedReaderTools:
             )
         except ReaderVerifierError as exc:
             self.last_rejection_reasons = [str(exc)]
-            return f"REJECTED: {exc}"
-
-        if not result.accepted:
-            self.last_rejection_reasons = list(result.reasons)
+            if self._execution_counts is not None:
+                self._execution_counts.verifier_error_count += 1
             if self._trace is not None:
                 self._trace.emit(
                     "EVIDENCE_REJECTED",
                     {
-                    "decisionAuthority": "python_verifier_client",
-                    "authoritative": False,
+                        "decisionAuthority": "python_verifier_client",
+                        "authoritative": False,
+                        "candidateFactId": candidate_id,
+                        "reasonCodes": ["VERIFIER_ERROR"],
+                    },
+                )
+            return f"REJECTED: {exc}"
+
+        if not result.accepted:
+            self.last_rejection_reasons = list(result.reasons)
+            if self._execution_counts is not None:
+                self._execution_counts.rejected_fact_count += 1
+            if self._trace is not None:
+                self._trace.emit(
+                    "EVIDENCE_REJECTED",
+                    {
+                        "decisionAuthority": "python_verifier_client",
+                        "authoritative": False,
                         "candidateFactId": candidate_id,
                         "reasonCodes": list(result.reasons),
                     },
@@ -359,6 +377,8 @@ class VerifierBackedReaderTools:
             joined = "; ".join(result.reasons)
             return f"REJECTED: {joined}"
 
+        if self._execution_counts is not None:
+            self._execution_counts.accepted_fact_count += 1
         if self._trace is not None:
             self._trace.emit(
                 "EVIDENCE_ACCEPTED",
@@ -624,6 +644,7 @@ class ReaderRunResult:
     model_usage_output_tokens: int | None = None
     model_usage_cache_read_input_tokens: int | None = None
     model_usage_cache_write_input_tokens: int | None = None
+    execution_counts: Any | None = None
 
 
 def _bundle_pages_for_lm(pages: list[DocumentPage]) -> str:
@@ -774,9 +795,12 @@ def run_reader(
     search_queries:
         Optional search strings executed via tools before extraction.
     """
+    from hive_agents.reader_diagnostics import ReaderExecutionCounts, fact_has_usable_evidence
+
     resolved_limits = limits or ReaderExecutionLimits()
     budget = _ExecutionBudget(limits=resolved_limits)
     stable_system = build_reader_stable_system(pack)
+    execution_counts = ReaderExecutionCounts()
 
     if tools is not None:
         inner_tools: ReaderTools = tools
@@ -786,6 +810,7 @@ def run_reader(
             verifier_client,
             verify_context,
             trace=trace_session,
+            execution_counts=execution_counts,
         )
     else:
         inner_tools = InMemoryReaderTools(pages)
@@ -836,6 +861,10 @@ def run_reader(
     raw_json = getattr(prediction, "extraction_json", "") or ""
     raw_facts = _parse_extraction_json(raw_json)
     candidate_facts = _normalize_facts_with_page_index(raw_facts, page_index)
+    execution_counts.candidate_fact_count = len(candidate_facts)
+    execution_counts.candidates_with_evidence_count = sum(
+        1 for fact in candidate_facts if fact_has_usable_evidence(fact)
+    )
 
     for fact in candidate_facts:
         if not fact.evidence:
@@ -865,6 +894,7 @@ def run_reader(
         model_usage_output_tokens=usage.output_tokens,
         model_usage_cache_read_input_tokens=usage.cache_read_input_tokens,
         model_usage_cache_write_input_tokens=usage.cache_write_input_tokens,
+        execution_counts=execution_counts,
     )
 
 

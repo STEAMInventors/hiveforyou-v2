@@ -31,6 +31,7 @@ from hive_agents.trace_client import (
     ReaderTraceError,
     reader_trace_config_from_env,
 )
+from hive_agents.reader_diagnostics import ReaderExecutionCounts, completed_audit_payload
 from hive_agents.trace_emitter import ReaderTraceContext, ReaderTraceSession
 from hive_agents.verifier_client import (
     ReaderVerifierClient,
@@ -208,17 +209,19 @@ def execute_study_reader(
             trace_session=trace_session,
         )
         duration_ms = int((time.perf_counter() - started) * 1000)
+        counts = result.execution_counts or ReaderExecutionCounts()
         trace_session.emit(
             "COMPLETED",
-            {
-                "durationMs": duration_ms,
-                "reasoningSteps": result.reasoning_steps,
-                "toolCalls": result.tool_calls,
-                "inputTokens": result.model_usage_input_tokens,
-                "outputTokens": result.model_usage_output_tokens,
-                "cacheReadInputTokens": result.model_usage_cache_read_input_tokens,
-                "cacheWriteInputTokens": result.model_usage_cache_write_input_tokens,
-            },
+            completed_audit_payload(
+                counts,
+                duration_ms=duration_ms,
+                reasoning_steps=result.reasoning_steps,
+                tool_calls=result.tool_calls,
+                input_tokens=result.model_usage_input_tokens,
+                output_tokens=result.model_usage_output_tokens,
+                cache_read_input_tokens=result.model_usage_cache_read_input_tokens,
+                cache_write_input_tokens=result.model_usage_cache_write_input_tokens,
+            ),
         )
         trace_session.flush()
     except ReaderTraceError as exc:
