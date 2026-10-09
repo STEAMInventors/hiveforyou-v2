@@ -52,6 +52,8 @@ class Settings(BaseSettings):
     )
     anthropic_api_key: str | None = None
     anthropic_workspace_id: str | None = None
+    agents_service_token: str | None = None
+    reader_max_request_bytes: int = Field(default=16 * 1024 * 1024, ge=1024)
 
     @field_validator("model_provider", mode="before")
     @classmethod
@@ -96,7 +98,12 @@ class Settings(BaseSettings):
             raise ValueError("MODEL_MAX_OUTPUT_TOKENS must be a positive integer")
         return parsed
 
-    @field_validator("anthropic_api_key", "anthropic_workspace_id", mode="before")
+    @field_validator(
+        "anthropic_api_key",
+        "anthropic_workspace_id",
+        "agents_service_token",
+        mode="before",
+    )
     @classmethod
     def _strip_optional_secret(cls, value: object) -> object:
         if value is None:
@@ -110,6 +117,13 @@ class Settings(BaseSettings):
         if self.agents_json is not None:
             return Path(self.agents_json).expanduser().resolve()
         return default_study_agents_json_path()
+
+    def require_agents_service_token(self) -> str:
+        if not self.agents_service_token:
+            raise ValueError(
+                "HIVE_AGENTS_SERVICE_TOKEN is required for study reader requests."
+            )
+        return self.agents_service_token
 
     def validate_lm_env(self) -> None:
         """Fail clearly when LM env is incomplete or unsupported."""
