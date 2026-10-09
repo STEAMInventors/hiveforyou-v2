@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from pathlib import Path
 from typing import Any
 from unittest.mock import MagicMock
 
@@ -21,6 +22,7 @@ from hive_agents.reader import (
     ReaderMissingPagesError,
     StablePrefixLM,
     build_reader_stable_system,
+    partition_dspy_lm_call,
     page_plain_text,
     reader_instructions_from_pack,
     run_reader,
@@ -355,8 +357,149 @@ def test_stable_prefix_lm_uses_build_dspy_lm_messages(
         HiveReaderModule()(untrusted_document_bundle='{"pages":[]}')
 
     assert wrapped.last_messages is not None
-    assert wrapped.last_messages[0]["content"] == stable
+    system_content = wrapped.last_messages[0]["content"]
+    assert system_content.startswith(stable)
+    assert "## DSPy extraction task" in system_content
+    assert "extraction_json" in system_content
     assert wrapped.last_messages[0]["role"] == "system"
     assert wrapped.last_messages[1]["role"] == "user"
+    assert "## Untrusted document bundle" in wrapped.last_messages[1]["content"]
     assert captured["payloads"]
-    assert captured["payloads"][0]["system"][0]["text"] == stable
+    assert captured["payloads"][0]["system"][0]["text"] == system_content
+
+
+_UNTRUSTED_BUNDLE_MARKER = "[[ ## untrusted_document_bundle ## ]]"
+L001_REFERRAL_PAGE = (
+    Path(__file__).resolve().parents[2]
+    / "engine"
+    / "intake"
+    / "fixtures"
+    / "l001"
+    / "document-pages"
+    / "01_initial_referral.json"
+)
+
+
+def _load_l001_referral_page() -> list[DocumentPage]:
+    payload = json.loads(L001_REFERRAL_PAGE.read_text(encoding="utf-8"))
+    pages: list[DocumentPage] = []
+    for page in payload["documentPages"]["pages"]:
+        pages.append(
+            DocumentPage(
+                documentId=page["documentId"],
+                pageNumber=page["pageNumber"],
+                words=[PageWord(seq=w["seq"], text=w["text"]) for w in page["words"]],
+            )
+        )
+    return pages
+
+
+def test_dspy_handoff_keeps_task_structure_in_system_not_user_blob(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("HIVE_ANTHROPIC_API_KEY", "test-key")
+    get_settings.cache_clear()
+
+    class CapturingLM:
+        model = "capturing-lm"
+        history: list[dict[str, Any]] = []
+
+        def __call__(self, **kwargs: Any) -> list[str]:
+            return [
+                '[[ ## extraction_json ## ]]\n{"candidateFacts":[]}\n[[ ## completed ## ]]'
+            ]
+
+    hive_stable = "HIVE_STABLE_MARKER"
+    wrapped = StablePrefixLM(CapturingLM(), hive_stable)
+    l001_pages = _load_l001_referral_page()
+    bundle = json.dumps(
+        {
+            "schemaHint": "canonical-study-proposal/4 candidate claims only",
+            "pages": [
+                {
+                    "documentId": l001_pages[0].documentId,
+                    "pageNumber": l001_pages[0].pageNumber,
+                    "text": page_plain_text(l001_pages[0]),
+                }
+            ],
+        }
+    )
+    with dspy.context(lm=wrapped):
+        HiveReaderModule()(untrusted_document_bundle=bundle)
+
+    assert wrapped.last_messages is not None
+    system = wrapped.last_messages[0]["content"]
+    user = wrapped.last_messages[1]["content"]
+    assert hive_stable in system
+    assert "Your input fields are:" in system
+    assert "[system]" not in user
+    assert "## Untrusted document bundle" in user
+    assert user.find("## Output format") > user.find(_UNTRUSTED_BUNDLE_MARKER)
+    assert "Maya Carter" in user
+
+
+def test_partition_dspy_lm_call_unit() -> None:
+    dspy_system, user = partition_dspy_lm_call(
+        prompt=None,
+        messages=[
+            {"role": "system", "content": "task structure"},
+            {
+                "role": "user",
+                "content": (
+                    f"{_UNTRUSTED_BUNDLE_MARKER}\n"
+                    '{"pages":[]}\n\n'
+                    "Respond with the corresponding output fields, ending with completed."
+                ),
+            },
+        ],
+    )
+    assert dspy_system == "task structure"
+    assert "## Untrusted document bundle" in user
+    assert "## Output format" in user
+    assert "[system]" not in user
+
+
+def test_l001_fixture_parseable_candidate_under_mocked_dspy_lm(
+    iep_pack,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    pages = _load_l001_referral_page()
+    doc_id = pages[0].documentId
+    quote = "Maya Carter"
+    payload = json.dumps(
+        {
+            "candidateFacts": [
+                {
+                    "id": "l001-student-name",
+                    "construct": {"measure": "student_name"},
+                    "value": {"kind": "text", "textValue": quote},
+                    "modality": "observed",
+                    "evidence": [
+                        {
+                            "sourceDocumentId": doc_id,
+                            "page": 1,
+                            "quote": quote,
+                        }
+                    ],
+                }
+            ]
+        }
+    )
+
+    def fake_forward(self, untrusted_document_bundle: str) -> dspy.Prediction:
+        assert quote in untrusted_document_bundle
+        assert doc_id in untrusted_document_bundle
+        return dspy.Prediction(extraction_json=payload)
+
+    monkeypatch.setattr(HiveReaderModule, "forward", fake_forward)
+    monkeypatch.setenv("HIVE_ANTHROPIC_API_KEY", "test-key")
+    get_settings.cache_clear()
+
+    lm = create_dspy_lm(lm_factory=lambda **_: MagicMock(spec=dspy.LM))
+    result = run_reader(pack=iep_pack, pages=pages, lm=lm)
+
+    assert len(result.candidate_facts) == 1
+    fact = result.candidate_facts[0]
+    assert fact.construct.measure == "student_name"
+    assert fact.evidence[0].quote == quote
+    assert fact.evidence[0].sourceDocumentId == doc_id
