@@ -105,7 +105,7 @@ const studyRunRow: HiveRow = {
   domain_pack_version: "1",
   question_set_version: "q/1",
   answer_snapshot_hash: "hash",
-  provider_id: "openai",
+  engine_provider: "openai",
   provider_mode: "openai",
   prompt_id: "canonical-study-v4",
   prompt_version: "v4",

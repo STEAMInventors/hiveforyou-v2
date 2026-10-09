@@ -7,7 +7,18 @@ import * as esbuild from "esbuild";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const workerRoot = path.join(__dirname, "..");
 const repoRoot = path.join(workerRoot, "..");
-const outFile = path.join(workerRoot, "dist/main.js");
+const BUNDLE_TARGETS = [
+  {
+    entry: path.join(workerRoot, "src/main.ts"),
+    outFile: path.join(workerRoot, "dist/main.js"),
+    label: "dist/main.js",
+  },
+  {
+    entry: path.join(workerRoot, "scripts/l001-agentic-reader-qualification.ts"),
+    outFile: path.join(workerRoot, "dist/l001-agentic-reader-qualification.js"),
+    label: "dist/l001-agentic-reader-qualification.js",
+  },
+];
 
 const ESM_BANNER = `import { createRequire } from "node:module";
 const require = createRequire(import.meta.url);
@@ -20,6 +31,8 @@ const RUNTIME_EXTERNAL_PREFIXES = [
   "pdfjs-dist",
   "onnxruntime-node",
   "@gutenye/ocr-node",
+  "zod",
+  "standardwebhooks",
 ];
 
 /** If any marker appears in dist/main.js, that package was bundled instead of external. */
@@ -72,44 +85,47 @@ function dedupeCreateRequireImports(bundleText) {
 
 mkdirSync(path.join(workerRoot, "dist"), { recursive: true });
 
-await esbuild.build({
-  entryPoints: [path.join(workerRoot, "src/main.ts")],
-  bundle: true,
-  platform: "node",
-  target: "node22",
-  format: "esm",
-  outfile: outFile,
-  banner: { js: ESM_BANNER },
-  sourcemap: true,
-  logLevel: "info",
-  plugins: [
-    {
-      name: "bundle-with-runtime-externals",
-      setup(build) {
-        build.onResolve({ filter: /.*/ }, (args) => {
-          if (args.path.startsWith(".") || path.isAbsolute(args.path)) {
-            return undefined;
-          }
-          if (args.path.startsWith("node:")) {
-            return undefined;
-          }
-          if (isHiveWorkspaceImport(args.path)) {
-            return undefined;
-          }
-          if (isRuntimeExternal(args.path)) {
-            return { path: args.path, external: true };
-          }
-          return undefined;
-        });
-      },
-    },
-  ],
-});
+const runtimeExternalPlugin = {
+  name: "bundle-with-runtime-externals",
+  setup(build) {
+    build.onResolve({ filter: /.*/ }, (args) => {
+      if (args.path.startsWith(".") || path.isAbsolute(args.path)) {
+        return undefined;
+      }
+      if (args.path.startsWith("node:")) {
+        return undefined;
+      }
+      if (isHiveWorkspaceImport(args.path)) {
+        return undefined;
+      }
+      if (isRuntimeExternal(args.path)) {
+        return { path: args.path, external: true };
+      }
+      return undefined;
+    });
+  },
+};
 
-let bundleText = readFileSync(outFile, "utf8");
-bundleText = dedupeCreateRequireImports(bundleText);
-writeFileSync(outFile, bundleText, "utf8");
-assertNoBundledRuntimePackages(bundleText);
+for (const target of BUNDLE_TARGETS) {
+  await esbuild.build({
+    entryPoints: [target.entry],
+    bundle: true,
+    platform: "node",
+    target: "node22",
+    format: "esm",
+    outfile: target.outFile,
+    banner: { js: ESM_BANNER },
+    sourcemap: true,
+    logLevel: "info",
+    plugins: [runtimeExternalPlugin],
+  });
+
+  let bundleText = readFileSync(target.outFile, "utf8");
+  bundleText = dedupeCreateRequireImports(bundleText);
+  writeFileSync(target.outFile, bundleText, "utf8");
+  assertNoBundledRuntimePackages(bundleText);
+  console.info(`[worker] bundled ${target.label} (Inngest + native packages external)`);
+}
 
 const workerPkg = readJson("worker/package.json");
 const dependencies = Object.fromEntries(
@@ -135,5 +151,3 @@ writeFileSync(
   `${JSON.stringify(runtimePackage, null, 2)}\n`,
   "utf8",
 );
-
-console.info("[worker] bundled dist/main.js (Inngest + native packages external)");

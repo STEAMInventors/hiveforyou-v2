@@ -47,7 +47,10 @@ WORKDIR /app
 
 COPY --from=build /repo/worker/dist/main.js ./dist/main.js
 COPY --from=build /repo/worker/dist/main.js.map ./dist/main.js.map
+COPY --from=build /repo/worker/dist/l001-agentic-reader-qualification.js ./dist/l001-agentic-reader-qualification.js
+COPY --from=build /repo/worker/dist/l001-agentic-reader-qualification.js.map ./dist/l001-agentic-reader-qualification.js.map
 COPY --from=build /repo/worker/dist/package.json ./package.json
+COPY engine/domain-packs/iep/study/agents.json ./pack/agents.json
 
 RUN npm install --omit=dev \
   && npm cache clean --force \

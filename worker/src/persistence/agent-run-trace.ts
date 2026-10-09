@@ -300,7 +300,7 @@ function mapStudyRunRow(row: HiveRow): CanonicalStudyRun {
     domainPackVersion: String(row.domain_pack_version),
     questionSetVersion: String(row.question_set_version),
     answerSnapshotHash: String(row.answer_snapshot_hash),
-    providerId: String(row.provider_id),
+    providerId: String(row.engine_provider),
     providerMode: String(row.provider_mode) as CanonicalStudyRun["providerMode"],
     promptId: String(row.prompt_id),
     promptVersion: String(row.prompt_version),

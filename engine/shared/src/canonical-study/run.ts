@@ -33,7 +33,7 @@ export type CanonicalStudyRun = {
   questionSetVersion: string;
   answerSnapshotHash: string;
   providerId: string;
-  providerMode: "fixture" | "openai" | "unconfigured";
+  providerMode: "fixture" | "openai" | "anthropic" | "unconfigured";
   promptId?: string;
   promptVersion?: string;
   promptSha256?: string;
