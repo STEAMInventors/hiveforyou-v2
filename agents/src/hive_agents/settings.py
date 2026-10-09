@@ -1,10 +1,16 @@
 from functools import lru_cache
 from pathlib import Path
-
+from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 STUDY_AGENTS_EXPORT_SCHEMA_VERSION = "study-agents/1"
 DEFAULT_DOMAIN_ID = "iep"
+
+DEFAULT_MODEL_PROVIDER = "anthropic"
+DEFAULT_MODEL_NAME = "claude-opus-5-5"
+DEFAULT_MODEL_MAX_OUTPUT_TOKENS = 16_000
+
+SUPPORTED_MODEL_PROVIDERS = frozenset({"anthropic"})
 
 
 def repo_root_from_module_file(module_file: str | Path) -> Path:
@@ -24,14 +30,97 @@ def default_study_agents_json_path(
 
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_prefix="HIVE_", extra="ignore")
+    model_config = SettingsConfigDict(
+        env_prefix="HIVE_",
+        extra="ignore",
+        populate_by_name=True,
+    )
 
     agents_json: Path | None = None
+
+    model_provider: str = Field(
+        default=DEFAULT_MODEL_PROVIDER,
+        validation_alias="MODEL_PROVIDER",
+    )
+    model_name: str = Field(
+        default=DEFAULT_MODEL_NAME,
+        validation_alias="MODEL_NAME",
+    )
+    model_max_output_tokens: int = Field(
+        default=DEFAULT_MODEL_MAX_OUTPUT_TOKENS,
+        validation_alias="MODEL_MAX_OUTPUT_TOKENS",
+    )
+    anthropic_api_key: str | None = None
+    anthropic_workspace_id: str | None = None
+
+    @field_validator("model_provider", mode="before")
+    @classmethod
+    def _normalize_model_provider(cls, value: object) -> object:
+        if value is None:
+            return DEFAULT_MODEL_PROVIDER
+        if isinstance(value, str):
+            normalized = value.strip().lower()
+            if not normalized:
+                return DEFAULT_MODEL_PROVIDER
+            if normalized not in SUPPORTED_MODEL_PROVIDERS:
+                raise ValueError(
+                    f'MODEL_PROVIDER must be "anthropic" (got "{value}")'
+                )
+            return normalized
+        raise ValueError("MODEL_PROVIDER must be a string")
+
+    @field_validator("model_name", mode="before")
+    @classmethod
+    def _normalize_model_name(cls, value: object) -> object:
+        if value is None:
+            return DEFAULT_MODEL_NAME
+        if isinstance(value, str):
+            stripped = value.strip()
+            return stripped or DEFAULT_MODEL_NAME
+        return value
+
+    @field_validator("model_max_output_tokens", mode="before")
+    @classmethod
+    def _validate_max_output_tokens(cls, value: object) -> object:
+        if value is None or (isinstance(value, str) and not value.strip()):
+            return DEFAULT_MODEL_MAX_OUTPUT_TOKENS
+        if isinstance(value, bool):
+            raise ValueError("MODEL_MAX_OUTPUT_TOKENS must be a positive integer")
+        if isinstance(value, str):
+            parsed = int(value.strip(), 10)
+        elif isinstance(value, int):
+            parsed = value
+        else:
+            raise ValueError("MODEL_MAX_OUTPUT_TOKENS must be a positive integer")
+        if parsed <= 0:
+            raise ValueError("MODEL_MAX_OUTPUT_TOKENS must be a positive integer")
+        return parsed
+
+    @field_validator("anthropic_api_key", "anthropic_workspace_id", mode="before")
+    @classmethod
+    def _strip_optional_secret(cls, value: object) -> object:
+        if value is None:
+            return None
+        if isinstance(value, str):
+            stripped = value.strip()
+            return stripped or None
+        return value
 
     def resolved_agents_json_path(self) -> Path:
         if self.agents_json is not None:
             return Path(self.agents_json).expanduser().resolve()
         return default_study_agents_json_path()
+
+    def validate_lm_env(self) -> None:
+        """Fail clearly when LM env is incomplete or unsupported."""
+        if self.model_provider not in SUPPORTED_MODEL_PROVIDERS:
+            raise ValueError(
+                f'MODEL_PROVIDER must be "anthropic" (got "{self.model_provider}")'
+            )
+        if not self.anthropic_api_key:
+            raise ValueError(
+                "HIVE_ANTHROPIC_API_KEY is required when MODEL_PROVIDER=anthropic"
+            )
 
 
 @lru_cache
