@@ -277,6 +277,66 @@ def attach_word_spans(page: DocumentPage, quote: str) -> tuple[int | None, int |
     return span_start, span_end
 
 
+@dataclass(frozen=True)
+class ReaderVerifyContext:
+    case_id: str
+    user_id: str
+
+
+class VerifierBackedReaderTools:
+    """Reader tools that delegate ``propose_fact`` to the TypeScript verifier."""
+
+    def __init__(
+        self,
+        pages: list[DocumentPage],
+        verifier_client: Any,
+        context: ReaderVerifyContext,
+    ) -> None:
+        self._inner = InMemoryReaderTools(pages)
+        self._verifier_client = verifier_client
+        self._context = context
+        self.last_rejection_reasons: list[str] | None = None
+
+    @property
+    def proposed_facts(self) -> list[CandidateFact]:
+        return self._inner.proposed_facts
+
+    def list_documents(self) -> list[DocumentSummary]:
+        return self._inner.list_documents()
+
+    def read_pages(self, document_id: str, page_numbers: list[int]) -> list[DocumentPage]:
+        return self._inner.read_pages(document_id, page_numbers)
+
+    def search(
+        self,
+        query: str,
+        *,
+        document_ids: list[str] | None = None,
+    ) -> list[SearchHit]:
+        return self._inner.search(query, document_ids=document_ids)
+
+    def propose_fact(self, fact: CandidateFactDraft) -> str:
+        from hive_agents.verifier_client import ReaderVerifierError
+
+        try:
+            result = self._verifier_client.verify_fact(
+                case_id=self._context.case_id,
+                user_id=self._context.user_id,
+                fact=fact,
+            )
+        except ReaderVerifierError as exc:
+            self.last_rejection_reasons = [str(exc)]
+            return f"REJECTED: {exc}"
+
+        if not result.accepted:
+            self.last_rejection_reasons = list(result.reasons)
+            joined = "; ".join(result.reasons)
+            return f"REJECTED: {joined}"
+
+        self.last_rejection_reasons = None
+        return self._inner.propose_fact(fact)
+
+
 class InMemoryReaderTools:
     """In-memory tool backend for tests and offline Reader runs."""
 
@@ -589,6 +649,8 @@ def run_reader(
     pages: list[DocumentPage],
     lm: dspy.LM,
     tools: ReaderTools | None = None,
+    verifier_client: Any | None = None,
+    verify_context: ReaderVerifyContext | None = None,
     limits: ReaderExecutionLimits | None = None,
     document_ids: list[str] | None = None,
     page_numbers_by_document: dict[str, list[int]] | None = None,
@@ -620,7 +682,12 @@ def run_reader(
     budget = _ExecutionBudget(limits=resolved_limits)
     stable_system = build_reader_stable_system(pack)
 
-    inner_tools: ReaderTools = tools or InMemoryReaderTools(pages)
+    if tools is not None:
+        inner_tools: ReaderTools = tools
+    elif verifier_client is not None and verify_context is not None:
+        inner_tools = VerifierBackedReaderTools(pages, verifier_client, verify_context)
+    else:
+        inner_tools = InMemoryReaderTools(pages)
     bounded_tools = BoundedReaderTools(inner_tools, budget)
 
     summaries = bounded_tools.list_documents()
@@ -720,7 +787,9 @@ __all__ = [
     "ReaderMissingPagesError",
     "ReaderRunResult",
     "ReaderTools",
+    "ReaderVerifyContext",
     "SearchHit",
+    "VerifierBackedReaderTools",
     "attach_word_spans",
     "build_reader_stable_system",
     "load_pack_and_run_reader",

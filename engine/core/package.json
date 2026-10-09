@@ -16,6 +16,7 @@
     "./pack-study-from-projection": "./src/study/narrative/build-pack-study-from-projection.ts",
     "./case-view-plan": "./src/projections/project-case-view-v2-plan.ts",
     "./study": "./src/study/index.ts",
+    "./study/validate-document-evidence": "./src/study/validate-document-evidence.ts",
     "./story/prefer-pack-narrative": "./src/study/story/prefer-pack-narrative.ts",
     "./document/page-model": "./src/document/page-model.ts",
     "./document/assembly": "./src/document/assembly.ts",
@@ -24,7 +25,11 @@
     "./study/shadow/run-shadow-study": "./src/study/shadow/run-shadow-study.ts",
     "./study/shadow/shadow-steps": "./src/study/shadow/shadow-steps.ts",
     "./study/shadow/shadow-v4": "./src/study/shadow/shadow-v4.ts",
-    "./study/shadow/shadow-state": "./src/study/shadow/shadow-state.ts"
+    "./study/shadow/shadow-state": "./src/study/shadow/shadow-state.ts",
+    "./atoms/map-v4-evidence": "./src/atoms/map-v4-evidence.ts",
+    "./shadow-golden/ensure-document-pages": "./scripts/shadow-golden/ensure-document-pages.ts",
+    "./shadow-golden/prompt-hash": "./scripts/shadow-golden/prompt-hash.ts",
+    "./eval-draft/load-recovered-corpus": "./scripts/eval-draft/load-recovered-corpus.ts"
   },
   "scripts": {
     "generate:prompts": "node scripts/generate-prompts.mjs",

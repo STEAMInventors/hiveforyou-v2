@@ -4,6 +4,8 @@ import { assertWorkerStartPolicy, readWorkerEnv } from "./env.js";
 import { startHeartbeat } from "./heartbeat.js";
 import { runBootCheckIfRequested } from "./boot-check.js";
 import { runSelfCheckIfRequested } from "./self-check.js";
+import { createWorkerAdminSupabase } from "./supabase/admin.js";
+import { startVerifierServerIfConfigured } from "./verifier/server.js";
 
 async function startConnect(): Promise<void> {
   const { connect } = await import("inngest/connect");
@@ -68,6 +70,8 @@ async function main(): Promise<void> {
   assertWorkerStartPolicy();
   const env = readWorkerEnv();
   startHeartbeat();
+  const supabase = createWorkerAdminSupabase(env);
+  await startVerifierServerIfConfigured(supabase, env);
   if (env.HIVE_WORKER_MODE === "serve") {
     await startServe();
     return;
