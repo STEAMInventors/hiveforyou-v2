@@ -22,3 +22,6 @@ services:
     env_file:
       - agents.config.env
       - /etc/hive-worker/worker.env
+    environment:
+      MODEL_PROVIDER: anthropic
+      MODEL_NAME: claude-opus-5-5
