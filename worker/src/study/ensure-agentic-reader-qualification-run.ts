@@ -1,4 +1,4 @@
-﻿import { randomUUID } from "node:crypto";
+import { randomUUID } from "node:crypto";
 
 import {
   assertL001QualificationDocumentScope,
@@ -87,7 +87,25 @@ export async function ensureAgenticReaderQualificationRun(
   }
 
   const prompt = loadEffectiveStudyAgentsPromptMetadata({ env });
-  const modelIdentity = resolveAgenticReaderModelIdentity(env);
+  let modelIdentity: ReturnType<typeof resolveAgenticReaderModelIdentity>;
+  try {
+    modelIdentity = resolveAgenticReaderModelIdentity(env);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    if (message === "READER_MODEL_IDENTITY_UNCONFIGURED") {
+      throw new AgenticReaderQualificationError(
+        "HIVE_AGENTS_MODEL_PROVIDER and HIVE_AGENTS_MODEL_NAME are required for Reader qualification metadata.",
+        "READER_MODEL_IDENTITY_UNCONFIGURED",
+      );
+    }
+    if (message === "READER_MODEL_IDENTITY_MISMATCH") {
+      throw new AgenticReaderQualificationError(
+        "HIVE_AGENTS_MODEL_* must match the effective hive-agents Reader model (including Docker overrides).",
+        "READER_MODEL_IDENTITY_MISMATCH",
+      );
+    }
+    throw error;
+  }
   const documentFingerprint = fingerprintRegisteredSourceDocuments(sha256Values);
   const engine = buildAgenticReaderQualificationEngineFingerprint({
     promptSha256: prompt.promptSha256,

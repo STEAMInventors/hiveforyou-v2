@@ -133,25 +133,84 @@ export function loadEffectiveStudyAgentsPromptMetadata(input?: {
   };
 }
 
+const DEFAULT_HIVE_AGENTS_CONFIG_MODEL_PROVIDER = "anthropic";
+const DEFAULT_HIVE_AGENTS_CONFIG_MODEL_NAME = "claude-opus-5-5";
+
+/**
+ * Effective hive-agents Reader model after Docker Compose env merge on Oracle.
+ * Later layers win: agents.config.env < shared worker.env on the agents container < compose `environment`.
+ * hive-worker v4 MODEL_* keys are intentionally excluded.
+ */
+export function resolveEffectiveHiveAgentsModelIdentity(
+  env: Record<string, string | undefined> = process.env,
+): Pick<AgenticReaderModelIdentity, "modelProvider" | "modelName"> {
+  let modelProvider =
+    env.HIVE_AGENTS_CONFIG_MODEL_PROVIDER?.trim()?.toLowerCase() ||
+    DEFAULT_HIVE_AGENTS_CONFIG_MODEL_PROVIDER;
+  let modelName =
+    env.HIVE_AGENTS_CONFIG_MODEL_NAME?.trim() || DEFAULT_HIVE_AGENTS_CONFIG_MODEL_NAME;
+
+  const containerProvider = env.HIVE_AGENTS_CONTAINER_MODEL_PROVIDER?.trim();
+  const containerName = env.HIVE_AGENTS_CONTAINER_MODEL_NAME?.trim();
+  if (containerProvider) {
+    modelProvider = containerProvider.toLowerCase();
+  }
+  if (containerName) {
+    modelName = containerName;
+  }
+
+  const composeProvider = env.HIVE_AGENTS_DOCKER_COMPOSE_MODEL_PROVIDER?.trim();
+  const composeName = env.HIVE_AGENTS_DOCKER_COMPOSE_MODEL_NAME?.trim();
+  if (composeProvider) {
+    modelProvider = composeProvider.toLowerCase();
+  }
+  if (composeName) {
+    modelName = composeName;
+  }
+
+  return { modelProvider, modelName };
+}
+
+function providerModeForHiveAgentsModel(
+  modelProvider: string,
+): CanonicalStudyRun["providerMode"] {
+  const normalizedProvider = modelProvider.toLowerCase();
+  if (normalizedProvider === "anthropic") {
+    return "anthropic";
+  }
+  if (normalizedProvider === "openai") {
+    return "openai";
+  }
+  if (normalizedProvider === "fixture") {
+    return "fixture";
+  }
+  return "unconfigured";
+}
+
+/** Qualification metadata uses hive-agents Reader model env, not hive-worker v4 MODEL_* keys. */
 export function resolveAgenticReaderModelIdentity(
   env: Record<string, string | undefined> = process.env,
 ): AgenticReaderModelIdentity {
-  const modelProvider = env.MODEL_PROVIDER?.trim() || "anthropic";
-  const modelName = env.MODEL_NAME?.trim() || "claude-opus-5-5";
-  const normalizedProvider = modelProvider.toLowerCase();
-  let providerMode: CanonicalStudyRun["providerMode"] = "unconfigured";
-  if (normalizedProvider === "anthropic") {
-    providerMode = "anthropic";
-  } else if (normalizedProvider === "openai") {
-    providerMode = "openai";
-  } else if (normalizedProvider === "fixture") {
-    providerMode = "fixture";
+  const configuredProvider = env.HIVE_AGENTS_MODEL_PROVIDER?.trim();
+  const configuredName = env.HIVE_AGENTS_MODEL_NAME?.trim();
+  if (!configuredProvider || !configuredName) {
+    throw new Error("READER_MODEL_IDENTITY_UNCONFIGURED");
   }
+
+  const effective = resolveEffectiveHiveAgentsModelIdentity(env);
+  const normalizedConfiguredProvider = configuredProvider.toLowerCase();
+  if (
+    normalizedConfiguredProvider !== effective.modelProvider ||
+    configuredName !== effective.modelName
+  ) {
+    throw new Error("READER_MODEL_IDENTITY_MISMATCH");
+  }
+
   return {
-    modelProvider: normalizedProvider,
-    modelName,
-    providerId: `hive-agents-${normalizedProvider}`,
-    providerMode,
+    modelProvider: normalizedConfiguredProvider,
+    modelName: configuredName,
+    providerId: `hive-agents-${normalizedConfiguredProvider}`,
+    providerMode: providerModeForHiveAgentsModel(normalizedConfiguredProvider),
   };
 }
 

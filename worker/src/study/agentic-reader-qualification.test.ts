@@ -20,6 +20,17 @@ import {
 import { loadTrustedDocumentPageBundle } from "./load-trusted-document-pages.js";
 import { runAgenticReaderQualification } from "./run-agentic-reader-qualification.js";
 
+const READER_QUALIFICATION_MODEL_ENV: Record<string, string> = {
+  MODEL_PROVIDER: "openai",
+  MODEL_NAME: "gpt-5.6-sol",
+  HIVE_AGENTS_CONFIG_MODEL_PROVIDER: "anthropic",
+  HIVE_AGENTS_CONFIG_MODEL_NAME: "claude-opus-5-5",
+  HIVE_AGENTS_DOCKER_COMPOSE_MODEL_PROVIDER: "anthropic",
+  HIVE_AGENTS_DOCKER_COMPOSE_MODEL_NAME: "claude-opus-5-5",
+  HIVE_AGENTS_MODEL_PROVIDER: "anthropic",
+  HIVE_AGENTS_MODEL_NAME: "claude-opus-5-5",
+};
+
 const USER_A = "11111111-1111-4111-8111-111111111111";
 const USER_B = "22222222-2222-4222-8222-222222222222";
 const CASE_A = "44444444-4444-4444-8444-444444444444";
@@ -165,10 +176,28 @@ function l001CachedObjects(userId: string): Map<string, Uint8Array> {
 }
 
 describe("agentic reader qualification worker flow", () => {
+  it("records anthropic Reader qualification metadata when worker defaults to openai", async () => {
+    const { gateway } = createStatefulGateway({
+      caseUserId: USER_A,
+      sourceDocuments: l001SourceDocuments(USER_A),
+      objects: l001CachedObjects(USER_A),
+    });
+    const result = await ensureAgenticReaderQualificationRun({
+      env: READER_QUALIFICATION_MODEL_ENV,
+      gateway,
+      caseId: CASE_A,
+      userId: USER_A,
+    });
+    expect(result.modelIdentity.modelProvider).toBe("anthropic");
+    expect(result.modelIdentity.modelName).toBe("claude-opus-5-5");
+    expect(result.run.providerMode).toBe("anthropic");
+    expect(result.run.providerId).toBe("hive-agents-anthropic");
+  });
   it("rejects case ownership failures", async () => {
     const { gateway } = createStatefulGateway({ caseUserId: USER_B });
     await expect(
       ensureAgenticReaderQualificationRun({
+        env: READER_QUALIFICATION_MODEL_ENV,
         gateway,
         caseId: CASE_A,
         userId: USER_A,
@@ -190,6 +219,7 @@ describe("agentic reader qualification worker flow", () => {
     });
     await expect(
       ensureAgenticReaderQualificationRun({
+        env: READER_QUALIFICATION_MODEL_ENV,
         gateway,
         caseId: CASE_A,
         userId: USER_A,
@@ -285,11 +315,13 @@ describe("agentic reader qualification worker flow", () => {
       sourceDocuments: l001SourceDocuments(USER_A),
     });
     const first = await ensureAgenticReaderQualificationRun({
+      env: READER_QUALIFICATION_MODEL_ENV,
       gateway,
       caseId: CASE_A,
       userId: USER_A,
     });
     const second = await ensureAgenticReaderQualificationRun({
+      env: READER_QUALIFICATION_MODEL_ENV,
       gateway,
       caseId: CASE_A,
       userId: USER_A,
@@ -304,8 +336,9 @@ describe("agentic reader qualification worker flow", () => {
       sourceDocuments: l001SourceDocuments(USER_A),
       objects: l001CachedObjects(USER_A),
     });
-    await ensureAgenticReaderQualificationRun({ gateway, caseId: CASE_A, userId: USER_A });
+    await ensureAgenticReaderQualificationRun({ gateway, caseId: CASE_A, userId: USER_A, env: READER_QUALIFICATION_MODEL_ENV });
     const result = await runAgenticReaderQualification({
+      env: READER_QUALIFICATION_MODEL_ENV,
       gateway,
       documentPagesBucket: "document-pages",
       caseId: CASE_A,
@@ -330,9 +363,10 @@ describe("agentic reader qualification worker flow", () => {
       sourceDocuments: l001SourceDocuments(USER_A),
       objects: l001CachedObjects(USER_A),
     });
-    await ensureAgenticReaderQualificationRun({ gateway, caseId: CASE_A, userId: USER_A });
+    await ensureAgenticReaderQualificationRun({ gateway, caseId: CASE_A, userId: USER_A, env: READER_QUALIFICATION_MODEL_ENV });
 
     const noAudit = await runAgenticReaderQualification({
+      env: READER_QUALIFICATION_MODEL_ENV,
       gateway,
       documentPagesBucket: "document-pages",
       caseId: CASE_A,
@@ -350,6 +384,7 @@ describe("agentic reader qualification worker flow", () => {
     expect(noAudit.code).toBe("READER_AUDIT_NOT_PERSISTED");
 
     const zeroAccepted = await runAgenticReaderQualification({
+      env: READER_QUALIFICATION_MODEL_ENV,
       gateway,
       documentPagesBucket: "document-pages",
       caseId: CASE_A,
@@ -378,10 +413,11 @@ describe("agentic reader qualification worker flow", () => {
       sourceDocuments: l001SourceDocuments(USER_A),
       objects: l001CachedObjects(USER_A),
     });
-    await ensureAgenticReaderQualificationRun({ gateway, caseId: CASE_A, userId: USER_A });
+    await ensureAgenticReaderQualificationRun({ gateway, caseId: CASE_A, userId: USER_A, env: READER_QUALIFICATION_MODEL_ENV });
     const prompt = loadEffectiveStudyAgentsPromptMetadata();
 
     const result = await runAgenticReaderQualification({
+      env: READER_QUALIFICATION_MODEL_ENV,
       gateway,
       documentPagesBucket: "document-pages",
       caseId: CASE_A,
@@ -438,6 +474,7 @@ describe("agentic reader qualification worker flow", () => {
       objects: l001CachedObjects(USER_A),
     });
     const ensured = await ensureAgenticReaderQualificationRun({
+      env: READER_QUALIFICATION_MODEL_ENV,
       gateway,
       caseId: CASE_A,
       userId: USER_A,
@@ -450,6 +487,7 @@ describe("agentic reader qualification worker flow", () => {
 
     const readerClient = vi.fn();
     const skipped = await runAgenticReaderQualification({
+      env: READER_QUALIFICATION_MODEL_ENV,
       gateway,
       documentPagesBucket: "document-pages",
       caseId: CASE_A,

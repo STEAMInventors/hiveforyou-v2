@@ -16,7 +16,24 @@ import {
   fingerprintL001QualificationCorpus,
   loadEffectiveStudyAgentsPromptMetadata,
   resolveAgenticReaderModelIdentity,
+  resolveEffectiveHiveAgentsModelIdentity,
 } from "./agentic-reader-qualification";
+
+function oracleReaderQualificationModelEnv(
+  overrides: Record<string, string | undefined> = {},
+): Record<string, string | undefined> {
+  return {
+    MODEL_PROVIDER: "openai",
+    MODEL_NAME: "gpt-5.6-sol",
+    HIVE_AGENTS_CONFIG_MODEL_PROVIDER: "anthropic",
+    HIVE_AGENTS_CONFIG_MODEL_NAME: "claude-opus-5-5",
+    HIVE_AGENTS_DOCKER_COMPOSE_MODEL_PROVIDER: "anthropic",
+    HIVE_AGENTS_DOCKER_COMPOSE_MODEL_NAME: "claude-opus-5-5",
+    HIVE_AGENTS_MODEL_PROVIDER: "anthropic",
+    HIVE_AGENTS_MODEL_NAME: "claude-opus-5-5",
+    ...overrides,
+  };
+}
 
 function minimalStudyRequest(): StartCanonicalStudyRequest {
   return {
@@ -93,10 +110,7 @@ describe("agentic reader qualification", () => {
     const prompt = loadEffectiveStudyAgentsPromptMetadata({
       agentsJsonPath: defaultStudyAgentsJsonPath("iep"),
     });
-    const model = resolveAgenticReaderModelIdentity({
-      MODEL_PROVIDER: "anthropic",
-      MODEL_NAME: "claude-opus-5-5",
-    });
+    const model = resolveAgenticReaderModelIdentity(oracleReaderQualificationModelEnv());
     const engine = buildAgenticReaderQualificationEngineFingerprint({
       promptSha256: prompt.promptSha256,
       modelIdentity: model,
@@ -149,14 +163,52 @@ describe("agentic reader qualification", () => {
     expect(meta.artifact.agents.reader.trim().length).toBeGreaterThan(40);
   });
 
+  it("records anthropic Reader identity when worker v4 defaults to openai", () => {
+    const model = resolveAgenticReaderModelIdentity(oracleReaderQualificationModelEnv());
+    expect(model.modelProvider).toBe("anthropic");
+    expect(model.modelName).toBe("claude-opus-5-5");
+    expect(model.providerId).toBe("hive-agents-anthropic");
+  });
+
+  it("fail-closes when qualification Reader identity is missing or mismatched", () => {
+    expect(() =>
+      resolveAgenticReaderModelIdentity(
+        oracleReaderQualificationModelEnv({
+          HIVE_AGENTS_MODEL_PROVIDER: undefined,
+        }),
+      ),
+    ).toThrow("READER_MODEL_IDENTITY_UNCONFIGURED");
+
+    expect(() =>
+      resolveAgenticReaderModelIdentity(
+        oracleReaderQualificationModelEnv({
+          HIVE_AGENTS_MODEL_PROVIDER: "openai",
+          HIVE_AGENTS_MODEL_NAME: "gpt-5.6-sol",
+        }),
+      ),
+    ).toThrow("READER_MODEL_IDENTITY_MISMATCH");
+  });
+
+  it("resolveEffectiveHiveAgentsModelIdentity honors docker-compose overrides over agents.config", () => {
+    const effective = resolveEffectiveHiveAgentsModelIdentity({
+      HIVE_AGENTS_CONFIG_MODEL_PROVIDER: "anthropic",
+      HIVE_AGENTS_CONFIG_MODEL_NAME: "claude-opus-5-5",
+      HIVE_AGENTS_CONTAINER_MODEL_PROVIDER: "openai",
+      HIVE_AGENTS_CONTAINER_MODEL_NAME: "gpt-5.6-sol",
+      HIVE_AGENTS_DOCKER_COMPOSE_MODEL_PROVIDER: "anthropic",
+      HIVE_AGENTS_DOCKER_COMPOSE_MODEL_NAME: "claude-opus-5-5",
+    });
+    expect(effective).toEqual({
+      modelProvider: "anthropic",
+      modelName: "claude-opus-5-5",
+    });
+  });
+
   it("builds a qualification run with anthropic provider mode when configured", () => {
     const prompt = loadEffectiveStudyAgentsPromptMetadata({
       agentsJsonPath: defaultStudyAgentsJsonPath("iep"),
     });
-    const model = resolveAgenticReaderModelIdentity({
-      MODEL_PROVIDER: "anthropic",
-      MODEL_NAME: "claude-opus-5-5",
-    });
+    const model = resolveAgenticReaderModelIdentity(oracleReaderQualificationModelEnv());
     const run = buildAgenticReaderQualificationRun({
       caseId: "44444444-4444-4444-8444-444444444444",
       idempotencyKey: "qual-key",
