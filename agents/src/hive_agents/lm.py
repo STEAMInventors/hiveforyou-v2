@@ -1,13 +1,15 @@
 from __future__ import annotations
 
 from collections.abc import Callable, Mapping, MutableMapping, Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from typing import Any, Protocol, runtime_checkable
 
 import dspy
 from dspy.lm15 import CacheConfig
 
 from hive_agents.settings import Settings, get_settings
+
+ANTHROPIC_WORKSPACE_HEADER = "anthropic-workspace-id"
 
 EPHEMERAL_CACHE_CONTROL: dict[str, str] = {"type": "ephemeral"}
 
@@ -134,7 +136,7 @@ def litellm_completion_kwargs_from_messages(
         "api_key": config.api_key,
     }
     if config.workspace_id:
-        kwargs["extra_headers"] = {"anthropic-workspace-id": config.workspace_id}
+        kwargs["extra_headers"] = {ANTHROPIC_WORKSPACE_HEADER: config.workspace_id}
     marked_tools = mark_tools_cache_breakpoint(tools)
     if marked_tools is not None:
         kwargs["tools"] = marked_tools
@@ -215,6 +217,46 @@ def normalize_model_usage(usage: object) -> NormalizedModelUsage:
     )
 
 
+@dataclass(frozen=True, slots=True)
+class AnthropicWorkspaceRoutingTransport:
+    """Inject ``anthropic-workspace-id`` on native lm15 HTTP without LiteLLM."""
+
+    workspace_id: str
+    inner: Any
+
+    def stream(self, request: Any) -> Any:
+        headers = list(request.headers)
+        if not any(name.lower() == ANTHROPIC_WORKSPACE_HEADER for name, _ in headers):
+            headers.append((ANTHROPIC_WORKSPACE_HEADER, self.workspace_id))
+        return self.inner.stream(replace(request, headers=headers))
+
+
+def _assert_native_workspace_routing_supported(config: LmConfig) -> None:
+    if not config.workspace_id:
+        return
+    if config.provider != "anthropic":
+        raise ValueError(
+            "HIVE_ANTHROPIC_WORKSPACE_ID requires MODEL_PROVIDER=anthropic; "
+            "native lm15 workspace routing is not supported for other providers."
+        )
+
+
+def _hive_lm15_engine_with_workspace(config: LmConfig) -> Any:
+    from dspy.clients.engines.lm15_engine import LM15Engine
+    from dspy.lm15 import RouterConfig
+    from dspy._vendor.lm15.transports import StdlibTransport
+
+    transport = AnthropicWorkspaceRoutingTransport(
+        workspace_id=config.workspace_id or "",
+        inner=StdlibTransport(),
+    )
+    router_config = RouterConfig(
+        api_keys={config.provider: config.api_key},
+        transport=transport,
+    )
+    return LM15Engine(router_config, model_type="chat")
+
+
 def create_dspy_lm(
     settings: Settings | None = None,
     *,
@@ -232,15 +274,17 @@ def create_dspy_lm(
     kwargs: dict[str, Any] = {
         "model": resolved_config.dspy_model,
         "max_tokens": resolved_config.max_output_tokens,
-        "api_key": resolved_config.api_key,
         "cache": False,
-        "engine": "lm15",
         "prompt_cache": anthropic_prompt_cache_config(),
     }
-    # Workspace routing uses extra_headers on the LiteLLM shaping path only
-    # (``litellm_completion_kwargs_from_messages``). ``extra_headers`` on
-    # ``dspy.LM`` forces the LiteLLM compatibility engine, which cannot carry
-    # ``prompt_cache`` — keep native lm15 for Anthropic prompt caching.
+    # ``extra_headers`` on ``dspy.LM`` forces LiteLLM and drops ``prompt_cache``.
+    # Workspace routing uses a native lm15 ``RouterConfig(transport=...)`` engine.
+    _assert_native_workspace_routing_supported(resolved_config)
+    if resolved_config.workspace_id:
+        kwargs["engine"] = _hive_lm15_engine_with_workspace(resolved_config)
+    else:
+        kwargs["engine"] = "lm15"
+        kwargs["api_key"] = resolved_config.api_key
 
     return factory(**kwargs)
 

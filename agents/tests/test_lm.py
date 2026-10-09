@@ -102,6 +102,8 @@ def test_import_and_configure_do_not_call_provider(monkeypatch: pytest.MonkeyPat
 
 
 def test_create_dspy_lm_workspace_and_prompt_cache(monkeypatch: pytest.MonkeyPatch) -> None:
+    from dspy.clients.engines.lm15_engine import LM15Engine
+
     monkeypatch.setenv("HIVE_ANTHROPIC_API_KEY", "test-key")
     monkeypatch.setenv("HIVE_ANTHROPIC_WORKSPACE_ID", "ws-abc")
     captured: dict[str, Any] = {}
@@ -112,7 +114,9 @@ def test_create_dspy_lm_workspace_and_prompt_cache(monkeypatch: pytest.MonkeyPat
 
     create_dspy_lm(lm_factory=fake_factory)
 
-    assert captured["engine"] == "lm15"
+    assert isinstance(captured["engine"], LM15Engine)
+    assert captured["engine"].config.transport is not None
+    assert "api_key" not in captured
     assert "extra_headers" not in captured
     assert captured["prompt_cache"].mode == "auto"
     config = resolve_lm_config(Settings(_env_file=None))
@@ -241,7 +245,7 @@ def mock_anthropic_transport(monkeypatch: pytest.MonkeyPatch) -> dict[str, list[
     from dspy._vendor.lm15.providers.anthropic import AnthropicLM
     from dspy._vendor.lm15.providers.base import HttpResponse
 
-    state: dict[str, list[Any]] = {"payloads": []}
+    state: dict[str, list[Any]] = {"payloads": [], "transport_requests": []}
     original_payload = AnthropicLM._payload
 
     def capture_payload(self, request, stream=False):
@@ -250,6 +254,7 @@ def mock_anthropic_transport(monkeypatch: pytest.MonkeyPatch) -> dict[str, list[
         return payload
 
     def fake_send(self, request):
+        state["transport_requests"].append(request)
         return HttpResponse(
             status=200,
             reason="OK",
@@ -262,6 +267,51 @@ def mock_anthropic_transport(monkeypatch: pytest.MonkeyPatch) -> dict[str, list[
     monkeypatch.setattr(AnthropicLM, "_payload", capture_payload)
     monkeypatch.setattr(AnthropicLM, "_send", fake_send)
     return state
+
+
+def test_dspy_lm_native_workspace_header_on_transport_request(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from contextlib import contextmanager
+
+    from dspy._vendor.lm15.transports._sync import StdlibTransport
+
+    monkeypatch.setenv("HIVE_ANTHROPIC_API_KEY", "test-key")
+    monkeypatch.setenv("HIVE_ANTHROPIC_WORKSPACE_ID", "ws-routed")
+
+    wire_requests: list[Any] = []
+
+    @contextmanager
+    def fake_http_response():
+        class _Resp:
+            status = 200
+            reason = "OK"
+            headers: list[tuple[str, str]] = []
+            http_version = "HTTP/1.1"
+
+            def read(self) -> bytes:
+                return _anthropic_success_body()
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *args: object) -> None:
+                return None
+
+        yield _Resp()
+
+    def capture_stream(self, request: Any) -> Any:
+        wire_requests.append(request)
+        return fake_http_response()
+
+    monkeypatch.setattr(StdlibTransport, "stream", capture_stream)
+
+    lm = create_dspy_lm()
+    lm(messages=build_dspy_lm_messages(stable_system="pack", case_user_content="case"))
+
+    assert len(wire_requests) == 1
+    wire_headers = wire_requests[0].headers
+    assert ("anthropic-workspace-id", "ws-routed") in wire_headers
 
 
 def test_dspy_lm_applies_ephemeral_cache_on_stable_system_at_provider_boundary(
