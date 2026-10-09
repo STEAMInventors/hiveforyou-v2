@@ -10,7 +10,7 @@ import dspy
 from dspy.clients.base_lm import BaseLM
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
-from hive_agents.lm import build_dspy_lm_messages
+from hive_agents.lm import build_dspy_lm_messages, normalize_model_usage
 from hive_agents.pack_loader import AgentPack, load_agent_pack
 
 ClaimModality = Literal["planned", "required", "decided", "observed", "unknown"]
@@ -27,6 +27,7 @@ ClaimValueKind = Literal[
 ProposalStatus = Literal["candidate"]
 VerificationStatus = Literal["proposed"]
 
+# Python EVIDENCE_* trace rows mirror the verifier HTTP client, not authoritative TS verifier events.
 HIVE_READER_GUARDRAILS = """\
 You are the Hive Reader agent. Propose candidate facts grounded in supplied document pages only.
 
@@ -291,10 +292,12 @@ class VerifierBackedReaderTools:
         pages: list[DocumentPage],
         verifier_client: Any,
         context: ReaderVerifyContext,
+        trace: Any | None = None,
     ) -> None:
         self._inner = InMemoryReaderTools(pages)
         self._verifier_client = verifier_client
         self._context = context
+        self._trace = trace
         self.last_rejection_reasons: list[str] | None = None
 
     @property
@@ -318,6 +321,19 @@ class VerifierBackedReaderTools:
     def propose_fact(self, fact: CandidateFactDraft) -> str:
         from hive_agents.verifier_client import ReaderVerifierError
 
+        candidate_id = f"reader-candidate-{uuid.uuid4().hex[:12]}"
+        if self._trace is not None and fact.evidence:
+            primary = fact.evidence[0]
+            self._trace.emit(
+                "FACT_PROPOSED",
+                {
+                    "decisionAuthority": "python_verifier_client",
+                    "authoritative": False,
+                    "candidateFactId": candidate_id,
+                    "sourceDocumentId": primary.sourceDocumentId,
+                    "page": primary.page,
+                },
+            )
         try:
             result = self._verifier_client.verify_fact(
                 case_id=self._context.case_id,
@@ -330,9 +346,29 @@ class VerifierBackedReaderTools:
 
         if not result.accepted:
             self.last_rejection_reasons = list(result.reasons)
+            if self._trace is not None:
+                self._trace.emit(
+                    "EVIDENCE_REJECTED",
+                    {
+                    "decisionAuthority": "python_verifier_client",
+                    "authoritative": False,
+                        "candidateFactId": candidate_id,
+                        "reasonCodes": list(result.reasons),
+                    },
+                )
             joined = "; ".join(result.reasons)
             return f"REJECTED: {joined}"
 
+        if self._trace is not None:
+            self._trace.emit(
+                "EVIDENCE_ACCEPTED",
+                {
+                    "decisionAuthority": "python_verifier_client",
+                    "authoritative": False,
+                    "candidateFactId": candidate_id,
+                    "reasonCodes": list(result.reasons),
+                },
+            )
         self.last_rejection_reasons = None
         return self._inner.propose_fact(fact)
 
@@ -409,6 +445,61 @@ class InMemoryReaderTools:
         )
         self._proposed.append(candidate)
         return fact_id
+
+
+class TracingReaderTools:
+    """Emits TOOL_CALLED events without logging document text."""
+
+    def __init__(self, inner: ReaderTools, trace: Any) -> None:
+        self._inner = inner
+        self._trace = trace
+
+    def list_documents(self) -> list[DocumentSummary]:
+        docs = self._inner.list_documents()
+        self._trace.emit(
+            "TOOL_CALLED",
+            {
+                "tool": "list_documents",
+                "outcome": "ok",
+                "documentCount": len(docs),
+            },
+        )
+        return docs
+
+    def read_pages(self, document_id: str, page_numbers: list[int]) -> list[DocumentPage]:
+        pages = self._inner.read_pages(document_id, page_numbers)
+        self._trace.emit(
+            "TOOL_CALLED",
+            {
+                "tool": "read_pages",
+                "outcome": "ok",
+                "sourceDocumentId": document_id,
+                "pageNumbers": page_numbers,
+                "pageCount": len(pages),
+            },
+        )
+        return pages
+
+    def search(
+        self,
+        query: str,
+        *,
+        document_ids: list[str] | None = None,
+    ) -> list[SearchHit]:
+        hits = self._inner.search(query, document_ids=document_ids)
+        self._trace.emit(
+            "TOOL_CALLED",
+            {
+                "tool": "search",
+                "outcome": "ok",
+                "queryLength": len(query.strip()),
+                "hitCount": len(hits),
+            },
+        )
+        return hits
+
+    def propose_fact(self, fact: CandidateFactDraft) -> str:
+        return self._inner.propose_fact(fact)
 
 
 class BoundedReaderTools:
@@ -529,6 +620,10 @@ class ReaderRunResult:
     tool_calls: int = 0
     stable_system_prefix: str = ""
     last_lm_messages: list[dict[str, Any]] | None = None
+    model_usage_input_tokens: int | None = None
+    model_usage_output_tokens: int | None = None
+    model_usage_cache_read_input_tokens: int | None = None
+    model_usage_cache_write_input_tokens: int | None = None
 
 
 def _bundle_pages_for_lm(pages: list[DocumentPage]) -> str:
@@ -655,6 +750,7 @@ def run_reader(
     document_ids: list[str] | None = None,
     page_numbers_by_document: dict[str, list[int]] | None = None,
     search_queries: list[str] | None = None,
+    trace_session: Any | None = None,
 ) -> ReaderRunResult:
     """
     Run the DSPy Reader over caller-supplied pages.
@@ -685,9 +781,16 @@ def run_reader(
     if tools is not None:
         inner_tools: ReaderTools = tools
     elif verifier_client is not None and verify_context is not None:
-        inner_tools = VerifierBackedReaderTools(pages, verifier_client, verify_context)
+        inner_tools = VerifierBackedReaderTools(
+            pages,
+            verifier_client,
+            verify_context,
+            trace=trace_session,
+        )
     else:
         inner_tools = InMemoryReaderTools(pages)
+    if trace_session is not None:
+        inner_tools = TracingReaderTools(inner_tools, trace_session)
     bounded_tools = BoundedReaderTools(inner_tools, budget)
 
     summaries = bounded_tools.list_documents()
@@ -748,12 +851,20 @@ def run_reader(
             )
         )
 
+    usage = normalize_model_usage(
+        wrapped_lm._inner.history[-1].get("usage") if getattr(wrapped_lm._inner, "history", None) else None
+    )
+
     return ReaderRunResult(
         candidate_facts=candidate_facts,
         reasoning_steps=budget.reasoning_steps,
         tool_calls=budget.tool_calls,
         stable_system_prefix=stable_system,
         last_lm_messages=wrapped_lm.last_messages,
+        model_usage_input_tokens=usage.input_tokens,
+        model_usage_output_tokens=usage.output_tokens,
+        model_usage_cache_read_input_tokens=usage.cache_read_input_tokens,
+        model_usage_cache_write_input_tokens=usage.cache_write_input_tokens,
     )
 
 

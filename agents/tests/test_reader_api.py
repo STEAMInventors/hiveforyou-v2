@@ -40,6 +40,7 @@ def _clear_settings_cache() -> None:
 def api_env(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("HIVE_AGENTS_SERVICE_TOKEN", "service-token-test")
     monkeypatch.setenv("HIVE_VERIFIER_TOKEN", "verifier-token-test")
+    monkeypatch.setenv("HIVE_AGENTS_ALLOW_NONPERSISTENT_AUDIT", "1")
     monkeypatch.setenv("HIVE_ANTHROPIC_API_KEY", "test-key")
     get_settings.cache_clear()
 
@@ -58,6 +59,8 @@ def _sample_request_body() -> dict[str, Any]:
         "caseId": "case-l001",
         "userId": "user-internal",
         "domainId": "iep",
+        "studyRunId": "33333333-3333-4333-8333-333333333333",
+        "attemptId": "55555555-5555-4555-8555-555555555555",
         "documents": [
             {
                 "sourceDocumentId": "doc-a",
@@ -160,6 +163,7 @@ def mock_reader_pipeline(monkeypatch: pytest.MonkeyPatch) -> None:
         "hive_agents.app._require_verifier_client",
         lambda: AcceptAllVerifier(),
     )
+    monkeypatch.setattr("hive_agents.app.reader_trace_config_from_env", lambda: None)
 
 
 def test_study_reader_success(client: TestClient, mock_reader_pipeline: None) -> None:
@@ -341,9 +345,47 @@ def test_production_path_uses_verifier_not_in_memory(
         ),
     )
 
+    monkeypatch.setenv("HIVE_AGENTS_ALLOW_NONPERSISTENT_AUDIT", "1")
+    get_settings.cache_clear()
+    monkeypatch.setattr("hive_agents.app.reader_trace_config_from_env", lambda: None)
     with patch.object(InMemoryReaderTools, "__init__", side_effect=AssertionError("no in-memory")):
         execute_study_reader(parsed)
 
     assert captured.get("verifier_client") is not None
     assert captured.get("verify_context") is not None
     assert captured.get("tools") is None
+
+
+def test_audit_not_configured_when_trace_env_missing_and_opted_in(
+    client: TestClient,
+    mock_reader_pipeline: None,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr("hive_agents.app.reader_trace_config_from_env", lambda: None)
+    response = client.post(
+        "/study/reader",
+        headers=_auth_headers(),
+        json=_sample_request_body(),
+    )
+    assert response.status_code == 200
+    audit = response.json().get("audit")
+    assert audit is not None
+    assert audit["persisted"] is False
+    assert audit["status"] == "not_configured"
+
+
+def test_audit_required_fail_closed_without_opt_in(
+    client: TestClient,
+    mock_reader_pipeline: None,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.delenv("HIVE_AGENTS_ALLOW_NONPERSISTENT_AUDIT", raising=False)
+    get_settings.cache_clear()
+    monkeypatch.setattr("hive_agents.app.reader_trace_config_from_env", lambda: None)
+    response = client.post(
+        "/study/reader",
+        headers=_auth_headers(),
+        json=_sample_request_body(),
+    )
+    assert response.status_code == 503
+    assert response.json()["error"]["code"] == "AUDIT_UNAVAILABLE"

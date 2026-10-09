@@ -14,6 +14,12 @@ import {
   type ReaderVerifierDeps,
   type ReaderVerifierScope,
 } from "./verify-reader-fact.js";
+import {
+  createSupabaseAgentRunTraceIngestDeps,
+  handleAgentRunTraceIngestRequest,
+  readAgentTraceEnv,
+  type AgentRunTraceIngestDeps,
+} from "../trace/agent-run-trace-ingest.js";
 
 const DEFAULT_HOST = "127.0.0.1";
 const DEFAULT_MAX_BODY_BYTES = 2 * 1024 * 1024;
@@ -21,6 +27,10 @@ const DEFAULT_MAX_BODY_BYTES = 2 * 1024 * 1024;
 export type VerifierServerOptions = {
   token: string;
   deps: ReaderVerifierDeps;
+  traceIngest?: {
+    token: string;
+    deps: AgentRunTraceIngestDeps;
+  };
   host?: string;
   port?: number;
   maxBodyBytes?: number;
@@ -190,6 +200,33 @@ export function createVerifierRequestListener(options: VerifierServerOptions) {
       return;
     }
 
+
+    if (path === "/internal/agent-run-trace/events") {
+      if (req.method !== "POST") {
+        sendJson(res, 405, apiError("METHOD_NOT_ALLOWED", "Method not allowed"));
+        return;
+      }
+      if (!options.traceIngest) {
+        sendJson(res, 503, apiError("TRACE_INGEST_UNAVAILABLE", "Trace ingest is not configured"));
+        return;
+      }
+      void handleAgentRunTraceIngestRequest(
+        req,
+        res,
+        {
+          token: options.traceIngest.token,
+          deps: options.traceIngest.deps,
+          maxBodyBytes: options.maxBodyBytes ?? DEFAULT_MAX_BODY_BYTES,
+        },
+        readRequestBody,
+      ).catch((error: unknown) => {
+        console.error("[agent-run-trace] unhandled request error", error);
+        if (!res.headersSent) {
+          sendJson(res, 500, apiError("TRACE_INGEST_FAILED", "Internal error"));
+        }
+      });
+      return;
+    }
     sendJson(res, 404, apiError("NOT_FOUND", "Not found"));
   };
 }

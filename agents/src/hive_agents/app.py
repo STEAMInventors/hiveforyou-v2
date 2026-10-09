@@ -10,6 +10,7 @@ from pydantic import ValidationError
 
 from hive_agents.api_models import (
     PackDomainMismatchError,
+    StudyReaderAudit,
     StudyReaderRequest,
     StudyReaderResponse,
     resolve_agent_pack_for_domain,
@@ -25,11 +26,18 @@ from hive_agents.reader import (
     run_reader,
 )
 from hive_agents.settings import get_settings
+from hive_agents.trace_client import (
+    ReaderTraceClient,
+    ReaderTraceError,
+    reader_trace_config_from_env,
+)
+from hive_agents.trace_emitter import ReaderTraceContext, ReaderTraceSession
 from hive_agents.verifier_client import (
     ReaderVerifierClient,
     ReaderVerifierError,
     reader_verifier_config_from_env,
 )
+
 
 logger = logging.getLogger(__name__)
 
@@ -86,12 +94,61 @@ def _require_verifier_client() -> ReaderVerifierClient:
     return ReaderVerifierClient(config)
 
 
+
+def _build_trace_session(
+    request: StudyReaderRequest,
+    *,
+    pack,
+    trace_client: ReaderTraceClient | None = None,
+) -> ReaderTraceSession | None:
+    if trace_client is not None:
+        client = trace_client
+    else:
+        config = reader_trace_config_from_env()
+        if config is None:
+            return None
+        client = ReaderTraceClient(config)
+    settings = get_settings()
+    source_document_ids = sorted(
+        {doc.source_document_id for doc in request.documents}
+    )
+    context = ReaderTraceContext(
+        study_run_id=request.study_run_id,
+        attempt_id=request.attempt_id,
+        case_id=request.case_id,
+        user_id=request.user_id,
+        domain_id=request.domain_id,
+        domain_pack_id=pack.domainPackId,
+        domain_pack_version=pack.domainPackVersion,
+        model_id=settings.model_name,
+        source_document_ids=source_document_ids,
+    )
+    return ReaderTraceSession(context=context, client=client)
+
+
+def _audit_for_request(
+    request: StudyReaderRequest,
+    *,
+    persisted: bool,
+    status: str,
+    error_code: str | None = None,
+) -> StudyReaderAudit:
+    return StudyReaderAudit(
+        study_run_id=request.study_run_id,
+        attempt_id=request.attempt_id,
+        persisted=persisted,
+        status=status,  # type: ignore[arg-type]
+        error_code=error_code,
+    )
+
+
 def execute_study_reader(
     request: StudyReaderRequest,
     *,
     lm_factory=create_dspy_lm,
     verifier_client: ReaderVerifierClient | None = None,
-) -> ReaderRunResult:
+    trace_client: ReaderTraceClient | None = None,
+) -> tuple[ReaderRunResult, StudyReaderAudit]:
     pack = resolve_agent_pack_for_domain(request.domain_id)
     pages = request.flattened_pages()
     if not pages:
@@ -105,17 +162,86 @@ def execute_study_reader(
     limits = request.limits.to_execution_limits() if request.limits else None
 
     lm = lm_factory()
-    return run_reader(
-        pack=pack,
-        pages=pages,
-        lm=lm,
-        verifier_client=client,
-        verify_context=verify_context,
-        limits=limits,
-        document_ids=request.document_ids,
-        page_numbers_by_document=request.page_numbers_by_document,
-        search_queries=request.search_queries,
+    trace_session = _build_trace_session(request, pack=pack, trace_client=trace_client)
+    audit_not_configured = _audit_for_request(
+        request,
+        persisted=False,
+        status="not_configured",
     )
+    if trace_session is None:
+        if not get_settings().agents_allow_nonpersistent_audit:
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail=_error_body(
+                    "AUDIT_UNAVAILABLE",
+                    "Reader audit trail is required (set HIVE_AGENT_TRACE_TOKEN or HIVE_VERIFIER_TOKEN).",
+                ),
+            )
+        result = run_reader(
+            pack=pack,
+            pages=pages,
+            lm=lm,
+            verifier_client=client,
+            verify_context=verify_context,
+            limits=limits,
+            document_ids=request.document_ids,
+            page_numbers_by_document=request.page_numbers_by_document,
+            search_queries=request.search_queries,
+        )
+        return result, audit_not_configured
+
+    import time
+
+    started = time.perf_counter()
+    trace_session.emit("STARTED", {"modelId": trace_session.context.model_id})
+    try:
+        result = run_reader(
+            pack=pack,
+            pages=pages,
+            lm=lm,
+            verifier_client=client,
+            verify_context=verify_context,
+            limits=limits,
+            document_ids=request.document_ids,
+            page_numbers_by_document=request.page_numbers_by_document,
+            search_queries=request.search_queries,
+            trace_session=trace_session,
+        )
+        duration_ms = int((time.perf_counter() - started) * 1000)
+        trace_session.emit(
+            "COMPLETED",
+            {
+                "durationMs": duration_ms,
+                "reasoningSteps": result.reasoning_steps,
+                "toolCalls": result.tool_calls,
+                "inputTokens": result.model_usage_input_tokens,
+                "outputTokens": result.model_usage_output_tokens,
+                "cacheReadInputTokens": result.model_usage_cache_read_input_tokens,
+                "cacheWriteInputTokens": result.model_usage_cache_write_input_tokens,
+            },
+        )
+        trace_session.flush()
+    except ReaderTraceError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail=_error_body("TRACE_PERSIST_FAILED", str(exc)),
+        ) from exc
+    except Exception as exc:
+        duration_ms = int((time.perf_counter() - started) * 1000)
+        trace_session.emit(
+            "FAILED",
+            {
+                "durationMs": duration_ms,
+                "errorCode": exc.__class__.__name__,
+            },
+        )
+        try:
+            trace_session.flush()
+        except ReaderTraceError:
+            raise
+        raise
+
+    return result, _audit_for_request(request, persisted=True, status="persisted")
 
 
 def _study_reader_response(
@@ -123,6 +249,7 @@ def _study_reader_response(
     result: ReaderRunResult,
     *,
     pack_version: str,
+    audit: StudyReaderAudit | None = None,
 ) -> StudyReaderResponse:
     candidate_facts = [
         fact.model_dump(mode="json", by_alias=False) for fact in result.candidate_facts
@@ -134,6 +261,7 @@ def _study_reader_response(
         candidate_facts=candidate_facts,
         reasoning_steps=result.reasoning_steps,
         tool_calls=result.tool_calls,
+        audit=audit,
     )
 
 
@@ -225,13 +353,18 @@ async def study_reader(
         ) from exc
 
     try:
-        result = execute_study_reader(request)
+        result, audit = execute_study_reader(request)
     except HTTPException:
         raise
     except ReaderVerifierError as exc:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail=_error_body("VERIFIER_UNAVAILABLE", str(exc)),
+        ) from exc
+    except ReaderTraceError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail=_error_body("TRACE_PERSIST_FAILED", str(exc)),
         ) from exc
     except ReaderLimitsExhausted as exc:
         raise HTTPException(
@@ -259,4 +392,5 @@ async def study_reader(
         request,
         result,
         pack_version=pack.domainPackVersion,
+        audit=audit,
     )

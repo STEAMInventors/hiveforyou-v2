@@ -136,6 +136,8 @@ class StudyReaderRequest(BaseModel):
     case_id: str = Field(validation_alias=AliasChoices("caseId"))
     user_id: str = Field(validation_alias=AliasChoices("userId"))
     domain_id: str = Field(validation_alias=AliasChoices("domainId"))
+    study_run_id: str = Field(validation_alias=AliasChoices("studyRunId"))
+    attempt_id: str = Field(validation_alias=AliasChoices("attemptId"))
     documents: list[StudyReaderDocumentInput] = Field(min_length=1)
     limits: ReaderLimitsInput | None = None
     document_ids: list[str] | None = Field(
@@ -151,12 +153,12 @@ class StudyReaderRequest(BaseModel):
         validation_alias=AliasChoices("searchQueries", "search_queries"),
     )
 
-    @field_validator("case_id", "user_id", "domain_id")
+    @field_validator("case_id", "user_id", "domain_id", "study_run_id", "attempt_id")
     @classmethod
     def _non_empty_ids(cls, value: str) -> str:
         stripped = value.strip()
         if not stripped:
-            raise ValueError("caseId, userId, and domainId must be non-empty.")
+            raise ValueError("caseId, userId, domainId, studyRunId, and attemptId must be non-empty.")
         return stripped
 
     @model_validator(mode="after")
@@ -182,6 +184,16 @@ class StudyReaderRequest(BaseModel):
         return pages
 
 
+class StudyReaderAudit(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True, serialize_by_alias=True)
+
+    study_run_id: str = Field(serialization_alias="studyRunId")
+    attempt_id: str = Field(serialization_alias="attemptId")
+    persisted: bool
+    status: Literal["persisted", "not_configured", "failed"] = "not_configured"
+    error_code: str | None = Field(default=None, serialization_alias="errorCode")
+
+
 class StudyReaderResponse(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
@@ -199,6 +211,7 @@ class StudyReaderResponse(BaseModel):
     candidate_facts: list[dict[str, object]] = Field(serialization_alias="candidateFacts")
     reasoning_steps: int = Field(serialization_alias="reasoningSteps")
     tool_calls: int = Field(serialization_alias="toolCalls")
+    audit: StudyReaderAudit | None = None
 
 
 class PackDomainMismatchError(ValueError):

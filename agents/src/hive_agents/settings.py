@@ -53,7 +53,22 @@ class Settings(BaseSettings):
     anthropic_api_key: str | None = None
     anthropic_workspace_id: str | None = None
     agents_service_token: str | None = None
+    agents_allow_nonpersistent_audit: bool = Field(default=False)
     reader_max_request_bytes: int = Field(default=16 * 1024 * 1024, ge=1024)
+
+    @field_validator("agents_allow_nonpersistent_audit", mode="before")
+    @classmethod
+    def _parse_allow_nonpersistent_audit(cls, value: object) -> object:
+        if value is None:
+            return False
+        if isinstance(value, bool):
+            return value
+        if isinstance(value, str):
+            normalized = value.strip().lower()
+            if not normalized:
+                return False
+            return normalized in {"1", "true", "yes", "on"}
+        return value
 
     @field_validator("model_provider", mode="before")
     @classmethod
