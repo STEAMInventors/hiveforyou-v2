@@ -17,7 +17,9 @@ docker compose build
 docker compose up -d
 ```
 
-Build context is the repo root; the image bundles `worker/dist/main.js` and installs native deps (`@napi-rs/canvas`, `pdfjs-dist`, OCR) in the runtime layer.
+Build context is the repo root. **`hive-worker`** bundles `worker/dist/main.js` and installs native deps (`@napi-rs/canvas`, `pdfjs-dist`, OCR) in the runtime layer. **`hive-agents`** is the Python DSPy FastAPI service (`agents/Dockerfile`, `uv.lock` frozen install); it shares the worker container network namespace (`network_mode: service:hive-worker`) so the TypeScript verifier can stay on `127.0.0.1` while remaining reachable from Python. Neither service publishes agent or verifier HTTP ports on the host.
+
+Non-secret agent config: `agents.config.env`. Host secrets (including `HIVE_AGENTS_SERVICE_TOKEN`, `HIVE_VERIFIER_TOKEN`, `HIVE_AGENT_TRACE_TOKEN`, `HIVE_ANTHROPIC_API_KEY`) stay in `/etc/hive-worker/worker.env`. Do **not** set `HIVE_AGENTS_ALLOW_NONPERSISTENT_AUDIT=1` in production.
 
 ## Smoke checks
 

@@ -97,6 +97,7 @@ def test_import_and_configure_do_not_call_provider(monkeypatch: pytest.MonkeyPat
     assert calls[0]["model"] == "anthropic/claude-opus-5-5"
     assert calls[0]["api_key"] == "test-key"
     assert calls[0]["cache"] is False
+    assert calls[0]["engine"] == "lm15"
     assert calls[0]["prompt_cache"].prefix == "stable"
 
 
@@ -111,8 +112,18 @@ def test_create_dspy_lm_workspace_and_prompt_cache(monkeypatch: pytest.MonkeyPat
 
     create_dspy_lm(lm_factory=fake_factory)
 
-    assert captured["extra_headers"] == {"anthropic-workspace-id": "ws-abc"}
+    assert captured["engine"] == "lm15"
+    assert "extra_headers" not in captured
     assert captured["prompt_cache"].mode == "auto"
+    config = resolve_lm_config(Settings(_env_file=None))
+    litellm_kwargs = litellm_completion_kwargs_from_messages(
+        config=config,
+        messages=build_anthropic_chat_messages(
+            stable_system="pack",
+            case_user_content="case",
+        ),
+    )
+    assert litellm_kwargs["extra_headers"] == {"anthropic-workspace-id": "ws-abc"}
 
 
 def test_cache_markers_on_stable_prefix_only() -> None:

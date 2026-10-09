@@ -8,3 +8,17 @@ services:
     env_file:
       - worker.config.env
       - /etc/hive-worker/worker.env
+
+  hive-agents:
+    build:
+      context: ../..
+      dockerfile: agents/Dockerfile
+    platform: linux/arm64
+    network_mode: "service:hive-worker"
+    depends_on:
+      hive-worker:
+        condition: service_started
+    restart: unless-stopped
+    env_file:
+      - agents.config.env
+      - /etc/hive-worker/worker.env

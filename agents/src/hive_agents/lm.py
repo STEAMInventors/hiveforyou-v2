@@ -234,12 +234,13 @@ def create_dspy_lm(
         "max_tokens": resolved_config.max_output_tokens,
         "api_key": resolved_config.api_key,
         "cache": False,
+        "engine": "lm15",
         "prompt_cache": anthropic_prompt_cache_config(),
     }
-    if resolved_config.workspace_id:
-        kwargs["extra_headers"] = {
-            "anthropic-workspace-id": resolved_config.workspace_id,
-        }
+    # Workspace routing uses extra_headers on the LiteLLM shaping path only
+    # (``litellm_completion_kwargs_from_messages``). ``extra_headers`` on
+    # ``dspy.LM`` forces the LiteLLM compatibility engine, which cannot carry
+    # ``prompt_cache`` — keep native lm15 for Anthropic prompt caching.
 
     return factory(**kwargs)
 

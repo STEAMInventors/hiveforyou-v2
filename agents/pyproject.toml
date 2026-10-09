@@ -2,17 +2,18 @@
 name = "hive-agents"
 version = "0.0.0"
 description = "HiveForYou DSPy study agents service"
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 dependencies = [
-  "dspy",
-  "fastapi",
-  "uvicorn[standard]",
-  "pydantic>=2",
-  "pydantic-settings>=2",
+  "dspy==3.4.0",
+  "litellm==1.104.2",
+  "fastapi>=0.115,<1",
+  "uvicorn[standard]>=0.32,<1",
+  "pydantic>=2,<3",
+  "pydantic-settings>=2,<3",
 ]
 
 [project.optional-dependencies]
-dev = ["pytest"]
+dev = ["pytest>=8,<9"]
 
 [build-system]
 requires = ["hatchling"]
@@ -24,3 +25,8 @@ packages = ["src/hive_agents"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["src"]
+
+[tool.uv]
+required-environments = [
+  "sys_platform == 'linux' and platform_machine == 'aarch64'",
+]

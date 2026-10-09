@@ -324,9 +324,18 @@ export async function startVerifierServerIfConfigured(
     return null;
   }
   const deps = createSupabaseReaderVerifierDeps(supabase, env);
+  const traceEnv = readAgentTraceEnv();
   const server = createVerifierServer({
     token: verifierEnv.token,
     deps,
+    ...(traceEnv
+      ? {
+          traceIngest: {
+            token: traceEnv.token,
+            deps: createSupabaseAgentRunTraceIngestDeps(supabase),
+          },
+        }
+      : {}),
     port: verifierEnv.port,
     host: DEFAULT_HOST,
   });
@@ -335,6 +344,7 @@ export async function startVerifierServerIfConfigured(
     host: DEFAULT_HOST,
     port: verifierEnv.port,
     path: "/verifier/reader-fact",
+    traceIngest: traceEnv ? "/internal/agent-run-trace/events" : null,
   });
   return server;
 }
