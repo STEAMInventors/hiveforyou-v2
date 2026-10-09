@@ -503,3 +503,222 @@ def test_l001_fixture_parseable_candidate_under_mocked_dspy_lm(
     assert fact.construct.measure == "student_name"
     assert fact.evidence[0].quote == quote
     assert fact.evidence[0].sourceDocumentId == doc_id
+
+
+def _predict_extraction_json_via_stable_prefix_lm(
+    monkeypatch: pytest.MonkeyPatch,
+    completion_text: str,
+    *,
+    stable: str = "hive-stable",
+    bundle: str = '{"pages":[]}',
+) -> str:
+    from dspy._vendor.lm15.providers.anthropic import AnthropicLM
+    from dspy._vendor.lm15.providers.base import HttpResponse
+
+    monkeypatch.setenv("HIVE_ANTHROPIC_API_KEY", "test-key")
+    get_settings.cache_clear()
+
+    def fake_send(self, request):
+        body = json.dumps(
+            {
+                "id": "msg_test",
+                "type": "message",
+                "role": "assistant",
+                "model": "claude-opus-5-5",
+                "content": [{"type": "text", "text": completion_text}],
+                "stop_reason": "end_turn",
+                "usage": {"input_tokens": 1, "output_tokens": 1},
+            }
+        ).encode()
+        return HttpResponse(
+            status=200,
+            reason="OK",
+            headers={},
+            body=body,
+            http_version="HTTP/1.1",
+            provider="anthropic",
+        )
+
+    monkeypatch.setattr(AnthropicLM, "_send", fake_send)
+    inner = create_dspy_lm()
+    wrapped = StablePrefixLM(inner, stable)
+    with dspy.context(lm=wrapped):
+        pred = HiveReaderModule()(untrusted_document_bundle=bundle)
+    return getattr(pred, "extraction_json", "") or ""
+
+
+def test_dspy_chat_adapter_populates_extraction_json_from_markers(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from dspy._vendor.lm15.providers.anthropic import AnthropicLM
+    from dspy._vendor.lm15.providers.base import HttpResponse
+
+    payload = json.dumps({"candidateFacts": []})
+    body = f"[[ ## extraction_json ## ]]\n{payload}\n[[ ## completed ## ]]"
+    monkeypatch.setenv("HIVE_ANTHROPIC_API_KEY", "test-key")
+    get_settings.cache_clear()
+
+    def fake_send(self, request):
+        resp_body = json.dumps(
+            {
+                "id": "msg_test",
+                "type": "message",
+                "role": "assistant",
+                "model": "claude-opus-5-5",
+                "content": [{"type": "text", "text": body}],
+                "stop_reason": "end_turn",
+                "usage": {"input_tokens": 1, "output_tokens": 1},
+            }
+        ).encode()
+        return HttpResponse(
+            status=200,
+            reason="OK",
+            headers={},
+            body=resp_body,
+            http_version="HTTP/1.1",
+            provider="anthropic",
+        )
+
+    monkeypatch.setattr(AnthropicLM, "_send", fake_send)
+    inner = create_dspy_lm()
+    with dspy.context(lm=inner):
+        direct = getattr(
+            HiveReaderModule()(untrusted_document_bundle='{"pages":[]}'),
+            "extraction_json",
+            "",
+        )
+    wrapped = StablePrefixLM(inner, "hive-stable")
+    with dspy.context(lm=wrapped):
+        via_prefix = getattr(
+            HiveReaderModule()(untrusted_document_bundle='{"pages":[]}'),
+            "extraction_json",
+            "",
+        )
+    assert direct.strip() == payload
+    assert via_prefix.strip() == payload
+
+
+def test_dspy_extraction_json_empty_when_marker_section_blank(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    body = "[[ ## extraction_json ## ]]\n\n[[ ## completed ## ]]"
+    raw = _predict_extraction_json_via_stable_prefix_lm(monkeypatch, body)
+    assert raw.strip() == ""
+
+
+def test_run_reader_extraction_diagnostic_empty_candidate_array(
+    iep_pack,
+    sample_pages,
+    dummy_lm,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def fake_forward(self, untrusted_document_bundle: str) -> dspy.Prediction:
+        return dspy.Prediction(extraction_json='{"candidateFacts": []}')
+
+    monkeypatch.setattr(HiveReaderModule, "forward", fake_forward)
+    result = run_reader(pack=iep_pack, pages=sample_pages, lm=dummy_lm)
+    counts = result.execution_counts
+    assert counts is not None
+    assert counts.candidate_fact_count == 0
+    assert counts.extraction_json_length > 0
+    assert counts.raw_parsed_fact_count == 0
+    assert counts.reader_extraction_output_type == "CANDIDATE_FACTS_ARRAY_EMPTY"
+
+
+def test_run_reader_extraction_diagnostic_empty_extraction_json(
+    iep_pack,
+    sample_pages,
+    dummy_lm,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def fake_forward(self, untrusted_document_bundle: str) -> dspy.Prediction:
+        return dspy.Prediction(extraction_json="   ")
+
+    monkeypatch.setattr(HiveReaderModule, "forward", fake_forward)
+    result = run_reader(pack=iep_pack, pages=sample_pages, lm=dummy_lm)
+    counts = result.execution_counts
+    assert counts is not None
+    assert counts.reader_extraction_output_type == "EXTRACTION_JSON_EMPTY"
+
+
+def test_run_reader_extraction_diagnostic_normalization_drops(
+    iep_pack,
+    sample_pages,
+    dummy_lm,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    payload = json.dumps(
+        {
+            "candidateFacts": [
+                {
+                    "construct": {"measure": "x"},
+                    "value": {"kind": "text", "textValue": "t"},
+                    "modality": "planned",
+                    "evidence": [],
+                }
+            ]
+        }
+    )
+
+    def fake_forward(self, untrusted_document_bundle: str) -> dspy.Prediction:
+        return dspy.Prediction(extraction_json=payload)
+
+    monkeypatch.setattr(HiveReaderModule, "forward", fake_forward)
+    result = run_reader(pack=iep_pack, pages=sample_pages, lm=dummy_lm)
+    counts = result.execution_counts
+    assert counts is not None
+    assert counts.raw_parsed_fact_count == 1
+    assert counts.candidate_fact_count == 0
+    assert counts.normalization_dropped_fact_count == 1
+    assert counts.reader_extraction_output_type == "PARSED_FACTS_LOST_IN_NORMALIZATION"
+
+
+def test_classify_reader_extraction_output_categories() -> None:
+    from hive_agents.reader_diagnostics import classify_reader_extraction_output
+
+    assert (
+        classify_reader_extraction_output(
+            extraction_json_length=0,
+            raw_parsed_fact_count=0,
+            candidate_fact_count=0,
+            normalization_dropped_fact_count=0,
+        )
+        == "EXTRACTION_JSON_EMPTY"
+    )
+    assert (
+        classify_reader_extraction_output(
+            extraction_json_length=10,
+            raw_parsed_fact_count=0,
+            candidate_fact_count=0,
+            normalization_dropped_fact_count=0,
+        )
+        == "CANDIDATE_FACTS_ARRAY_EMPTY"
+    )
+    assert (
+        classify_reader_extraction_output(
+            extraction_json_length=10,
+            raw_parsed_fact_count=2,
+            candidate_fact_count=0,
+            normalization_dropped_fact_count=2,
+        )
+        == "PARSED_FACTS_LOST_IN_NORMALIZATION"
+    )
+    assert (
+        classify_reader_extraction_output(
+            extraction_json_length=10,
+            raw_parsed_fact_count=1,
+            candidate_fact_count=1,
+            normalization_dropped_fact_count=0,
+        )
+        is None
+    )
+
+
+def test_dspy_output_field_mismatch_raises_after_stable_prefix_fix(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from dspy.utils.exceptions import AdapterParseError
+
+    body = "[[ ## wrong_field ## ]]\n{}\n[[ ## completed ## ]]"
+    with pytest.raises(AdapterParseError):
+        _predict_extraction_json_via_stable_prefix_lm(monkeypatch, body)

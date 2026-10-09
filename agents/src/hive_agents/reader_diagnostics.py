@@ -12,6 +12,13 @@ ReaderDiagnosticOutcome = Literal[
     "VERIFIER_ERROR",
 ]
 
+ReaderExtractionOutputType = Literal[
+    "EXTRACTION_JSON_EMPTY",
+    "CANDIDATE_FACTS_ARRAY_EMPTY",
+    "PARSED_FACTS_LOST_IN_NORMALIZATION",
+    "DSPY_OUTPUT_FIELD_MISMATCH",
+]
+
 
 @dataclass
 class ReaderExecutionCounts:
@@ -21,16 +28,26 @@ class ReaderExecutionCounts:
     accepted_fact_count: int = 0
     rejected_fact_count: int = 0
     verifier_error_count: int = 0
+    extraction_json_length: int = 0
+    raw_parsed_fact_count: int = 0
+    normalization_dropped_fact_count: int = 0
+    reader_extraction_output_type: ReaderExtractionOutputType | None = None
 
-    def to_audit_payload(self) -> dict[str, int]:
-        return {
+    def to_audit_payload(self) -> dict[str, int | str]:
+        payload: dict[str, int | str] = {
             "candidateFactCount": self.candidate_fact_count,
             "candidatesWithEvidenceCount": self.candidates_with_evidence_count,
             "verifierSubmissionCount": self.verifier_submission_count,
             "acceptedFactCount": self.accepted_fact_count,
             "rejectedFactCount": self.rejected_fact_count,
             "verifierErrorCount": self.verifier_error_count,
+            "extractionJsonLength": self.extraction_json_length,
+            "rawParsedFactCount": self.raw_parsed_fact_count,
+            "normalizationDroppedFactCount": self.normalization_dropped_fact_count,
         }
+        if self.reader_extraction_output_type is not None:
+            payload["readerExtractionOutputType"] = self.reader_extraction_output_type
+        return payload
 
 
 def evidence_is_usable(evidence: SourceEvidence) -> bool:
@@ -45,6 +62,28 @@ def fact_has_usable_evidence(fact: CandidateFact) -> bool:
     if not fact.evidence:
         return False
     return evidence_is_usable(fact.evidence[0])
+
+
+def classify_reader_extraction_output(
+    *,
+    extraction_json_length: int,
+    raw_parsed_fact_count: int,
+    candidate_fact_count: int,
+    normalization_dropped_fact_count: int,
+) -> ReaderExtractionOutputType | None:
+    """Classify extraction_json using aggregate counts only."""
+    if candidate_fact_count > 0:
+        return None
+    if extraction_json_length == 0:
+        return "EXTRACTION_JSON_EMPTY"
+    if (
+        normalization_dropped_fact_count > 0
+        and raw_parsed_fact_count > candidate_fact_count
+    ):
+        return "PARSED_FACTS_LOST_IN_NORMALIZATION"
+    if raw_parsed_fact_count == 0:
+        return "CANDIDATE_FACTS_ARRAY_EMPTY"
+    return None
 
 
 def classify_reader_diagnostic_outcome(

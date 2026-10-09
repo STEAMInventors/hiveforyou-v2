@@ -587,6 +587,11 @@ class StablePrefixLM(BaseLM):
             case_user_content=case_user_content,
         )
         self.last_messages = built
+        # LegacyEngine expects a provider-shaped response from forward(), not
+        # finalized outputs from __call__ (which breaks ChatAdapter parsing).
+        forward = getattr(self._inner, "forward", None)
+        if callable(forward):
+            return forward(messages=built, **kwargs)
         return self._inner(messages=built, **kwargs)
 
 
@@ -804,9 +809,28 @@ def _normalize_facts_with_page_index(
     raw_facts: list[dict[str, Any]],
     page_index: dict[tuple[str, int], DocumentPage],
 ) -> list[CandidateFact]:
+    normalized, _ = _normalize_facts_with_page_index_counting_drops(
+        raw_facts, page_index
+    )
+    return normalized
+
+
+def _normalize_facts_with_page_index_counting_drops(
+    raw_facts: list[dict[str, Any]],
+    page_index: dict[tuple[str, int], DocumentPage],
+) -> tuple[list[CandidateFact], int]:
+    from pydantic import ValidationError
+
     normalized: list[CandidateFact] = []
+    dropped = 0
     for raw in raw_facts:
-        fact = _coerce_candidate_fact(raw)
+        try:
+            fact = _coerce_candidate_fact(raw)
+        except ReaderError:
+            raise
+        except ValidationError:
+            dropped += 1
+            continue
         enriched_evidence: list[SourceEvidence] = []
         for ev in fact.evidence:
             page = page_index.get(_page_key(ev.sourceDocumentId, ev.page))
@@ -823,7 +847,7 @@ def _normalize_facts_with_page_index(
                 )
             )
         normalized.append(fact.model_copy(update={"evidence": enriched_evidence}))
-    return normalized
+    return normalized, dropped
 
 
 def run_reader(
@@ -862,7 +886,11 @@ def run_reader(
     search_queries:
         Optional search strings executed via tools before extraction.
     """
-    from hive_agents.reader_diagnostics import ReaderExecutionCounts, fact_has_usable_evidence
+    from hive_agents.reader_diagnostics import (
+        ReaderExecutionCounts,
+        classify_reader_extraction_output,
+        fact_has_usable_evidence,
+    )
 
     resolved_limits = limits or ReaderExecutionLimits()
     budget = _ExecutionBudget(limits=resolved_limits)
@@ -922,15 +950,37 @@ def run_reader(
     wrapped_lm = StablePrefixLM(lm, stable_system)
 
     budget.consume_reasoning()
-    with dspy.context(lm=wrapped_lm):
-        prediction = module(untrusted_document_bundle=bundle)
+    try:
+        with dspy.context(lm=wrapped_lm):
+            prediction = module(untrusted_document_bundle=bundle)
+    except Exception as exc:
+        from dspy.utils.exceptions import AdapterParseError
+
+        if isinstance(exc, AdapterParseError):
+            execution_counts.reader_extraction_output_type = (
+                "DSPY_OUTPUT_FIELD_MISMATCH"
+            )
+        raise
 
     raw_json = getattr(prediction, "extraction_json", "") or ""
+    execution_counts.extraction_json_length = len(raw_json.strip())
     raw_facts = _parse_extraction_json(raw_json)
-    candidate_facts = _normalize_facts_with_page_index(raw_facts, page_index)
+    execution_counts.raw_parsed_fact_count = len(raw_facts)
+    candidate_facts, dropped = _normalize_facts_with_page_index_counting_drops(
+        raw_facts, page_index
+    )
+    execution_counts.normalization_dropped_fact_count = dropped
     execution_counts.candidate_fact_count = len(candidate_facts)
     execution_counts.candidates_with_evidence_count = sum(
         1 for fact in candidate_facts if fact_has_usable_evidence(fact)
+    )
+    execution_counts.reader_extraction_output_type = (
+        classify_reader_extraction_output(
+            extraction_json_length=execution_counts.extraction_json_length,
+            raw_parsed_fact_count=execution_counts.raw_parsed_fact_count,
+            candidate_fact_count=execution_counts.candidate_fact_count,
+            normalization_dropped_fact_count=execution_counts.normalization_dropped_fact_count,
+        )
     )
 
     for fact in candidate_facts:
