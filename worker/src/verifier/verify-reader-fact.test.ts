@@ -8,6 +8,7 @@ import {
   createVerifierServer,
   listenVerifierServer,
 } from "./server.js";
+import { bindDocumentPagesToSourceDocumentId } from "../study/trusted-document-pages-shared.js";
 import {
   verifyReaderFact,
   type ReaderVerifierDeps,
@@ -223,6 +224,76 @@ describe("verifyReaderFact", () => {
     );
     expect(result.accepted).toBe(false);
     expect(result.reasons.join(" ")).toMatch(/unknown|not authorized/i);
+  });
+
+  it("rejects document identity mismatch between evidence sourceDocumentId and cached documentId", async () => {
+    const authoritativeId = "00000000-0000-4000-8000-000000000001";
+    const stalePages: DocumentPages = {
+      ...fixturePages(),
+      documentId: "01_initial_referral.pdf",
+      pages: fixturePages().pages.map((page) => ({
+        ...page,
+        documentId: "01_initial_referral.pdf",
+      })),
+    };
+    const result = await verifyReaderFact(
+      {
+        caseId: "case-1",
+        userId: "user-1",
+        evidence: [
+          {
+            sourceDocumentId: authoritativeId,
+            page: 1,
+            quote: "Reading comprehension",
+          },
+        ],
+      },
+      depsFromFixtures({
+        scope: {
+          ...scope,
+          authorizedSourceDocumentIds: [authoritativeId],
+        },
+        pagesByDoc: { [authoritativeId]: stalePages },
+      }),
+    );
+    expect(result.accepted).toBe(false);
+    expect(result.reasons[0]).toBe(
+      `Document identity mismatch for ${authoritativeId}.`,
+    );
+  });
+
+  it("accepts evidence when cached pages are bound to authoritative sourceDocumentId", async () => {
+    const authoritativeId = "00000000-0000-4000-8000-000000000001";
+    const stalePages: DocumentPages = {
+      ...fixturePages(),
+      documentId: "01_initial_referral.pdf",
+      pages: fixturePages().pages.map((page) => ({
+        ...page,
+        documentId: "01_initial_referral.pdf",
+      })),
+    };
+    const boundPages = bindDocumentPagesToSourceDocumentId(stalePages, authoritativeId);
+    const result = await verifyReaderFact(
+      {
+        caseId: "case-1",
+        userId: "user-1",
+        evidence: [
+          {
+            sourceDocumentId: authoritativeId,
+            page: 1,
+            quote: "Reading comprehension",
+          },
+        ],
+      },
+      depsFromFixtures({
+        scope: {
+          ...scope,
+          authorizedSourceDocumentIds: [authoritativeId],
+        },
+        pagesByDoc: { [authoritativeId]: boundPages },
+      }),
+    );
+    expect(result.accepted).toBe(true);
   });
 
   it("rejects cross-case document references", async () => {

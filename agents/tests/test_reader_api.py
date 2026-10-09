@@ -389,3 +389,36 @@ def test_audit_required_fail_closed_without_opt_in(
     )
     assert response.status_code == 503
     assert response.json()["error"]["code"] == "AUDIT_UNAVAILABLE"
+
+
+def test_study_reader_wire_defaults_page_document_id_to_source_document_id() -> None:
+    from hive_agents.api_models import StudyReaderDocumentInput
+
+    authoritative_id = "00000000-0000-4000-8000-000000000001"
+    doc = StudyReaderDocumentInput.model_validate(
+        {
+            "sourceDocumentId": authoritative_id,
+            "pages": [{"pageNumber": 1, "words": [{"seq": 0, "text": "Hello"}]}],
+        }
+    )
+    assert doc.source_document_id == authoritative_id
+    assert doc.pages[0].to_document_page().documentId == authoritative_id
+
+
+def test_study_reader_wire_rejects_page_document_id_mismatch() -> None:
+    from hive_agents.api_models import StudyReaderDocumentInput
+
+    authoritative_id = "00000000-0000-4000-8000-000000000001"
+    with pytest.raises(ValueError, match="sourceDocumentId"):
+        StudyReaderDocumentInput.model_validate(
+            {
+                "sourceDocumentId": authoritative_id,
+                "pages": [
+                    {
+                        "documentId": "01_initial_referral.pdf",
+                        "pageNumber": 1,
+                        "words": [{"seq": 0, "text": "Hello"}],
+                    }
+                ],
+            }
+        )

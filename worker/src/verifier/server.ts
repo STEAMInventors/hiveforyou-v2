@@ -5,6 +5,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { WorkerEnv } from "../env.js";
 import { DocumentPagesStorage } from "../intake/document-pages-storage.js";
 import { WorkerSourceDocumentRepository } from "../intake/worker-source-documents.js";
+import { bindDocumentPagesToSourceDocumentId } from "../study/trusted-document-pages-shared.js";
 import { createSupabaseHiveGateway } from "../persistence/hive-gateway.js";
 
 import { isAuthorized } from "./auth.js";
@@ -295,7 +296,11 @@ export function createSupabaseReaderVerifierDeps(
       if (!record) {
         return null;
       }
-      return pagesStorage.load(userId, record.sha256);
+      const cached = await pagesStorage.load(userId, record.sha256);
+      if (!cached) {
+        return null;
+      }
+      return bindDocumentPagesToSourceDocumentId(cached, sourceDocumentId);
     },
   };
 }

@@ -3,13 +3,18 @@ import { documentPagesStoragePath } from "@hiveforyou/shared/hive-artifact-paths
 
 import {
   assertTrustedDocumentPagesPayload,
+  bindDocumentPagesToSourceDocumentId,
   type RegisteredQualificationDocument,
   TrustedDocumentPagesError,
 } from "./trusted-document-pages-shared.js";
 import type { HiveGateway } from "../persistence/hive-gateway.js";
 
 export type { RegisteredQualificationDocument } from "./trusted-document-pages-shared.js";
-export { TrustedDocumentPagesError, assertTrustedDocumentPagesPayload } from "./trusted-document-pages-shared.js";
+export {
+  TrustedDocumentPagesError,
+  assertTrustedDocumentPagesPayload,
+  bindDocumentPagesToSourceDocumentId,
+} from "./trusted-document-pages-shared.js";
 
 export type TrustedDocumentPageBundle = {
   sourceDocumentId: string;
@@ -35,7 +40,10 @@ export async function loadTrustedDocumentPageBundle(input: {
         "DOCUMENT_PAGES_CACHE_MISSING",
       );
     }
-    const documentPages = assertTrustedDocumentPagesPayload(bytes, document.sha256);
+    const documentPages = bindDocumentPagesToSourceDocumentId(
+      assertTrustedDocumentPagesPayload(bytes, document.sha256),
+      document.id,
+    );
     bundles.push({
       sourceDocumentId: document.id,
       sha256: document.sha256,

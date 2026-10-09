@@ -18,6 +18,38 @@ export class TrustedDocumentPagesError extends Error {
   }
 }
 
+/**
+ * Binds trusted page text to the registered source document id for this case.
+ * Cache payloads may retain extraction-time ids (e.g. filenames); evidence and
+ * the verifier use durable {@link sourceDocumentId} from persistence.
+ */
+export function bindDocumentPagesToSourceDocumentId(
+  documentPages: DocumentPages,
+  sourceDocumentId: string,
+): DocumentPages {
+  const authoritativeId = sourceDocumentId.trim();
+  if (!authoritativeId) {
+    throw new TrustedDocumentPagesError(
+      "Registered source document id is required.",
+      "SOURCE_DOCUMENT_ID_REQUIRED",
+    );
+  }
+  if (
+    documentPages.documentId === authoritativeId &&
+    documentPages.pages.every((page) => page.documentId === authoritativeId)
+  ) {
+    return documentPages;
+  }
+  return {
+    ...documentPages,
+    documentId: authoritativeId,
+    pages: documentPages.pages.map((page) => ({
+      ...page,
+      documentId: authoritativeId,
+    })),
+  };
+}
+
 export function assertTrustedDocumentPagesPayload(
   bytes: Uint8Array,
   expectedSha256: string,
