@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
 from typing import Literal
 
 from hive_agents.reader import CandidateFact, SourceEvidence
@@ -31,10 +31,11 @@ class ReaderExecutionCounts:
     extraction_json_length: int = 0
     raw_parsed_fact_count: int = 0
     normalization_dropped_fact_count: int = 0
+    normalization_rejection_reason_counts: dict[str, int] = field(default_factory=dict)
     reader_extraction_output_type: ReaderExtractionOutputType | None = None
 
-    def to_audit_payload(self) -> dict[str, int | str]:
-        payload: dict[str, int | str] = {
+    def to_audit_payload(self) -> dict[str, int | str | dict[str, int]]:
+        payload: dict[str, int | str | dict[str, int]] = {
             "candidateFactCount": self.candidate_fact_count,
             "candidatesWithEvidenceCount": self.candidates_with_evidence_count,
             "verifierSubmissionCount": self.verifier_submission_count,
@@ -45,6 +46,10 @@ class ReaderExecutionCounts:
             "rawParsedFactCount": self.raw_parsed_fact_count,
             "normalizationDroppedFactCount": self.normalization_dropped_fact_count,
         }
+        if self.normalization_rejection_reason_counts:
+            payload["normalizationRejectionReasonCounts"] = dict(
+                sorted(self.normalization_rejection_reason_counts.items())
+            )
         if self.reader_extraction_output_type is not None:
             payload["readerExtractionOutputType"] = self.reader_extraction_output_type
         return payload

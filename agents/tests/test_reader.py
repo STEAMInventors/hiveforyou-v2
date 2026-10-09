@@ -670,6 +670,9 @@ def test_run_reader_extraction_diagnostic_normalization_drops(
     assert counts.raw_parsed_fact_count == 1
     assert counts.candidate_fact_count == 0
     assert counts.normalization_dropped_fact_count == 1
+    assert counts.normalization_rejection_reason_counts == {
+        "MISSING_REQUIRED_FIELD": 1,
+    }
     assert counts.reader_extraction_output_type == "PARSED_FACTS_LOST_IN_NORMALIZATION"
 
 
@@ -722,3 +725,126 @@ def test_dspy_output_field_mismatch_raises_after_stable_prefix_fix(
     body = "[[ ## wrong_field ## ]]\n{}\n[[ ## completed ## ]]"
     with pytest.raises(AdapterParseError):
         _predict_extraction_json_via_stable_prefix_lm(monkeypatch, body)
+
+
+def _run_reader_with_candidate_facts(
+    iep_pack,
+    sample_pages,
+    dummy_lm,
+    monkeypatch: pytest.MonkeyPatch,
+    candidate_facts: list[dict],
+):
+    payload = json.dumps({"candidateFacts": candidate_facts})
+
+    def fake_forward(self, untrusted_document_bundle: str) -> dspy.Prediction:
+        return dspy.Prediction(extraction_json=payload)
+
+    monkeypatch.setattr(HiveReaderModule, "forward", fake_forward)
+    return run_reader(pack=iep_pack, pages=sample_pages, lm=dummy_lm)
+
+
+def test_normalization_adapts_canonical_v3_text_value_slots(
+    iep_pack,
+    sample_pages,
+    dummy_lm,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    result = _run_reader_with_candidate_facts(
+        iep_pack,
+        sample_pages,
+        dummy_lm,
+        monkeypatch,
+        [
+            {
+                "construct": {"measure": "student_name"},
+                "value": {"kind": "text", "text": "Maya Carter"},
+                "modality": "observed",
+                "evidenceRefs": [
+                    {
+                        "sourceDocumentId": sample_pages[0].documentId,
+                        "page": 1,
+                        "quote": "Maya Carter",
+                    }
+                ],
+            }
+        ],
+    )
+    assert len(result.candidate_facts) == 1
+    assert result.candidate_facts[0].value.textValue == "Maya Carter"
+
+
+@pytest.mark.parametrize(
+    ("candidate", "expected_reason"),
+    [
+        ("not-a-dict", "INVALID_CANDIDATE_SHAPE"),
+        (
+            {
+                "construct": {"measure": "x"},
+                "value": {"kind": "not_a_kind", "textValue": "t"},
+                "modality": "planned",
+                "evidence": [
+                    {
+                        "sourceDocumentId": "doc-a",
+                        "page": 1,
+                        "quote": "t",
+                    }
+                ],
+            },
+            "INVALID_VALUE_KIND",
+        ),
+        (
+            {
+                "construct": {"measure": "x"},
+                "value": {"kind": "text", "textValue": "t"},
+                "modality": "planned",
+                "evidence": "not-a-list",
+            },
+            "INVALID_EVIDENCE_SHAPE",
+        ),
+        (
+            {
+                "construct": {"measure": "x"},
+                "value": {"kind": "text", "textValue": "t"},
+                "modality": "planned",
+                "evidence": [],
+            },
+            "MISSING_REQUIRED_FIELD",
+        ),
+        (
+            {
+                "construct": {"measure": "x"},
+                "value": {"kind": "text", "textValue": "t"},
+                "modality": "hypothetical",
+                "evidence": [
+                    {
+                        "sourceDocumentId": "doc-a",
+                        "page": 1,
+                        "quote": "t",
+                    }
+                ],
+            },
+            "INVALID_MODALITY",
+        ),
+    ],
+)
+def test_normalization_rejection_reason_counters(
+    iep_pack,
+    sample_pages,
+    dummy_lm,
+    monkeypatch: pytest.MonkeyPatch,
+    candidate,
+    expected_reason: str,
+) -> None:
+    facts = [candidate] if isinstance(candidate, dict) else [candidate]
+    result = _run_reader_with_candidate_facts(
+        iep_pack,
+        sample_pages,
+        dummy_lm,
+        monkeypatch,
+        facts,
+    )
+    counts = result.execution_counts
+    assert counts is not None
+    assert counts.candidate_fact_count == 0
+    assert counts.normalization_dropped_fact_count == 1
+    assert counts.normalization_rejection_reason_counts == {expected_reason: 1}

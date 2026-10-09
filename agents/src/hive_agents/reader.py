@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import math
 import re
 import uuid
 from dataclasses import dataclass, field
@@ -14,6 +15,16 @@ from hive_agents.lm import build_dspy_lm_messages, normalize_model_usage
 from hive_agents.pack_loader import AgentPack, load_agent_pack
 
 ClaimModality = Literal["planned", "required", "decided", "observed", "unknown"]
+CLAIM_MODALITIES: frozenset[str] = frozenset(
+    {"planned", "required", "decided", "observed", "unknown"}
+)
+NormalizationRejectionReason = Literal[
+    "INVALID_VALUE_KIND",
+    "INVALID_EVIDENCE_SHAPE",
+    "MISSING_REQUIRED_FIELD",
+    "INVALID_MODALITY",
+    "INVALID_CANDIDATE_SHAPE",
+]
 ClaimValueKind = Literal[
     "quantity",
     "text",
@@ -195,6 +206,14 @@ class _ExecutionBudget:
             raise ReaderLimitsExhausted(
                 f"Reader reasoning step budget exhausted ({self.limits.max_reasoning_steps})."
             )
+
+
+class FactCoercionRejected(Exception):
+    """Deterministic normalization rejection (aggregate counts only in audit)."""
+
+    def __init__(self, reason: NormalizationRejectionReason) -> None:
+        self.reason = reason
+        super().__init__(reason)
 
 
 class ReaderError(Exception):
@@ -754,24 +773,190 @@ def _parse_extraction_json(raw: str) -> list[dict[str, Any]]:
     raise ReaderError("Reader LM JSON must contain candidateFacts (array).")
 
 
-def _coerce_candidate_fact(raw: dict[str, Any]) -> CandidateFact:
-    evidence_raw = raw.get("evidence") or raw.get("evidenceRefs") or []
+_CLAIM_VALUE_KINDS: frozenset[str] = frozenset(
+    {
+        "quantity",
+        "text",
+        "code",
+        "boolean",
+        "entity_ref",
+        "date",
+        "period",
+        "unknown",
+    }
+)
+
+_VALUE_TRANSPORT_SLOTS: frozenset[str] = frozenset(
+    {
+        "numberValue",
+        "textValue",
+        "codeValue",
+        "booleanValue",
+        "entityId",
+        "dateValue",
+        "periodStart",
+        "periodEnd",
+        "unit",
+    }
+)
+
+_ACTIVE_VALUE_SLOTS_BY_KIND: dict[str, frozenset[str]] = {
+    "quantity": frozenset({"numberValue", "unit"}),
+    "text": frozenset({"textValue"}),
+    "code": frozenset({"codeValue"}),
+    "boolean": frozenset({"booleanValue"}),
+    "entity_ref": frozenset({"entityId"}),
+    "date": frozenset({"dateValue"}),
+    "period": frozenset({"periodStart", "periodEnd"}),
+    "unknown": frozenset(),
+}
+
+
+def _bump_rejection(
+    tallies: dict[str, int],
+    reason: NormalizationRejectionReason,
+) -> None:
+    tallies[reason] = tallies.get(reason, 0) + 1
+
+
+def _adapt_reader_value_raw(
+    value_raw: Any,
+    *,
+    claim_unit: Any = None,
+) -> dict[str, Any]:
+    """Map canonical /3 value slots and OpenAI transport into ClaimValue v4 shape."""
+    if not isinstance(value_raw, dict):
+        return {"kind": "unknown"}
+
+    adapted: dict[str, Any] = dict(value_raw)
+    kind_raw = adapted.get("kind")
+    if not isinstance(kind_raw, str) or not kind_raw.strip():
+        raise FactCoercionRejected("INVALID_VALUE_KIND")
+    kind = kind_raw.strip().lower()
+    if kind not in _CLAIM_VALUE_KINDS:
+        raise FactCoercionRejected("INVALID_VALUE_KIND")
+    adapted["kind"] = kind
+
+    if kind == "quantity" and "numberValue" not in adapted and "amount" in adapted:
+        adapted["numberValue"] = adapted.pop("amount")
+    if kind == "text" and "textValue" not in adapted and "text" in adapted:
+        adapted["textValue"] = adapted.pop("text")
+    if kind == "code" and "codeValue" not in adapted and "code" in adapted:
+        adapted["codeValue"] = adapted.pop("code")
+    if kind == "boolean" and "booleanValue" not in adapted and "value" in adapted:
+        adapted["booleanValue"] = adapted.pop("value")
+    if kind == "date" and "dateValue" not in adapted and "value" in adapted:
+        adapted["dateValue"] = adapted.pop("value")
+    if kind == "period":
+        if "periodStart" not in adapted and "start" in adapted:
+            adapted["periodStart"] = adapted.pop("start")
+        if "periodEnd" not in adapted and "end" in adapted:
+            adapted["periodEnd"] = adapted.pop("end")
+
+    if kind == "quantity" and adapted.get("unit") is None and claim_unit is not None:
+        adapted["unit"] = claim_unit
+
+    allowed = {"kind", *_VALUE_TRANSPORT_SLOTS}
+    unknown_keys = set(adapted.keys()) - allowed
+    if unknown_keys:
+        raise FactCoercionRejected("INVALID_VALUE_KIND")
+
+    active = _ACTIVE_VALUE_SLOTS_BY_KIND[kind]
+    scrubbed: dict[str, Any] = {"kind": kind}
+    for slot in _VALUE_TRANSPORT_SLOTS:
+        if slot in active:
+            scrubbed[slot] = adapted.get(slot)
+        else:
+            scrubbed[slot] = None
+
+    _assert_value_payload(scrubbed)
+    return scrubbed
+
+
+def _assert_value_payload(value: dict[str, Any]) -> None:
+    kind = value["kind"]
+    if kind == "quantity":
+        amount = value.get("numberValue")
+        if (
+            isinstance(amount, bool)
+            or not isinstance(amount, (int, float))
+            or not math.isfinite(float(amount))
+        ):
+            raise FactCoercionRejected("MISSING_REQUIRED_FIELD")
+        return
+    if kind == "text":
+        text_value = value.get("textValue")
+        if not isinstance(text_value, str) or not text_value.strip():
+            raise FactCoercionRejected("MISSING_REQUIRED_FIELD")
+        return
+    if kind == "code":
+        code_value = value.get("codeValue")
+        if not isinstance(code_value, str) or not code_value.strip():
+            raise FactCoercionRejected("MISSING_REQUIRED_FIELD")
+        return
+    if kind == "boolean":
+        if not isinstance(value.get("booleanValue"), bool):
+            raise FactCoercionRejected("MISSING_REQUIRED_FIELD")
+        return
+    if kind == "entity_ref":
+        entity_id = value.get("entityId")
+        if not isinstance(entity_id, str) or not entity_id.strip():
+            raise FactCoercionRejected("MISSING_REQUIRED_FIELD")
+        return
+    if kind == "date":
+        date_value = value.get("dateValue")
+        if not isinstance(date_value, str) or not date_value.strip():
+            raise FactCoercionRejected("MISSING_REQUIRED_FIELD")
+        return
+    if kind == "period":
+        return
+
+
+def _parse_reader_evidence(raw: dict[str, Any]) -> list[SourceEvidence]:
+    evidence_raw = raw.get("evidence")
+    if evidence_raw is None:
+        evidence_raw = raw.get("evidenceRefs")
+    if evidence_raw is None:
+        evidence_raw = []
+    if not isinstance(evidence_raw, list):
+        raise FactCoercionRejected("INVALID_EVIDENCE_SHAPE")
+
     evidence: list[SourceEvidence] = []
-    if isinstance(evidence_raw, list):
-        for item in evidence_raw:
-            if not isinstance(item, dict):
-                continue
-            evidence.append(
-                SourceEvidence(
-                    sourceDocumentId=str(
-                        item.get("sourceDocumentId") or item.get("documentId") or ""
-                    ),
-                    page=int(item.get("page") or item.get("pageNumber") or 0),
-                    quote=str(item.get("quote") or item.get("snippet") or ""),
-                    spanStart=item.get("spanStart"),
-                    spanEnd=item.get("spanEnd"),
-                )
+    for item in evidence_raw:
+        if not isinstance(item, dict):
+            continue
+        evidence.append(
+            SourceEvidence(
+                sourceDocumentId=str(
+                    item.get("sourceDocumentId") or item.get("documentId") or ""
+                ),
+                page=int(item.get("page") or item.get("pageNumber") or 0),
+                quote=str(item.get("quote") or item.get("snippet") or ""),
+                spanStart=item.get("spanStart"),
+                spanEnd=item.get("spanEnd"),
             )
+        )
+    if not evidence:
+        raise FactCoercionRejected("MISSING_REQUIRED_FIELD")
+    return evidence
+
+
+def _parse_reader_modality(raw: dict[str, Any]) -> ClaimModality:
+    modality_raw = raw.get("modality") or "unknown"
+    if not isinstance(modality_raw, str):
+        raise FactCoercionRejected("INVALID_MODALITY")
+    modality = modality_raw.strip().lower()
+    if modality not in CLAIM_MODALITIES:
+        raise FactCoercionRejected("INVALID_MODALITY")
+    return modality  # type: ignore[return-value]
+
+
+def _coerce_candidate_fact(raw: dict[str, Any]) -> CandidateFact:
+    verification = raw.get("verificationStatus") or raw.get("status") or "proposed"
+    if str(verification).lower() in {"verified", "validated", "accepted", "canonical"}:
+        raise ReaderError("Reader must not emit verified or validated facts.")
+
+    evidence = _parse_reader_evidence(raw)
 
     construct_raw = raw.get("construct") or {}
     if isinstance(construct_raw, str):
@@ -785,14 +970,11 @@ def _coerce_candidate_fact(raw: dict[str, Any]) -> CandidateFact:
     else:
         construct = ConstructParts(measure="unspecified")
 
-    value_raw = raw.get("value") or {}
+    value_raw = raw.get("value")
     if not isinstance(value_raw, dict):
-        value_raw = {"kind": "unknown"}
-    value = ClaimValue.model_validate(value_raw)
-
-    verification = raw.get("verificationStatus") or raw.get("status") or "proposed"
-    if str(verification).lower() in {"verified", "validated", "accepted", "canonical"}:
-        raise ReaderError("Reader must not emit verified or validated facts.")
+        value_raw = {}
+    value_payload = _adapt_reader_value_raw(value_raw, claim_unit=raw.get("unit"))
+    value = ClaimValue.model_validate(value_payload)
 
     fact_id = str(raw.get("id") or f"reader-candidate-{uuid.uuid4().hex[:12]}")
     return CandidateFact(
@@ -800,7 +982,7 @@ def _coerce_candidate_fact(raw: dict[str, Any]) -> CandidateFact:
         subjectEntityId=raw.get("subjectEntityId"),
         construct=construct,
         value=value,
-        modality=raw.get("modality") or "unknown",
+        modality=_parse_reader_modality(raw),
         evidence=evidence,
     )
 
@@ -809,7 +991,7 @@ def _normalize_facts_with_page_index(
     raw_facts: list[dict[str, Any]],
     page_index: dict[tuple[str, int], DocumentPage],
 ) -> list[CandidateFact]:
-    normalized, _ = _normalize_facts_with_page_index_counting_drops(
+    normalized, _, _ = _normalize_facts_with_page_index_counting_drops(
         raw_facts, page_index
     )
     return normalized
@@ -818,18 +1000,28 @@ def _normalize_facts_with_page_index(
 def _normalize_facts_with_page_index_counting_drops(
     raw_facts: list[dict[str, Any]],
     page_index: dict[tuple[str, int], DocumentPage],
-) -> tuple[list[CandidateFact], int]:
+) -> tuple[list[CandidateFact], int, dict[str, int]]:
     from pydantic import ValidationError
 
     normalized: list[CandidateFact] = []
     dropped = 0
+    rejection_reason_counts: dict[str, int] = {}
     for raw in raw_facts:
+        if not isinstance(raw, dict):
+            dropped += 1
+            _bump_rejection(rejection_reason_counts, "INVALID_CANDIDATE_SHAPE")
+            continue
         try:
             fact = _coerce_candidate_fact(raw)
         except ReaderError:
             raise
+        except FactCoercionRejected as exc:
+            dropped += 1
+            _bump_rejection(rejection_reason_counts, exc.reason)
+            continue
         except ValidationError:
             dropped += 1
+            _bump_rejection(rejection_reason_counts, "INVALID_CANDIDATE_SHAPE")
             continue
         enriched_evidence: list[SourceEvidence] = []
         for ev in fact.evidence:
@@ -847,7 +1039,7 @@ def _normalize_facts_with_page_index_counting_drops(
                 )
             )
         normalized.append(fact.model_copy(update={"evidence": enriched_evidence}))
-    return normalized, dropped
+    return normalized, dropped, rejection_reason_counts
 
 
 def run_reader(
@@ -966,10 +1158,11 @@ def run_reader(
     execution_counts.extraction_json_length = len(raw_json.strip())
     raw_facts = _parse_extraction_json(raw_json)
     execution_counts.raw_parsed_fact_count = len(raw_facts)
-    candidate_facts, dropped = _normalize_facts_with_page_index_counting_drops(
-        raw_facts, page_index
+    candidate_facts, dropped, rejection_reason_counts = (
+        _normalize_facts_with_page_index_counting_drops(raw_facts, page_index)
     )
     execution_counts.normalization_dropped_fact_count = dropped
+    execution_counts.normalization_rejection_reason_counts = rejection_reason_counts
     execution_counts.candidate_fact_count = len(candidate_facts)
     execution_counts.candidates_with_evidence_count = sum(
         1 for fact in candidate_facts if fact_has_usable_evidence(fact)
