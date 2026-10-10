@@ -17,6 +17,10 @@ def trace_batch_serialized_byte_size(events: list[dict[str, Any]]) -> int:
 
 _SAFE_SERVER_ERROR_CODE = re.compile(r"^[A-Z0-9_]{1,64}$")
 
+_TRACE_INGEST_OUTCOMES = frozenset({"inserted", "duplicate"})
+# Safe to retry the same event ids when the client never received a trusted response.
+_TRACE_INGEST_IDEMPOTENT_MAX_ATTEMPTS = 2
+
 
 class ReaderTraceTransport(Protocol):
     def post_json(
@@ -107,6 +111,44 @@ def _log_trace_ingest_failure(
         details.batch_total,
         details.events_persisted_before_failure,
     )
+
+
+def _is_idempotent_retryable_trace_error(exc: ReaderTraceError) -> bool:
+    if exc.details is not None and exc.details.http_status is not None:
+        return False
+    message = str(exc).strip().lower()
+    return message == "trace ingest unavailable" or "trace ingest unavailable" in message
+
+
+def _validate_ingest_results(
+    results: list[Any],
+    *,
+    event_count: int,
+) -> ReaderTraceFailureDetails | None:
+    if len(results) != event_count:
+        return ReaderTraceFailureDetails(
+            http_status=200,
+            server_error_code="RESULT_COUNT_MISMATCH",
+            event_count=event_count,
+            batch_bytes=0,
+        )
+    for item in results:
+        if not isinstance(item, dict):
+            return ReaderTraceFailureDetails(
+                http_status=200,
+                server_error_code="MALFORMED_RESPONSE",
+                event_count=event_count,
+                batch_bytes=0,
+            )
+        outcome = item.get("outcome")
+        if outcome not in _TRACE_INGEST_OUTCOMES:
+            return ReaderTraceFailureDetails(
+                http_status=200,
+                server_error_code="MALFORMED_RESPONSE",
+                event_count=event_count,
+                batch_bytes=0,
+            )
+    return None
 
 
 def _format_failure_message(details: ReaderTraceFailureDetails) -> str:
@@ -204,6 +246,22 @@ class ReaderTraceClient:
     def ingest_events(self, events: list[dict[str, Any]]) -> dict[str, Any]:
         if not events:
             raise ReaderTraceError("trace batch must not be empty")
+        last_exc: ReaderTraceError | None = None
+        for attempt in range(_TRACE_INGEST_IDEMPOTENT_MAX_ATTEMPTS):
+            try:
+                return self._ingest_events_once(events)
+            except ReaderTraceError as exc:
+                last_exc = exc
+                if (
+                    attempt + 1 < _TRACE_INGEST_IDEMPOTENT_MAX_ATTEMPTS
+                    and _is_idempotent_retryable_trace_error(exc)
+                ):
+                    continue
+                raise
+        assert last_exc is not None
+        raise last_exc
+
+    def _ingest_events_once(self, events: list[dict[str, Any]]) -> dict[str, Any]:
         batch_bytes = trace_batch_serialized_byte_size(events)
         event_count = len(events)
         attempt_id = _attempt_id_from_events(events)
@@ -233,6 +291,8 @@ class ReaderTraceClient:
             )
             _log_trace_ingest_failure(attempt_id=attempt_id, details=merged)
             if exc.details is None:
+                if _is_idempotent_retryable_trace_error(exc):
+                    raise
                 raise ReaderTraceError(_format_failure_message(merged), details=merged) from exc
             raise
         results = parsed.get("results")
@@ -245,10 +305,11 @@ class ReaderTraceClient:
             )
             _log_trace_ingest_failure(attempt_id=attempt_id, details=details)
             raise ReaderTraceError(_format_failure_message(details), details=details)
-        if len(results) != event_count:
+        validation_error = _validate_ingest_results(results, event_count=event_count)
+        if validation_error is not None:
             details = ReaderTraceFailureDetails(
-                http_status=200,
-                server_error_code="RESULT_COUNT_MISMATCH",
+                http_status=validation_error.http_status,
+                server_error_code=validation_error.server_error_code,
                 event_count=event_count,
                 batch_bytes=batch_bytes,
             )

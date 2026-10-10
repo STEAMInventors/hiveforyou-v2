@@ -8,9 +8,11 @@ from typing import Any, TYPE_CHECKING
 
 from hive_agents.trace_client import ReaderTraceError, ReaderTraceFailureDetails
 
-# Must match worker/src/trace/agent-run-trace-ingest.ts
+# Server caps — must match worker/src/trace/agent-run-trace-ingest.ts
 AGENT_RUN_TRACE_MAX_EVENTS_PER_BATCH = 256
 AGENT_RUN_TRACE_MAX_BODY_BYTES = 2 * 1024 * 1024
+# Reader flush target (smaller batches avoid worker sequential-ingest timeouts).
+AGENT_RUN_TRACE_FLUSH_MAX_EVENTS_PER_BATCH = 25
 
 
 def trace_batch_serialized_byte_size(events: list[dict[str, Any]]) -> int:
@@ -20,7 +22,7 @@ def trace_batch_serialized_byte_size(events: list[dict[str, Any]]) -> int:
 def split_trace_event_batches(
     events: list[dict[str, Any]],
     *,
-    max_events: int = AGENT_RUN_TRACE_MAX_EVENTS_PER_BATCH,
+    max_events: int = AGENT_RUN_TRACE_FLUSH_MAX_EVENTS_PER_BATCH,
     max_bytes: int = AGENT_RUN_TRACE_MAX_BODY_BYTES,
 ) -> list[list[dict[str, Any]]]:
     if not events:

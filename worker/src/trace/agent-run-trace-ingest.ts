@@ -73,6 +73,8 @@ export async function ingestAgentRunTraceEvents(
     );
   }
 
+  // Sequential append (idempotent by event id). Batched bulk insert is feasible but out of scope here;
+  // Python Reader flush uses AGENT_RUN_TRACE_FLUSH_MAX_EVENTS_PER_BATCH (25) to stay within timeout.
   const results: AgentRunTraceIngestResult["results"] = [];
   for (const event of validated) {
     const outcome = await deps.repository.appendWithScopeValidation(event);

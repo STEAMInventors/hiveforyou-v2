@@ -13,6 +13,7 @@ from hive_agents.trace_client import (
     trace_batch_serialized_byte_size,
 )
 from hive_agents.trace_emitter import (
+    AGENT_RUN_TRACE_FLUSH_MAX_EVENTS_PER_BATCH,
     AGENT_RUN_TRACE_MAX_EVENTS_PER_BATCH,
     ReaderTraceContext,
     ReaderTraceSession,
@@ -109,6 +110,7 @@ def test_flush_splits_when_event_count_exceeds_ingest_limit() -> None:
     total_events = sum(len(body["events"]) for body in transport.bodies)
     assert total_events == 261
     for body in transport.bodies:
+        assert len(body["events"]) <= AGENT_RUN_TRACE_FLUSH_MAX_EVENTS_PER_BATCH
         assert len(body["events"]) <= AGENT_RUN_TRACE_MAX_EVENTS_PER_BATCH
     flattened = [event for body in transport.bodies for event in body["events"]]
     assert [event["sequenceNumber"] for event in flattened] == list(range(261))
@@ -250,11 +252,84 @@ def test_multi_batch_flush_fails_closed_after_partial_success() -> None:
         transport=PartialFailTransport(),
     )
     session = ReaderTraceSession(context=_sample_context(), client=client)
-    for index in range(AGENT_RUN_TRACE_MAX_EVENTS_PER_BATCH + 1):
+    for index in range(AGENT_RUN_TRACE_FLUSH_MAX_EVENTS_PER_BATCH + 1):
         session.emit("TOOL_CALLED", {"tool": "search", "hitCount": 0, "queryLength": index})
     with pytest.raises(ReaderTraceError) as raised:
         session.flush()
     assert calls["count"] == 2
     assert raised.value.details is not None
-    assert raised.value.details.events_persisted_before_failure == AGENT_RUN_TRACE_MAX_EVENTS_PER_BATCH
+    assert (
+        raised.value.details.events_persisted_before_failure
+        == AGENT_RUN_TRACE_FLUSH_MAX_EVENTS_PER_BATCH
+    )
     assert raised.value.details.batch_index == 1
+
+
+def test_split_trace_event_batches_defaults_to_flush_limit() -> None:
+    events = [_minimal_event(index) for index in range(30)]
+    batches = split_trace_event_batches(events)
+    assert all(len(batch) <= AGENT_RUN_TRACE_FLUSH_MAX_EVENTS_PER_BATCH for batch in batches)
+    assert sum(len(batch) for batch in batches) == 30
+
+
+def test_trace_client_accepts_duplicate_outcomes() -> None:
+    class DuplicateTransport:
+        def post_json(self, **kwargs):  # type: ignore[no-untyped-def]
+            events = kwargs["body"]["events"]
+            return {
+                "results": [{"id": event["id"], "outcome": "duplicate"} for event in events],
+            }
+
+    client = ReaderTraceClient(
+        ReaderTraceConfig(base_url="http://127.0.0.1:4319", token="t"),
+        transport=DuplicateTransport(),
+    )
+    client.ingest_events([_minimal_event(0)])
+
+
+def test_trace_client_retries_after_timeout_when_server_already_persisted() -> None:
+    persisted_ids: set[str] = set()
+    calls = {"count": 0}
+
+    class TimeoutThenIdempotentTransport:
+        def post_json(self, **kwargs):  # type: ignore[no-untyped-def]
+            calls["count"] += 1
+            events = kwargs["body"]["events"]
+            if calls["count"] == 1:
+                for event in events:
+                    persisted_ids.add(event["id"])
+                raise ReaderTraceError("trace ingest unavailable")
+            outcomes = []
+            for event in events:
+                outcome = "duplicate" if event["id"] in persisted_ids else "inserted"
+                outcomes.append({"id": event["id"], "outcome": outcome})
+            return {"results": outcomes}
+
+    client = ReaderTraceClient(
+        ReaderTraceConfig(base_url="http://127.0.0.1:4319", token="t"),
+        transport=TimeoutThenIdempotentTransport(),
+    )
+    events = [_minimal_event(0), _minimal_event(1)]
+    client.ingest_events(events)
+    assert calls["count"] == 2
+
+
+def test_multi_batch_flush_succeeds_with_small_batches() -> None:
+    transport = FakeTransport()
+    client = ReaderTraceClient(
+        ReaderTraceConfig(base_url="http://127.0.0.1:4319", token="t"),
+        transport=transport,
+    )
+    session = ReaderTraceSession(context=_sample_context(), client=client)
+    for index in range(256):
+        session.emit("TOOL_CALLED", {"tool": "search", "hitCount": 0, "queryLength": index})
+    session.emit("COMPLETED", {"durationMs": 1})
+    session.flush()
+    expected_batches = (256 + 1 + AGENT_RUN_TRACE_FLUSH_MAX_EVENTS_PER_BATCH - 1) // (
+        AGENT_RUN_TRACE_FLUSH_MAX_EVENTS_PER_BATCH
+    )
+    assert len(transport.bodies) == expected_batches
+    flattened = [event for body in transport.bodies for event in body["events"]]
+    assert len(flattened) == 257
+    assert flattened[-1]["eventType"] == "COMPLETED"
+    assert [event["sequenceNumber"] for event in flattened] == list(range(257))
