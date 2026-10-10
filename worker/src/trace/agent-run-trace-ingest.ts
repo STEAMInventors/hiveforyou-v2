@@ -12,6 +12,10 @@ import {
 } from "../persistence/agent-run-trace.js";
 import { isAuthorized } from "../verifier/auth.js";
 
+/** Must stay aligned with hive_agents.trace_emitter (Python Reader flush). */
+export const AGENT_RUN_TRACE_MAX_EVENTS_PER_BATCH = 256;
+export const AGENT_RUN_TRACE_MAX_BODY_BYTES = 2 * 1024 * 1024;
+
 export type AgentRunTraceIngestDeps = {
   repository: AgentRunTraceRepository;
 };
@@ -46,7 +50,7 @@ export async function ingestAgentRunTraceEvents(
   if (!Array.isArray(eventsRaw) || eventsRaw.length === 0) {
     throw new AgentRunTraceValidationError("events must be a non-empty array.", "INVALID_REQUEST");
   }
-  if (eventsRaw.length > 256) {
+  if (eventsRaw.length > AGENT_RUN_TRACE_MAX_EVENTS_PER_BATCH) {
     throw new AgentRunTraceValidationError("Too many events in one batch.", "PAYLOAD_TOO_LARGE");
   }
 

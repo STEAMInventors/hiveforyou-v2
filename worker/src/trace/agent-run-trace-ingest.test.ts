@@ -2,10 +2,11 @@ import { request as httpRequest } from "node:http";
 
 import { describe, expect, it, vi } from "vitest";
 
-import type {
-  AgentRunTraceAppendResult,
-  AgentRunTraceEventInput,
-  AgentRunTraceRepository,
+import {
+  AgentRunTraceValidationError,
+  type AgentRunTraceAppendResult,
+  type AgentRunTraceEventInput,
+  type AgentRunTraceRepository,
 } from "../persistence/agent-run-trace.js";
 import {
   closeVerifierServer,
@@ -13,7 +14,11 @@ import {
   listenVerifierServer,
 } from "../verifier/server.js";
 import type { ReaderVerifierDeps } from "../verifier/verify-reader-fact.js";
-import type { AgentRunTraceIngestDeps } from "./agent-run-trace-ingest.js";
+import {
+  AGENT_RUN_TRACE_MAX_EVENTS_PER_BATCH,
+  ingestAgentRunTraceEvents,
+  type AgentRunTraceIngestDeps,
+} from "./agent-run-trace-ingest.js";
 
 const TOKEN = "test-verifier-token";
 
@@ -86,6 +91,25 @@ function httpJson(input: {
     req.end();
   });
 }
+
+describe("agent run trace ingest batch limits", () => {
+  it("rejects more than the max events per batch", async () => {
+    const events = Array.from({ length: AGENT_RUN_TRACE_MAX_EVENTS_PER_BATCH + 1 }, () =>
+      sampleTraceEvent(),
+    );
+    const append = vi.fn();
+    const deps: AgentRunTraceIngestDeps = {
+      repository: { appendWithScopeValidation: append } as AgentRunTraceRepository,
+    };
+    await expect(ingestAgentRunTraceEvents({ events }, deps)).rejects.toBeInstanceOf(
+      AgentRunTraceValidationError,
+    );
+    await expect(ingestAgentRunTraceEvents({ events }, deps)).rejects.toMatchObject({
+      code: "PAYLOAD_TOO_LARGE",
+    });
+    expect(append).not.toHaveBeenCalled();
+  });
+});
 
 describe("agent run trace ingest HTTP route", () => {
   it("returns 503 when trace ingest is not configured on the verifier listener", async () => {
