@@ -70,7 +70,7 @@ def resolve_reader_stable_system_for_request(
         return build_reader_stable_system(pack), None
     from hive_agents.reader_prompt.trusted_manifest import format_engine1_context_block
 
-    parallel_variant = resolve_reader_parallel_prompt_variant(resolved)
+    parallel_variant = resolve_reader_parallel_prompt_variant(settings)
     assembled: AssembledReaderExperimentPrompt = assemble_reader_architecture_prompt(
         architecture,
         pack=pack,
