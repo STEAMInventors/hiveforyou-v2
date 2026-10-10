@@ -4,8 +4,15 @@ import { TextEncoder } from "node:util";
 import { describe, expect, it, vi } from "vitest";
 
 import {
+  AGENTIC_READER_QUALIFICATION_ANSWER_SNAPSHOT_HASH,
+  AGENTIC_READER_QUALIFICATION_QUESTION_SET_VERSION,
+  buildAgenticReaderQualificationEngineFingerprint,
+  computeAgenticReaderQualificationIdempotencyKey,
+  fingerprintRegisteredSourceDocuments,
   L001_QUALIFICATION_SOURCE_SHA256,
   loadEffectiveStudyAgentsPromptMetadata,
+  loadReaderExperimentPromptHashes,
+  resolveAgenticReaderModelIdentity,
 } from "@hiveforyou/core/study";
 import { documentPagesStoragePath } from "@hiveforyou/shared/hive-artifact-paths";
 import { NESTIEP_EXTRACTOR_VERSION } from "@hiveforyou/shared/intake";
@@ -308,6 +315,66 @@ describe("agentic reader qualification worker flow", () => {
     expect(request.documents[0]?.sourceDocumentId).toBe("00000000-0000-4000-8000-000000000001");
     expect(request.documents[0]?.pages[0]?.pageNumber).toBe(2);
     expect(request.documents[0]?.pages[0]?.words[0]).toEqual({ seq: 3, text: "Reading" });
+  });
+
+  it("ensure does not reuse a legacy shared-prefix case_wide SUCCEEDED run after A2 pins", async () => {
+    const { gateway, studyRuns } = createStatefulGateway({
+      caseUserId: USER_A,
+      sourceDocuments: l001SourceDocuments(USER_A),
+    });
+    const prompt = loadEffectiveStudyAgentsPromptMetadata();
+    const hashes = loadReaderExperimentPromptHashes();
+    const model = resolveAgenticReaderModelIdentity(READER_QUALIFICATION_MODEL_ENV);
+    const legacyEngine = buildAgenticReaderQualificationEngineFingerprint({
+      promptSha256: hashes.sharedPromptSha256,
+      modelIdentity: model,
+      readerArchitectureVariant: "case_wide",
+    });
+    const legacyIdempotencyKey = computeAgenticReaderQualificationIdempotencyKey({
+      caseId: CASE_A,
+      domainId: prompt.artifact.domainId,
+      domainPackId: prompt.artifact.domainPackId,
+      domainPackVersion: prompt.artifact.domainPackVersion,
+      documentFingerprint: fingerprintRegisteredSourceDocuments(
+        L001_QUALIFICATION_SOURCE_SHA256,
+      ),
+      engine: legacyEngine,
+    });
+    const legacyRunId = "99999999-9999-4999-8999-999999999999";
+    studyRuns.push({
+      id: legacyRunId,
+      case_id: CASE_A,
+      user_id: USER_A,
+      idempotency_key: legacyIdempotencyKey,
+      study_context_id: legacyRunId,
+      domain_id: prompt.artifact.domainId,
+      domain_pack_id: prompt.artifact.domainPackId,
+      domain_pack_version: prompt.artifact.domainPackVersion,
+      question_set_version: AGENTIC_READER_QUALIFICATION_QUESTION_SET_VERSION,
+      answer_snapshot_hash: AGENTIC_READER_QUALIFICATION_ANSWER_SNAPSHOT_HASH,
+      engine_provider: model.providerId,
+      provider_mode: model.providerMode,
+      prompt_id: "reader-experiment/architecture/case_wide",
+      prompt_version: `${hashes.promptVersion}+case_wide`,
+      prompt_sha256: hashes.sharedPromptSha256,
+      started_at: "2026-10-09T00:00:00.000Z",
+      status: "SUCCEEDED",
+    });
+
+    const ensured = await ensureAgenticReaderQualificationRun({
+      env: {
+        ...READER_QUALIFICATION_MODEL_ENV,
+        HIVE_READER_ARCHITECTURE_VARIANT: "case_wide",
+      },
+      gateway,
+      caseId: CASE_A,
+      userId: USER_A,
+    });
+
+    expect(ensured.idempotencyKey).not.toBe(legacyIdempotencyKey);
+    expect(ensured.run.studyRunId).not.toBe(legacyRunId);
+    expect(studyRuns.some((row) => row.id === legacyRunId && row.status === "SUCCEEDED")).toBe(true);
+    expect(studyRuns.filter((row) => row.case_id === CASE_A)).toHaveLength(2);
   });
 
   it("ensure is idempotent for the same qualification fingerprint", async () => {

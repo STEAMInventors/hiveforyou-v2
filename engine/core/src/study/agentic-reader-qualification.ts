@@ -143,8 +143,18 @@ export const READER_EXPERIMENT_L001_MAX_REASONING_STEPS = 4;
 
 export type ReaderExperimentPromptHashes = {
   promptVersion: string;
+  /** Shared stable prefix (through §4 + golden methodology + post-checklist); integrity checks only. */
   sharedPromptSha256: string;
+  case_wide_sha256: string;
+  parallel_document_sha256: string;
 };
+
+const READER_EXPERIMENT_PROMPT_HASH_KEYS = [
+  "promptVersion",
+  "sharedPromptSha256",
+  "case_wide_sha256",
+  "parallel_document_sha256",
+] as const satisfies readonly (keyof ReaderExperimentPromptHashes)[];
 
 export function readerExperimentPromptHashesPath(
   env: Record<string, string | undefined> = process.env,
@@ -172,12 +182,26 @@ export function loadReaderExperimentPromptHashes(
 ): ReaderExperimentPromptHashes {
   const path = readerExperimentPromptHashesPath(env);
   const parsed = JSON.parse(readFileSync(path, "utf8")) as ReaderExperimentPromptHashes;
-  for (const key of ["promptVersion", "sharedPromptSha256"] as const) {
+  for (const key of READER_EXPERIMENT_PROMPT_HASH_KEYS) {
     if (typeof parsed[key] !== "string" || !parsed[key].trim()) {
+      throw new Error(`READER_EXPERIMENT_PROMPT_HASHES_INVALID:${path}:${key}`);
+    }
+    if (key !== "promptVersion" && !/^[a-f0-9]{64}$/i.test(parsed[key].trim())) {
       throw new Error(`READER_EXPERIMENT_PROMPT_HASHES_INVALID:${path}:${key}`);
     }
   }
   return parsed;
+}
+
+/** Architecture-specific full stable-prefix SHA256 from committed experiment pins. */
+export function resolveReaderArchitecturePromptSha256(
+  hashes: ReaderExperimentPromptHashes,
+  architecture: ReaderArchitectureVariant,
+): string {
+  if (architecture === "case_wide") {
+    return hashes.case_wide_sha256.toLowerCase();
+  }
+  return hashes.parallel_document_sha256.toLowerCase();
 }
 
 export function resolveReaderArchitectureVariant(
@@ -221,7 +245,7 @@ export function loadAgenticReaderQualificationPromptMetadata(input?: {
   return {
     promptId: `reader-experiment/architecture/${architecture}`,
     promptVersion: `${hashes.promptVersion}+${architecture}`,
-    promptSha256: hashes.sharedPromptSha256,
+    promptSha256: resolveReaderArchitecturePromptSha256(hashes, architecture),
     agentsJsonPath: base.agentsJsonPath,
     artifact: base.artifact,
   };

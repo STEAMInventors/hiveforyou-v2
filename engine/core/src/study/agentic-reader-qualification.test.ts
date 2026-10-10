@@ -34,9 +34,37 @@ import {
 const COMMITTED_READER_EXPERIMENT_PROMPT_HASHES = {
   promptVersion: "hive-reader-prompt/2.0.0",
   sharedPromptSha256: "f4f425e1a985c81661ab81a299a5bc0b6b97f679f1cae9ecc7cf4ba046304ca3",
-  case_wide_sha256: "642db763812ef567d5bd24dfed65fefe87c238886616942d0d229f0d3d5a4c64",
+  case_wide_sha256: "81233aa51b6ec10a9c7e44288965f5e2770a4a6c98927b139a9ed2c51bb669ee",
   parallel_document_sha256: "6e97b881c1f310be1c80844813851849199e24827cbe7698542da58ea5033fce",
 } as const;
+
+/** Pre-A2 bug: case_wide qualification keyed off shared prefix only. */
+const LEGACY_VARIANT_A_CASE_WIDE_PROMPT_SHA256 =
+  COMMITTED_READER_EXPERIMENT_PROMPT_HASHES.sharedPromptSha256;
+
+function qualificationIdempotencyKeyForArchitecture(input: {
+  architecture: "case_wide" | "parallel_document";
+  promptSha256: string;
+  caseId?: string;
+}): string {
+  const prompt = loadEffectiveStudyAgentsPromptMetadata({
+    agentsJsonPath: defaultStudyAgentsJsonPath("iep"),
+  });
+  const model = resolveAgenticReaderModelIdentity(oracleReaderQualificationModelEnv());
+  const engine = buildAgenticReaderQualificationEngineFingerprint({
+    promptSha256: input.promptSha256,
+    modelIdentity: model,
+    readerArchitectureVariant: input.architecture,
+  });
+  return computeAgenticReaderQualificationIdempotencyKey({
+    caseId: input.caseId ?? "case-1",
+    domainId: prompt.artifact.domainId,
+    domainPackId: prompt.artifact.domainPackId,
+    domainPackVersion: prompt.artifact.domainPackVersion,
+    documentFingerprint: fingerprintL001QualificationCorpus(),
+    engine,
+  });
+}
 
 function oracleReaderQualificationModelEnv(
   overrides: Record<string, string | undefined> = {},
@@ -316,10 +344,65 @@ describe("agentic reader qualification", () => {
         HIVE_READER_ARCHITECTURE_VARIANT: "case_wide",
       },
     });
+    const variantB = loadAgenticReaderQualificationPromptMetadata({
+      env: {
+        HIVE_READER_EXPERIMENT_PROMPT_HASHES_JSON: undefined,
+        HIVE_READER_ARCHITECTURE_VARIANT: "parallel_document",
+      },
+    });
     expect(base.promptSha256).not.toBe(variantA.promptSha256);
-    expect(variantA.promptSha256).toBe(COMMITTED_READER_EXPERIMENT_PROMPT_HASHES.sharedPromptSha256);
+    expect(variantA.promptSha256).toBe(COMMITTED_READER_EXPERIMENT_PROMPT_HASHES.case_wide_sha256);
+    expect(variantA.promptSha256).not.toBe(COMMITTED_READER_EXPERIMENT_PROMPT_HASHES.sharedPromptSha256);
+    expect(variantB.promptSha256).toBe(
+      COMMITTED_READER_EXPERIMENT_PROMPT_HASHES.parallel_document_sha256,
+    );
     expect(variantA.promptId).toBe("reader-experiment/architecture/case_wide");
     expect(variantA.promptVersion).toBe("hive-reader-prompt/2.0.0+case_wide");
+  });
+
+  it("derives distinct idempotency keys for legacy Variant A vs A2 case_wide pins", () => {
+    const legacyKey = qualificationIdempotencyKeyForArchitecture({
+      architecture: "case_wide",
+      promptSha256: LEGACY_VARIANT_A_CASE_WIDE_PROMPT_SHA256,
+    });
+    const a2Key = qualificationIdempotencyKeyForArchitecture({
+      architecture: "case_wide",
+      promptSha256: COMMITTED_READER_EXPERIMENT_PROMPT_HASHES.case_wide_sha256,
+    });
+    expect(legacyKey).not.toBe(a2Key);
+  });
+
+  it("keeps parallel_document idempotency stable when only case_wide prompt pins change", () => {
+    const parallelPin = COMMITTED_READER_EXPERIMENT_PROMPT_HASHES.parallel_document_sha256;
+    const beforeA2 = qualificationIdempotencyKeyForArchitecture({
+      architecture: "parallel_document",
+      promptSha256: parallelPin,
+    });
+    const afterA2 = qualificationIdempotencyKeyForArchitecture({
+      architecture: "parallel_document",
+      promptSha256: parallelPin,
+    });
+    expect(afterA2).toBe(beforeA2);
+    expect(beforeA2).not.toBe(
+      qualificationIdempotencyKeyForArchitecture({
+        architecture: "case_wide",
+        promptSha256: COMMITTED_READER_EXPERIMENT_PROMPT_HASHES.case_wide_sha256,
+      }),
+    );
+  });
+
+  it("does not reuse idempotency keys from legacy shared-prefix case_wide runs after A2", () => {
+    const legacySucceededKey = qualificationIdempotencyKeyForArchitecture({
+      architecture: "case_wide",
+      promptSha256: LEGACY_VARIANT_A_CASE_WIDE_PROMPT_SHA256,
+      caseId: "44444444-4444-4444-8444-444444444444",
+    });
+    const a2Key = qualificationIdempotencyKeyForArchitecture({
+      architecture: "case_wide",
+      promptSha256: COMMITTED_READER_EXPERIMENT_PROMPT_HASHES.case_wide_sha256,
+      caseId: "44444444-4444-4444-8444-444444444444",
+    });
+    expect(a2Key).not.toBe(legacySucceededKey);
   });
 
   it("retires HIVE_READER_EXPERIMENT_VARIANT", () => {
