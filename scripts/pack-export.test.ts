@@ -76,6 +76,7 @@ describe("pack-export", () => {
       '"domainId"',
       '"domainPackId"',
       '"domainPackVersion"',
+      '"readerCoverage"',
       '"agents"',
       '"intake"',
       '"reader"',
@@ -170,6 +171,7 @@ describe("pack-export", () => {
       "domainId",
       "domainPackId",
       "domainPackVersion",
+      "readerCoverage",
       "schemaVersion",
     ]);
     expect(Object.keys(parsed.agents as Record<string, unknown>).sort()).toEqual([
@@ -203,8 +205,15 @@ describe("pack-export", () => {
       "domainId",
       "domainPackId",
       "domainPackVersion",
+      "readerCoverage",
       "agents",
     ]);
+    const readerCoverage = parsed.readerCoverage as Record<string, unknown>;
+    expect(typeof readerCoverage.domainLabel).toBe("string");
+    expect(Array.isArray(readerCoverage.documentTypes)).toBe(true);
+    expect((readerCoverage.documentTypes as unknown[]).length).toBeGreaterThan(0);
+    expect(Array.isArray(readerCoverage.vocabulary)).toBe(true);
+    expect((readerCoverage.vocabulary as unknown[]).length).toBeGreaterThan(0);
     const agents = parsed.agents as Record<string, unknown>;
     expect(Object.keys(agents)).toEqual([...STUDY_AGENT_ROLES]);
     for (const role of STUDY_AGENT_ROLES) {

@@ -23,6 +23,7 @@ from hive_agents.reader_prompt.sections_shared import (
     SECTION_3_TRUSTED_CONTEXT,
     SECTION_4_BOUNDARIES,
     shared_sections_after_checklist,
+    shared_sections_before_golden_methodology,
 )
 
 
@@ -41,7 +42,7 @@ def shared_stable_prefix_without_section_five(pack) -> str:
             SECTION_3_TRUSTED_CONTEXT.strip(),
             SECTION_4_BOUNDARIES.strip(),
             golden_reference_methodology_for_reader(),
-            shared_sections_after_checklist(),
+            shared_sections_after_checklist(architecture="parallel_document"),
         ]
     )
 
@@ -71,6 +72,26 @@ def main() -> int:
     hashes_path = out_dir / "prompt-hashes.json"
     hashes_path.write_text(json.dumps(hashes_payload, indent=2) + "\n", encoding="utf-8")
 
+    # Variant A baseline (pre–§6): same composer without the §6 checklist block.
+    pack_reader = reader_instructions_from_pack(pack)
+    pack_header = (
+        f"Domain pack: domainId={pack.domainId} "
+        f"domainPackId={pack.domainPackId} domainPackVersion={pack.domainPackVersion}\n\n"
+        f"## Domain pack reader instructions\n\n{pack_reader.strip()}"
+    )
+    baseline_prefix = "\n\n".join(
+        [
+            pack_header,
+            shared_sections_before_golden_methodology(architecture="case_wide"),
+            golden_reference_methodology_for_reader(),
+            shared_sections_after_checklist(architecture="case_wide"),
+        ]
+    )
+    baseline_chars = len(baseline_prefix)
+    a2_chars = len(assembled_case.stable_system_prefix)
+    baseline_tokens_est = baseline_chars // 4
+    a2_tokens_est = a2_chars // 4
+
     review_path = out_dir / "PROMPT_REVIEW.md"
     review_path.write_text(
         "\n".join(
@@ -80,11 +101,14 @@ def main() -> int:
                 "No document text or student information in this file.",
                 "",
                 f"- Prompt version: `{PROMPT_VERSION}`",
-                f"- Shared prefix (§1–4 + full golden v4.1 + §7–11) SHA-256: `{shared_prompt_sha256}`",
-                f"- Variant A (`case_wide`) SHA-256: `{assembled_case.prompt_sha256}`",
+                f"- Shared prefix (§1–4 + full golden v4.1 + §7–11 parallel §10) SHA-256: `{shared_prompt_sha256}`",
+                f"- Variant A baseline (`case_wide` without §6) stable prefix: **{baseline_chars}** chars (~**{baseline_tokens_est}** tokens)",
+                f"- Variant A2 (`case_wide` with §6) stable prefix: **{a2_chars}** chars (~**{a2_tokens_est}** tokens); Δ **{a2_chars - baseline_chars}** chars",
+                f"- Variant A2 (`case_wide`) SHA-256: `{assembled_case.prompt_sha256}`",
                 f"- Variant B (`parallel_document`) SHA-256: `{assembled_parallel.prompt_sha256}`",
                 "",
-                "Architectures differ only in Hive Prompt Standard §5 workflow text.",
+                "Architectures differ in §5 workflow; case_wide adds §6 domain-aware coverage checklist and §10 supplement.",
+                "`parallel_document` stable prefix is unchanged when only §6 (case_wide) edits.",
                 "",
                 f"Golden methodology map: `engine/eval/reports/reader-experiment/GOLDEN_REFERENCE_MAP.md`",
                 "",

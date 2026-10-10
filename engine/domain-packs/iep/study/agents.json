@@ -3,6 +3,577 @@
   "domainId": "iep",
   "domainPackId": "hive.domain.iep",
   "domainPackVersion": "0.0.0-scaffold",
+  "readerCoverage": {
+    "domainLabel": "Special education records",
+    "documentTypes": [
+      "Referral for Special Education Evaluation",
+      "Parent Consent for Initial Special Education Evaluation",
+      "Special Education Evaluation Plan",
+      "Academic Evaluation Report",
+      "Psychoeducational evaluation",
+      "Speech-language evaluation",
+      "Eligibility Determination",
+      "Individualized Education Program",
+      "Progress report",
+      "Document (unclassified)"
+    ],
+    "familyRoles": [
+      "Referral",
+      "Consent form",
+      "Evaluation plan",
+      "Evaluation report",
+      "Eligibility determination",
+      "Service plan",
+      "Progress update",
+      "Uploaded file",
+      "Meeting notice"
+    ],
+    "relationshipKinds": [
+      "precedes",
+      "supports",
+      "same_sequence",
+      "related"
+    ],
+    "focusConstructs": [
+      "related_services",
+      "service_frequency",
+      "service_session_length",
+      "accommodation",
+      "least_restrictive_environment",
+      "eligibility_category",
+      "present_levels"
+    ],
+    "vocabulary": [
+      {
+        "termId": "iep",
+        "label": "Individualized Education Program",
+        "abbreviations": [
+          "IEP"
+        ]
+      },
+      {
+        "termId": "plaafp",
+        "label": "Present levels of academic achievement and functional performance",
+        "abbreviations": [
+          "PLAAFP",
+          "PLAAFPs",
+          "PLEP",
+          "PLOP",
+          "PLP"
+        ]
+      },
+      {
+        "termId": "annual_goal",
+        "label": "Annual goal"
+      },
+      {
+        "termId": "short_term_objective",
+        "label": "Short-term objective",
+        "abbreviations": [
+          "STO",
+          "STOs"
+        ]
+      },
+      {
+        "termId": "progress_report",
+        "label": "Progress report"
+      },
+      {
+        "termId": "accommodation",
+        "label": "Accommodation"
+      },
+      {
+        "termId": "modification",
+        "label": "Modification"
+      },
+      {
+        "termId": "supplementary_aids_and_services",
+        "label": "Supplementary aids and services"
+      },
+      {
+        "termId": "transition_plan",
+        "label": "Postsecondary transition plan"
+      },
+      {
+        "termId": "iep_amendment",
+        "label": "IEP amendment"
+      },
+      {
+        "termId": "draft_iep",
+        "label": "Draft IEP"
+      },
+      {
+        "termId": "special_education",
+        "label": "Special education",
+        "abbreviations": [
+          "SPED",
+          "SpEd",
+          "SE"
+        ],
+        "contextRequired": true
+      },
+      {
+        "termId": "specially_designed_instruction",
+        "label": "Specially designed instruction",
+        "abbreviations": [
+          "SDI"
+        ]
+      },
+      {
+        "termId": "related_services",
+        "label": "Related services"
+      },
+      {
+        "termId": "speech_language_therapy",
+        "label": "Speech-language therapy",
+        "abbreviations": [
+          "SLT",
+          "ST"
+        ],
+        "contextRequired": true
+      },
+      {
+        "termId": "occupational_therapy",
+        "label": "Occupational therapy",
+        "abbreviations": [
+          "OT"
+        ],
+        "contextRequired": true
+      },
+      {
+        "termId": "physical_therapy",
+        "label": "Physical therapy",
+        "abbreviations": [
+          "PT"
+        ],
+        "contextRequired": true
+      },
+      {
+        "termId": "counseling_services",
+        "label": "Counseling services"
+      },
+      {
+        "termId": "assistive_technology",
+        "label": "Assistive technology",
+        "abbreviations": [
+          "AT"
+        ],
+        "contextRequired": true
+      },
+      {
+        "termId": "extended_school_year",
+        "label": "Extended school year services",
+        "abbreviations": [
+          "ESY"
+        ]
+      },
+      {
+        "termId": "paraprofessional_support",
+        "label": "Paraprofessional support"
+      },
+      {
+        "termId": "transportation",
+        "label": "Special transportation"
+      },
+      {
+        "termId": "service_frequency",
+        "label": "Frequency"
+      },
+      {
+        "termId": "service_session_length",
+        "label": "Session length"
+      },
+      {
+        "termId": "service_duration",
+        "label": "Duration of service"
+      },
+      {
+        "termId": "service_location",
+        "label": "Location of service"
+      },
+      {
+        "termId": "push_in",
+        "label": "Push-in service"
+      },
+      {
+        "termId": "pull_out",
+        "label": "Pull-out service"
+      },
+      {
+        "termId": "consult_service",
+        "label": "Consultation service"
+      },
+      {
+        "termId": "least_restrictive_environment",
+        "label": "Least restrictive environment",
+        "abbreviations": [
+          "LRE"
+        ]
+      },
+      {
+        "termId": "general_education",
+        "label": "General education",
+        "abbreviations": [
+          "GE",
+          "Gen Ed",
+          "GenEd"
+        ],
+        "contextRequired": true
+      },
+      {
+        "termId": "inclusion",
+        "label": "Inclusion"
+      },
+      {
+        "termId": "self_contained",
+        "label": "Self-contained classroom"
+      },
+      {
+        "termId": "initial_evaluation",
+        "label": "Initial evaluation"
+      },
+      {
+        "termId": "reevaluation",
+        "label": "Reevaluation"
+      },
+      {
+        "termId": "reed",
+        "label": "Review of existing evaluation data",
+        "abbreviations": [
+          "REED"
+        ]
+      },
+      {
+        "termId": "iee",
+        "label": "Independent educational evaluation",
+        "abbreviations": [
+          "IEE"
+        ]
+      },
+      {
+        "termId": "fie",
+        "label": "Full and individual evaluation",
+        "abbreviations": [
+          "FIE",
+          "FIIE"
+        ]
+      },
+      {
+        "termId": "fba",
+        "label": "Functional behavioral assessment",
+        "abbreviations": [
+          "FBA"
+        ]
+      },
+      {
+        "termId": "psychoeducational_evaluation",
+        "label": "Psychoeducational evaluation"
+      },
+      {
+        "termId": "bip",
+        "label": "Behavior intervention plan",
+        "abbreviations": [
+          "BIP"
+        ]
+      },
+      {
+        "termId": "pbis",
+        "label": "Positive behavioral interventions and supports",
+        "abbreviations": [
+          "PBIS"
+        ]
+      },
+      {
+        "termId": "mdr",
+        "label": "Manifestation determination review",
+        "abbreviations": [
+          "MDR"
+        ]
+      },
+      {
+        "termId": "wcpm",
+        "label": "Words correct per minute",
+        "abbreviations": [
+          "WCPM",
+          "CWPM"
+        ]
+      },
+      {
+        "termId": "oral_reading_fluency",
+        "label": "Oral reading fluency",
+        "abbreviations": [
+          "ORF"
+        ]
+      },
+      {
+        "termId": "curriculum_based_measurement",
+        "label": "Curriculum-based measurement",
+        "abbreviations": [
+          "CBM"
+        ]
+      },
+      {
+        "termId": "percent_accuracy",
+        "label": "Percent accuracy"
+      },
+      {
+        "termId": "trials_criterion",
+        "label": "Trials criterion"
+      },
+      {
+        "termId": "baseline",
+        "label": "Baseline"
+      },
+      {
+        "termId": "data_collection_method",
+        "label": "Data collection method"
+      },
+      {
+        "termId": "eligibility_autism",
+        "label": "Autism",
+        "abbreviations": [
+          "AU",
+          "AUT"
+        ],
+        "contextRequired": true
+      },
+      {
+        "termId": "eligibility_deaf_blindness",
+        "label": "Deaf-blindness",
+        "abbreviations": [
+          "DB"
+        ],
+        "contextRequired": true
+      },
+      {
+        "termId": "eligibility_deafness",
+        "label": "Deafness"
+      },
+      {
+        "termId": "eligibility_emotional_disturbance",
+        "label": "Emotional disturbance",
+        "abbreviations": [
+          "ED",
+          "EBD"
+        ],
+        "contextRequired": true
+      },
+      {
+        "termId": "eligibility_hearing_impairment",
+        "label": "Hearing impairment",
+        "abbreviations": [
+          "HI"
+        ],
+        "contextRequired": true
+      },
+      {
+        "termId": "eligibility_intellectual_disability",
+        "label": "Intellectual disability",
+        "abbreviations": [
+          "ID"
+        ],
+        "contextRequired": true
+      },
+      {
+        "termId": "eligibility_multiple_disabilities",
+        "label": "Multiple disabilities",
+        "abbreviations": [
+          "MD"
+        ],
+        "contextRequired": true
+      },
+      {
+        "termId": "eligibility_orthopedic_impairment",
+        "label": "Orthopedic impairment",
+        "abbreviations": [
+          "OI"
+        ],
+        "contextRequired": true
+      },
+      {
+        "termId": "eligibility_other_health_impairment",
+        "label": "Other health impairment",
+        "abbreviations": [
+          "OHI"
+        ]
+      },
+      {
+        "termId": "eligibility_specific_learning_disability",
+        "label": "Specific learning disability",
+        "abbreviations": [
+          "SLD",
+          "LD"
+        ]
+      },
+      {
+        "termId": "eligibility_speech_language_impairment",
+        "label": "Speech or language impairment",
+        "abbreviations": [
+          "SI",
+          "SLI",
+          "S/L"
+        ],
+        "contextRequired": true
+      },
+      {
+        "termId": "eligibility_traumatic_brain_injury",
+        "label": "Traumatic brain injury",
+        "abbreviations": [
+          "TBI"
+        ]
+      },
+      {
+        "termId": "eligibility_visual_impairment",
+        "label": "Visual impairment including blindness",
+        "abbreviations": [
+          "VI"
+        ],
+        "contextRequired": true
+      },
+      {
+        "termId": "eligibility_developmental_delay",
+        "label": "Developmental delay",
+        "abbreviations": [
+          "DD"
+        ],
+        "contextRequired": true
+      },
+      {
+        "termId": "iep_team",
+        "label": "IEP team"
+      },
+      {
+        "termId": "ard_committee",
+        "label": "Admission, review, and dismissal committee",
+        "abbreviations": [
+          "ARD",
+          "ARDC"
+        ]
+      },
+      {
+        "termId": "annual_review",
+        "label": "Annual review"
+      },
+      {
+        "termId": "parent_participation",
+        "label": "Parent participation"
+      },
+      {
+        "termId": "case_manager",
+        "label": "Case manager"
+      },
+      {
+        "termId": "slp",
+        "label": "Speech-language pathologist",
+        "abbreviations": [
+          "SLP",
+          "SLP-A",
+          "SLPA"
+        ]
+      },
+      {
+        "termId": "school_psychologist",
+        "label": "School psychologist"
+      },
+      {
+        "termId": "lssp",
+        "label": "Licensed specialist in school psychology",
+        "abbreviations": [
+          "LSSP"
+        ]
+      },
+      {
+        "termId": "educational_diagnostician",
+        "label": "Educational diagnostician"
+      },
+      {
+        "termId": "bcba",
+        "label": "Board Certified Behavior Analyst",
+        "abbreviations": [
+          "BCBA"
+        ]
+      },
+      {
+        "termId": "lea_representative",
+        "label": "Local education agency representative",
+        "abbreviations": [
+          "LEA rep",
+          "LEA"
+        ]
+      },
+      {
+        "termId": "fape",
+        "label": "Free appropriate public education",
+        "abbreviations": [
+          "FAPE"
+        ]
+      },
+      {
+        "termId": "prior_written_notice",
+        "label": "Prior written notice",
+        "abbreviations": [
+          "PWN"
+        ]
+      },
+      {
+        "termId": "procedural_safeguards_notice",
+        "label": "Procedural safeguards notice"
+      },
+      {
+        "termId": "parental_consent",
+        "label": "Parental consent"
+      },
+      {
+        "termId": "transfer_of_rights",
+        "label": "Transfer of rights at age of majority"
+      },
+      {
+        "termId": "state_complaint",
+        "label": "State complaint"
+      },
+      {
+        "termId": "mediation",
+        "label": "Mediation"
+      },
+      {
+        "termId": "due_process_complaint",
+        "label": "Due process complaint"
+      },
+      {
+        "termId": "resolution_meeting",
+        "label": "Resolution meeting"
+      },
+      {
+        "termId": "stay_put",
+        "label": "Stay put"
+      },
+      {
+        "termId": "idea",
+        "label": "Individuals with Disabilities Education Act",
+        "abbreviations": [
+          "IDEA",
+          "IDEIA"
+        ]
+      },
+      {
+        "termId": "section_504_plan",
+        "label": "Section 504 plan",
+        "abbreviations": [
+          "504"
+        ],
+        "contextRequired": true
+      },
+      {
+        "termId": "mtss",
+        "label": "Multi-tiered system of supports",
+        "abbreviations": [
+          "MTSS",
+          "RTI",
+          "RtI"
+        ]
+      }
+    ]
+  },
   "agents": {
     "intake": "You are orienting a special-education record set before detailed reading.\n\nUse the structure map and logical-document manifest: document types (IEP, evaluations, eligibility, progress reports, consent/referral), family roles (especially current vs prior IEP), and relationships such as precedes or supports.\n\nIdentify the student, school, and district or agency as entities when named. Distinguish plan identity dates (IEP date, meeting date, document date) from birth dates, grade-as-of dates, and goal or reporting period end dates.\n\nUse pack recognition vocabulary only to normalize labels in claims; vocabulary is not evidence by itself.\n\nNote where the collection looks incomplete (for example eligibility without evaluation, goals without progress reports, or a referenced amendment without a matching plan version) as leads for later missing-information items—not as established facts.",
     "reader": "Read each logical document for IEP-relevant facts, not a generic summary.\n\nIn IEP plans, extract present levels (PLAAFP), measurable annual goals (including criteria, method, and schedule when stated), related services, accommodations and modifications, supplementary aids, LRE or placement, eligibility category, and transition content when present.\n\nTreat service frequency, session length, and total duration as separate quantitative facts when the document states them separately. Treat special education and each related service as its own service line when listed.\n\nIn evaluation reports, capture instruments, scores or levels, dates, and recommendations that may explain plan language. In progress reports, capture reported results and the reporting period; tie wording to the goal or measure being reported.\n\nUse modality to reflect whether text states a requirement, a decision, a plan, or observed implementation. Anchor time-sensitive claims with occurred-on or effective-period values from the document. Prefer exact goal and measure wording when proposing text values.\n\nWhile reading each document, note cross-document hooks: evaluation results that explain present levels or goals, progress reports tied to a goal or reporting period, amendments or notices that reference an IEP date or prior plan, and prior vs current IEPs from the structure map.\n\nWhen dates show an older plan was replaced, treat different goals, services, or placement as historical plan changes for their own periods—not as conflicting facts unless two sources disagree about the same period.\n\nNote meaningful gaps visible in the document (empty rows, unspecified goal criteria, references to records not in the upload set) as candidates for missing-information items, not as facts the evidence establishes.",

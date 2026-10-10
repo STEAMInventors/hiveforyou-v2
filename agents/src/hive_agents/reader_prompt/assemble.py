@@ -7,6 +7,9 @@ from hive_agents.pack_loader import AgentPack
 from hive_agents.reader import reader_instructions_from_pack
 from hive_agents.reader_prompt.constants import PROMPT_VERSION, READER_ARCHITECTURE_VARIANTS
 from hive_agents.reader_prompt.golden_reference import golden_reference_methodology_for_reader
+from hive_agents.reader_prompt.section6_golden_inspired import (
+    build_case_wide_domain_coverage_checklist,
+)
 from hive_agents.reader_prompt.sections_shared import (
     shared_sections_after_checklist,
     shared_sections_before_golden_methodology,
@@ -44,9 +47,13 @@ def assemble_reader_architecture_prompt(
     )
     shared_before = shared_sections_before_golden_methodology(architecture=normalized)
     golden_body = golden_reference_methodology_for_reader()
-    shared_after = shared_sections_after_checklist()
+    shared_after = shared_sections_after_checklist(architecture=normalized)
 
-    stable = "\n\n".join([pack_header, shared_before, golden_body, shared_after])
+    stable_parts = [pack_header, shared_before]
+    if normalized == "case_wide":
+        stable_parts.append(build_case_wide_domain_coverage_checklist(pack))
+    stable_parts.extend([golden_body, shared_after])
+    stable = "\n\n".join(stable_parts)
     manifest_parts = []
     if engine1_context_block and engine1_context_block.strip():
         manifest_parts.append(engine1_context_block.strip())

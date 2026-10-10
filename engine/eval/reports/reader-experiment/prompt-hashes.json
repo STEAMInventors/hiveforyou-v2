@@ -1,6 +1,6 @@
 {
   "promptVersion": "hive-reader-prompt/2.0.0",
   "sharedPromptSha256": "f4f425e1a985c81661ab81a299a5bc0b6b97f679f1cae9ecc7cf4ba046304ca3",
-  "case_wide_sha256": "642db763812ef567d5bd24dfed65fefe87c238886616942d0d229f0d3d5a4c64",
+  "case_wide_sha256": "81233aa51b6ec10a9c7e44288965f5e2770a4a6c98927b139a9ed2c51bb669ee",
   "parallel_document_sha256": "6e97b881c1f310be1c80844813851849199e24827cbe7698542da58ea5033fce"
 }

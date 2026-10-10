@@ -120,6 +120,10 @@ A document with zero extractable facts is acceptable; do not invent facts to fil
 Do not treat absent sections as proof a fact is missing unless the source explicitly shows an empty labeled field (those are not candidate facts).
 """
 
+SECTION_10_CASE_WIDE_SUPPLEMENT = """\
+For case-wide extraction, you must complete §6.7 (per-document final self-check) before returning `candidateFacts`.
+"""
+
 SECTION_11_ABSTENTION = """\
 ## 11. ABSTENTION, AMBIGUITY AND FAILURE HANDLING
 
@@ -149,13 +153,16 @@ def shared_sections_before_checklist() -> str:
     return shared_sections_before_golden_methodology(architecture="case_wide")
 
 
-def shared_sections_after_checklist() -> str:
+def shared_sections_after_checklist(*, architecture: str = "case_wide") -> str:
+    completeness = SECTION_10_COMPLETENESS.strip()
+    if architecture == "case_wide":
+        completeness = f"{completeness}\n\n{SECTION_10_CASE_WIDE_SUPPLEMENT.strip()}"
     return "\n\n".join(
         [
             SECTION_7_ATOMIC.strip(),
             SECTION_8_EVIDENCE.strip(),
             SECTION_9_OUTPUT.strip(),
-            SECTION_10_COMPLETENESS.strip(),
+            completeness,
             SECTION_11_ABSTENTION.strip(),
         ]
     )

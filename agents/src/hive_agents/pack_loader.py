@@ -31,6 +31,39 @@ class StudyAgentInstructions(BaseModel):
         return self
 
 
+class ReaderCoverageVocabularyTerm(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    termId: str
+    label: str
+    abbreviations: list[str] | None = None
+    contextRequired: bool | None = None
+
+
+class ReaderCoverageExport(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    domainLabel: str
+    documentTypes: list[str]
+    familyRoles: list[str]
+    relationshipKinds: list[str]
+    focusConstructs: list[str]
+    vocabulary: list[ReaderCoverageVocabularyTerm]
+
+
+def empty_reader_coverage(*, domain_id: str, domain_label: str | None = None) -> ReaderCoverageExport:
+    """Defaults when study-agents/1 export omits optional ``readerCoverage`` (legacy artifacts)."""
+    label = (domain_label or domain_id).strip() or domain_id
+    return ReaderCoverageExport(
+        domainLabel=label,
+        documentTypes=[],
+        familyRoles=[],
+        relationshipKinds=[],
+        focusConstructs=[],
+        vocabulary=[],
+    )
+
+
 class AgentPack(BaseModel):
     """Phase 2 ``StudyAgentsExportArtifact`` (``scripts/pack-export.ts``)."""
 
@@ -42,6 +75,7 @@ class AgentPack(BaseModel):
     domainId: str
     domainPackId: str
     domainPackVersion: str
+    readerCoverage: ReaderCoverageExport | None = None
     agents: StudyAgentInstructions
 
     @field_validator("schemaVersion")
@@ -53,6 +87,12 @@ class AgentPack(BaseModel):
                 f'"{STUDY_AGENTS_EXPORT_SCHEMA_VERSION}".'
             )
         return value
+
+    @model_validator(mode="after")
+    def _default_reader_coverage(self) -> AgentPack:
+        if self.readerCoverage is None:
+            self.readerCoverage = empty_reader_coverage(domain_id=self.domainId)
+        return self
 
 
 def load_agent_pack(path: Path | None = None) -> AgentPack:

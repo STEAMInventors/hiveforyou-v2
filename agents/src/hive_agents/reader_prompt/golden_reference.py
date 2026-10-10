@@ -164,6 +164,6 @@ def shared_golden_prefix_sha256_material() -> str:
             SECTION_3_TRUSTED_CONTEXT.strip(),
             SECTION_4_BOUNDARIES.strip(),
             golden_reference_methodology_for_reader(),
-            shared_sections_after_checklist(),
+            shared_sections_after_checklist(architecture="case_wide"),
         ]
     )

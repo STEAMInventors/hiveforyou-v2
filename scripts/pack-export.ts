@@ -2,7 +2,11 @@ import { mkdirSync, realpathSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import type { DomainPack, StudyAgentInstructions } from "@hiveforyou/domain-pack";
+import type {
+  DomainPack,
+  DomainPackVocabularyTerm,
+  StudyAgentInstructions,
+} from "@hiveforyou/domain-pack";
 import { getDomainPackByDomainId } from "@hiveforyou/domain-pack";
 import "@hiveforyou/domain-packs";
 
@@ -12,13 +16,65 @@ export const STUDY_AGENT_ROLES = ["intake", "reader", "investigator", "writer"] 
 
 export type StudyAgentRole = (typeof STUDY_AGENT_ROLES)[number];
 
+export type ReaderCoverageVocabularyTerm = {
+  termId: string;
+  label: string;
+  abbreviations?: string[];
+  contextRequired?: boolean;
+};
+
+/** Pack-derived Reader orientation (document types, constructs, vocabulary — not evidence). */
+export type ReaderCoverageExport = {
+  domainLabel: string;
+  documentTypes: string[];
+  familyRoles: string[];
+  relationshipKinds: string[];
+  focusConstructs: string[];
+  vocabulary: ReaderCoverageVocabularyTerm[];
+};
+
 export type StudyAgentsExportArtifact = {
   schemaVersion: typeof STUDY_AGENTS_EXPORT_SCHEMA_VERSION;
   domainId: string;
   domainPackId: string;
   domainPackVersion: string;
+  readerCoverage: ReaderCoverageExport;
   agents: StudyAgentInstructions;
 };
+
+function serializeVocabularyTerm(term: DomainPackVocabularyTerm): ReaderCoverageVocabularyTerm {
+  const out: ReaderCoverageVocabularyTerm = {
+    termId: term.termId,
+    label: term.label,
+  };
+  if (term.abbreviations?.length) {
+    out.abbreviations = [...term.abbreviations];
+  }
+  if (term.contextRequired) {
+    out.contextRequired = true;
+  }
+  return out;
+}
+
+export function buildReaderCoverageExport(pack: DomainPack, domainId: string): ReaderCoverageExport {
+  const study = pack.study;
+  if (!study) {
+    throw new Error(`Domain pack "${domainId}" has no study snapshot.`);
+  }
+  const discover = pack.discover;
+  if (!discover) {
+    throw new Error(`Domain pack "${domainId}" has no discover snapshot for readerCoverage.`);
+  }
+  const vocabulary = pack.recognitionVocabulary ?? [];
+  return {
+    domainLabel: study.domainLabel,
+    documentTypes: [...discover.documentTypes],
+    familyRoles: [...discover.familyRoles],
+    relationshipKinds: [...discover.relationshipKinds],
+    focusConstructs: [...(study.focusConstructs ?? [])],
+    vocabulary: vocabulary.map(serializeVocabularyTerm),
+  };
+}
 
 const SAFE_DOMAIN_ID = /^[a-z][a-z0-9-]*$/;
 
@@ -72,11 +128,13 @@ export function buildStudyAgentsExportArtifact(
     throw new Error(`Domain pack "${domainId}" has no study snapshot.`);
   }
   const agents = validateStudyAgentInstructions(study.agents, domainId);
+  const readerCoverage = buildReaderCoverageExport(pack, domainId);
   return {
     schemaVersion: STUDY_AGENTS_EXPORT_SCHEMA_VERSION,
     domainId: study.domainId,
     domainPackId: study.domainPackId,
     domainPackVersion: study.domainPackVersion,
+    readerCoverage,
     agents: {
       intake: agents.intake,
       reader: agents.reader,
@@ -101,6 +159,7 @@ export function serializeStudyAgentsExportJson(artifact: StudyAgentsExportArtifa
     domainId: artifact.domainId,
     domainPackId: artifact.domainPackId,
     domainPackVersion: artifact.domainPackVersion,
+    readerCoverage: artifact.readerCoverage,
     agents: {
       intake: artifact.agents.intake,
       reader: artifact.agents.reader,

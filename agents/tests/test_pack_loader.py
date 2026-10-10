@@ -96,3 +96,15 @@ def test_unsupported_schema_version_fails(tmp_path: Path) -> None:
     bad.write_text(json.dumps(raw), encoding="utf-8")
     with pytest.raises(ValueError, match="contract validation"):
         load_agent_pack(bad)
+
+
+def test_legacy_study_agents_export_without_reader_coverage_loads(tmp_path: Path) -> None:
+    raw = json.loads(IEP_AGENTS_JSON.read_text(encoding="utf-8"))
+    del raw["readerCoverage"]
+    legacy = tmp_path / "legacy-agents.json"
+    legacy.write_text(json.dumps(raw), encoding="utf-8")
+    pack = load_agent_pack(legacy)
+    assert pack.domainId == "iep"
+    assert pack.readerCoverage.documentTypes == []
+    assert pack.readerCoverage.vocabulary == []
+    assert pack.agents.reader.strip()
