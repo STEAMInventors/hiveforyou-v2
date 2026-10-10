@@ -6,7 +6,7 @@ import {
   buildAgenticReaderQualificationRun,
   computeAgenticReaderQualificationIdempotencyKey,
   fingerprintRegisteredSourceDocuments,
-  loadEffectiveStudyAgentsPromptMetadata,
+  loadAgenticReaderQualificationPromptMetadata,
   persistStudyRun,
   resolveAgenticReaderModelIdentity,
 } from "@hiveforyou/core/study";
@@ -86,7 +86,7 @@ export async function ensureAgenticReaderQualificationRun(
     );
   }
 
-  const prompt = loadEffectiveStudyAgentsPromptMetadata({ env });
+  const prompt = loadAgenticReaderQualificationPromptMetadata({ env });
   let modelIdentity: ReturnType<typeof resolveAgenticReaderModelIdentity>;
   try {
     modelIdentity = resolveAgenticReaderModelIdentity(env);

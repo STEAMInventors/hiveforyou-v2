@@ -848,3 +848,21 @@ def test_normalization_rejection_reason_counters(
     assert counts.candidate_fact_count == 0
     assert counts.normalization_dropped_fact_count == 1
     assert counts.normalization_rejection_reason_counts == {expected_reason: 1}
+
+
+def test_truncate_verification_on_budget(
+    iep_pack,
+    sample_pages,
+    mock_lm_extraction,
+    dummy_lm,
+) -> None:
+    """Experiment-only soft stop preserves normalized candidates when tool budget is exhausted."""
+    result = run_reader(
+        pack=iep_pack,
+        pages=sample_pages,
+        lm=dummy_lm,
+        limits=ReaderExecutionLimits(max_tool_calls=3, max_reasoning_steps=4),
+        truncate_verification_on_budget=True,
+    )
+    assert len(result.candidate_facts) >= 1
+    assert result.verification_incomplete is True

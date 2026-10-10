@@ -1,5 +1,10 @@
 import { randomUUID } from "node:crypto";
 
+import {
+  READER_EXPERIMENT_L001_MAX_REASONING_STEPS,
+  READER_EXPERIMENT_L001_MAX_TOOL_CALLS,
+  resolveReaderExperimentVariant,
+} from "@hiveforyou/core/study";
 import type { CanonicalStudyRun } from "@hiveforyou/shared/canonical-study";
 
 import type { StudyReaderRequestWire } from "./document-pages-to-reader-request.js";
@@ -185,6 +190,12 @@ export async function runAgenticReaderQualification(
       studyRunId: running.studyRunId,
       attemptId,
       bundles,
+      limits: resolveReaderExperimentVariant(env)
+        ? {
+            maxToolCalls: READER_EXPERIMENT_L001_MAX_TOOL_CALLS,
+            maxReasoningSteps: READER_EXPERIMENT_L001_MAX_REASONING_STEPS,
+          }
+        : undefined,
     });
     readerResponse = await input.readerClient(request);
   } catch (error) {

@@ -727,9 +727,11 @@ class HiveReaderModule(dspy.Module):
 @dataclass
 class ReaderRunResult:
     candidate_facts: list[CandidateFact] = field(default_factory=list)
+    accepted_candidate_facts: list[CandidateFact] = field(default_factory=list)
     reasoning_steps: int = 0
     tool_calls: int = 0
     stable_system_prefix: str = ""
+    verification_incomplete: bool = False
     last_lm_messages: list[dict[str, Any]] | None = None
     model_usage_input_tokens: int | None = None
     model_usage_output_tokens: int | None = None
@@ -1055,6 +1057,9 @@ def run_reader(
     page_numbers_by_document: dict[str, list[int]] | None = None,
     search_queries: list[str] | None = None,
     trace_session: Any | None = None,
+    stable_system: str | None = None,
+    untrusted_manifest_prefix: str | None = None,
+    truncate_verification_on_budget: bool = False,
 ) -> ReaderRunResult:
     """
     Run the DSPy Reader over caller-supplied pages.
@@ -1086,19 +1091,22 @@ def run_reader(
 
     resolved_limits = limits or ReaderExecutionLimits()
     budget = _ExecutionBudget(limits=resolved_limits)
-    stable_system = build_reader_stable_system(pack)
+    resolved_stable_system = stable_system or build_reader_stable_system(pack)
     execution_counts = ReaderExecutionCounts()
+    verification_incomplete = False
 
+    verifier_backed: VerifierBackedReaderTools | None = None
     if tools is not None:
         inner_tools: ReaderTools = tools
     elif verifier_client is not None and verify_context is not None:
-        inner_tools = VerifierBackedReaderTools(
+        verifier_backed = VerifierBackedReaderTools(
             pages,
             verifier_client,
             verify_context,
             trace=trace_session,
             execution_counts=execution_counts,
         )
+        inner_tools = verifier_backed
     else:
         inner_tools = InMemoryReaderTools(pages)
     if trace_session is not None:
@@ -1138,8 +1146,12 @@ def run_reader(
         )
 
     bundle = _bundle_pages_for_lm(loaded_pages)
+    if untrusted_manifest_prefix:
+        from hive_agents.reader_prompt.assemble import append_untrusted_manifest_to_case_user
+
+        bundle = append_untrusted_manifest_to_case_user(bundle, untrusted_manifest_prefix)
     module = HiveReaderModule()
-    wrapped_lm = StablePrefixLM(lm, stable_system)
+    wrapped_lm = StablePrefixLM(lm, resolved_stable_system)
 
     budget.consume_reasoning()
     try:
@@ -1179,16 +1191,25 @@ def run_reader(
     for fact in candidate_facts:
         if not fact.evidence:
             continue
-        primary = fact.evidence[0]
-        bounded_tools.propose_fact(
-            CandidateFactDraft(
-                subjectEntityId=fact.subjectEntityId,
-                construct=fact.construct,
-                value=fact.value,
-                modality=fact.modality,
-                evidence=fact.evidence,
+        try:
+            bounded_tools.propose_fact(
+                CandidateFactDraft(
+                    subjectEntityId=fact.subjectEntityId,
+                    construct=fact.construct,
+                    value=fact.value,
+                    modality=fact.modality,
+                    evidence=fact.evidence,
+                )
             )
-        )
+        except ReaderLimitsExhausted:
+            if truncate_verification_on_budget:
+                verification_incomplete = True
+                break
+            raise
+
+    accepted_facts: list[CandidateFact] = []
+    if verifier_backed is not None:
+        accepted_facts = list(verifier_backed.proposed_facts)
 
     usage = normalize_model_usage(
         wrapped_lm._inner.history[-1].get("usage") if getattr(wrapped_lm._inner, "history", None) else None
@@ -1196,9 +1217,11 @@ def run_reader(
 
     return ReaderRunResult(
         candidate_facts=candidate_facts,
+        accepted_candidate_facts=accepted_facts,
         reasoning_steps=budget.reasoning_steps,
         tool_calls=budget.tool_calls,
-        stable_system_prefix=stable_system,
+        stable_system_prefix=resolved_stable_system,
+        verification_incomplete=verification_incomplete,
         last_lm_messages=wrapped_lm.last_messages,
         model_usage_input_tokens=usage.input_tokens,
         model_usage_output_tokens=usage.output_tokens,

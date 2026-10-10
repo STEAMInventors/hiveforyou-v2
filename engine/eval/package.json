@@ -12,6 +12,7 @@
     "test": "vitest run",
     "golden:draft": "pnpm --filter @hiveforyou/core exec tsx ../eval/scripts/draft-golden.ts",
     "eval": "tsx scripts/eval.ts",
+    "reader-experiment:dry-run": "tsx scripts/reader-experiment-dry-run.ts",
     "eval:serve": "tsx scripts/serve-grader.ts"
   },
   "dependencies": {

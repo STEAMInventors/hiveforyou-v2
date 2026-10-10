@@ -133,6 +133,97 @@ export function loadEffectiveStudyAgentsPromptMetadata(input?: {
   };
 }
 
+export const READER_EXPERIMENT_VARIANTS = [
+  "golden_inspired",
+  "existing_reader_structured",
+] as const;
+
+export type ReaderExperimentVariant = (typeof READER_EXPERIMENT_VARIANTS)[number];
+
+/** 1 list + 8 read_pages (L001) + verifier buffer — matches Python READER_EXPERIMENT_L001_LIMITS. */
+export const READER_EXPERIMENT_L001_MAX_TOOL_CALLS = 165;
+export const READER_EXPERIMENT_L001_MAX_REASONING_STEPS = 4;
+
+export type ReaderExperimentPromptHashes = {
+  promptVersion: string;
+  golden_inspired: string;
+  existing_reader_structured: string;
+};
+
+export function readerExperimentPromptHashesPath(): string {
+  return join(CORE_REPO_ROOT, "engine", "eval", "reports", "reader-experiment", "prompt-hashes.json");
+}
+
+export function loadReaderExperimentPromptHashes(): ReaderExperimentPromptHashes {
+  const path = readerExperimentPromptHashesPath();
+  const parsed = JSON.parse(readFileSync(path, "utf8")) as ReaderExperimentPromptHashes;
+  for (const key of ["promptVersion", "golden_inspired", "existing_reader_structured"] as const) {
+    if (typeof parsed[key] !== "string" || !parsed[key].trim()) {
+      throw new Error(`READER_EXPERIMENT_PROMPT_HASHES_INVALID:${path}:${key}`);
+    }
+  }
+  return parsed;
+}
+
+export function resolveReaderExperimentVariant(
+  env: Record<string, string | undefined> = process.env,
+): ReaderExperimentVariant | null {
+  const raw = env.HIVE_READER_EXPERIMENT_VARIANT?.trim();
+  if (!raw) {
+    return null;
+  }
+  if (!(READER_EXPERIMENT_VARIANTS as readonly string[]).includes(raw)) {
+    throw new Error(`READER_EXPERIMENT_VARIANT_UNSUPPORTED:${raw}`);
+  }
+  return raw as ReaderExperimentVariant;
+}
+
+/** Qualification prompt metadata — experiment variant overrides pack reader hash when env set. */
+export function loadAgenticReaderQualificationPromptMetadata(input?: {
+  agentsJsonPath?: string;
+  env?: Record<string, string | undefined>;
+}): AgenticReaderPromptMetadata {
+  const env = input?.env ?? process.env;
+  const variant = resolveReaderExperimentVariant(env);
+  const base = loadEffectiveStudyAgentsPromptMetadata(input);
+  if (!variant) {
+    return base;
+  }
+  const hashes = loadReaderExperimentPromptHashes();
+  return {
+    promptId: `reader-experiment/${variant}`,
+    promptVersion: `${hashes.promptVersion}+${variant}`,
+    promptSha256: hashes[variant],
+    agentsJsonPath: base.agentsJsonPath,
+    artifact: base.artifact,
+  };
+}
+
+type L001ManifestFile = { filename: string; sha256: string };
+
+/** Map persisted sourceDocumentId → golden corpus filename via SHA-256 pins. */
+export function buildL001QualificationSourceDocumentIdToFilename(
+  registered: ReadonlyArray<{ id: string; sha256: string }>,
+): Map<string, string> {
+  const manifestPath = join(CORE_REPO_ROOT, "engine", "intake", "fixtures", "l001", "manifest.json");
+  const manifest = JSON.parse(readFileSync(manifestPath, "utf8")) as { files: L001ManifestFile[] };
+  const filenameByHash = new Map<string, string>();
+  for (const file of manifest.files) {
+    filenameByHash.set(file.sha256.toLowerCase(), file.filename);
+  }
+  const map = new Map<string, string>();
+  for (const doc of registered) {
+    const filename = filenameByHash.get(doc.sha256.toLowerCase());
+    if (filename) {
+      map.set(doc.id, filename);
+    }
+  }
+  if (map.size !== L001_QUALIFICATION_SOURCE_SHA256.length) {
+    throw new Error("L001_QUALIFICATION_SOURCE_DOCUMENT_FILENAME_MAP_INCOMPLETE");
+  }
+  return map;
+}
+
 const DEFAULT_HIVE_AGENTS_CONFIG_MODEL_PROVIDER = "anthropic";
 const DEFAULT_HIVE_AGENTS_CONFIG_MODEL_NAME = "claude-opus-5-5";
 

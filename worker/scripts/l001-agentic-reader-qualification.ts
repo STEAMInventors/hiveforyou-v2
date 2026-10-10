@@ -99,6 +99,42 @@ async function cmdEnsure(): Promise<void> {
   });
 }
 
+function applyExperimentCliFlags(argv: string[]): { dryRun: boolean; live: boolean; variant: string | null } {
+  let dryRun = false;
+  let live = false;
+  let variant: string | null = null;
+  for (let i = 3; i < argv.length; i += 1) {
+    const arg = argv[i]?.trim();
+    if (arg === "--dry-run") {
+      dryRun = true;
+    } else if (arg === "--live") {
+      live = true;
+    } else if (arg === "--variant") {
+      variant = argv[++i]?.trim() ?? null;
+    }
+  }
+  if (variant) {
+    process.env.HIVE_READER_EXPERIMENT_VARIANT = variant;
+    process.env.HIVE_READER_EXPERIMENT_TRUNCATE_VERIFICATION = "1";
+  }
+  if (live && process.env.HIVE_READER_EXPERIMENT_ALLOW_LIVE !== "1") {
+    throw new Error("Live experiment blocked: set HIVE_READER_EXPERIMENT_ALLOW_LIVE=1 explicitly.");
+  }
+  return { dryRun, live, variant };
+}
+
+async function cmdDryRun(): Promise<void> {
+  const { execSync } = await import("node:child_process");
+  const { dirname, join } = await import("node:path");
+  const { fileURLToPath } = await import("node:url");
+  const repoRoot = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
+  execSync("pnpm --filter @hiveforyou/eval reader-experiment:dry-run", {
+    cwd: repoRoot,
+    stdio: "inherit",
+    env: process.env,
+  });
+}
+
 async function cmdRun(): Promise<void> {
   const env = process.env;
   const workerEnv = readQualificationWorkerEnv(env);
@@ -131,15 +167,25 @@ async function cmdRun(): Promise<void> {
 
 async function main(): Promise<void> {
   const command = process.argv[2]?.trim();
+  const flags = applyExperimentCliFlags(process.argv);
+  if (flags.dryRun) {
+    await cmdDryRun();
+    return;
+  }
   if (command === "ensure") {
     await cmdEnsure();
     return;
   }
   if (command === "run") {
+    if (flags.variant && !flags.live) {
+      throw new Error("Experiment run requires --live (Anthropic) with HIVE_READER_EXPERIMENT_ALLOW_LIVE=1.");
+    }
     await cmdRun();
     return;
   }
-  console.error("Usage: node dist/l001-agentic-reader-qualification.js <ensure|run>");
+  console.error(
+    "Usage: l001-agentic-reader-qualification <ensure|run> [--variant golden_inspired|existing_reader_structured] [--dry-run] [--live DO NOT RUN without approval]",
+  );
   process.exitCode = 1;
 }
 

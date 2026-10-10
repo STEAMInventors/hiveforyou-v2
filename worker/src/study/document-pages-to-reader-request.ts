@@ -17,6 +17,11 @@ export type StudyReaderDocumentWire = {
   pages: StudyReaderPageWire[];
 };
 
+export type StudyReaderLimitsWire = {
+  maxToolCalls: number;
+  maxReasoningSteps: number;
+};
+
 export type StudyReaderRequestWire = {
   caseId: string;
   userId: string;
@@ -24,6 +29,7 @@ export type StudyReaderRequestWire = {
   studyRunId: string;
   attemptId: string;
   documents: StudyReaderDocumentWire[];
+  limits?: StudyReaderLimitsWire;
 };
 
 function pageToWire(page: PageModel, sourceDocumentId: string): StudyReaderPageWire {
@@ -53,6 +59,7 @@ export function buildStudyReaderRequestFromTrustedPages(input: {
   studyRunId: string;
   attemptId: string;
   bundles: TrustedDocumentPageBundle[];
+  limits?: StudyReaderLimitsWire;
 }): StudyReaderRequestWire {
   const documents = input.bundles.map((bundle) =>
     documentPagesToReaderDocument(bundle.sourceDocumentId, bundle.documentPages),
@@ -64,5 +71,6 @@ export function buildStudyReaderRequestFromTrustedPages(input: {
     studyRunId: input.studyRunId,
     attemptId: input.attemptId,
     documents,
+    limits: input.limits,
   };
 }

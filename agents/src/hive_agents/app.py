@@ -25,6 +25,10 @@ from hive_agents.reader import (
     ReaderVerifyContext,
     run_reader,
 )
+from hive_agents.reader_experiment_runtime import (
+    resolve_reader_stable_system_for_request,
+    trusted_documents_from_reader_request_documents,
+)
 from hive_agents.settings import get_settings
 from hive_agents.trace_client import (
     ReaderTraceClient,
@@ -161,6 +165,14 @@ def execute_study_reader(
         user_id=request.user_id,
     )
     limits = request.limits.to_execution_limits() if request.limits else None
+    settings = get_settings()
+    trusted_documents = trusted_documents_from_reader_request_documents(request.documents)
+    stable_system, manifest_block = resolve_reader_stable_system_for_request(
+        pack,
+        settings=settings,
+        trusted_documents=trusted_documents,
+    )
+    truncate_verification = settings.reader_experiment_truncate_verification
 
     lm = lm_factory()
     trace_session = _build_trace_session(request, pack=pack, trace_client=trace_client)
@@ -188,6 +200,9 @@ def execute_study_reader(
             document_ids=request.document_ids,
             page_numbers_by_document=request.page_numbers_by_document,
             search_queries=request.search_queries,
+            stable_system=stable_system,
+            untrusted_manifest_prefix=manifest_block,
+            truncate_verification_on_budget=truncate_verification,
         )
         return result, audit_not_configured
 
@@ -207,6 +222,9 @@ def execute_study_reader(
             page_numbers_by_document=request.page_numbers_by_document,
             search_queries=request.search_queries,
             trace_session=trace_session,
+            stable_system=stable_system,
+            untrusted_manifest_prefix=manifest_block,
+            truncate_verification_on_budget=truncate_verification,
         )
         duration_ms = int((time.perf_counter() - started) * 1000)
         counts = result.execution_counts or ReaderExecutionCounts()

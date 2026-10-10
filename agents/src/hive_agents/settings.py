@@ -55,6 +55,38 @@ class Settings(BaseSettings):
     agents_service_token: str | None = None
     agents_allow_nonpersistent_audit: bool = Field(default=False)
     reader_max_request_bytes: int = Field(default=16 * 1024 * 1024, ge=1024)
+    reader_experiment_variant: str | None = Field(
+        default=None,
+        validation_alias="READER_EXPERIMENT_VARIANT",
+    )
+    reader_experiment_truncate_verification: bool = Field(
+        default=False,
+        validation_alias="READER_EXPERIMENT_TRUNCATE_VERIFICATION",
+    )
+
+    @field_validator("reader_experiment_truncate_verification", mode="before")
+    @classmethod
+    def _parse_reader_experiment_truncate(cls, value: object) -> object:
+        if value is None:
+            return False
+        if isinstance(value, bool):
+            return value
+        if isinstance(value, str):
+            normalized = value.strip().lower()
+            if not normalized:
+                return False
+            return normalized in {"1", "true", "yes", "on"}
+        return value
+
+    @field_validator("reader_experiment_variant", mode="before")
+    @classmethod
+    def _normalize_reader_experiment_variant(cls, value: object) -> object:
+        if value is None:
+            return None
+        if isinstance(value, str):
+            stripped = value.strip()
+            return stripped or None
+        return value
 
     @field_validator("agents_allow_nonpersistent_audit", mode="before")
     @classmethod
