@@ -51,6 +51,21 @@ COPY --from=build /repo/worker/dist/l001-agentic-reader-qualification.js ./dist/
 COPY --from=build /repo/worker/dist/l001-agentic-reader-qualification.js.map ./dist/l001-agentic-reader-qualification.js.map
 COPY --from=build /repo/worker/dist/package.json ./package.json
 COPY engine/domain-packs/iep/study/agents.json ./pack/agents.json
+COPY engine/eval/reports/reader-experiment/prompt-hashes.json ./pack/reader-experiment-prompt-hashes.json
+
+ENV HIVE_READER_EXPERIMENT_PROMPT_HASHES_JSON=/app/pack/reader-experiment-prompt-hashes.json
+
+RUN node --input-type=module -e "\
+import { readFileSync } from 'node:fs';\
+const path = process.env.HIVE_READER_EXPERIMENT_PROMPT_HASHES_JSON;\
+if (!path) throw new Error('HIVE_READER_EXPERIMENT_PROMPT_HASHES_JSON missing');\
+const parsed = JSON.parse(readFileSync(path, 'utf8'));\
+for (const key of ['promptVersion', 'golden_inspired', 'existing_reader_structured']) {\
+  if (typeof parsed[key] !== 'string' || !parsed[key].trim()) {\
+    throw new Error('READER_EXPERIMENT_PROMPT_HASHES_INVALID:' + key);\
+  }\
+}\
+"
 
 RUN npm install --omit=dev \
   && npm cache clean --force \

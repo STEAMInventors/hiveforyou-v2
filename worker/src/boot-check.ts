@@ -1,8 +1,11 @@
+import { verifyReaderExperimentPromptHashesPackaged } from "@hiveforyou/core/study";
+
 import { runSelfCheck } from "./self-check.js";
 
 /** Load Inngest client + worker functions like startup, without connect/serve. */
 export async function runBootCheck(): Promise<void> {
   await runSelfCheck();
+  verifyReaderExperimentPromptHashesPackaged();
   await import("inngest/connect");
   const { inngest } = await import("./inngest/client.js");
   const { workerFunctions } = await import("./inngest/functions/index.js");

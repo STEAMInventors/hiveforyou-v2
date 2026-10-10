@@ -150,12 +150,31 @@ export type ReaderExperimentPromptHashes = {
   existing_reader_structured: string;
 };
 
-export function readerExperimentPromptHashesPath(): string {
+export function readerExperimentPromptHashesPath(
+  env: Record<string, string | undefined> = process.env,
+): string {
+  const override = env.HIVE_READER_EXPERIMENT_PROMPT_HASHES_JSON?.trim();
+  if (override) {
+    return override;
+  }
   return join(CORE_REPO_ROOT, "engine", "eval", "reports", "reader-experiment", "prompt-hashes.json");
 }
 
-export function loadReaderExperimentPromptHashes(): ReaderExperimentPromptHashes {
-  const path = readerExperimentPromptHashesPath();
+/** Fail closed when Oracle/worker image sets HIVE_READER_EXPERIMENT_PROMPT_HASHES_JSON. */
+export function verifyReaderExperimentPromptHashesPackaged(
+  env: Record<string, string | undefined> = process.env,
+): void {
+  const override = env.HIVE_READER_EXPERIMENT_PROMPT_HASHES_JSON?.trim();
+  if (!override) {
+    return;
+  }
+  loadReaderExperimentPromptHashes(env);
+}
+
+export function loadReaderExperimentPromptHashes(
+  env: Record<string, string | undefined> = process.env,
+): ReaderExperimentPromptHashes {
+  const path = readerExperimentPromptHashesPath(env);
   const parsed = JSON.parse(readFileSync(path, "utf8")) as ReaderExperimentPromptHashes;
   for (const key of ["promptVersion", "golden_inspired", "existing_reader_structured"] as const) {
     if (typeof parsed[key] !== "string" || !parsed[key].trim()) {
@@ -189,7 +208,7 @@ export function loadAgenticReaderQualificationPromptMetadata(input?: {
   if (!variant) {
     return base;
   }
-  const hashes = loadReaderExperimentPromptHashes();
+  const hashes = loadReaderExperimentPromptHashes(env);
   return {
     promptId: `reader-experiment/${variant}`,
     promptVersion: `${hashes.promptVersion}+${variant}`,

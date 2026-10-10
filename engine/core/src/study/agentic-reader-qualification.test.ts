@@ -14,10 +14,21 @@ import {
   computeAgenticReaderQualificationIdempotencyKey,
   defaultStudyAgentsJsonPath,
   fingerprintL001QualificationCorpus,
+  loadAgenticReaderQualificationPromptMetadata,
   loadEffectiveStudyAgentsPromptMetadata,
+  loadReaderExperimentPromptHashes,
+  readerExperimentPromptHashesPath,
   resolveAgenticReaderModelIdentity,
   resolveEffectiveHiveAgentsModelIdentity,
+  verifyReaderExperimentPromptHashesPackaged,
 } from "./agentic-reader-qualification";
+
+const COMMITTED_READER_EXPERIMENT_PROMPT_HASHES = {
+  promptVersion: "hive-reader-prompt/1.0.0",
+  golden_inspired: "ae580790f08b2f7836655d1eaab52e795691a4f359e6585e12939385b9e37c1e",
+  existing_reader_structured:
+    "d0747e97e3c664e1c8e22028036e5f27aca689202a7f72c74ab4a212e267465c",
+} as const;
 
 function oracleReaderQualificationModelEnv(
   overrides: Record<string, string | undefined> = {},
@@ -202,6 +213,40 @@ describe("agentic reader qualification", () => {
       modelProvider: "anthropic",
       modelName: "claude-opus-5-5",
     });
+  });
+
+  it("loads committed reader experiment prompt hashes from the repo tree", () => {
+    const hashes = loadReaderExperimentPromptHashes({
+      HIVE_READER_EXPERIMENT_PROMPT_HASHES_JSON: undefined,
+    });
+    expect(hashes).toEqual(COMMITTED_READER_EXPERIMENT_PROMPT_HASHES);
+  });
+
+  it("honors HIVE_READER_EXPERIMENT_PROMPT_HASHES_JSON like the Oracle worker image", () => {
+    const repoPath = readerExperimentPromptHashesPath({});
+    const env = { HIVE_READER_EXPERIMENT_PROMPT_HASHES_JSON: repoPath };
+    expect(readerExperimentPromptHashesPath(env)).toBe(repoPath);
+    expect(loadReaderExperimentPromptHashes(env)).toEqual(COMMITTED_READER_EXPERIMENT_PROMPT_HASHES);
+    expect(() => verifyReaderExperimentPromptHashesPackaged(env)).not.toThrow();
+  });
+
+  it("does not require packaged experiment metadata when the env override is unset", () => {
+    expect(() => verifyReaderExperimentPromptHashesPackaged({})).not.toThrow();
+  });
+
+  it("uses experiment prompt hash metadata only when HIVE_READER_EXPERIMENT_VARIANT is set", () => {
+    const base = loadAgenticReaderQualificationPromptMetadata({
+      env: { HIVE_READER_EXPERIMENT_PROMPT_HASHES_JSON: undefined },
+    });
+    const variantA = loadAgenticReaderQualificationPromptMetadata({
+      env: {
+        HIVE_READER_EXPERIMENT_PROMPT_HASHES_JSON: undefined,
+        HIVE_READER_EXPERIMENT_VARIANT: "golden_inspired",
+      },
+    });
+    expect(base.promptSha256).not.toBe(variantA.promptSha256);
+    expect(variantA.promptSha256).toBe(COMMITTED_READER_EXPERIMENT_PROMPT_HASHES.golden_inspired);
+    expect(variantA.promptId).toBe("reader-experiment/golden_inspired");
   });
 
   it("builds a qualification run with anthropic provider mode when configured", () => {
