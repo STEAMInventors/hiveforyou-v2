@@ -5,10 +5,15 @@ from dataclasses import dataclass
 
 from hive_agents.pack_loader import AgentPack
 from hive_agents.reader import reader_instructions_from_pack
-from hive_agents.reader_prompt.constants import PROMPT_VERSION, READER_ARCHITECTURE_VARIANTS
+from hive_agents.reader_prompt.constants import (
+    PROMPT_VERSION,
+    READER_ARCHITECTURE_VARIANTS,
+    resolve_parallel_prompt_variant,
+)
 from hive_agents.reader_prompt.golden_reference import golden_reference_methodology_for_reader
 from hive_agents.reader_prompt.section6_golden_inspired import (
     build_case_wide_domain_coverage_checklist,
+    build_parallel_document_domain_coverage_checklist,
 )
 from hive_agents.reader_prompt.sections_shared import (
     shared_sections_after_checklist,
@@ -32,11 +37,18 @@ def assemble_reader_architecture_prompt(
     pack: AgentPack,
     trusted_documents: list[TrustedDocumentMeta] | None = None,
     engine1_context_block: str | None = None,
+    parallel_prompt_variant: str | None = None,
 ) -> AssembledReaderExperimentPrompt:
     normalized = architecture.strip()
     if normalized not in READER_ARCHITECTURE_VARIANTS:
         raise ValueError(
             f"architecture must be one of {sorted(READER_ARCHITECTURE_VARIANTS)} (got {architecture!r})"
+        )
+    resolved_parallel_variant = resolve_parallel_prompt_variant(parallel_prompt_variant)
+    if normalized != "parallel_document" and resolved_parallel_variant:
+        raise ValueError(
+            "parallel_prompt_variant applies only to parallel_document architecture "
+            f"(got architecture={normalized!r}, variant={parallel_prompt_variant!r})"
         )
 
     pack_reader = reader_instructions_from_pack(pack)
@@ -47,11 +59,16 @@ def assemble_reader_architecture_prompt(
     )
     shared_before = shared_sections_before_golden_methodology(architecture=normalized)
     golden_body = golden_reference_methodology_for_reader()
-    shared_after = shared_sections_after_checklist(architecture=normalized)
+    shared_after = shared_sections_after_checklist(
+        architecture=normalized,
+        parallel_prompt_variant=resolved_parallel_variant,
+    )
 
     stable_parts = [pack_header, shared_before]
     if normalized == "case_wide":
         stable_parts.append(build_case_wide_domain_coverage_checklist(pack))
+    elif normalized == "parallel_document" and resolved_parallel_variant == "p6":
+        stable_parts.append(build_parallel_document_domain_coverage_checklist(pack))
     stable_parts.extend([golden_body, shared_after])
     stable = "\n\n".join(stable_parts)
     manifest_parts = []
@@ -62,6 +79,8 @@ def assemble_reader_architecture_prompt(
 
     digest = hashlib.sha256(stable.encode("utf-8")).hexdigest()
     version = f"{PROMPT_VERSION}+architecture/{normalized}"
+    if resolved_parallel_variant == "p6":
+        version = f"{version}+p6"
     return AssembledReaderExperimentPrompt(
         architecture=normalized,
         prompt_version=version,

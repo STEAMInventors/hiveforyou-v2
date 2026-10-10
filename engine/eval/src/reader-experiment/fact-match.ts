@@ -47,8 +47,20 @@ export type ReaderGoldenComparisonSummary = {
   verificationIncomplete: boolean;
 };
 
+export type ReaderGoldenMatchDiagnostics = {
+  evidenceRefCount: number;
+  documentIdResolvedCount: number;
+  pageResolvedCount: number;
+  quoteMappedToWordRangeCount: number;
+  goldenRangeOverlapCount: number;
+  valueMatchCount: number;
+  modalityMatchCount: number;
+};
+
 export type ReaderGoldenComparisonReport = {
   summary: ReaderGoldenComparisonSummary;
+  matchDiagnostics: ReaderGoldenMatchDiagnostics;
+  corpusMappingBlocked: boolean;
   perGoldenFact: PerGoldenFactRow[];
   perDocumentCoverage: PerDocumentCoverageRow[];
   unmatchedCandidateIds: string[];
@@ -119,13 +131,17 @@ function resolveDocumentId(sourceDocumentId: string, context: GradeCorpusContext
   return null;
 }
 
-function resolveEvidenceRefToWordRange(
+function resolveEvidenceRefStages(
   ref: EvidenceReferenceV4,
   context: GradeCorpusContext,
-): PageWordRange | null {
+): {
+  documentId: string | null;
+  pageResolved: boolean;
+  wordRange: PageWordRange | null;
+} {
   const documentId = resolveDocumentId(ref.sourceDocumentId, context);
   if (!documentId) {
-    return null;
+    return { documentId: null, pageResolved: false, wordRange: null };
   }
   const pageNumber = ref.page ?? 1;
   const pageModel = context.pageModelsByDocumentId.get(documentId)?.find((p) => p.pageNumber === pageNumber);
@@ -133,13 +149,13 @@ function resolveEvidenceRefToWordRange(
     .get(documentId)
     ?.find((p) => p.pageNumber === pageNumber);
   if (!pageModel || !recoveredPage) {
-    return null;
+    return { documentId, pageResolved: false, wordRange: null };
   }
   const quote = ref.quote?.trim() ?? "";
   if (!quote) {
-    return null;
+    return { documentId, pageResolved: true, wordRange: null };
   }
-  return mapV4EvidenceRefToWordRange({
+  const wordRange = mapV4EvidenceRefToWordRange({
     documentId,
     recoveredPage,
     pageModel,
@@ -150,6 +166,80 @@ function resolveEvidenceRefToWordRange(
       snippet: quote,
     },
   });
+  return { documentId, pageResolved: true, wordRange };
+}
+
+function resolveEvidenceRefToWordRange(
+  ref: EvidenceReferenceV4,
+  context: GradeCorpusContext,
+): PageWordRange | null {
+  return resolveEvidenceRefStages(ref, context).wordRange;
+}
+
+export function collectReaderGoldenMatchDiagnostics(input: {
+  golden: GoldenCase;
+  candidates: ReaderExperimentCandidateFact[];
+  corpus: GradeCorpusContext;
+}): ReaderGoldenMatchDiagnostics {
+  const diagnostics: ReaderGoldenMatchDiagnostics = {
+    evidenceRefCount: 0,
+    documentIdResolvedCount: 0,
+    pageResolvedCount: 0,
+    quoteMappedToWordRangeCount: 0,
+    goldenRangeOverlapCount: 0,
+    valueMatchCount: 0,
+    modalityMatchCount: 0,
+  };
+  const sortedGolden = [...input.golden.facts].sort((a, b) => a.id.localeCompare(b.id));
+  for (const candidate of input.candidates) {
+    for (const ref of candidate.evidenceRefs) {
+      diagnostics.evidenceRefCount += 1;
+      const stages = resolveEvidenceRefStages(ref, input.corpus);
+      if (stages.documentId) {
+        diagnostics.documentIdResolvedCount += 1;
+      }
+      if (stages.pageResolved) {
+        diagnostics.pageResolvedCount += 1;
+      }
+      if (!stages.wordRange) {
+        continue;
+      }
+      diagnostics.quoteMappedToWordRangeCount += 1;
+      for (const fact of sortedGolden) {
+        const factRange = goldenToPageWordRange(fact);
+        if (!wordRangesOverlap(factRange, stages.wordRange)) {
+          continue;
+        }
+        diagnostics.goldenRangeOverlapCount += 1;
+        if (claimValuesEquivalent(candidate.value, fact.value)) {
+          diagnostics.valueMatchCount += 1;
+          if (fact.acceptableModalities.includes(candidate.modality)) {
+            diagnostics.modalityMatchCount += 1;
+          }
+        }
+      }
+    }
+  }
+  return diagnostics;
+}
+
+export function readerGoldenCorpusMappingFailure(input: {
+  candidateCount: number;
+  diagnostics: ReaderGoldenMatchDiagnostics;
+}): string | null {
+  if (input.candidateCount === 0) {
+    return null;
+  }
+  if (input.diagnostics.evidenceRefCount === 0) {
+    return "Accepted facts have no evidence references; cannot grade provenance overlap.";
+  }
+  if (input.diagnostics.documentIdResolvedCount === 0) {
+    return "Corpus mapping failed: no accepted-fact sourceDocumentId resolves to a golden corpus document (check UUID → L001 filename map).";
+  }
+  if (input.diagnostics.pageResolvedCount === 0) {
+    return "Corpus mapping failed: no accepted-fact evidence resolves to a golden corpus page.";
+  }
+  return null;
 }
 
 function clamp01(n: number): number {
@@ -377,6 +467,10 @@ export function buildReaderGoldenComparisonReport(input: {
     candidateCount === 0 ? (goldenFactCount === 0 ? 1 : 0) : matchedGoldenCount / candidateCount;
   const recall = goldenFactCount === 0 ? 1 : matchedGoldenCount / goldenFactCount;
 
+  const matchDiagnostics = collectReaderGoldenMatchDiagnostics({ golden, candidates, corpus });
+  const corpusMappingBlocked =
+    readerGoldenCorpusMappingFailure({ candidateCount, diagnostics: matchDiagnostics }) !== null;
+
   const byDoc = new Map<string, { golden: number; matched: number }>();
   for (const row of perGoldenFact) {
     const entry = byDoc.get(row.documentId) ?? { golden: 0, matched: 0 };
@@ -406,6 +500,8 @@ export function buildReaderGoldenComparisonReport(input: {
       unmatchedCandidateCount: unmatchedCandidateIds.length,
       verificationIncomplete,
     },
+    matchDiagnostics,
+    corpusMappingBlocked,
     perGoldenFact,
     perDocumentCoverage,
     unmatchedCandidateIds,
@@ -443,6 +539,380 @@ export function parseAcceptedReaderFactsJson(raw: unknown): ReaderExperimentCand
     return raw as ReaderExperimentCandidateFact[];
   }
   throw new Error("Unrecognized accepted facts JSON shape");
+}
+
+export type GoldenMismatchClassification =
+  | "TRUE_OMISSION"
+  | "VALUE_EXTRACTION_ERROR"
+  | "MODALITY_EXTRACTION_ERROR"
+  | "EQUIVALENT_VALUE_GRADER_MISMATCH"
+  | "EVIDENCE_ALIGNMENT_ERROR"
+  | "INDETERMINATE";
+
+export type ClosestCandidateDiagnostics = {
+  candidateId: string;
+  constructMeasure: string;
+  candidateModality: ClaimModality;
+  candidateValueKind: ClaimValueV4["kind"];
+  resolvedDocumentId: string | null;
+  candidatePage: number | null;
+  sameDocument: boolean;
+  samePage: boolean;
+  evidenceOverlap: boolean;
+  constructMatch: boolean;
+  valueMatch: boolean;
+  modalityMatch: boolean;
+  rankScore: number;
+};
+
+export type GoldenMismatchAuditRow = {
+  goldenFactId: string;
+  documentId: string;
+  pageNumber: number;
+  graderStatus: GoldenFactMatchStatus;
+  classification: GoldenMismatchClassification;
+  classificationReason: string;
+  closestCandidate: ClosestCandidateDiagnostics | null;
+  alternateCandidateIds: string[];
+  proposedValueEquivalence: { rule: string; detail: string } | null;
+};
+
+export type ReaderGoldenMismatchAuditReport = {
+  schemaVersion: "reader-golden-mismatch-audit/1";
+  generatedAt: string;
+  documentFilter: string | null;
+  officialComparisonSummary: ReaderGoldenComparisonSummary;
+  classificationCounts: Record<GoldenMismatchClassification, number>;
+  rows: GoldenMismatchAuditRow[];
+};
+
+function normalizeTextForStrictEquivalence(text: string): string {
+  return text.trim().replace(/\s+/g, " ").toLowerCase();
+}
+
+/** Deterministic near-miss checks only; never fuzzy semantic equivalence. */
+export function proposeStrictValueEquivalence(
+  candidateValue: ClaimValueV4,
+  goldenValue: ClaimValueV4,
+): { equivalent: true; rule: string; detail: string } | { equivalent: false } {
+  if (claimValuesEquivalent(candidateValue, goldenValue)) {
+    return {
+      equivalent: true,
+      rule: "claimValuesEquivalent",
+      detail: "Values already match under official grader equality.",
+    };
+  }
+  if (candidateValue.kind === "text" && goldenValue.kind === "text") {
+    const left = normalizeTextForStrictEquivalence(candidateValue.textValue ?? "");
+    const right = normalizeTextForStrictEquivalence(goldenValue.textValue ?? "");
+    if (left.length > 0 && left === right) {
+      return {
+        equivalent: true,
+        rule: "text_whitespace_case_insensitive",
+        detail:
+          "Candidate and golden text differ only by outer whitespace and/or letter case; claimValuesEquivalent requires exact textValue.",
+      };
+    }
+  }
+  return { equivalent: false };
+}
+
+function goldenFactConstructTokens(factId: string): string[] {
+  const stem = factId.replace(/^clm_/, "").toLowerCase();
+  return stem.split("_").filter((part) => part.length >= 3);
+}
+
+export function constructMatchesGoldenFact(factId: string, measure: string): boolean {
+  const measureNorm = measure.toLowerCase().replace(/[^a-z0-9]+/g, "_");
+  const stem = factId.replace(/^clm_/, "").toLowerCase();
+  if (measureNorm.includes(stem) || stem.includes(measureNorm.replace(/_/g, ""))) {
+    return true;
+  }
+  const tokens = goldenFactConstructTokens(factId);
+  if (tokens.length === 0) {
+    return false;
+  }
+  const matched = tokens.filter((token) => measureNorm.includes(token));
+  return matched.length >= Math.min(2, tokens.length);
+}
+
+function rankCandidateAgainstGoldenFact(input: {
+  fact: GoldenFact;
+  candidate: ReaderExperimentCandidateFact;
+  corpus: GradeCorpusContext;
+}): ClosestCandidateDiagnostics {
+  const { fact, candidate, corpus } = input;
+  let best: ClosestCandidateDiagnostics = {
+    candidateId: candidate.id,
+    constructMeasure: candidate.construct.measure,
+    candidateModality: candidate.modality,
+    candidateValueKind: candidate.value.kind,
+    resolvedDocumentId: null,
+    candidatePage: null,
+    sameDocument: false,
+    samePage: false,
+    evidenceOverlap: false,
+    constructMatch: constructMatchesGoldenFact(fact.id, candidate.construct.measure),
+    valueMatch: claimValuesEquivalent(candidate.value, fact.value),
+    modalityMatch: fact.acceptableModalities.includes(candidate.modality),
+    rankScore: 0,
+  };
+
+  for (const ref of candidate.evidenceRefs) {
+    const stages = resolveEvidenceRefStages(ref, corpus);
+    const factRange = goldenToPageWordRange(fact);
+    const overlap =
+      stages.wordRange !== null && wordRangesOverlap(factRange, stages.wordRange);
+    const sameDocument = stages.documentId === fact.documentId;
+    const pageNumber = ref.page ?? 1;
+    const samePage = sameDocument && pageNumber === fact.pageNumber;
+
+    const link: ClosestCandidateDiagnostics = {
+      candidateId: candidate.id,
+      constructMeasure: candidate.construct.measure,
+      candidateModality: candidate.modality,
+      candidateValueKind: candidate.value.kind,
+      resolvedDocumentId: stages.documentId,
+      candidatePage: pageNumber,
+      sameDocument,
+      samePage,
+      evidenceOverlap: overlap,
+      constructMatch: constructMatchesGoldenFact(fact.id, candidate.construct.measure),
+      valueMatch: claimValuesEquivalent(candidate.value, fact.value),
+      modalityMatch: fact.acceptableModalities.includes(candidate.modality),
+      rankScore: 0,
+    };
+    link.rankScore =
+      (link.sameDocument ? 64 : 0) +
+      (link.samePage ? 32 : 0) +
+      (link.evidenceOverlap ? 16 : 0) +
+      (link.constructMatch ? 8 : 0) +
+      (link.valueMatch ? 4 : 0) +
+      (link.modalityMatch ? 2 : 0);
+
+    if (link.rankScore > best.rankScore) {
+      best = link;
+    }
+  }
+
+  if (candidate.evidenceRefs.length === 0) {
+    best.rankScore =
+      (best.constructMatch ? 8 : 0) +
+      (best.valueMatch ? 4 : 0) +
+      (best.modalityMatch ? 2 : 0);
+  }
+
+  return best;
+}
+
+export function findClosestCandidateForGoldenFact(input: {
+  fact: GoldenFact;
+  candidates: ReaderExperimentCandidateFact[];
+  corpus: GradeCorpusContext;
+}): { closest: ClosestCandidateDiagnostics | null; alternates: string[] } {
+  const ranked = [...input.candidates]
+    .map((candidate) => rankCandidateAgainstGoldenFact({ fact: input.fact, candidate, corpus: input.corpus }))
+    .sort((a, b) => {
+      if (b.rankScore !== a.rankScore) {
+        return b.rankScore - a.rankScore;
+      }
+      return a.candidateId.localeCompare(b.candidateId);
+    });
+
+  if (ranked.length === 0 || ranked[0]!.rankScore <= 0) {
+    return { closest: ranked[0]?.rankScore === 0 ? ranked[0]! : null, alternates: [] };
+  }
+
+  const topScore = ranked[0]!.rankScore;
+  const top = ranked.filter((row) => row.rankScore === topScore);
+  return {
+    closest: top[0] ?? null,
+    alternates: top.slice(1).map((row) => row.candidateId),
+  };
+}
+
+export function classifyUnmatchedGoldenFact(input: {
+  fact: GoldenFact;
+  graderStatus: GoldenFactMatchStatus;
+  closest: ClosestCandidateDiagnostics | null;
+}): {
+  classification: GoldenMismatchClassification;
+  reason: string;
+  proposedValueEquivalence: { rule: string; detail: string } | null;
+} {
+  const { fact, graderStatus, closest } = input;
+  if (graderStatus === "matched") {
+    return {
+      classification: "INDETERMINATE",
+      reason: "Golden fact is matched; audit applies to unmatched rows only.",
+      proposedValueEquivalence: null,
+    };
+  }
+
+  if (!closest || closest.rankScore <= 0) {
+    return {
+      classification: "TRUE_OMISSION",
+      reason: "No verifier-accepted candidate shares document, page, or provenance overlap with this golden anchor.",
+      proposedValueEquivalence: null,
+    };
+  }
+
+  if (closest.sameDocument && closest.samePage && !closest.evidenceOverlap) {
+    return {
+      classification: "EVIDENCE_ALIGNMENT_ERROR",
+      reason:
+        "Candidate cites the same document and page but the mapped quote word range does not overlap the golden wordRange (verifier accepted a different span on-page).",
+      proposedValueEquivalence: null,
+    };
+  }
+
+  if (!closest.evidenceOverlap) {
+    return {
+      classification: "TRUE_OMISSION",
+      reason:
+        "Closest candidate is on a different page or document without provenance overlap; no accepted extraction anchors this golden fact.",
+      proposedValueEquivalence: null,
+    };
+  }
+
+  if (closest.valueMatch && closest.modalityMatch) {
+    return {
+      classification: "INDETERMINATE",
+      reason:
+        "Closest overlapping candidate matches value and acceptable modality but the one-to-one grader did not assign it (likely consumed by another golden fact or tie order).",
+      proposedValueEquivalence: null,
+    };
+  }
+
+  if (closest.valueMatch && !closest.modalityMatch) {
+    return {
+      classification: "MODALITY_EXTRACTION_ERROR",
+      reason: `Overlapping value matches golden but modality ${closest.candidateModality} is not in acceptableModalities [${fact.acceptableModalities.join(", ")}].`,
+      proposedValueEquivalence: null,
+    };
+  }
+
+  return {
+    classification: "VALUE_EXTRACTION_ERROR",
+    reason: "Overlapping candidate value differs from golden under claimValuesEquivalent (see classifyUnmatchedGoldenFactWithCandidate for equivalence review).",
+    proposedValueEquivalence: null,
+  };
+}
+
+export function classifyUnmatchedGoldenFactWithCandidate(input: {
+  fact: GoldenFact;
+  graderStatus: GoldenFactMatchStatus;
+  closest: ClosestCandidateDiagnostics | null;
+  candidateValue: ClaimValueV4 | null;
+}): {
+  classification: GoldenMismatchClassification;
+  reason: string;
+  proposedValueEquivalence: { rule: string; detail: string } | null;
+} {
+  const base = classifyUnmatchedGoldenFact({
+    fact: input.fact,
+    graderStatus: input.graderStatus,
+    closest: input.closest,
+  });
+  if (
+    !input.closest?.evidenceOverlap ||
+    !input.candidateValue ||
+    input.closest.valueMatch ||
+    base.classification === "INDETERMINATE" ||
+    base.classification === "MODALITY_EXTRACTION_ERROR" ||
+    base.classification === "TRUE_OMISSION" ||
+    base.classification === "EVIDENCE_ALIGNMENT_ERROR"
+  ) {
+    return base;
+  }
+
+  const equivalence = proposeStrictValueEquivalence(input.candidateValue, input.fact.value);
+  if (equivalence.equivalent) {
+    return {
+      classification: "EQUIVALENT_VALUE_GRADER_MISMATCH",
+      reason: equivalence.detail,
+      proposedValueEquivalence: { rule: equivalence.rule, detail: equivalence.detail },
+    };
+  }
+
+  return {
+    classification: "VALUE_EXTRACTION_ERROR",
+    reason: "Overlapping candidate value differs from golden under claimValuesEquivalent.",
+    proposedValueEquivalence: null,
+  };
+}
+
+export function buildReaderGoldenMismatchAuditReport(input: {
+  golden: GoldenCase;
+  comparison: ReaderGoldenComparisonReport;
+  candidates: ReaderExperimentCandidateFact[];
+  corpus: GradeCorpusContext;
+  documentFilter?: string | null;
+  generatedAt?: string;
+}): ReaderGoldenMismatchAuditReport {
+  const documentFilter = input.documentFilter?.trim() || null;
+  const candidatesById = new Map(input.candidates.map((c) => [c.id, c]));
+  const rows: GoldenMismatchAuditRow[] = [];
+
+  for (const row of input.comparison.perGoldenFact) {
+    if (row.status === "matched") {
+      continue;
+    }
+    if (documentFilter && row.documentId !== documentFilter) {
+      continue;
+    }
+    const fact = input.golden.facts.find((f) => f.id === row.goldenFactId);
+    if (!fact) {
+      continue;
+    }
+    const { closest, alternates } = findClosestCandidateForGoldenFact({
+      fact,
+      candidates: input.candidates,
+      corpus: input.corpus,
+    });
+    const candidateValue = closest ? (candidatesById.get(closest.candidateId)?.value ?? null) : null;
+    const classified = classifyUnmatchedGoldenFactWithCandidate({
+      fact,
+      graderStatus: row.status,
+      closest,
+      candidateValue,
+    });
+
+    rows.push({
+      goldenFactId: row.goldenFactId,
+      documentId: row.documentId,
+      pageNumber: row.pageNumber,
+      graderStatus: row.status,
+      classification: classified.classification,
+      classificationReason: classified.reason,
+      closestCandidate: closest,
+      alternateCandidateIds: alternates,
+      proposedValueEquivalence: classified.proposedValueEquivalence,
+    });
+  }
+
+  rows.sort((a, b) => a.goldenFactId.localeCompare(b.goldenFactId));
+
+  const classificationCounts: Record<GoldenMismatchClassification, number> = {
+    TRUE_OMISSION: 0,
+    VALUE_EXTRACTION_ERROR: 0,
+    MODALITY_EXTRACTION_ERROR: 0,
+    EQUIVALENT_VALUE_GRADER_MISMATCH: 0,
+    EVIDENCE_ALIGNMENT_ERROR: 0,
+    INDETERMINATE: 0,
+  };
+  for (const row of rows) {
+    classificationCounts[row.classification] += 1;
+  }
+
+  return {
+    schemaVersion: "reader-golden-mismatch-audit/1",
+    generatedAt: input.generatedAt ?? new Date().toISOString(),
+    documentFilter,
+    officialComparisonSummary: { ...input.comparison.summary },
+    classificationCounts,
+    rows,
+  };
 }
 
 const TRACE_PERSISTED_FIELDS = [

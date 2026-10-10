@@ -1,6 +1,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
+import { buildL001QualificationSourceDocumentIdToFilename } from "@hiveforyou/core/study";
 import type { PageModel } from "@hiveforyou/core/document/page-model";
 import type { NestIepRecoveredPage } from "@hiveforyou/shared/intake";
 
@@ -123,5 +124,30 @@ export async function loadGradeCorpusForGolden(input: {
     pageModelsByDocumentId,
     recoveredPagesByDocumentId,
     sourceDocumentIdToDocumentId,
+  };
+}
+
+/** Merge persisted sourceDocumentId (UUID) → golden filename via L001 SHA-256 pins. */
+export function enrichL001GradeCorpusWithRegisteredDocuments(
+  corpus: GradeCorpusContext,
+  registered: ReadonlyArray<{ id: string; sha256: string }>,
+  env: Record<string, string | undefined> = process.env,
+): GradeCorpusContext {
+  if (registered.length === 0) {
+    return corpus;
+  }
+  let shaMap: Map<string, string>;
+  try {
+    shaMap = buildL001QualificationSourceDocumentIdToFilename(registered, env);
+  } catch {
+    return corpus;
+  }
+  const merged = new Map(corpus.sourceDocumentIdToDocumentId ?? []);
+  for (const [sourceDocumentId, filename] of shaMap) {
+    merged.set(sourceDocumentId, filename);
+  }
+  return {
+    ...corpus,
+    sourceDocumentIdToDocumentId: merged,
   };
 }

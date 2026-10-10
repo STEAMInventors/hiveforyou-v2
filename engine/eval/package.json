@@ -14,6 +14,7 @@
     "eval": "tsx scripts/eval.ts",
     "reader-experiment:dry-run": "tsx scripts/reader-experiment-dry-run.ts",
     "reader-golden-compare": "tsx scripts/eval.ts --reader-golden-compare",
+    "reader-golden-mismatch-audit": "tsx scripts/eval.ts --reader-golden-mismatch-audit",
     "eval:serve": "tsx scripts/serve-grader.ts"
   },
   "dependencies": {

@@ -8,7 +8,11 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { assertGoldenSplit, type GoldenSplit } from "../src/golden/validate.js";
-import { runEvalCli, runReaderGoldenCompareCli } from "../src/eval/run-eval.js";
+import {
+  runEvalCli,
+  runReaderGoldenCompareCli,
+  runReaderGoldenMismatchAuditCli,
+} from "../src/eval/run-eval.js";
 
 const scriptDir = dirname(fileURLToPath(import.meta.url));
 const evalRoot = resolve(scriptDir, "..");
@@ -57,6 +61,17 @@ async function main(): Promise<void> {
       env: process.env,
     });
     console.info("[reader-golden-compare] wrote", outPath);
+    return;
+  }
+
+  if (process.argv.includes("--reader-golden-mismatch-audit")) {
+    const filtered = process.argv.slice(2).filter((a) => a !== "--reader-golden-mismatch-audit");
+    const { outPath } = await runReaderGoldenMismatchAuditCli({
+      repoRoot,
+      argv: filtered,
+      env: process.env,
+    });
+    console.info("[reader-golden-mismatch-audit] wrote", outPath);
     return;
   }
 

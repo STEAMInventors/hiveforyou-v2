@@ -108,10 +108,12 @@ function applyExperimentCliFlags(argv: string[]): {
   dryRun: boolean;
   live: boolean;
   architecture: string | null;
+  parallelPromptVariant: string | null;
 } {
   let dryRun = false;
   let live = false;
   let architecture: string | null = null;
+  let parallelPromptVariant: string | null = null;
   for (let i = 3; i < argv.length; i += 1) {
     const arg = argv[i]?.trim();
     if (arg === "--dry-run") {
@@ -120,6 +122,8 @@ function applyExperimentCliFlags(argv: string[]): {
       live = true;
     } else if (arg === "--architecture") {
       architecture = argv[++i]?.trim() ?? null;
+    } else if (arg === "--parallel-prompt-variant") {
+      parallelPromptVariant = argv[++i]?.trim() ?? null;
     } else if (arg === "--variant") {
       throw new Error("--variant retired; use --architecture case_wide|parallel_document");
     }
@@ -128,10 +132,13 @@ function applyExperimentCliFlags(argv: string[]): {
     process.env.HIVE_READER_ARCHITECTURE_VARIANT = architecture;
     process.env.HIVE_READER_EXPERIMENT_TRUNCATE_VERIFICATION = "1";
   }
+  if (parallelPromptVariant) {
+    process.env.HIVE_READER_PARALLEL_PROMPT_VARIANT = parallelPromptVariant;
+  }
   if (live && process.env.HIVE_READER_EXPERIMENT_ALLOW_LIVE !== "1") {
     throw new Error("Live experiment blocked: set HIVE_READER_EXPERIMENT_ALLOW_LIVE=1 explicitly.");
   }
-  return { dryRun, live, architecture };
+  return { dryRun, live, architecture, parallelPromptVariant };
 }
 
 async function cmdDryRun(): Promise<void> {
@@ -201,7 +208,7 @@ async function main(): Promise<void> {
     return;
   }
   console.error(
-    "Usage: l001-agentic-reader-qualification <ensure|run|dry-run> [--architecture case_wide|parallel_document] [--dry-run] [--live DO NOT RUN without approval]",
+    "Usage: l001-agentic-reader-qualification <ensure|run|dry-run> [--architecture case_wide|parallel_document] [--parallel-prompt-variant p6] [--dry-run] [--live DO NOT RUN without approval]",
   );
   process.exitCode = 1;
 }

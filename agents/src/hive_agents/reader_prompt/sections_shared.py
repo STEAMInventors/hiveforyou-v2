@@ -124,6 +124,10 @@ SECTION_10_CASE_WIDE_SUPPLEMENT = """\
 For case-wide extraction, you must complete §6.7 (per-document final self-check) before returning `candidateFacts`.
 """
 
+SECTION_10_PARALLEL_P6_SUPPLEMENT = """\
+For parallel-document extraction with domain coverage (B-P6), complete §6.7 for the supplied document only before returning `candidateFacts`.
+"""
+
 SECTION_11_ABSTENTION = """\
 ## 11. ABSTENTION, AMBIGUITY AND FAILURE HANDLING
 
@@ -153,10 +157,16 @@ def shared_sections_before_checklist() -> str:
     return shared_sections_before_golden_methodology(architecture="case_wide")
 
 
-def shared_sections_after_checklist(*, architecture: str = "case_wide") -> str:
+def shared_sections_after_checklist(
+    *,
+    architecture: str = "case_wide",
+    parallel_prompt_variant: str | None = None,
+) -> str:
     completeness = SECTION_10_COMPLETENESS.strip()
     if architecture == "case_wide":
         completeness = f"{completeness}\n\n{SECTION_10_CASE_WIDE_SUPPLEMENT.strip()}"
+    elif architecture == "parallel_document" and parallel_prompt_variant == "p6":
+        completeness = f"{completeness}\n\n{SECTION_10_PARALLEL_P6_SUPPLEMENT.strip()}"
     return "\n\n".join(
         [
             SECTION_7_ATOMIC.strip(),

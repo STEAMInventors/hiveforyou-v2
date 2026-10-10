@@ -3,7 +3,7 @@ from __future__ import annotations
 from hive_agents.pack_loader import AgentPack
 from hive_agents.reader import build_reader_stable_system
 from hive_agents.reader_prompt.assemble import AssembledReaderExperimentPrompt, assemble_reader_architecture_prompt
-from hive_agents.reader_prompt.constants import READER_ARCHITECTURE_VARIANTS
+from hive_agents.reader_prompt.constants import READER_ARCHITECTURE_VARIANTS, resolve_parallel_prompt_variant
 from hive_agents.reader_prompt.trusted_manifest import TrustedDocumentMeta
 from hive_agents.settings import Settings, get_settings
 
@@ -48,6 +48,11 @@ def resolve_reader_architecture(settings: Settings | None = None) -> str | None:
     return raw
 
 
+def resolve_reader_parallel_prompt_variant(settings: Settings | None = None) -> str | None:
+    resolved = settings or get_settings()
+    return resolve_parallel_prompt_variant(resolved.reader_parallel_prompt_variant)
+
+
 def resolve_reader_stable_system_for_request(
     pack: AgentPack,
     *,
@@ -65,10 +70,12 @@ def resolve_reader_stable_system_for_request(
         return build_reader_stable_system(pack), None
     from hive_agents.reader_prompt.trusted_manifest import format_engine1_context_block
 
+    parallel_variant = resolve_reader_parallel_prompt_variant(resolved)
     assembled: AssembledReaderExperimentPrompt = assemble_reader_architecture_prompt(
         architecture,
         pack=pack,
         trusted_documents=trusted_documents,
         engine1_context_block=format_engine1_context_block(engine1_context_json or ""),
+        parallel_prompt_variant=parallel_variant,
     )
     return assembled.stable_system_prefix, assembled.trusted_manifest_block

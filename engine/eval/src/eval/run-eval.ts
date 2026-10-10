@@ -20,9 +20,17 @@ import { validateGoldenCase } from "../golden/validate.js";
 import type { GoldenCase } from "../golden/types.js";
 import type { ReaderTraceEventRow } from "../reader-experiment/fact-match.js";
 import {
+  buildReaderGoldenComparisonReport,
+  buildReaderGoldenMismatchAuditReport,
+  collectReaderGoldenMatchDiagnostics,
+  type ReaderGoldenMismatchAuditReport,
+} from "../reader-experiment/fact-match.js";
+import {
   gradeStudyRunAgainstGolden,
   loadReaderAcceptedFactsForStudyRun,
 } from "../reader-experiment/golden-comparison.js";
+import { enrichL001GradeCorpusWithRegisteredDocuments } from "./load-grade-corpus.js";
+import type { GradeCorpusContext } from "../grade.js";
 
 export type ParsedEvalSource = {
   label: string;
@@ -188,6 +196,25 @@ export async function runEvalCli(input: {
 
 export type ReaderGoldenCompareRunSpec = { label: string; studyRunId: string; factsPath?: string };
 
+export function printReaderGoldenMismatchAuditSummary(audit: ReaderGoldenMismatchAuditReport): void {
+  console.info("[reader-golden-mismatch-audit] classificationCounts", audit.classificationCounts);
+  console.info(
+    "[reader-golden-mismatch-audit] officialComparisonSummary",
+    JSON.stringify({
+      matchedGoldenCount: audit.officialComparisonSummary.matchedGoldenCount,
+      recall: audit.officialComparisonSummary.recall,
+      precision: audit.officialComparisonSummary.precision,
+      documentFilter: audit.documentFilter,
+    }),
+  );
+  for (const row of audit.rows) {
+    const candidateId = row.closestCandidate?.candidateId ?? null;
+    console.info(
+      `[reader-golden-mismatch-audit] ${row.goldenFactId} ${row.classification} candidate=${candidateId ?? "none"}`,
+    );
+  }
+}
+
 function loadDotEnvFile(absPath: string): Record<string, string> {
   if (!existsSync(absPath)) {
     throw new Error(`Env file not found: ${absPath}`);
@@ -213,6 +240,64 @@ function loadDotEnvFile(absPath: string): Record<string, string> {
     out[key] = value;
   }
   return out;
+}
+
+type RegisteredSourceDocumentPin = { id: string; sha256: string };
+
+async function loadRegisteredSourceDocumentsForStudyRun(
+  env: Record<string, string>,
+  studyRunId: string,
+): Promise<RegisteredSourceDocumentPin[]> {
+  const url = env.NEXT_PUBLIC_SUPABASE_URL?.trim();
+  const key = env.SUPABASE_SERVICE_ROLE_KEY?.trim();
+  if (!url || !key) {
+    return [];
+  }
+  const sb = createClient(url, key, { db: { schema: "hive" } });
+  const { data: runRow, error: runError } = await sb
+    .from("study_runs")
+    .select("case_id")
+    .eq("id", studyRunId)
+    .maybeSingle();
+  if (runError) {
+    throw new Error(`Supabase study_runs load failed for ${studyRunId}: ${runError.message}`);
+  }
+  const caseId = runRow?.case_id;
+  if (!caseId || typeof caseId !== "string") {
+    return [];
+  }
+  const { data: docs, error: docsError } = await sb
+    .from("source_documents")
+    .select("id,sha256")
+    .eq("case_id", caseId);
+  if (docsError) {
+    throw new Error(`Supabase source_documents load failed for case ${caseId}: ${docsError.message}`);
+  }
+  const pins: RegisteredSourceDocumentPin[] = [];
+  for (const row of docs ?? []) {
+    const id = row.id;
+    const sha256 = row.sha256;
+    if (typeof id === "string" && typeof sha256 === "string" && /^[a-f0-9]{64}$/i.test(sha256.trim())) {
+      pins.push({ id, sha256: sha256.toLowerCase() });
+    }
+  }
+  return pins;
+}
+
+async function enrichCorpusForReaderGoldenRun(input: {
+  corpus: GradeCorpusContext;
+  goldenCaseId: string;
+  studyRunId: string;
+  env: Record<string, string>;
+}): Promise<GradeCorpusContext> {
+  if (input.goldenCaseId !== "l001") {
+    return input.corpus;
+  }
+  const registered = await loadRegisteredSourceDocumentsForStudyRun(input.env, input.studyRunId);
+  if (registered.length === 0) {
+    return input.corpus;
+  }
+  return enrichL001GradeCorpusWithRegisteredDocuments(input.corpus, registered, input.env);
 }
 
 async function loadReaderTraceEvents(
@@ -326,10 +411,16 @@ export async function runReaderGoldenCompareCli(input: {
       explicitPath: run.factsPath,
       env,
     });
+    const enrichedCorpus = await enrichCorpusForReaderGoldenRun({
+      corpus,
+      goldenCaseId: goldenRaw.caseId,
+      studyRunId: run.studyRunId,
+      env,
+    });
     const traceEvents = await loadReaderTraceEvents(env, run.studyRunId);
     const graded = gradeStudyRunAgainstGolden({
       golden: goldenRaw,
-      corpus,
+      corpus: enrichedCorpus,
       studyRunId: run.studyRunId,
       traceEvents,
       accepted,
@@ -346,6 +437,12 @@ export async function runReaderGoldenCompareCli(input: {
 
     if (graded.comparison) {
       runEntry.comparison = graded.comparison;
+    } else if (accepted.source !== null && accepted.facts.length > 0) {
+      runEntry.matchDiagnostics = collectReaderGoldenMatchDiagnostics({
+        golden: goldenRaw,
+        candidates: accepted.facts,
+        corpus: enrichedCorpus,
+      });
     }
 
     (report.runs as Record<string, unknown>)[run.label] = runEntry;
@@ -354,6 +451,131 @@ export async function runReaderGoldenCompareCli(input: {
   const outAbs = join(input.repoRoot, outPath);
   mkdirSync(dirname(outAbs), { recursive: true });
   writeFileSync(outAbs, `${JSON.stringify(report, null, 2)}\n`, "utf8");
+
+  return { outPath };
+}
+
+export async function runReaderGoldenMismatchAuditCli(input: {
+  repoRoot: string;
+  argv: string[];
+  env?: Record<string, string | undefined>;
+}): Promise<{ outPath: string }> {
+  let goldenPath = "engine/eval/golden/tune/l001.json";
+  let studyRunId: string | null = null;
+  let runLabel = "A2";
+  let documentFilter: string | null = "08_initial_iep.pdf";
+  let factsDir: string | undefined;
+  let explicitFactsPath: string | undefined;
+  let supabaseEnvFile: string | undefined;
+  let outPath = "engine/eval/reports/reader-experiment/local/l001-a2-initial-iep-mismatch-audit.json";
+
+  for (let i = 0; i < input.argv.length; i += 1) {
+    const arg = input.argv[i]!;
+    if (arg === "--golden") {
+      goldenPath = input.argv[++i] ?? goldenPath;
+    } else if (arg === "--run") {
+      const spec = input.argv[++i] ?? "";
+      const colon = spec.indexOf(":");
+      if (colon <= 0) {
+        throw new Error(`Invalid --run ${spec}`);
+      }
+      runLabel = spec.slice(0, colon);
+      studyRunId = spec.slice(colon + 1);
+    } else if (arg === "--study-run-id") {
+      studyRunId = input.argv[++i] ?? null;
+    } else if (arg === "--document") {
+      documentFilter = input.argv[++i] ?? null;
+    } else if (arg === "--all-documents") {
+      documentFilter = null;
+    } else if (arg === "--facts-dir") {
+      factsDir = input.argv[++i];
+    } else if (arg === "--facts") {
+      explicitFactsPath = input.argv[++i];
+    } else if (arg === "--supabase-env") {
+      supabaseEnvFile = input.argv[++i];
+    } else if (arg === "--out") {
+      outPath = input.argv[++i] ?? outPath;
+    }
+  }
+
+  if (!studyRunId) {
+    throw new Error("Required: --run Label:studyRunId or --study-run-id");
+  }
+
+  const goldenParsed = validateGoldenCase(
+    JSON.parse(readFileSync(join(input.repoRoot, goldenPath), "utf8")) as unknown,
+  );
+  if (!goldenParsed.ok) {
+    throw new Error(
+      `Golden validation failed: ${goldenParsed.issues.map((issue) => issue.message).join("; ")}`,
+    );
+  }
+  const goldenRaw = goldenParsed.value;
+  assertCertifiedGolden(goldenRaw);
+
+  const corpus = await loadGradeCorpusForGolden({
+    repoRoot: input.repoRoot,
+    goldenCaseId: goldenRaw.caseId,
+    corpusDirRel: goldenRaw.corpusDir,
+  });
+
+  const env: Record<string, string> = {
+    ...(supabaseEnvFile ? loadDotEnvFile(join(input.repoRoot, supabaseEnvFile)) : {}),
+  };
+  if (input.env) {
+    for (const [key, value] of Object.entries(input.env)) {
+      if (value !== undefined) {
+        env[key] = value;
+      }
+    }
+  }
+
+  const accepted = await loadReaderAcceptedFactsForStudyRun({
+    repoRoot: input.repoRoot,
+    studyRunId,
+    factsDir: factsDir ?? "engine/eval/reports/reader-experiment/local/reader-accepted-facts",
+    explicitPath: explicitFactsPath,
+    env,
+  });
+  if (accepted.facts.length === 0) {
+    throw new Error(`No accepted facts loaded for studyRunId ${studyRunId}`);
+  }
+
+  const enrichedCorpus = await enrichCorpusForReaderGoldenRun({
+    corpus,
+    goldenCaseId: goldenRaw.caseId,
+    studyRunId,
+    env,
+  });
+
+  const comparison = buildReaderGoldenComparisonReport({
+    golden: goldenRaw,
+    candidates: accepted.facts,
+    corpus: enrichedCorpus,
+  });
+
+  const audit = buildReaderGoldenMismatchAuditReport({
+    golden: goldenRaw,
+    comparison,
+    candidates: accepted.facts,
+    corpus: enrichedCorpus,
+    documentFilter,
+    generatedAt: new Date().toISOString(),
+  });
+
+  const report = {
+    runLabel,
+    studyRunId,
+    factsPath: accepted.factsPath,
+    acceptedFactsSource: accepted.source,
+    audit,
+  };
+
+  const outAbs = join(input.repoRoot, outPath);
+  mkdirSync(dirname(outAbs), { recursive: true });
+  writeFileSync(outAbs, `${JSON.stringify(report, null, 2)}\n`, "utf8");
+
+  printReaderGoldenMismatchAuditSummary(audit);
 
   return { outPath };
 }

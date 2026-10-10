@@ -25,5 +25,10 @@ def test_committed_prompt_hashes_match_assembler(iep_pack) -> None:
     assert payload["promptVersion"] == PROMPT_VERSION
     case = assemble_reader_architecture_prompt("case_wide", pack=iep_pack)
     parallel = assemble_reader_architecture_prompt("parallel_document", pack=iep_pack)
+    parallel_p6 = assemble_reader_architecture_prompt(
+        "parallel_document", pack=iep_pack, parallel_prompt_variant="p6"
+    )
     assert case.prompt_sha256 == payload["case_wide_sha256"]
     assert parallel.prompt_sha256 == payload["parallel_document_sha256"]
+    assert parallel_p6.prompt_sha256 == payload["parallel_document_p6_sha256"]
+    assert parallel.prompt_sha256 != parallel_p6.prompt_sha256

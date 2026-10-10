@@ -49,6 +49,8 @@ typecheck.txt
 
 _tmp-*
 
+engine/eval/reports/reader-experiment/local/
+
 after-tests.txt
 after-typecheck.txt
 after-core-test-prompts.txt

@@ -36,6 +36,7 @@ const COMMITTED_READER_EXPERIMENT_PROMPT_HASHES = {
   sharedPromptSha256: "f4f425e1a985c81661ab81a299a5bc0b6b97f679f1cae9ecc7cf4ba046304ca3",
   case_wide_sha256: "81233aa51b6ec10a9c7e44288965f5e2770a4a6c98927b139a9ed2c51bb669ee",
   parallel_document_sha256: "6e97b881c1f310be1c80844813851849199e24827cbe7698542da58ea5033fce",
+  parallel_document_p6_sha256: "3b671c93576d081e0b1033c514d2c2ab356150e72f8c25d24fc8d0f08057e36e",
 } as const;
 
 /** Pre-A2 bug: case_wide qualification keyed off shared prefix only. */
@@ -358,6 +359,28 @@ describe("agentic reader qualification", () => {
     );
     expect(variantA.promptId).toBe("reader-experiment/architecture/case_wide");
     expect(variantA.promptVersion).toBe("hive-reader-prompt/2.0.0+case_wide");
+  });
+
+  it("uses B-P6 prompt metadata when parallel_document and HIVE_READER_PARALLEL_PROMPT_VARIANT=p6", () => {
+    const variantBP6 = loadAgenticReaderQualificationPromptMetadata({
+      env: {
+        HIVE_READER_EXPERIMENT_PROMPT_HASHES_JSON: undefined,
+        HIVE_READER_ARCHITECTURE_VARIANT: "parallel_document",
+        HIVE_READER_PARALLEL_PROMPT_VARIANT: "p6",
+      },
+    });
+    const variantB = loadAgenticReaderQualificationPromptMetadata({
+      env: {
+        HIVE_READER_EXPERIMENT_PROMPT_HASHES_JSON: undefined,
+        HIVE_READER_ARCHITECTURE_VARIANT: "parallel_document",
+      },
+    });
+    expect(variantBP6.promptSha256).toBe(
+      COMMITTED_READER_EXPERIMENT_PROMPT_HASHES.parallel_document_p6_sha256,
+    );
+    expect(variantBP6.promptSha256).not.toBe(variantB.promptSha256);
+    expect(variantBP6.promptId).toBe("reader-experiment/architecture/parallel_document/B-P6");
+    expect(variantBP6.promptVersion).toBe("hive-reader-prompt/2.0.0+parallel_document+p6");
   });
 
   it("derives distinct idempotency keys for legacy Variant A vs A2 case_wide pins", () => {

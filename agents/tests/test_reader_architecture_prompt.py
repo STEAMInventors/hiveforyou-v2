@@ -9,6 +9,7 @@ from hive_agents.pack_loader import AgentPack, ReaderCoverageExport, StudyAgentI
 from hive_agents.reader_prompt.assemble import assemble_reader_architecture_prompt
 from hive_agents.reader_prompt.section6_golden_inspired import (
     build_case_wide_domain_coverage_checklist,
+    build_parallel_document_domain_coverage_checklist,
 )
 from hive_agents.reader_prompt.golden_reference import (
     golden_reference_methodology_for_reader,
@@ -45,14 +46,50 @@ def test_golden_reference_reader_adaptation_strips_proposal_output_contract() ->
 def test_architectures_differ_in_section_five_and_case_wide_section_six(iep_pack) -> None:
     a = assemble_reader_architecture_prompt("case_wide", pack=iep_pack)
     b = assemble_reader_architecture_prompt("parallel_document", pack=iep_pack)
+    b_p6 = assemble_reader_architecture_prompt(
+        "parallel_document", pack=iep_pack, parallel_prompt_variant="p6"
+    )
     assert a.prompt_sha256 != b.prompt_sha256
+    assert b.prompt_sha256 != b_p6.prompt_sha256
     assert "case-wide architecture" in a.stable_system_prefix
     assert "parallel-document architecture" in b.stable_system_prefix
     assert "## 6. DOMAIN-AWARE COVERAGE CHECKLIST" in a.stable_system_prefix
+    assert "(case-wide)" in a.stable_system_prefix
     assert "## 6. DOMAIN-AWARE COVERAGE CHECKLIST" not in b.stable_system_prefix
+    assert "(this document only)" in b_p6.stable_system_prefix
     assert "### 6.7 Final self-check" in a.stable_system_prefix
     assert "§6.7" in a.stable_system_prefix
     assert "§6.7" not in b.stable_system_prefix
+    assert "§6.7" in shared_sections_after_checklist(
+        architecture="parallel_document", parallel_prompt_variant="p6"
+    )
+
+
+def test_a2_case_wide_prompt_sha_immutable(iep_pack) -> None:
+    import json
+    from pathlib import Path
+
+    repo = Path(__file__).resolve().parents[2]
+    hashes_path = repo / "engine" / "eval" / "reports" / "reader-experiment" / "prompt-hashes.json"
+    payload = json.loads(hashes_path.read_text(encoding="utf-8"))
+    a2 = assemble_reader_architecture_prompt("case_wide", pack=iep_pack)
+    assert a2.prompt_sha256 == payload["case_wide_sha256"]
+
+
+def test_parallel_b_p6_document_scoped_coverage_without_cross_document_requirements(iep_pack) -> None:
+    checklist = build_parallel_document_domain_coverage_checklist(iep_pack)
+    assert "this document only" in checklist.lower()
+    assert "Engine 1-assigned" in checklist
+    assert "Do **not** require cross-document" in checklist
+    assert "Do **not** invoke tools" in checklist
+    assert "For **each** logical document in the trusted manifest" not in checklist
+    assert "cross-document hooks" not in checklist.lower()
+
+    assembled = assemble_reader_architecture_prompt(
+        "parallel_document", pack=iep_pack, parallel_prompt_variant="p6"
+    )
+    assert iep_pack.readerCoverage.documentTypes[0] in assembled.stable_system_prefix
+    assert "For **each** logical document again" not in assembled.stable_system_prefix
 
 
 def test_case_wide_checklist_uses_pack_export_not_hardcoded_domain(iep_pack) -> None:

@@ -146,7 +146,10 @@ export type ReaderExperimentPromptHashes = {
   /** Shared stable prefix (through §4 + golden methodology + post-checklist); integrity checks only. */
   sharedPromptSha256: string;
   case_wide_sha256: string;
+  /** Baseline parallel B (no §6). */
   parallel_document_sha256: string;
+  /** B-P6 parallel prompt parity (document-scoped §6). */
+  parallel_document_p6_sha256: string;
 };
 
 const READER_EXPERIMENT_PROMPT_HASH_KEYS = [
@@ -154,7 +157,12 @@ const READER_EXPERIMENT_PROMPT_HASH_KEYS = [
   "sharedPromptSha256",
   "case_wide_sha256",
   "parallel_document_sha256",
+  "parallel_document_p6_sha256",
 ] as const satisfies readonly (keyof ReaderExperimentPromptHashes)[];
+
+export const READER_PARALLEL_PROMPT_VARIANTS = ["p6"] as const;
+
+export type ReaderParallelPromptVariant = (typeof READER_PARALLEL_PROMPT_VARIANTS)[number];
 
 export function readerExperimentPromptHashesPath(
   env: Record<string, string | undefined> = process.env,
@@ -194,12 +202,36 @@ export function loadReaderExperimentPromptHashes(
 }
 
 /** Architecture-specific full stable-prefix SHA256 from committed experiment pins. */
+export function resolveReaderParallelPromptVariant(
+  env: Record<string, string | undefined> = process.env,
+): ReaderParallelPromptVariant | null {
+  const raw = env.HIVE_READER_PARALLEL_PROMPT_VARIANT?.trim();
+  if (!raw) {
+    return null;
+  }
+  const normalized = raw.toLowerCase().replace(/_/g, "-");
+  if (normalized === "baseline" || normalized === "b" || normalized === "default") {
+    return null;
+  }
+  if (normalized === "p6" || normalized === "b-p6" || normalized === "bp6") {
+    return "p6";
+  }
+  if ((READER_PARALLEL_PROMPT_VARIANTS as readonly string[]).includes(normalized)) {
+    return normalized as ReaderParallelPromptVariant;
+  }
+  throw new Error(`READER_PARALLEL_PROMPT_VARIANT_UNSUPPORTED:${raw}`);
+}
+
 export function resolveReaderArchitecturePromptSha256(
   hashes: ReaderExperimentPromptHashes,
   architecture: ReaderArchitectureVariant,
+  parallelPromptVariant?: ReaderParallelPromptVariant | null,
 ): string {
   if (architecture === "case_wide") {
     return hashes.case_wide_sha256.toLowerCase();
+  }
+  if (parallelPromptVariant === "p6") {
+    return hashes.parallel_document_p6_sha256.toLowerCase();
   }
   return hashes.parallel_document_sha256.toLowerCase();
 }
@@ -242,10 +274,26 @@ export function loadAgenticReaderQualificationPromptMetadata(input?: {
     return base;
   }
   const hashes = loadReaderExperimentPromptHashes(env);
+  const parallelVariant =
+    architecture === "parallel_document" ? resolveReaderParallelPromptVariant(env) : null;
+  const promptSha256 = resolveReaderArchitecturePromptSha256(
+    hashes,
+    architecture,
+    parallelVariant,
+  );
+  if (architecture === "parallel_document" && parallelVariant === "p6") {
+    return {
+      promptId: "reader-experiment/architecture/parallel_document/B-P6",
+      promptVersion: `${hashes.promptVersion}+parallel_document+p6`,
+      promptSha256,
+      agentsJsonPath: base.agentsJsonPath,
+      artifact: base.artifact,
+    };
+  }
   return {
     promptId: `reader-experiment/architecture/${architecture}`,
     promptVersion: `${hashes.promptVersion}+${architecture}`,
-    promptSha256: resolveReaderArchitecturePromptSha256(hashes, architecture),
+    promptSha256,
     agentsJsonPath: base.agentsJsonPath,
     artifact: base.artifact,
   };

@@ -63,6 +63,10 @@ class Settings(BaseSettings):
         default=None,
         validation_alias="READER_ARCHITECTURE_VARIANT",
     )
+    reader_parallel_prompt_variant: str | None = Field(
+        default=None,
+        validation_alias="READER_PARALLEL_PROMPT_VARIANT",
+    )
     reader_parallel_concurrency: int = Field(
         default=8,
         validation_alias="READER_PARALLEL_CONCURRENCY",
@@ -99,6 +103,16 @@ class Settings(BaseSettings):
     @field_validator("reader_architecture_variant", mode="before")
     @classmethod
     def _normalize_reader_architecture_variant(cls, value: object) -> object:
+        if value is None:
+            return None
+        if isinstance(value, str):
+            stripped = value.strip()
+            return stripped or None
+        return value
+
+    @field_validator("reader_parallel_prompt_variant", mode="before")
+    @classmethod
+    def _normalize_reader_parallel_prompt_variant(cls, value: object) -> object:
         if value is None:
             return None
         if isinstance(value, str):

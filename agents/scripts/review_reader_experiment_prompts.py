@@ -53,9 +53,16 @@ def main() -> int:
 
     assembled_case = assemble_reader_architecture_prompt("case_wide", pack=pack)
     assembled_parallel = assemble_reader_architecture_prompt("parallel_document", pack=pack)
+    assembled_parallel_p6 = assemble_reader_architecture_prompt(
+        "parallel_document",
+        pack=pack,
+        parallel_prompt_variant="p6",
+    )
 
     if assembled_case.prompt_sha256 == assembled_parallel.prompt_sha256:
         raise SystemExit("case_wide and parallel_document stable prefixes must differ (section 5 only)")
+    if assembled_parallel.prompt_sha256 == assembled_parallel_p6.prompt_sha256:
+        raise SystemExit("baseline parallel_document and B-P6 stable prefixes must differ")
 
     shared_prefix = shared_stable_prefix_without_section_five(pack)
     shared_prompt_sha256 = hashlib.sha256(shared_prefix.encode("utf-8")).hexdigest()
@@ -68,6 +75,7 @@ def main() -> int:
         "sharedPromptSha256": shared_prompt_sha256,
         "case_wide_sha256": assembled_case.prompt_sha256,
         "parallel_document_sha256": assembled_parallel.prompt_sha256,
+        "parallel_document_p6_sha256": assembled_parallel_p6.prompt_sha256,
     }
     hashes_path = out_dir / "prompt-hashes.json"
     hashes_path.write_text(json.dumps(hashes_payload, indent=2) + "\n", encoding="utf-8")
@@ -105,10 +113,11 @@ def main() -> int:
                 f"- Variant A baseline (`case_wide` without §6) stable prefix: **{baseline_chars}** chars (~**{baseline_tokens_est}** tokens)",
                 f"- Variant A2 (`case_wide` with §6) stable prefix: **{a2_chars}** chars (~**{a2_tokens_est}** tokens); Δ **{a2_chars - baseline_chars}** chars",
                 f"- Variant A2 (`case_wide`) SHA-256: `{assembled_case.prompt_sha256}`",
-                f"- Variant B (`parallel_document`) SHA-256: `{assembled_parallel.prompt_sha256}`",
+                f"- Variant B (`parallel_document` baseline) SHA-256: `{assembled_parallel.prompt_sha256}`",
+                f"- Variant B-P6 (`parallel_document` + `HIVE_READER_PARALLEL_PROMPT_VARIANT=p6`) SHA-256: `{assembled_parallel_p6.prompt_sha256}`",
                 "",
-                "Architectures differ in §5 workflow; case_wide adds §6 domain-aware coverage checklist and §10 supplement.",
-                "`parallel_document` stable prefix is unchanged when only §6 (case_wide) edits.",
+                "Architectures differ in §5 workflow; case_wide adds §6 case-wide checklist and §10 supplement.",
+                "Baseline `parallel_document` has no §6; B-P6 adds document-scoped §6 and §10 supplement via env.",
                 "",
                 f"Golden methodology map: `engine/eval/reports/reader-experiment/GOLDEN_REFERENCE_MAP.md`",
                 "",
