@@ -14,7 +14,8 @@ import {
   loadReaderExperimentPromptHashes,
   resolveAgenticReaderModelIdentity,
 } from "@hiveforyou/core/study";
-import { documentPagesStoragePath } from "@hiveforyou/shared/hive-artifact-paths";
+import { documentPagesStoragePath, readerAcceptedFactsStoragePath } from "@hiveforyou/shared/hive-artifact-paths";
+import { READER_ACCEPTED_FACTS_SCHEMA_VERSION } from "@hiveforyou/shared/reader-accepted-facts";
 import { NESTIEP_EXTRACTOR_VERSION } from "@hiveforyou/shared/intake";
 
 import { DOCUMENT_PAGES_PAYLOAD_SCHEMA_VERSION } from "../intake/document-pages-storage.js";
@@ -91,10 +92,16 @@ function createStatefulGateway(seed?: {
   caseUserId?: string;
   sourceDocuments?: HiveRow[];
   objects?: Map<string, Uint8Array>;
-}): { gateway: HiveGateway; studyRuns: HiveRow[]; traceEvents: HiveRow[] } {
+}): {
+  gateway: HiveGateway;
+  studyRuns: HiveRow[];
+  traceEvents: HiveRow[];
+  uploadedObjects: Map<string, Uint8Array>;
+} {
   const studyRuns: HiveRow[] = [];
   const traceEvents: HiveRow[] = [];
   const objects = seed?.objects ?? new Map<string, Uint8Array>();
+  const uploadedObjects = new Map<string, Uint8Array>();
 
   const gateway: HiveGateway = {
     async insert(table, row) {
@@ -153,11 +160,14 @@ function createStatefulGateway(seed?: {
       }
       return bytes;
     },
-    async uploadObject() {},
+    async uploadObject(_bucket, path, bytes) {
+      uploadedObjects.set(path, bytes);
+      objects.set(path, bytes);
+    },
     async removeObject() {},
   };
 
-  return { gateway, studyRuns, traceEvents };
+  return { gateway, studyRuns, traceEvents, uploadedObjects };
 }
 
 function l001SourceDocuments(userId: string): HiveRow[] {
@@ -611,7 +621,7 @@ describe("agentic reader qualification worker flow", () => {
   });
 
   it("run succeeds with persisted audit and correlated trace acceptance", async () => {
-    const { gateway, traceEvents } = createStatefulGateway({
+    const { gateway, traceEvents, uploadedObjects } = createStatefulGateway({
       caseUserId: USER_A,
       sourceDocuments: l001SourceDocuments(USER_A),
       objects: l001CachedObjects(USER_A),
@@ -655,7 +665,31 @@ describe("agentic reader qualification worker flow", () => {
         );
         return {
           schemaVersion: "study-reader/1",
-          candidateFacts: [{ id: "fact-1" }],
+          candidateFacts: [
+            {
+              id: "fact-1",
+              construct: { measure: "reading" },
+              value: { kind: "text", textValue: "Hello" },
+              modality: "observed",
+              evidence: [{ sourceDocumentId: "doc-a", page: 1, quote: "Hello" }],
+            },
+            {
+              id: "fact-rejected",
+              construct: { measure: "other" },
+              value: { kind: "text", textValue: "Rejected" },
+              modality: "observed",
+              evidence: [{ sourceDocumentId: "doc-a", page: 1, quote: "Rejected" }],
+            },
+          ],
+          acceptedCandidateFacts: [
+            {
+              id: "fact-1",
+              construct: { measure: "reading" },
+              value: { kind: "text", textValue: "Hello" },
+              modality: "observed",
+              evidence: [{ sourceDocumentId: "doc-a", page: 1, quote: "Hello" }],
+            },
+          ],
           audit: {
             studyRunId: request.studyRunId,
             attemptId: request.attemptId,
@@ -669,6 +703,118 @@ describe("agentic reader qualification worker flow", () => {
     expect(result.outcome).toBe("succeeded");
     expect(result.run.status).toBe("SUCCEEDED");
     expect(prompt.promptSha256).toMatch(/^[a-f0-9]{64}$/);
+    if (result.outcome !== "succeeded") {
+      throw new Error("expected succeeded outcome");
+    }
+    const artifactPath = readerAcceptedFactsStoragePath(USER_A, result.run.studyRunId);
+    expect(result.acceptedFactsArtifactPath).toBe(artifactPath);
+    const stored = uploadedObjects.get(artifactPath);
+    expect(stored).toBeDefined();
+    const artifact = JSON.parse(new TextDecoder().decode(stored!));
+    expect(artifact.schemaVersion).toBe(READER_ACCEPTED_FACTS_SCHEMA_VERSION);
+    expect(artifact.attemptId).toBe(result.attemptId);
+    expect(artifact.facts).toHaveLength(1);
+    expect(artifact.facts[0].id).toBe("fact-1");
+  });
+
+  it("run ignores failed retry trace when grading attempt counts", async () => {
+    const { gateway, traceEvents, uploadedObjects } = createStatefulGateway({
+      caseUserId: USER_A,
+      sourceDocuments: l001SourceDocuments(USER_A),
+      objects: l001CachedObjects(USER_A),
+    });
+    await ensureAgenticReaderQualificationRun({ gateway, caseId: CASE_A, userId: USER_A, env: READER_QUALIFICATION_MODEL_ENV });
+
+    const failedAttempt = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa";
+    traceEvents.push(
+      {
+        study_run_id: "placeholder",
+        attempt_id: failedAttempt,
+        event_type: "STARTED",
+        case_id: CASE_A,
+        user_id: USER_A,
+        sequence_number: 0,
+      },
+      {
+        study_run_id: "placeholder",
+        attempt_id: failedAttempt,
+        event_type: "EVIDENCE_ACCEPTED",
+        case_id: CASE_A,
+        user_id: USER_A,
+        sequence_number: 1,
+      },
+      {
+        study_run_id: "placeholder",
+        attempt_id: failedAttempt,
+        event_type: "EVIDENCE_ACCEPTED",
+        case_id: CASE_A,
+        user_id: USER_A,
+        sequence_number: 2,
+      },
+    );
+
+    const result = await runAgenticReaderQualification({
+      env: READER_QUALIFICATION_MODEL_ENV,
+      gateway,
+      documentPagesBucket: "document-pages",
+      caseId: CASE_A,
+      userId: USER_A,
+      readerClient: async (request) => {
+        traceEvents.push(
+          {
+            study_run_id: request.studyRunId,
+            attempt_id: request.attemptId,
+            event_type: "STARTED",
+            case_id: CASE_A,
+            user_id: USER_A,
+            sequence_number: 10,
+          },
+          {
+            study_run_id: request.studyRunId,
+            attempt_id: request.attemptId,
+            event_type: "EVIDENCE_ACCEPTED",
+            case_id: CASE_A,
+            user_id: USER_A,
+            sequence_number: 11,
+          },
+          {
+            study_run_id: request.studyRunId,
+            attempt_id: request.attemptId,
+            event_type: "COMPLETED",
+            case_id: CASE_A,
+            user_id: USER_A,
+            sequence_number: 12,
+            event_payload: { acceptedFactCount: 1 },
+          },
+        );
+        return {
+          schemaVersion: "study-reader/1",
+          candidateFacts: [{ id: "fact-1" }],
+          acceptedCandidateFacts: [
+            {
+              id: "fact-1",
+              construct: { measure: "reading" },
+              value: { kind: "text", textValue: "Hello" },
+              modality: "observed",
+              evidence: [{ sourceDocumentId: "doc-a", page: 1, quote: "Hello" }],
+            },
+          ],
+          audit: {
+            studyRunId: request.studyRunId,
+            attemptId: request.attemptId,
+            persisted: true,
+            status: "persisted",
+          },
+        };
+      },
+    });
+
+    expect(result.outcome).toBe("succeeded");
+    if (result.outcome !== "succeeded") {
+      throw new Error("expected succeeded");
+    }
+    expect(result.acceptedEvidenceEvents).toBe(1);
+    expect(uploadedObjects.size).toBeGreaterThan(0);
   });
 
   it("does not silently repeat a succeeded qualification run", async () => {

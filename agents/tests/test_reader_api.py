@@ -188,6 +188,81 @@ def test_study_reader_success(client: TestClient, mock_reader_pipeline: None) ->
     assert fact["proposalStatus"] == "candidate"
     assert fact["verificationStatus"] == "proposed"
     assert fact["evidence"][0]["quote"] == "Reading comprehension"
+    assert len(body["acceptedCandidateFacts"]) == 1
+    accepted = body["acceptedCandidateFacts"][0]
+    assert accepted["evidence"][0]["quote"] == "Reading comprehension"
+
+
+def test_study_reader_accepted_facts_exclude_verifier_rejections(
+    client: TestClient,
+    api_env: None,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Accepted facts must reflect verifier accepted=true only, not all candidates."""
+    payload = _sample_extraction_json()
+    parsed = json.loads(payload)
+    parsed["candidateFacts"].append(
+        {
+            "id": "fact-rejected",
+            "construct": {"measure": "other", "task": "note"},
+            "value": {"kind": "text", "textValue": "Rejected line"},
+            "modality": "observed",
+            "evidence": [
+                {
+                    "sourceDocumentId": "doc-a",
+                    "page": 1,
+                    "quote": "Rejected line",
+                }
+            ],
+        }
+    )
+    payload = json.dumps(parsed)
+
+    def fake_forward(self: HiveReaderModule, untrusted_document_bundle: str) -> dspy.Prediction:
+        return dspy.Prediction(extraction_json=payload)
+
+    monkeypatch.setattr(HiveReaderModule, "forward", fake_forward)
+    monkeypatch.setattr(
+        "hive_agents.app.create_dspy_lm",
+        lambda *args, **kwargs: MagicMock(spec=dspy.LM),
+    )
+
+    class SelectiveVerifier:
+        def verify_fact(self, **kwargs: Any) -> Any:
+            from hive_agents.verifier_client import ReaderVerifierResult
+
+            fact = kwargs["fact"]
+            quote = fact.evidence[0].quote
+            if quote == "Rejected line":
+                return ReaderVerifierResult(accepted=False, reasons=["QUOTE_NO_MATCH"], verified_evidence=[])
+            ev = fact.evidence[0]
+            return ReaderVerifierResult(
+                accepted=True,
+                reasons=[],
+                verified_evidence=[
+                    {
+                        "sourceDocumentId": ev.sourceDocumentId,
+                        "page": ev.page,
+                        "quote": ev.quote,
+                        "spanStart": ev.spanStart,
+                        "spanEnd": ev.spanEnd,
+                    }
+                ],
+            )
+
+    monkeypatch.setattr("hive_agents.app._require_verifier_client", lambda: SelectiveVerifier())
+    monkeypatch.setattr("hive_agents.app.reader_trace_config_from_env", lambda: None)
+
+    response = client.post(
+        "/study/reader",
+        headers=_auth_headers(),
+        json=_sample_request_body(),
+    )
+    assert response.status_code == 200
+    body = response.json()
+    assert len(body["candidateFacts"]) == 2
+    assert len(body["acceptedCandidateFacts"]) == 1
+    assert body["acceptedCandidateFacts"][0]["value"]["textValue"] == "Reading comprehension"
 
 
 def test_study_reader_parallel_document_http_no_event_loop_error(

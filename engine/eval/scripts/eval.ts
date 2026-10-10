@@ -8,7 +8,7 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { assertGoldenSplit, type GoldenSplit } from "../src/golden/validate.js";
-import { runEvalCli } from "../src/eval/run-eval.js";
+import { runEvalCli, runReaderGoldenCompareCli } from "../src/eval/run-eval.js";
 
 const scriptDir = dirname(fileURLToPath(import.meta.url));
 const evalRoot = resolve(scriptDir, "..");
@@ -49,6 +49,17 @@ function parseArgs(argv: string[]): {
 }
 
 async function main(): Promise<void> {
+  if (process.argv.includes("--reader-golden-compare")) {
+    const filtered = process.argv.slice(2).filter((a) => a !== "--reader-golden-compare");
+    const { outPath } = await runReaderGoldenCompareCli({
+      repoRoot,
+      argv: filtered,
+      env: process.env,
+    });
+    console.info("[reader-golden-compare] wrote", outPath);
+    return;
+  }
+
   const args = parseArgs(process.argv.slice(2));
   const generatedIso = new Date().toISOString();
   const reportsDir = join(evalRoot, "reports");

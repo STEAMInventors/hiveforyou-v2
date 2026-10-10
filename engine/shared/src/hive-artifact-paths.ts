@@ -7,3 +7,8 @@ export function documentPagesStoragePath(userId: string, sha256: string): string
 export function shadowWorkStatePath(userId: string, studyRunId: string): string {
   return `${userId}/shadow-work/${studyRunId}/state.json`;
 }
+
+/** Verifier-accepted Reader facts (quotes): `{userId}/reader-accepted-facts/{studyRunId}.json` */
+export function readerAcceptedFactsStoragePath(userId: string, studyRunId: string): string {
+  return `${userId}/reader-accepted-facts/${studyRunId}.json`;
+}

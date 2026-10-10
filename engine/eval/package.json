@@ -13,11 +13,13 @@
     "golden:draft": "pnpm --filter @hiveforyou/core exec tsx ../eval/scripts/draft-golden.ts",
     "eval": "tsx scripts/eval.ts",
     "reader-experiment:dry-run": "tsx scripts/reader-experiment-dry-run.ts",
+    "reader-golden-compare": "tsx scripts/eval.ts --reader-golden-compare",
     "eval:serve": "tsx scripts/serve-grader.ts"
   },
   "dependencies": {
     "@hiveforyou/core": "workspace:*",
-    "@hiveforyou/shared": "workspace:*"
+    "@hiveforyou/shared": "workspace:*",
+    "@supabase/supabase-js": "^2.49.1"
   },
   "devDependencies": {
     "typescript": "^5.7.2",

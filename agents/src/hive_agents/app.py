@@ -392,11 +392,15 @@ def _study_reader_response(
     candidate_facts = [
         fact.model_dump(mode="json", by_alias=False) for fact in result.candidate_facts
     ]
+    accepted_candidate_facts = [
+        fact.model_dump(mode="json", by_alias=False) for fact in result.accepted_candidate_facts
+    ]
     return StudyReaderResponse(
         case_id=request.case_id,
         domain_id=request.domain_id,
         pack_version=pack_version,
         candidate_facts=candidate_facts,
+        accepted_candidate_facts=accepted_candidate_facts,
         reasoning_steps=result.reasoning_steps,
         tool_calls=result.tool_calls,
         audit=audit,

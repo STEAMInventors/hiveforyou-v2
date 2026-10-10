@@ -1,8 +1,8 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
 
 import type { GoldenSplit } from "../golden/types.js";
-import { gradeGoldenProposal } from "../grade.js";
+import { assertCertifiedGolden, gradeGoldenProposal } from "../grade.js";
 import { baselineCaseIdForGolden } from "./baseline-case-id.js";
 import { baselineProposalLimits, proposalFromStudyBaseline } from "./baseline-proposal.js";
 import type { StudyBaseline } from "./baseline-types.js";
@@ -14,6 +14,15 @@ import {
   type EvalRunSummary,
 } from "./report.js";
 import { listGoldensForSplit } from "./select-goldens.js";
+import { createClient } from "@supabase/supabase-js";
+
+import { validateGoldenCase } from "../golden/validate.js";
+import type { GoldenCase } from "../golden/types.js";
+import type { ReaderTraceEventRow } from "../reader-experiment/fact-match.js";
+import {
+  gradeStudyRunAgainstGolden,
+  loadReaderAcceptedFactsForStudyRun,
+} from "../reader-experiment/golden-comparison.js";
 
 export type ParsedEvalSource = {
   label: string;
@@ -175,4 +184,176 @@ export async function runEvalCli(input: {
   }
 
   return { reportPaths };
+}
+
+export type ReaderGoldenCompareRunSpec = { label: string; studyRunId: string; factsPath?: string };
+
+function loadDotEnvFile(absPath: string): Record<string, string> {
+  if (!existsSync(absPath)) {
+    throw new Error(`Env file not found: ${absPath}`);
+  }
+  const out: Record<string, string> = {};
+  for (const line of readFileSync(absPath, "utf8").split(/\r?\n/)) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith("#")) {
+      continue;
+    }
+    const eq = trimmed.indexOf("=");
+    if (eq <= 0) {
+      continue;
+    }
+    const key = trimmed.slice(0, eq).trim();
+    let value = trimmed.slice(eq + 1).trim();
+    if (
+      (value.startsWith('"') && value.endsWith('"')) ||
+      (value.startsWith("'") && value.endsWith("'"))
+    ) {
+      value = value.slice(1, -1);
+    }
+    out[key] = value;
+  }
+  return out;
+}
+
+async function loadReaderTraceEvents(
+  env: Record<string, string>,
+  studyRunId: string,
+): Promise<ReaderTraceEventRow[]> {
+  const url = env.NEXT_PUBLIC_SUPABASE_URL?.trim();
+  const key = env.SUPABASE_SERVICE_ROLE_KEY?.trim();
+  if (!url || !key) {
+    return [];
+  }
+  const sb = createClient(url, key, { db: { schema: "hive" } });
+  const { data, error } = await sb
+    .from("agent_run_trace_events")
+    .select("event_type,event_payload,attempt_id,sequence_number")
+    .eq("study_run_id", studyRunId)
+    .order("sequence_number", { ascending: true });
+  if (error) {
+    throw new Error(`Supabase trace load failed for ${studyRunId}: ${error.message}`);
+  }
+  return (data ?? []) as ReaderTraceEventRow[];
+}
+
+export async function runReaderGoldenCompareCli(input: {
+  repoRoot: string;
+  argv: string[];
+  env?: Record<string, string | undefined>;
+}): Promise<{ outPath: string }> {
+  let goldenPath = "engine/eval/golden/tune/l001.json";
+  const runs: ReaderGoldenCompareRunSpec[] = [];
+  let factsDir: string | undefined;
+  let supabaseEnvFile: string | undefined;
+  let outPath = "engine/eval/reports/reader-experiment/l001-a-a2-b-comparison.json";
+
+  for (let i = 0; i < input.argv.length; i += 1) {
+    const arg = input.argv[i]!;
+    if (arg === "--golden") {
+      goldenPath = input.argv[++i] ?? goldenPath;
+    } else if (arg === "--run") {
+      const spec = input.argv[++i] ?? "";
+      const colon = spec.indexOf(":");
+      if (colon <= 0) {
+        throw new Error(`Invalid --run ${spec}`);
+      }
+      runs.push({ label: spec.slice(0, colon), studyRunId: spec.slice(colon + 1) });
+    } else if (arg === "--facts-dir") {
+      factsDir = input.argv[++i];
+    } else if (arg === "--facts") {
+      const spec = input.argv[++i] ?? "";
+      const colon = spec.indexOf(":");
+      if (colon <= 0) {
+        throw new Error(`Invalid --facts ${spec}`);
+      }
+      const label = spec.slice(0, colon);
+      const path = spec.slice(colon + 1);
+      const existing = runs.find((r) => r.label === label);
+      if (existing) {
+        existing.factsPath = path;
+      }
+    } else if (arg === "--supabase-env") {
+      supabaseEnvFile = input.argv[++i];
+    } else if (arg === "--out") {
+      outPath = input.argv[++i] ?? outPath;
+    }
+  }
+
+  if (runs.length === 0) {
+    throw new Error("At least one --run Label:studyRunId is required");
+  }
+
+  const goldenParsed = validateGoldenCase(
+    JSON.parse(readFileSync(join(input.repoRoot, goldenPath), "utf8")) as unknown,
+  );
+  if (!goldenParsed.ok) {
+    throw new Error(
+      `Golden validation failed: ${goldenParsed.issues.map((issue) => issue.message).join("; ")}`,
+    );
+  }
+  const goldenRaw = goldenParsed.value;
+  assertCertifiedGolden(goldenRaw);
+
+  const corpus = await loadGradeCorpusForGolden({
+    repoRoot: input.repoRoot,
+    goldenCaseId: goldenRaw.caseId,
+    corpusDirRel: goldenRaw.corpusDir,
+  });
+
+  const env: Record<string, string> = {
+    ...(supabaseEnvFile ? loadDotEnvFile(join(input.repoRoot, supabaseEnvFile)) : {}),
+  };
+  if (input.env) {
+    for (const [key, value] of Object.entries(input.env)) {
+      if (value !== undefined) {
+        env[key] = value;
+      }
+    }
+  }
+
+  const report: Record<string, unknown> = {
+    schemaVersion: "reader-golden-comparison/1",
+    generatedAt: new Date().toISOString(),
+    golden: { caseId: goldenRaw.caseId, path: goldenPath, factCount: goldenRaw.facts.length },
+    runs: {} as Record<string, unknown>,
+  };
+
+  for (const run of runs) {
+    const accepted = await loadReaderAcceptedFactsForStudyRun({
+      repoRoot: input.repoRoot,
+      studyRunId: run.studyRunId,
+      factsDir,
+      explicitPath: run.factsPath,
+      env,
+    });
+    const traceEvents = await loadReaderTraceEvents(env, run.studyRunId);
+    const graded = gradeStudyRunAgainstGolden({
+      golden: goldenRaw,
+      corpus,
+      studyRunId: run.studyRunId,
+      traceEvents,
+      accepted,
+    });
+
+    const runEntry: Record<string, unknown> = {
+      label: run.label,
+      studyRunId: run.studyRunId,
+      gradeability: graded.gradeability,
+      factsPath: accepted.factsPath,
+      acceptedFactsSource: accepted.source,
+      attemptId: accepted.artifact?.attemptId ?? graded.gradeability.traceAudit?.attemptId ?? null,
+    };
+
+    if (graded.comparison) {
+      runEntry.comparison = graded.comparison;
+    }
+
+    (report.runs as Record<string, unknown>)[run.label] = runEntry;
+  }
+
+  const outAbs = join(input.repoRoot, outPath);
+  mkdirSync(dirname(outAbs), { recursive: true });
+  writeFileSync(outAbs, `${JSON.stringify(report, null, 2)}\n`, "utf8");
+
+  return { outPath };
 }

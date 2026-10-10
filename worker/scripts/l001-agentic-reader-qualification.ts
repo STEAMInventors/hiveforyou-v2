@@ -169,6 +169,8 @@ async function cmdRun(): Promise<void> {
     attemptId: "attemptId" in outcome ? outcome.attemptId : undefined,
     acceptedEvidenceEvents:
       outcome.outcome === "succeeded" ? outcome.acceptedEvidenceEvents : undefined,
+    acceptedFactsArtifactPath:
+      outcome.outcome === "succeeded" ? outcome.acceptedFactsArtifactPath : undefined,
     errorMessage: outcome.run.errorMessage,
   });
   if (outcome.outcome === "failed") {

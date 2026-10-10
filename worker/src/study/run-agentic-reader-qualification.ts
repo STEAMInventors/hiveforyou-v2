@@ -6,6 +6,7 @@ import {
   buildL001QualificationSourceDocumentIdToFilename,
   resolveReaderArchitectureVariant,
 } from "@hiveforyou/core/study";
+import { buildReaderAcceptedFactsArtifact } from "@hiveforyou/shared/reader-accepted-facts";
 import type { CanonicalStudyRun } from "@hiveforyou/shared/canonical-study";
 
 import type { StudyReaderRequestWire } from "./document-pages-to-reader-request.js";
@@ -30,6 +31,7 @@ import {
   readCompletedDiagnostics,
   resolveReaderQualificationFailureCode,
 } from "./reader-qualification-diagnostics.js";
+import { ReaderAcceptedFactsStorage } from "./reader-accepted-facts-storage.js";
 
 export type StudyReaderAuditWire = {
   studyRunId: string;
@@ -42,6 +44,7 @@ export type StudyReaderAuditWire = {
 export type StudyReaderResponseWire = {
   schemaVersion: "study-reader/1";
   candidateFacts: unknown[];
+  acceptedCandidateFacts?: unknown[];
   audit?: StudyReaderAuditWire | null;
 };
 
@@ -70,6 +73,7 @@ export type RunAgenticReaderQualificationResult =
       run: CanonicalStudyRun;
       attemptId: string;
       acceptedEvidenceEvents: number;
+      acceptedFactsArtifactPath: string;
       ensure: EnsureAgenticReaderQualificationRunResult;
     }
   | {
@@ -298,13 +302,20 @@ export async function runAgenticReaderQualification(
   const diagnostics = readCompletedDiagnostics(traceEvents);
   const acceptedFromPayload = diagnostics?.acceptedFactCount ?? 0;
   const acceptedFacts = Math.max(acceptedFromPayload, acceptedEvidenceEvents);
+  const acceptedCandidateFacts = readerResponse.acceptedCandidateFacts ?? [];
+  const acceptedFromResponse = Array.isArray(acceptedCandidateFacts)
+    ? acceptedCandidateFacts.length
+    : 0;
 
-  if (!correlated || acceptedFacts < 1) {
-    const code = resolveReaderQualificationFailureCode({
+  if (!correlated || acceptedFacts < 1 || acceptedFromResponse < 1) {
+    let code = resolveReaderQualificationFailureCode({
       correlated,
       diagnostics,
       acceptedEvidenceEvents,
     });
+    if (correlated && acceptedFacts >= 1 && acceptedFromResponse < 1) {
+      code = "READER_ACCEPTED_FACTS_MISSING";
+    }
     const failed = await markRunStatus({
       gateway: input.gateway,
       userId,
@@ -315,6 +326,40 @@ export async function runAgenticReaderQualification(
       completedAt: now(),
     });
     return { outcome: "failed", run: failed, attemptId, code, ensure };
+  }
+
+  const acceptedFactsStorage = new ReaderAcceptedFactsStorage(
+    input.gateway,
+    input.documentPagesBucket,
+  );
+  const artifact = buildReaderAcceptedFactsArtifact({
+    studyRunId: running.studyRunId,
+    attemptId,
+    caseId,
+    readerArchitectureVariant: resolveReaderArchitectureVariant(env),
+    promptSha256: ensure.prompt.promptSha256,
+    createdAt: now(),
+    facts: acceptedCandidateFacts,
+  });
+  try {
+    await acceptedFactsStorage.save(userId, artifact);
+  } catch {
+    const failed = await markRunStatus({
+      gateway: input.gateway,
+      userId,
+      run: running,
+      status: "FAILED",
+      errorCode: "STUDY_WORKER_FAILED",
+      errorMessage: "READER_ACCEPTED_FACTS_PERSIST_FAILED",
+      completedAt: now(),
+    });
+    return {
+      outcome: "failed",
+      run: failed,
+      attemptId,
+      code: "READER_ACCEPTED_FACTS_PERSIST_FAILED",
+      ensure,
+    };
   }
 
   const succeeded = await markRunStatus({
@@ -329,6 +374,7 @@ export async function runAgenticReaderQualification(
     run: succeeded,
     attemptId,
     acceptedEvidenceEvents,
+    acceptedFactsArtifactPath: acceptedFactsStorage.pathFor(userId, running.studyRunId),
     ensure,
   };
 }

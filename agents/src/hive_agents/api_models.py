@@ -213,6 +213,10 @@ class StudyReaderResponse(BaseModel):
     domain_id: str = Field(serialization_alias="domainId")
     pack_version: str = Field(serialization_alias="packVersion")
     candidate_facts: list[dict[str, object]] = Field(serialization_alias="candidateFacts")
+    accepted_candidate_facts: list[dict[str, object]] = Field(
+        default_factory=list,
+        serialization_alias="acceptedCandidateFacts",
+    )
     reasoning_steps: int = Field(serialization_alias="reasoningSteps")
     tool_calls: int = Field(serialization_alias="toolCalls")
     audit: StudyReaderAudit | None = None
