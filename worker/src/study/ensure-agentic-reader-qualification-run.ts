@@ -9,6 +9,7 @@ import {
   loadAgenticReaderQualificationPromptMetadata,
   persistStudyRun,
   resolveAgenticReaderModelIdentity,
+  resolveReaderArchitectureVariant,
 } from "@hiveforyou/core/study";
 import type { CanonicalStudyRun } from "@hiveforyou/shared/canonical-study";
 
@@ -110,6 +111,7 @@ export async function ensureAgenticReaderQualificationRun(
   const engine = buildAgenticReaderQualificationEngineFingerprint({
     promptSha256: prompt.promptSha256,
     modelIdentity,
+    readerArchitectureVariant: resolveReaderArchitectureVariant(env),
   });
   const idempotencyKey = computeAgenticReaderQualificationIdempotencyKey({
     caseId,

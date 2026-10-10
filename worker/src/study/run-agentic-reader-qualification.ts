@@ -3,7 +3,8 @@ import { randomUUID } from "node:crypto";
 import {
   READER_EXPERIMENT_L001_MAX_REASONING_STEPS,
   READER_EXPERIMENT_L001_MAX_TOOL_CALLS,
-  resolveReaderExperimentVariant,
+  buildL001QualificationSourceDocumentIdToFilename,
+  resolveReaderArchitectureVariant,
 } from "@hiveforyou/core/study";
 import type { CanonicalStudyRun } from "@hiveforyou/shared/canonical-study";
 
@@ -14,6 +15,10 @@ import {
   type EnsureAgenticReaderQualificationRunResult,
 } from "./ensure-agentic-reader-qualification-run.js";
 import {
+  resolveEngine1ReaderContext,
+  serializeEngine1ReaderContext,
+} from "./engine1-reader-context.js";
+import {
   loadTrustedDocumentPageBundle,
   TrustedDocumentPagesError,
 } from "./load-trusted-document-pages.js";
@@ -22,7 +27,7 @@ import { SupabaseStudyRunRepository } from "../persistence/worker-supabase-repos
 import {
   readCompletedDiagnostics,
   resolveReaderQualificationFailureCode,
-} from './reader-qualification-diagnostics.js';
+} from "./reader-qualification-diagnostics.js";
 
 export type StudyReaderAuditWire = {
   studyRunId: string;
@@ -176,12 +181,32 @@ export async function runAgenticReaderQualification(
   const userId = input.userId;
 
   let readerResponse: StudyReaderResponseWire;
+  const processingStarted = performance.now();
   try {
     const bundles = await loadTrustedDocumentPageBundle({
       gateway: input.gateway,
       bucket: input.documentPagesBucket,
       userId,
       documents: ensure.registeredDocuments,
+    });
+    const documentLoadMs = Math.round(performance.now() - processingStarted);
+    const filenameMap = buildL001QualificationSourceDocumentIdToFilename(ensure.registeredDocuments);
+    const pageCountBySource = new Map(
+      bundles.map((bundle) => [
+        bundle.sourceDocumentId,
+        bundle.documentPages.pages.length,
+      ]),
+    );
+    const engine1Context = await resolveEngine1ReaderContext({
+      gateway: input.gateway,
+      userId,
+      caseId,
+      domainId: ensure.prompt.artifact.domainId,
+      domainPackId: ensure.prompt.artifact.domainPackId,
+      domainPackVersion: ensure.prompt.artifact.domainPackVersion,
+      registeredDocuments: ensure.registeredDocuments,
+      filenameBySourceDocumentId: filenameMap,
+      pageCountBySourceDocumentId: pageCountBySource,
     });
     const request = buildStudyReaderRequestFromTrustedPages({
       caseId,
@@ -190,13 +215,15 @@ export async function runAgenticReaderQualification(
       studyRunId: running.studyRunId,
       attemptId,
       bundles,
-      limits: resolveReaderExperimentVariant(env)
+      engine1ReaderContextJson: serializeEngine1ReaderContext(engine1Context),
+      limits: resolveReaderArchitectureVariant(env)
         ? {
             maxToolCalls: READER_EXPERIMENT_L001_MAX_TOOL_CALLS,
             maxReasoningSteps: READER_EXPERIMENT_L001_MAX_REASONING_STEPS,
           }
         : undefined,
     });
+    void documentLoadMs;
     readerResponse = await input.readerClient(request);
   } catch (error) {
     const code =

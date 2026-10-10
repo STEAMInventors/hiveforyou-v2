@@ -2,7 +2,7 @@
 
 Branch: **refactor/engine-boundary**. Legacy slice scope: [NEXT-v2-slices.md](NEXT-v2-slices.md).
 
-**Current ticket:** **T3.9** Reader A/B experiment (Stages 1–2 committed; Stage 3 live **awaiting explicit approval**). T1.5 paused — do not extend without new authorization.
+**Current ticket:** **T3.9** Reader architecture experiment (case_wide vs parallel_document) — P1–P6 implemented in repo; **STOP** before Oracle deploy or live Anthropic. T1.5 paused — do not extend without new authorization.
 
 **Phase 0:** implementation and live verification complete.
 
@@ -32,7 +32,7 @@ Amendments (Aryya-authorized):
 | T1.3 | Grader logic | Done |
 | T1.4 | Eval CLI / local grader endpoint | Done |
 | T1.5 | Local grader HTTP endpoint (`serve-grader.ts`); Bearer token; POST `/eval/grade` | Done (paused — do not extend) |
-| T3.9 | L001 Reader prompt A/B (golden-inspired vs structured existing); reuse `/study/reader` + qualification harness; fact-level golden metrics; dry-run + cost estimate | **Done** (repo); live Anthropic **blocked until approval** |
+| T3.9 | L001 Reader architecture A/B (case_wide vs parallel_document); full golden v4.1 prompt; Engine 1 context; dedup + timing; golden 117-fact grade; dry-run + cost estimate | **Done** (repo P1-P6); deploy/live Anthropic **STOP until approval** |
 
 ### T1.2 closure rule (amended)
 

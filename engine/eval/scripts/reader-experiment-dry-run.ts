@@ -9,14 +9,17 @@ import { fileURLToPath } from "node:url";
 
 import {
   loadReaderExperimentPromptHashes,
+  READER_ARCHITECTURE_VARIANTS,
   READER_EXPERIMENT_L001_MAX_TOOL_CALLS,
-  READER_EXPERIMENT_VARIANTS,
 } from "@hiveforyou/core/study";
 
 import { estimateReaderExperimentDryRun } from "../src/reader-experiment/dry-run-estimate.js";
 
 const scriptDir = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(scriptDir, "../../..");
+
+const L001_LOGICAL_DOCUMENT_COUNT = 8;
+const PARALLEL_CONCURRENCY = 8;
 
 function main(): void {
   const goldenPath = join(repoRoot, "engine/eval/golden/tune/l001.json");
@@ -44,23 +47,39 @@ function main(): void {
   }
 
   const configuredMaxOutputTokens = Number(process.env.MODEL_MAX_OUTPUT_TOKENS ?? 16_000);
-  const stablePrefixCharCount = 12_000;
-  const estimate = estimateReaderExperimentDryRun({
+  const stablePrefixCharCount = 28_000;
+
+  const caseWide = estimateReaderExperimentDryRun({
     configuredMaxOutputTokens,
     goldenFactCount: golden.facts.length,
     stablePrefixCharCount,
     documentBundleCharCount: documentChars,
     maxToolCalls: READER_EXPERIMENT_L001_MAX_TOOL_CALLS,
+    label: "case_wide",
+    modelExtractionCalls: 1,
+  });
+
+  const perDocChars = Math.ceil(documentChars / L001_LOGICAL_DOCUMENT_COUNT);
+  const parallel = estimateReaderExperimentDryRun({
+    configuredMaxOutputTokens,
+    goldenFactCount: golden.facts.length,
+    stablePrefixCharCount,
+    documentBundleCharCount: perDocChars,
+    maxToolCalls: 4,
+    label: "parallel_document",
+    modelExtractionCalls: L001_LOGICAL_DOCUMENT_COUNT,
+    parallelConcurrency: PARALLEL_CONCURRENCY,
   });
 
   console.info(
     JSON.stringify(
       {
         stage: "dry-run",
-        variants: READER_EXPERIMENT_VARIANTS,
+        architectures: READER_ARCHITECTURE_VARIANTS,
         promptHashes: hashes,
-        estimate,
-        liveRequires: "HIVE_READER_EXPERIMENT_ALLOW_LIVE=1 and explicit --live on qualification CLI",
+        estimates: { case_wide: caseWide, parallel_document: parallel },
+        liveRequires:
+          "HIVE_READER_EXPERIMENT_ALLOW_LIVE=1, HIVE_READER_ARCHITECTURE_VARIANT, and explicit --live on qualification CLI",
       },
       null,
       2,

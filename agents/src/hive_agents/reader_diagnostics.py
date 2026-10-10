@@ -118,6 +118,7 @@ def completed_audit_payload(
     output_tokens: int | None,
     cache_read_input_tokens: int | None,
     cache_write_input_tokens: int | None,
+    experiment: dict[str, int | str | None] | None = None,
 ) -> dict[str, int | str | None]:
     outcome = classify_reader_diagnostic_outcome(counts)
     payload: dict[str, int | str | None] = {
@@ -132,6 +133,10 @@ def completed_audit_payload(
     }
     if outcome is not None:
         payload["readerDiagnosticOutcome"] = outcome
+    if experiment:
+        for key, value in experiment.items():
+            if value is not None:
+                payload[key] = value
     return payload
 
 

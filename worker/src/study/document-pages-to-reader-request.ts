@@ -30,6 +30,7 @@ export type StudyReaderRequestWire = {
   attemptId: string;
   documents: StudyReaderDocumentWire[];
   limits?: StudyReaderLimitsWire;
+  engine1ReaderContextJson?: string;
 };
 
 function pageToWire(page: PageModel, sourceDocumentId: string): StudyReaderPageWire {
@@ -60,6 +61,7 @@ export function buildStudyReaderRequestFromTrustedPages(input: {
   attemptId: string;
   bundles: TrustedDocumentPageBundle[];
   limits?: StudyReaderLimitsWire;
+  engine1ReaderContextJson?: string;
 }): StudyReaderRequestWire {
   const documents = input.bundles.map((bundle) =>
     documentPagesToReaderDocument(bundle.sourceDocumentId, bundle.documentPages),
@@ -72,5 +74,6 @@ export function buildStudyReaderRequestFromTrustedPages(input: {
     attemptId: input.attemptId,
     documents,
     limits: input.limits,
+    engine1ReaderContextJson: input.engine1ReaderContextJson,
   };
 }

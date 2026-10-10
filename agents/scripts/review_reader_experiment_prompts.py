@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-"""Stage 1: assemble A/B prompts, verify shared sections, write prompt-hashes.json (no model calls)."""
+"""Assemble architecture prompts, verify §5-only diff, write prompt-hashes.json (no model calls)."""
 
 from __future__ import annotations
 
+import hashlib
 import json
 import sys
 from pathlib import Path
@@ -12,83 +13,88 @@ if str(_REPO_ROOT / "agents" / "src") not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT / "agents" / "src"))
 
 from hive_agents.pack_loader import load_agent_pack
-from hive_agents.reader_prompt.assemble import assemble_reader_experiment_prompt
-from hive_agents.reader_prompt.constants import PROMPT_VERSION
-from hive_agents.reader_prompt.section6_existing_reader import SECTION_6_EXISTING_READER
-from hive_agents.reader_prompt.section6_golden_inspired import SECTION_6_GOLDEN_INSPIRED
+from hive_agents.reader import reader_instructions_from_pack
+from hive_agents.reader_prompt.assemble import assemble_reader_architecture_prompt
+from hive_agents.reader_prompt.constants import PROMPT_VERSION, READER_ARCHITECTURE_VARIANTS
+from hive_agents.reader_prompt.golden_reference import golden_reference_methodology_for_reader
 from hive_agents.reader_prompt.sections_shared import (
+    SECTION_1_ROLE,
+    SECTION_2_OBJECTIVE,
+    SECTION_3_TRUSTED_CONTEXT,
+    SECTION_4_BOUNDARIES,
     shared_sections_after_checklist,
-    shared_sections_before_checklist,
 )
+
+
+def shared_stable_prefix_without_section_five(pack) -> str:
+    pack_reader = reader_instructions_from_pack(pack)
+    pack_header = (
+        f"Domain pack: domainId={pack.domainId} "
+        f"domainPackId={pack.domainPackId} domainPackVersion={pack.domainPackVersion}\n\n"
+        f"## Domain pack reader instructions\n\n{pack_reader.strip()}"
+    )
+    return "\n\n".join(
+        [
+            pack_header,
+            SECTION_1_ROLE.strip(),
+            SECTION_2_OBJECTIVE.strip(),
+            SECTION_3_TRUSTED_CONTEXT.strip(),
+            SECTION_4_BOUNDARIES.strip(),
+            golden_reference_methodology_for_reader(),
+            shared_sections_after_checklist(),
+        ]
+    )
 
 
 def main() -> int:
     pack_path = _REPO_ROOT / "engine" / "domain-packs" / "iep" / "study" / "agents.json"
     pack = load_agent_pack(pack_path)
 
-    assembled_a = assemble_reader_experiment_prompt("golden_inspired", pack=pack)
-    assembled_b = assemble_reader_experiment_prompt("existing_reader_structured", pack=pack)
+    assembled_case = assemble_reader_architecture_prompt("case_wide", pack=pack)
+    assembled_parallel = assemble_reader_architecture_prompt("parallel_document", pack=pack)
 
-    shared_before = shared_sections_before_checklist()
-    shared_after = shared_sections_after_checklist()
-    for label, assembled, section_6 in (
-        ("A", assembled_a, SECTION_6_GOLDEN_INSPIRED.strip()),
-        ("B", assembled_b, SECTION_6_EXISTING_READER.strip()),
-    ):
-        body = assembled.stable_system_prefix
-        if shared_before not in body or shared_after not in body:
-            raise SystemExit(f"{label}: missing shared sections in stable prefix")
-        if section_6 not in body:
-            raise SystemExit(f"{label}: missing section 6 in stable prefix")
+    if assembled_case.prompt_sha256 == assembled_parallel.prompt_sha256:
+        raise SystemExit("case_wide and parallel_document stable prefixes must differ (section 5 only)")
 
-    if assembled_a.stable_system_prefix == assembled_b.stable_system_prefix:
-        raise SystemExit("A and B stable prefixes must differ (section 6 only)")
+    shared_prefix = shared_stable_prefix_without_section_five(pack)
+    shared_prompt_sha256 = hashlib.sha256(shared_prefix.encode("utf-8")).hexdigest()
 
     out_dir = _REPO_ROOT / "engine" / "eval" / "reports" / "reader-experiment"
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    hashes_path = out_dir / "prompt-hashes.json"
     hashes_payload = {
         "promptVersion": PROMPT_VERSION,
-        "golden_inspired": assembled_a.prompt_sha256,
-        "existing_reader_structured": assembled_b.prompt_sha256,
+        "sharedPromptSha256": shared_prompt_sha256,
+        "case_wide_sha256": assembled_case.prompt_sha256,
+        "parallel_document_sha256": assembled_parallel.prompt_sha256,
     }
+    hashes_path = out_dir / "prompt-hashes.json"
     hashes_path.write_text(json.dumps(hashes_payload, indent=2) + "\n", encoding="utf-8")
 
     review_path = out_dir / "PROMPT_REVIEW.md"
     review_path.write_text(
         "\n".join(
             [
-                "# T3.9 Reader experiment — prompt review",
+                "# T3.9 Reader architecture experiment — prompt review",
                 "",
                 "No document text or student information in this file.",
                 "",
                 f"- Prompt version: `{PROMPT_VERSION}`",
-                f"- Variant A hash: `{assembled_a.prompt_sha256}`",
-                f"- Variant B hash: `{assembled_b.prompt_sha256}`",
+                f"- Shared prefix (§1–4 + full golden v4.1 + §7–11) SHA-256: `{shared_prompt_sha256}`",
+                f"- Variant A (`case_wide`) SHA-256: `{assembled_case.prompt_sha256}`",
+                f"- Variant B (`parallel_document`) SHA-256: `{assembled_parallel.prompt_sha256}`",
                 "",
-                "## Shared sections (1–5, 7–11)",
+                "Architectures differ only in Hive Prompt Standard §5 workflow text.",
                 "",
-                "Byte-identical across A and B (verified by review script).",
-                "",
-                "## Section 6 — A (golden_inspired)",
-                "",
-                "```text",
-                SECTION_6_GOLDEN_INSPIRED.strip(),
-                "```",
-                "",
-                "## Section 6 — B (existing_reader_structured)",
-                "",
-                "```text",
-                SECTION_6_EXISTING_READER.strip(),
-                "```",
+                f"Golden methodology map: `engine/eval/reports/reader-experiment/GOLDEN_REFERENCE_MAP.md`",
                 "",
             ]
         ),
         encoding="utf-8",
     )
 
-    print(json.dumps({"hashesPath": str(hashes_path), "reviewPath": str(review_path)}, indent=2))
+    per_arch = {v: assemble_reader_architecture_prompt(v, pack=pack).prompt_sha256 for v in sorted(READER_ARCHITECTURE_VARIANTS)}
+    print(json.dumps({"hashesPath": str(hashes_path), "reviewPath": str(review_path), **hashes_payload, "verified": per_arch}, indent=2))
     return 0
 
 

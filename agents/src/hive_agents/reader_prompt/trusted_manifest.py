@@ -11,6 +11,18 @@ class TrustedDocumentMeta:
     page_count: int | None = None
 
 
+def format_engine1_context_block(context_json: str) -> str:
+    """Trusted Engine 1 inventory JSON from worker (persisted discover or TEST_ONLY minimal)."""
+    stripped = context_json.strip()
+    if not stripped:
+        return ""
+    return (
+        "--- TRUSTED_ENGINE1_READER_CONTEXT (metadata only; not evidence) ---\n"
+        f"{stripped}\n"
+        "--- END TRUSTED_ENGINE1_READER_CONTEXT ---"
+    )
+
+
 def format_trusted_manifest_block(documents: list[TrustedDocumentMeta]) -> str:
     """Trusted metadata for §3 case user delimiters (no page text)."""
     lines = ["--- TRUSTED_LOGICAL_DOCUMENT_MANIFEST (metadata only) ---"]

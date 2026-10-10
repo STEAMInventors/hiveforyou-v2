@@ -26,8 +26,14 @@ from hive_agents.reader import (
     run_reader,
 )
 from hive_agents.reader_experiment_runtime import (
+    resolve_reader_architecture,
     resolve_reader_stable_system_for_request,
     trusted_documents_from_reader_request_documents,
+)
+from hive_agents.reader_parallel import run_reader_parallel_document
+from hive_agents.reader_prompt.constants import (
+    READER_EXPERIMENT_L001_LIMITS,
+    READER_EXPERIMENT_PARALLEL_PER_DOC_LIMITS,
 )
 from hive_agents.settings import get_settings
 from hive_agents.trace_client import (
@@ -147,6 +153,115 @@ def _audit_for_request(
     )
 
 
+def _document_order_for_parallel(
+    engine1_reader_context_json: str | None,
+    *,
+    fallback_source_document_ids: list[str],
+) -> list[str]:
+    if not engine1_reader_context_json:
+        return list(fallback_source_document_ids)
+    import json
+
+    try:
+        parsed = json.loads(engine1_reader_context_json)
+    except json.JSONDecodeError:
+        return list(fallback_source_document_ids)
+    logical = parsed.get("logicalDocuments")
+    if not isinstance(logical, list):
+        return list(fallback_source_document_ids)
+    ordered: list[str] = []
+    for item in logical:
+        if not isinstance(item, dict):
+            continue
+        source_id = item.get("sourceDocumentId")
+        if isinstance(source_id, str) and source_id.strip():
+            ordered.append(source_id.strip())
+    if not ordered:
+        return list(fallback_source_document_ids)
+    return ordered
+
+
+def _execute_reader_variant(
+    *,
+    architecture: str | None,
+    pack,
+    pages,
+    lm,
+    client,
+    verify_context,
+    limits,
+    request: StudyReaderRequest,
+    settings,
+    stable_system: str,
+    manifest_block: str | None,
+    truncate_verification: bool,
+    trace_session,
+) -> tuple[ReaderRunResult, dict[str, int | str | None] | None]:
+    import json
+
+    experiment_audit: dict[str, int | str | None] | None = None
+    if architecture == "parallel_document":
+        fallback_ids = [doc.source_document_id for doc in request.documents]
+        document_order = _document_order_for_parallel(
+            request.engine1_reader_context_json,
+            fallback_source_document_ids=fallback_ids,
+        )
+        merge_limits = limits.to_execution_limits() if limits else READER_EXPERIMENT_L001_LIMITS
+        result, timing, dedup_stats, task_results = run_reader_parallel_document(
+            pack=pack,
+            pages=pages,
+            lm=lm,
+            verifier_client=client,
+            verify_context=verify_context,
+            stable_system=stable_system,
+            untrusted_manifest_prefix=manifest_block,
+            document_order=document_order,
+            limits_per_document=READER_EXPERIMENT_PARALLEL_PER_DOC_LIMITS,
+            merge_limits=merge_limits,
+            concurrency=settings.reader_parallel_concurrency,
+            truncate_verification_on_budget=truncate_verification,
+            trace_session=trace_session,
+        )
+        partial_failures = sum(1 for task in task_results if task.error_code)
+        experiment_audit = {
+            "readerArchitectureVariant": "parallel_document",
+            "wallClockMs": timing.wall_clock_ms,
+            "extractionPhaseMs": timing.extraction_phase_ms,
+            "mergeDedupMs": timing.merge_dedup_ms,
+            "verificationMs": timing.verification_ms,
+            "peakConcurrentModelCalls": timing.peak_concurrent_model_calls,
+            "modelCallCount": timing.model_call_count,
+            "preMergeCandidateCount": dedup_stats.pre_merge_count,
+            "postMergeCandidateCount": dedup_stats.post_merge_count,
+            "dedupRemovedCount": dedup_stats.removed_count,
+            "partialDocumentFailures": partial_failures,
+        }
+        return result, experiment_audit
+
+    resolved_limits = limits.to_execution_limits() if limits else None
+    result = run_reader(
+        pack=pack,
+        pages=pages,
+        lm=lm,
+        verifier_client=client,
+        verify_context=verify_context,
+        limits=resolved_limits,
+        document_ids=request.document_ids,
+        page_numbers_by_document=request.page_numbers_by_document,
+        search_queries=request.search_queries,
+        trace_session=trace_session,
+        stable_system=stable_system,
+        untrusted_manifest_prefix=manifest_block,
+        truncate_verification_on_budget=truncate_verification,
+    )
+    if architecture == "case_wide":
+        experiment_audit = {
+            "readerArchitectureVariant": "case_wide",
+            "modelCallCount": 1,
+        }
+    return result, experiment_audit
+
+
 def execute_study_reader(
     request: StudyReaderRequest,
     *,
@@ -171,8 +286,10 @@ def execute_study_reader(
         pack,
         settings=settings,
         trusted_documents=trusted_documents,
+        engine1_context_json=request.engine1_reader_context_json,
     )
     truncate_verification = settings.reader_experiment_truncate_verification
+    architecture = resolve_reader_architecture(settings)
 
     lm = lm_factory()
     trace_session = _build_trace_session(request, pack=pack, trace_client=trace_client)
@@ -190,19 +307,20 @@ def execute_study_reader(
                     "Reader audit trail is required (set HIVE_AGENT_TRACE_TOKEN or HIVE_VERIFIER_TOKEN).",
                 ),
             )
-        result = run_reader(
+        result, _experiment = _execute_reader_variant(
+            architecture=architecture,
             pack=pack,
             pages=pages,
             lm=lm,
-            verifier_client=client,
+            client=client,
             verify_context=verify_context,
             limits=limits,
-            document_ids=request.document_ids,
-            page_numbers_by_document=request.page_numbers_by_document,
-            search_queries=request.search_queries,
+            request=request,
+            settings=settings,
             stable_system=stable_system,
-            untrusted_manifest_prefix=manifest_block,
-            truncate_verification_on_budget=truncate_verification,
+            manifest_block=manifest_block,
+            truncate_verification=truncate_verification,
+            trace_session=None,
         )
         return result, audit_not_configured
 
@@ -211,20 +329,20 @@ def execute_study_reader(
     started = time.perf_counter()
     trace_session.emit("STARTED", {"modelId": trace_session.context.model_id})
     try:
-        result = run_reader(
+        result, experiment_audit = _execute_reader_variant(
+            architecture=architecture,
             pack=pack,
             pages=pages,
             lm=lm,
-            verifier_client=client,
+            client=client,
             verify_context=verify_context,
             limits=limits,
-            document_ids=request.document_ids,
-            page_numbers_by_document=request.page_numbers_by_document,
-            search_queries=request.search_queries,
-            trace_session=trace_session,
+            request=request,
+            settings=settings,
             stable_system=stable_system,
-            untrusted_manifest_prefix=manifest_block,
-            truncate_verification_on_budget=truncate_verification,
+            manifest_block=manifest_block,
+            truncate_verification=truncate_verification,
+            trace_session=trace_session,
         )
         duration_ms = int((time.perf_counter() - started) * 1000)
         counts = result.execution_counts or ReaderExecutionCounts()
@@ -239,6 +357,7 @@ def execute_study_reader(
                 output_tokens=result.model_usage_output_tokens,
                 cache_read_input_tokens=result.model_usage_cache_read_input_tokens,
                 cache_write_input_tokens=result.model_usage_cache_write_input_tokens,
+                experiment=experiment_audit,
             ),
         )
         trace_session.flush()

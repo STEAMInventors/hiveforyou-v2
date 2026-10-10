@@ -60,7 +60,7 @@ import { readFileSync } from 'node:fs';\
 const path = process.env.HIVE_READER_EXPERIMENT_PROMPT_HASHES_JSON;\
 if (!path) throw new Error('HIVE_READER_EXPERIMENT_PROMPT_HASHES_JSON missing');\
 const parsed = JSON.parse(readFileSync(path, 'utf8'));\
-for (const key of ['promptVersion', 'golden_inspired', 'existing_reader_structured']) {\
+for (const key of ['promptVersion', 'sharedPromptSha256']) {\
   if (typeof parsed[key] !== 'string' || !parsed[key].trim()) {\
     throw new Error('READER_EXPERIMENT_PROMPT_HASHES_INVALID:' + key);\
   }\

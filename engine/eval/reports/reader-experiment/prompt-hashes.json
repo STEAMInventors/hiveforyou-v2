@@ -1,5 +1,6 @@
 {
-  "promptVersion": "hive-reader-prompt/1.0.0",
-  "golden_inspired": "ae580790f08b2f7836655d1eaab52e795691a4f359e6585e12939385b9e37c1e",
-  "existing_reader_structured": "d0747e97e3c664e1c8e22028036e5f27aca689202a7f72c74ab4a212e267465c"
+  "promptVersion": "hive-reader-prompt/2.0.0",
+  "sharedPromptSha256": "ba7aea2af5ed99a3ccdf4d03581ab77d4631b76536550b31cbb93fca5295512c",
+  "case_wide_sha256": "a81af2b42e8285b158e1557f53ed834b06eab585cec4d8f20a61ea0deaf6f2be",
+  "parallel_document_sha256": "7b13e7d1538872acdd88ae17b00f8cf412f792376f14c04efca5a46f7f438dcb"
 }

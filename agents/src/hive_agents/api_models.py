@@ -152,6 +152,10 @@ class StudyReaderRequest(BaseModel):
         default=None,
         validation_alias=AliasChoices("searchQueries", "search_queries"),
     )
+    engine1_reader_context_json: str | None = Field(
+        default=None,
+        validation_alias=AliasChoices("engine1ReaderContextJson", "engine1_reader_context_json"),
+    )
 
     @field_validator("case_id", "user_id", "domain_id", "study_run_id", "attempt_id")
     @classmethod

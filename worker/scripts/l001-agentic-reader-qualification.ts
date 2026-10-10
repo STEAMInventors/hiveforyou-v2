@@ -99,28 +99,34 @@ async function cmdEnsure(): Promise<void> {
   });
 }
 
-function applyExperimentCliFlags(argv: string[]): { dryRun: boolean; live: boolean; variant: string | null } {
+function applyExperimentCliFlags(argv: string[]): {
+  dryRun: boolean;
+  live: boolean;
+  architecture: string | null;
+} {
   let dryRun = false;
   let live = false;
-  let variant: string | null = null;
+  let architecture: string | null = null;
   for (let i = 3; i < argv.length; i += 1) {
     const arg = argv[i]?.trim();
     if (arg === "--dry-run") {
       dryRun = true;
     } else if (arg === "--live") {
       live = true;
+    } else if (arg === "--architecture") {
+      architecture = argv[++i]?.trim() ?? null;
     } else if (arg === "--variant") {
-      variant = argv[++i]?.trim() ?? null;
+      throw new Error("--variant retired; use --architecture case_wide|parallel_document");
     }
   }
-  if (variant) {
-    process.env.HIVE_READER_EXPERIMENT_VARIANT = variant;
+  if (architecture) {
+    process.env.HIVE_READER_ARCHITECTURE_VARIANT = architecture;
     process.env.HIVE_READER_EXPERIMENT_TRUNCATE_VERIFICATION = "1";
   }
   if (live && process.env.HIVE_READER_EXPERIMENT_ALLOW_LIVE !== "1") {
     throw new Error("Live experiment blocked: set HIVE_READER_EXPERIMENT_ALLOW_LIVE=1 explicitly.");
   }
-  return { dryRun, live, variant };
+  return { dryRun, live, architecture };
 }
 
 async function cmdDryRun(): Promise<void> {
@@ -176,15 +182,19 @@ async function main(): Promise<void> {
     await cmdEnsure();
     return;
   }
+  if (command === "dry-run") {
+    await cmdDryRun();
+    return;
+  }
   if (command === "run") {
-    if (flags.variant && !flags.live) {
+    if (flags.architecture && !flags.live) {
       throw new Error("Experiment run requires --live (Anthropic) with HIVE_READER_EXPERIMENT_ALLOW_LIVE=1.");
     }
     await cmdRun();
     return;
   }
   console.error(
-    "Usage: l001-agentic-reader-qualification <ensure|run> [--variant golden_inspired|existing_reader_structured] [--dry-run] [--live DO NOT RUN without approval]",
+    "Usage: l001-agentic-reader-qualification <ensure|run|dry-run> [--architecture case_wide|parallel_document] [--dry-run] [--live DO NOT RUN without approval]",
   );
   process.exitCode = 1;
 }

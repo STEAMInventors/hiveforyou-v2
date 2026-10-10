@@ -59,6 +59,14 @@ class Settings(BaseSettings):
         default=None,
         validation_alias="READER_EXPERIMENT_VARIANT",
     )
+    reader_architecture_variant: str | None = Field(
+        default=None,
+        validation_alias="READER_ARCHITECTURE_VARIANT",
+    )
+    reader_parallel_concurrency: int = Field(
+        default=8,
+        validation_alias="READER_PARALLEL_CONCURRENCY",
+    )
     reader_experiment_truncate_verification: bool = Field(
         default=False,
         validation_alias="READER_EXPERIMENT_TRUNCATE_VERIFICATION",
@@ -87,6 +95,31 @@ class Settings(BaseSettings):
             stripped = value.strip()
             return stripped or None
         return value
+
+    @field_validator("reader_architecture_variant", mode="before")
+    @classmethod
+    def _normalize_reader_architecture_variant(cls, value: object) -> object:
+        if value is None:
+            return None
+        if isinstance(value, str):
+            stripped = value.strip()
+            return stripped or None
+        return value
+
+    @field_validator("reader_parallel_concurrency", mode="before")
+    @classmethod
+    def _parse_reader_parallel_concurrency(cls, value: object) -> object:
+        if value is None or (isinstance(value, str) and not value.strip()):
+            return 8
+        if isinstance(value, str):
+            parsed = int(value.strip(), 10)
+        elif isinstance(value, int):
+            parsed = value
+        else:
+            raise ValueError("READER_PARALLEL_CONCURRENCY must be a positive integer")
+        if parsed <= 0:
+            raise ValueError("READER_PARALLEL_CONCURRENCY must be a positive integer")
+        return parsed
 
     @field_validator("agents_allow_nonpersistent_audit", mode="before")
     @classmethod

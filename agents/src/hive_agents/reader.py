@@ -1060,6 +1060,8 @@ def run_reader(
     stable_system: str | None = None,
     untrusted_manifest_prefix: str | None = None,
     truncate_verification_on_budget: bool = False,
+    preload_via_tools: bool = True,
+    verify_candidates: bool = True,
 ) -> ReaderRunResult:
     """
     Run the DSPy Reader over caller-supplied pages.
@@ -1113,29 +1115,34 @@ def run_reader(
         inner_tools = TracingReaderTools(inner_tools, trace_session)
     bounded_tools = BoundedReaderTools(inner_tools, budget)
 
-    summaries = bounded_tools.list_documents()
-    if document_ids is not None:
-        allowed = set(document_ids)
-        summaries = [s for s in summaries if s.documentId in allowed]
-
     page_index = build_document_page_index(pages)
     loaded_pages: list[DocumentPage] = []
-    for summary in summaries:
-        if page_numbers_by_document and summary.documentId in page_numbers_by_document:
-            page_nums = page_numbers_by_document[summary.documentId]
-        else:
-            page_nums = sorted(
-                p for (doc_id, p) in page_index if doc_id == summary.documentId
+    if preload_via_tools:
+        summaries = bounded_tools.list_documents()
+        if document_ids is not None:
+            allowed = set(document_ids)
+            summaries = [s for s in summaries if s.documentId in allowed]
+        for summary in summaries:
+            if page_numbers_by_document and summary.documentId in page_numbers_by_document:
+                page_nums = page_numbers_by_document[summary.documentId]
+            else:
+                page_nums = sorted(
+                    p for (doc_id, p) in page_index if doc_id == summary.documentId
+                )
+            if not page_nums:
+                continue
+            loaded_pages.extend(
+                bounded_tools.read_pages(summary.documentId, page_nums)
             )
-        if not page_nums:
-            continue
-        loaded_pages.extend(
-            bounded_tools.read_pages(summary.documentId, page_nums)
-        )
-
-    if search_queries:
-        for query in search_queries:
-            bounded_tools.search(query, document_ids=document_ids)
+        if search_queries:
+            for query in search_queries:
+                bounded_tools.search(query, document_ids=document_ids)
+    else:
+        allowed_ids = set(document_ids) if document_ids is not None else None
+        for page in pages:
+            if allowed_ids is not None and page.documentId not in allowed_ids:
+                continue
+            loaded_pages.append(page)
 
     if not loaded_pages:
         if not pages:
@@ -1188,28 +1195,28 @@ def run_reader(
         )
     )
 
-    for fact in candidate_facts:
-        if not fact.evidence:
-            continue
-        try:
-            bounded_tools.propose_fact(
-                CandidateFactDraft(
-                    subjectEntityId=fact.subjectEntityId,
-                    construct=fact.construct,
-                    value=fact.value,
-                    modality=fact.modality,
-                    evidence=fact.evidence,
-                )
-            )
-        except ReaderLimitsExhausted:
-            if truncate_verification_on_budget:
-                verification_incomplete = True
-                break
-            raise
-
     accepted_facts: list[CandidateFact] = []
-    if verifier_backed is not None:
-        accepted_facts = list(verifier_backed.proposed_facts)
+    if verify_candidates:
+        for fact in candidate_facts:
+            if not fact.evidence:
+                continue
+            try:
+                bounded_tools.propose_fact(
+                    CandidateFactDraft(
+                        subjectEntityId=fact.subjectEntityId,
+                        construct=fact.construct,
+                        value=fact.value,
+                        modality=fact.modality,
+                        evidence=fact.evidence,
+                    )
+                )
+            except ReaderLimitsExhausted:
+                if truncate_verification_on_budget:
+                    verification_incomplete = True
+                    break
+                raise
+        if verifier_backed is not None:
+            accepted_facts = list(verifier_backed.proposed_facts)
 
     usage = normalize_model_usage(
         wrapped_lm._inner.history[-1].get("usage") if getattr(wrapped_lm._inner, "history", None) else None

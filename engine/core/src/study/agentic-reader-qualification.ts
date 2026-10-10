@@ -133,12 +133,9 @@ export function loadEffectiveStudyAgentsPromptMetadata(input?: {
   };
 }
 
-export const READER_EXPERIMENT_VARIANTS = [
-  "golden_inspired",
-  "existing_reader_structured",
-] as const;
+export const READER_ARCHITECTURE_VARIANTS = ["case_wide", "parallel_document"] as const;
 
-export type ReaderExperimentVariant = (typeof READER_EXPERIMENT_VARIANTS)[number];
+export type ReaderArchitectureVariant = (typeof READER_ARCHITECTURE_VARIANTS)[number];
 
 /** 1 list + 8 read_pages (L001) + verifier buffer — matches Python READER_EXPERIMENT_L001_LIMITS. */
 export const READER_EXPERIMENT_L001_MAX_TOOL_CALLS = 165;
@@ -146,8 +143,7 @@ export const READER_EXPERIMENT_L001_MAX_REASONING_STEPS = 4;
 
 export type ReaderExperimentPromptHashes = {
   promptVersion: string;
-  golden_inspired: string;
-  existing_reader_structured: string;
+  sharedPromptSha256: string;
 };
 
 export function readerExperimentPromptHashesPath(
@@ -176,7 +172,7 @@ export function loadReaderExperimentPromptHashes(
 ): ReaderExperimentPromptHashes {
   const path = readerExperimentPromptHashesPath(env);
   const parsed = JSON.parse(readFileSync(path, "utf8")) as ReaderExperimentPromptHashes;
-  for (const key of ["promptVersion", "golden_inspired", "existing_reader_structured"] as const) {
+  for (const key of ["promptVersion", "sharedPromptSha256"] as const) {
     if (typeof parsed[key] !== "string" || !parsed[key].trim()) {
       throw new Error(`READER_EXPERIMENT_PROMPT_HASHES_INVALID:${path}:${key}`);
     }
@@ -184,17 +180,30 @@ export function loadReaderExperimentPromptHashes(
   return parsed;
 }
 
-export function resolveReaderExperimentVariant(
+export function resolveReaderArchitectureVariant(
   env: Record<string, string | undefined> = process.env,
-): ReaderExperimentVariant | null {
-  const raw = env.HIVE_READER_EXPERIMENT_VARIANT?.trim();
+): ReaderArchitectureVariant | null {
+  const legacy = env.HIVE_READER_EXPERIMENT_VARIANT?.trim();
+  if (legacy) {
+    throw new Error(
+      "READER_EXPERIMENT_VARIANT_RETIRED: use HIVE_READER_ARCHITECTURE_VARIANT=case_wide|parallel_document",
+    );
+  }
+  const raw = env.HIVE_READER_ARCHITECTURE_VARIANT?.trim();
   if (!raw) {
     return null;
   }
-  if (!(READER_EXPERIMENT_VARIANTS as readonly string[]).includes(raw)) {
-    throw new Error(`READER_EXPERIMENT_VARIANT_UNSUPPORTED:${raw}`);
+  if (!(READER_ARCHITECTURE_VARIANTS as readonly string[]).includes(raw)) {
+    throw new Error(`READER_ARCHITECTURE_VARIANT_UNSUPPORTED:${raw}`);
   }
-  return raw as ReaderExperimentVariant;
+  return raw as ReaderArchitectureVariant;
+}
+
+/** @deprecated Use resolveReaderArchitectureVariant */
+export function resolveReaderExperimentVariant(
+  env: Record<string, string | undefined> = process.env,
+): ReaderArchitectureVariant | null {
+  return resolveReaderArchitectureVariant(env);
 }
 
 /** Qualification prompt metadata — experiment variant overrides pack reader hash when env set. */
@@ -203,16 +212,16 @@ export function loadAgenticReaderQualificationPromptMetadata(input?: {
   env?: Record<string, string | undefined>;
 }): AgenticReaderPromptMetadata {
   const env = input?.env ?? process.env;
-  const variant = resolveReaderExperimentVariant(env);
+  const architecture = resolveReaderArchitectureVariant(env);
   const base = loadEffectiveStudyAgentsPromptMetadata(input);
-  if (!variant) {
+  if (!architecture) {
     return base;
   }
   const hashes = loadReaderExperimentPromptHashes(env);
   return {
-    promptId: `reader-experiment/${variant}`,
-    promptVersion: `${hashes.promptVersion}+${variant}`,
-    promptSha256: hashes[variant],
+    promptId: `reader-experiment/architecture/${architecture}`,
+    promptVersion: `${hashes.promptVersion}+${architecture}`,
+    promptSha256: hashes.sharedPromptSha256,
     agentsJsonPath: base.agentsJsonPath,
     artifact: base.artifact,
   };
@@ -357,12 +366,23 @@ export function computeAgenticReaderQualificationIdempotencyKey(input: {
 export function buildAgenticReaderQualificationEngineFingerprint(input: {
   promptSha256: string;
   modelIdentity: AgenticReaderModelIdentity;
+  readerArchitectureVariant?: ReaderArchitectureVariant | null;
 }): AgenticReaderQualificationEngineFingerprint {
-  return {
+  const base = {
     namespace: AGENTIC_READER_QUALIFICATION_NAMESPACE,
     modelProvider: input.modelIdentity.modelProvider,
     modelName: input.modelIdentity.modelName,
     promptSha256: input.promptSha256,
+  };
+  if (!input.readerArchitectureVariant) {
+    return base;
+  }
+  return {
+    ...base,
+    promptSha256: hashCanonicalJson({
+      promptSha256: input.promptSha256,
+      readerArchitectureVariant: input.readerArchitectureVariant,
+    }),
   };
 }
 

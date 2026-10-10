@@ -2,6 +2,9 @@
 
 export type ReaderExperimentDryRunEstimate = {
   label: "ESTIMATE";
+  architecture?: string;
+  modelExtractionCalls: number;
+  parallelConcurrency?: number;
   configuredMaxOutputTokens: number;
   fixedToolOverhead: number;
   maxToolCalls: number;
@@ -11,6 +14,7 @@ export type ReaderExperimentDryRunEstimate = {
   documentBundleTokensEstimate: number;
   outputTokensAllowance: number;
   outputTruncationRisk: boolean;
+  inputTokensPerExtractionEstimate: number;
   inputTokensTotalEstimate: number;
   costUsdPerVariantEstimate: { low: number; high: number };
 };
@@ -25,23 +29,33 @@ export function estimateReaderExperimentDryRun(input: {
   documentBundleCharCount: number;
   fixedToolOverhead?: number;
   maxToolCalls?: number;
+  label?: string;
+  modelExtractionCalls?: number;
+  parallelConcurrency?: number;
 }): ReaderExperimentDryRunEstimate {
   const fixedToolOverhead = input.fixedToolOverhead ?? 9;
   const maxToolCalls = input.maxToolCalls ?? 165;
+  const modelExtractionCalls = input.modelExtractionCalls ?? 1;
   const stablePrefixTokensEstimate = Math.ceil(input.stablePrefixCharCount / 4);
   const documentBundleTokensEstimate = Math.ceil(input.documentBundleCharCount / 4);
   const outputTokensAllowance = input.configuredMaxOutputTokens;
   const outputTruncationRisk = outputTokensAllowance > 0 && input.goldenFactCount * 120 > outputTokensAllowance * 0.7;
-  const inputTokensTotalEstimate = stablePrefixTokensEstimate + documentBundleTokensEstimate + 512;
+  const inputTokensPerExtractionEstimate =
+    stablePrefixTokensEstimate + documentBundleTokensEstimate + 512;
+  const inputTokensTotalEstimate = inputTokensPerExtractionEstimate * modelExtractionCalls;
+  const outputLowPerCall = 4_000;
   const costLow =
     (inputTokensTotalEstimate / 1_000_000) * OPUS_INPUT_USD_PER_M +
-    (4_000 / 1_000_000) * OPUS_OUTPUT_USD_PER_M;
+    (outputLowPerCall * modelExtractionCalls / 1_000_000) * OPUS_OUTPUT_USD_PER_M;
   const costHigh =
     (inputTokensTotalEstimate / 1_000_000) * OPUS_INPUT_USD_PER_M +
-    (outputTokensAllowance / 1_000_000) * OPUS_OUTPUT_USD_PER_M;
+    (outputTokensAllowance * modelExtractionCalls / 1_000_000) * OPUS_OUTPUT_USD_PER_M;
 
   return {
     label: "ESTIMATE",
+    architecture: input.label,
+    modelExtractionCalls,
+    parallelConcurrency: input.parallelConcurrency,
     configuredMaxOutputTokens: input.configuredMaxOutputTokens,
     fixedToolOverhead,
     maxToolCalls,
@@ -51,6 +65,7 @@ export function estimateReaderExperimentDryRun(input: {
     documentBundleTokensEstimate,
     outputTokensAllowance,
     outputTruncationRisk,
+    inputTokensPerExtractionEstimate,
     inputTokensTotalEstimate,
     costUsdPerVariantEstimate: { low: costLow, high: costHigh },
   };
