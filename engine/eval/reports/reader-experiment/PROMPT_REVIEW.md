@@ -3,9 +3,9 @@
 No document text or student information in this file.
 
 - Prompt version: `hive-reader-prompt/2.0.0`
-- Shared prefix (§1–4 + full golden v4.1 + §7–11) SHA-256: `ba7aea2af5ed99a3ccdf4d03581ab77d4631b76536550b31cbb93fca5295512c`
-- Variant A (`case_wide`) SHA-256: `a81af2b42e8285b158e1557f53ed834b06eab585cec4d8f20a61ea0deaf6f2be`
-- Variant B (`parallel_document`) SHA-256: `7b13e7d1538872acdd88ae17b00f8cf412f792376f14c04efca5a46f7f438dcb`
+- Shared prefix (§1–4 + full golden v4.1 + §7–11) SHA-256: `f4f425e1a985c81661ab81a299a5bc0b6b97f679f1cae9ecc7cf4ba046304ca3`
+- Variant A (`case_wide`) SHA-256: `642db763812ef567d5bd24dfed65fefe87c238886616942d0d229f0d3d5a4c64`
+- Variant B (`parallel_document`) SHA-256: `6e97b881c1f310be1c80844813851849199e24827cbe7698542da58ea5033fce`
 
 Architectures differ only in Hive Prompt Standard §5 workflow text.
 

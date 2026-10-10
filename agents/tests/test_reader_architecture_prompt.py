@@ -6,7 +6,10 @@ import pytest
 
 from hive_agents.pack_loader import load_agent_pack
 from hive_agents.reader_prompt.assemble import assemble_reader_architecture_prompt
-from hive_agents.reader_prompt.golden_reference import load_golden_reference_methodology_body
+from hive_agents.reader_prompt.golden_reference import (
+    golden_reference_methodology_for_reader,
+    load_golden_reference_methodology_body,
+)
 from hive_agents.reader_prompt.sections_shared import (
     shared_sections_after_checklist,
     shared_sections_before_golden_methodology,
@@ -24,6 +27,15 @@ def test_full_golden_reference_embedded(iep_pack) -> None:
     assert "canonical-study-proposal/4" in body
     assert "Voice proposal" in body
     assert len(body) > 4000
+
+
+def test_golden_reference_reader_adaptation_strips_proposal_output_contract() -> None:
+    adapted = golden_reference_methodology_for_reader()
+    assert "Do not reclassify the domain" in adapted
+    assert "Voice proposal" not in adapted
+    assert "## Conflicts" not in adapted
+    assert "## Missing information" not in adapted
+    assert "Downstream delegation (Reader)" in adapted
 
 
 def test_architectures_differ_only_in_section_five(iep_pack) -> None:

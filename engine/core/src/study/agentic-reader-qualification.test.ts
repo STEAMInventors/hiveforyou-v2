@@ -25,9 +25,9 @@ import {
 
 const COMMITTED_READER_EXPERIMENT_PROMPT_HASHES = {
   promptVersion: "hive-reader-prompt/2.0.0",
-  sharedPromptSha256: "ba7aea2af5ed99a3ccdf4d03581ab77d4631b76536550b31cbb93fca5295512c",
-  case_wide_sha256: "a81af2b42e8285b158e1557f53ed834b06eab585cec4d8f20a61ea0deaf6f2be",
-  parallel_document_sha256: "7b13e7d1538872acdd88ae17b00f8cf412f792376f14c04efca5a46f7f438dcb",
+  sharedPromptSha256: "f4f425e1a985c81661ab81a299a5bc0b6b97f679f1cae9ecc7cf4ba046304ca3",
+  case_wide_sha256: "642db763812ef567d5bd24dfed65fefe87c238886616942d0d229f0d3d5a4c64",
+  parallel_document_sha256: "6e97b881c1f310be1c80844813851849199e24827cbe7698542da58ea5033fce",
 } as const;
 
 function oracleReaderQualificationModelEnv(

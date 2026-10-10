@@ -16,6 +16,11 @@ from hive_agents.api_models import (
     resolve_agent_pack_for_domain,
 )
 from hive_agents.auth import is_authorized
+from hive_agents.engine1_trust import (
+    Engine1ReaderContextError,
+    ValidatedEngine1ReaderContext,
+    validate_engine1_reader_context_json,
+)
 from hive_agents.lm import create_dspy_lm
 from hive_agents.reader import (
     ReaderError,
@@ -154,31 +159,13 @@ def _audit_for_request(
 
 
 def _document_order_for_parallel(
-    engine1_reader_context_json: str | None,
+    validated_engine1: ValidatedEngine1ReaderContext | None,
     *,
     fallback_source_document_ids: list[str],
 ) -> list[str]:
-    if not engine1_reader_context_json:
-        return list(fallback_source_document_ids)
-    import json
-
-    try:
-        parsed = json.loads(engine1_reader_context_json)
-    except json.JSONDecodeError:
-        return list(fallback_source_document_ids)
-    logical = parsed.get("logicalDocuments")
-    if not isinstance(logical, list):
-        return list(fallback_source_document_ids)
-    ordered: list[str] = []
-    for item in logical:
-        if not isinstance(item, dict):
-            continue
-        source_id = item.get("sourceDocumentId")
-        if isinstance(source_id, str) and source_id.strip():
-            ordered.append(source_id.strip())
-    if not ordered:
-        return list(fallback_source_document_ids)
-    return ordered
+    if validated_engine1 is not None:
+        return list(validated_engine1.logical_document_ids)
+    return list(fallback_source_document_ids)
 
 
 def _execute_reader_variant(
@@ -196,14 +183,13 @@ def _execute_reader_variant(
     manifest_block: str | None,
     truncate_verification: bool,
     trace_session,
+    validated_engine1: ValidatedEngine1ReaderContext | None = None,
 ) -> tuple[ReaderRunResult, dict[str, int | str | None] | None]:
-    import json
-
     experiment_audit: dict[str, int | str | None] | None = None
     if architecture == "parallel_document":
         fallback_ids = [doc.source_document_id for doc in request.documents]
         document_order = _document_order_for_parallel(
-            request.engine1_reader_context_json,
+            validated_engine1,
             fallback_source_document_ids=fallback_ids,
         )
         merge_limits = limits.to_execution_limits() if limits else READER_EXPERIMENT_L001_LIMITS
@@ -282,6 +268,15 @@ def execute_study_reader(
     limits = request.limits.to_execution_limits() if request.limits else None
     settings = get_settings()
     trusted_documents = trusted_documents_from_reader_request_documents(request.documents)
+    validated_engine1 = None
+    if request.engine1_reader_context_json:
+        validated_engine1 = validate_engine1_reader_context_json(
+            request.engine1_reader_context_json,
+            domain_id=request.domain_id,
+            domain_pack_id=pack.domainPackId,
+            domain_pack_version=pack.domainPackVersion,
+            trusted_documents=trusted_documents,
+        )
     stable_system, manifest_block = resolve_reader_stable_system_for_request(
         pack,
         settings=settings,
@@ -321,6 +316,7 @@ def execute_study_reader(
             manifest_block=manifest_block,
             truncate_verification=truncate_verification,
             trace_session=None,
+            validated_engine1=validated_engine1,
         )
         return result, audit_not_configured
 
@@ -343,6 +339,7 @@ def execute_study_reader(
             manifest_block=manifest_block,
             truncate_verification=truncate_verification,
             trace_session=trace_session,
+            validated_engine1=validated_engine1,
         )
         duration_ms = int((time.perf_counter() - started) * 1000)
         counts = result.execution_counts or ReaderExecutionCounts()
@@ -515,6 +512,11 @@ async def study_reader(
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail=_error_body("MISSING_PAGES", str(exc)),
+        ) from exc
+    except Engine1ReaderContextError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=_error_body(exc.code, str(exc)),
         ) from exc
     except ReaderError as exc:
         raise HTTPException(

@@ -120,8 +120,11 @@ def run_reader_parallel_document(
                 async with lock:
                     in_flight -= 1
 
+    async def _run_parallel_extractions() -> None:
+        await asyncio.gather(*(extract_one(doc_id) for doc_id in ordered_ids))
+
     extract_started = time.perf_counter()
-    asyncio.run(asyncio.gather(*(extract_one(doc_id) for doc_id in ordered_ids)))
+    asyncio.run(_run_parallel_extractions())
     timing.extraction_phase_ms = int((time.perf_counter() - extract_started) * 1000)
     timing.peak_concurrent_model_calls = peak
     timing.model_call_count = len(ordered_ids)
