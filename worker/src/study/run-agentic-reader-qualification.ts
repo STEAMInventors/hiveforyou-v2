@@ -18,12 +18,14 @@ import {
   resolveEngine1ReaderContext,
   serializeEngine1ReaderContext,
 } from "./engine1-reader-context.js";
-import {
-  loadTrustedDocumentPageBundle,
-  TrustedDocumentPagesError,
-} from "./load-trusted-document-pages.js";
+import { loadTrustedDocumentPageBundle } from "./load-trusted-document-pages.js";
 import type { HiveGateway } from "../persistence/hive-gateway.js";
 import { SupabaseStudyRunRepository } from "../persistence/worker-supabase-repositories.js";
+import {
+  logQualificationPipelineFailure,
+  resolveQualificationPipelineFailure,
+  type QualificationPipelineStage,
+} from "./reader-qualification-pipeline-error.js";
 import {
   readCompletedDiagnostics,
   resolveReaderQualificationFailureCode,
@@ -182,6 +184,7 @@ export async function runAgenticReaderQualification(
 
   let readerResponse: StudyReaderResponseWire;
   const processingStarted = performance.now();
+  let stage: QualificationPipelineStage = "DOCUMENT_LOAD";
   try {
     const bundles = await loadTrustedDocumentPageBundle({
       gateway: input.gateway,
@@ -197,6 +200,7 @@ export async function runAgenticReaderQualification(
         bundle.documentPages.pages.length,
       ]),
     );
+    stage = "ENGINE1_CONTEXT";
     const engine1Context = await resolveEngine1ReaderContext({
       gateway: input.gateway,
       userId,
@@ -208,6 +212,7 @@ export async function runAgenticReaderQualification(
       filenameBySourceDocumentId: filenameMap,
       pageCountBySourceDocumentId: pageCountBySource,
     });
+    stage = "REQUEST_BUILD";
     const request = buildStudyReaderRequestFromTrustedPages({
       caseId,
       userId,
@@ -224,24 +229,26 @@ export async function runAgenticReaderQualification(
         : undefined,
     });
     void documentLoadMs;
+    stage = "READER_HTTP";
     readerResponse = await input.readerClient(request);
   } catch (error) {
-    const code =
-      error instanceof TrustedDocumentPagesError
-        ? error.code
-        : error instanceof Error
-          ? "READER_HTTP_FAILED"
-          : "READER_HTTP_FAILED";
+    const failure = resolveQualificationPipelineFailure(error, stage);
+    logQualificationPipelineFailure({
+      studyRunId: running.studyRunId,
+      attemptId,
+      stage,
+      failure,
+    });
     const failed = await markRunStatus({
       gateway: input.gateway,
       userId,
       run: running,
       status: "FAILED",
       errorCode: "STUDY_WORKER_FAILED",
-      errorMessage: code,
+      errorMessage: failure.code,
       completedAt: now(),
     });
-    return { outcome: "failed", run: failed, attemptId, code, ensure };
+    return { outcome: "failed", run: failed, attemptId, code: failure.code, ensure };
   }
 
   const audit = readerResponse.audit;

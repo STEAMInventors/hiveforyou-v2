@@ -3,6 +3,10 @@ import { createClient } from "@supabase/supabase-js";
 import { createSupabaseHiveGateway } from "../src/persistence/hive-gateway.js";
 import { ensureAgenticReaderQualificationRun } from "../src/study/ensure-agentic-reader-qualification-run.js";
 import {
+  ReaderHttpInvocationError,
+  sanitizeReaderErrorCode,
+} from "../src/study/reader-qualification-pipeline-error.js";
+import {
   runAgenticReaderQualification,
   type StudyReaderRequestWire,
   type StudyReaderResponseWire,
@@ -69,8 +73,9 @@ async function postStudyReader(
     error?: { code?: string; message?: string };
   };
   if (!response.ok) {
-    const code = payload.error?.code ?? `HTTP_${response.status}`;
-    throw new Error(`READER_HTTP_FAILED:${code}`);
+    const readerErrorCode =
+      sanitizeReaderErrorCode(payload.error?.code) ?? `HTTP_${response.status}`;
+    throw new ReaderHttpInvocationError(response.status, readerErrorCode);
   }
   return payload;
 }

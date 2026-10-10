@@ -18,6 +18,7 @@ import {
   ensureAgenticReaderQualificationRun,
 } from "./ensure-agentic-reader-qualification-run.js";
 import { loadTrustedDocumentPageBundle } from "./load-trusted-document-pages.js";
+import { ReaderHttpInvocationError } from "./reader-qualification-pipeline-error.js";
 import { runAgenticReaderQualification } from "./run-agentic-reader-qualification.js";
 
 const READER_QUALIFICATION_MODEL_ENV: Record<string, string> = {
@@ -328,6 +329,95 @@ describe("agentic reader qualification worker flow", () => {
     });
     expect(second.run.studyRunId).toBe(first.run.studyRunId);
     expect(second.idempotencyKey).toBe(first.idempotencyKey);
+  });
+
+  it("run preserves document load error codes", async () => {
+    const { gateway } = createStatefulGateway({
+      caseUserId: USER_A,
+      sourceDocuments: l001SourceDocuments(USER_A),
+    });
+    await ensureAgenticReaderQualificationRun({
+      gateway,
+      caseId: CASE_A,
+      userId: USER_A,
+      env: READER_QUALIFICATION_MODEL_ENV,
+    });
+    const result = await runAgenticReaderQualification({
+      env: READER_QUALIFICATION_MODEL_ENV,
+      gateway,
+      documentPagesBucket: "document-pages",
+      caseId: CASE_A,
+      userId: USER_A,
+      readerClient: vi.fn(),
+    });
+    expect(result.outcome).toBe("failed");
+    if (result.outcome !== "failed") {
+      throw new Error("expected failed outcome");
+    }
+    expect(result.code).toBe("DOCUMENT_PAGES_CACHE_MISSING");
+  });
+
+  it("run preserves reader HTTP error codes from hive-agents", async () => {
+    const { gateway } = createStatefulGateway({
+      caseUserId: USER_A,
+      sourceDocuments: l001SourceDocuments(USER_A),
+      objects: l001CachedObjects(USER_A),
+    });
+    await ensureAgenticReaderQualificationRun({
+      gateway,
+      caseId: CASE_A,
+      userId: USER_A,
+      env: READER_QUALIFICATION_MODEL_ENV,
+    });
+    const result = await runAgenticReaderQualification({
+      env: READER_QUALIFICATION_MODEL_ENV,
+      gateway,
+      documentPagesBucket: "document-pages",
+      caseId: CASE_A,
+      userId: USER_A,
+      readerClient: vi.fn(async () => {
+        throw new ReaderHttpInvocationError(422, "ENGINE1_CONTEXT_MISMATCH");
+      }),
+    });
+    expect(result.outcome).toBe("failed");
+    if (result.outcome !== "failed") {
+      throw new Error("expected failed outcome");
+    }
+    expect(result.code).toBe("ENGINE1_CONTEXT_MISMATCH");
+  });
+
+  it("run reports engine1 context stage failures without masking", async () => {
+    const base = createStatefulGateway({
+      caseUserId: USER_A,
+      sourceDocuments: l001SourceDocuments(USER_A),
+      objects: l001CachedObjects(USER_A),
+    });
+    const selectWhere = base.gateway.selectWhere.bind(base.gateway);
+    base.gateway.selectWhere = async (table, where, options) => {
+      if (table === "discover_artifacts") {
+        throw new Error("discover artifacts unavailable");
+      }
+      return selectWhere(table, where, options);
+    };
+    await ensureAgenticReaderQualificationRun({
+      gateway: base.gateway,
+      caseId: CASE_A,
+      userId: USER_A,
+      env: READER_QUALIFICATION_MODEL_ENV,
+    });
+    const result = await runAgenticReaderQualification({
+      env: READER_QUALIFICATION_MODEL_ENV,
+      gateway: base.gateway,
+      documentPagesBucket: "document-pages",
+      caseId: CASE_A,
+      userId: USER_A,
+      readerClient: vi.fn(),
+    });
+    expect(result.outcome).toBe("failed");
+    if (result.outcome !== "failed") {
+      throw new Error("expected failed outcome");
+    }
+    expect(result.code).toBe("ENGINE1_CONTEXT_FAILED");
   });
 
   it("run reports reader HTTP failures and clears RUNNING", async () => {
