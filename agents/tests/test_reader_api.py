@@ -190,6 +190,90 @@ def test_study_reader_success(client: TestClient, mock_reader_pipeline: None) ->
     assert fact["evidence"][0]["quote"] == "Reading comprehension"
 
 
+def test_study_reader_parallel_document_http_no_event_loop_error(
+    client: TestClient,
+    api_env: None,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Regression: parallel_document uses asyncio.run; must not run on the FastAPI loop."""
+    monkeypatch.setenv("HIVE_READER_ARCHITECTURE_VARIANT", "parallel_document")
+    get_settings.cache_clear()
+    extraction_calls: list[str] = []
+    payload = _sample_extraction_json()
+
+    def fake_forward(self: HiveReaderModule, untrusted_document_bundle: str) -> dspy.Prediction:
+        extraction_calls.append(untrusted_document_bundle)
+        return dspy.Prediction(extraction_json=payload)
+
+    monkeypatch.setattr(HiveReaderModule, "forward", fake_forward)
+    monkeypatch.setattr(
+        "hive_agents.app.create_dspy_lm",
+        lambda *args, **kwargs: MagicMock(spec=dspy.LM),
+    )
+
+    class AcceptAllVerifier:
+        def verify_fact(self, **kwargs: Any) -> Any:
+            from hive_agents.verifier_client import ReaderVerifierResult
+
+            fact = kwargs["fact"]
+            ev = fact.evidence[0]
+            return ReaderVerifierResult(
+                accepted=True,
+                reasons=[],
+                verified_evidence=[
+                    {
+                        "sourceDocumentId": ev.sourceDocumentId,
+                        "page": ev.page,
+                        "quote": ev.quote,
+                        "spanStart": ev.spanStart,
+                        "spanEnd": ev.spanEnd,
+                    }
+                ],
+            )
+
+    monkeypatch.setattr(
+        "hive_agents.app._require_verifier_client",
+        lambda: AcceptAllVerifier(),
+    )
+    monkeypatch.setattr("hive_agents.app.reader_trace_config_from_env", lambda: None)
+
+    body = _sample_request_body()
+    body["documents"].append(
+        {
+            "sourceDocumentId": "doc-b",
+            "pages": [
+                {
+                    "pageNumber": 1,
+                    "words": [{"seq": 0, "text": "Supplemental"}],
+                }
+            ],
+        }
+    )
+
+    response = client.post("/study/reader", headers=_auth_headers(), json=body)
+    assert response.status_code == 200, response.text
+    assert len(extraction_calls) == 2
+    parsed = response.json()
+    assert parsed["schemaVersion"] == "study-reader/1"
+    assert len(parsed["candidateFacts"]) >= 1
+
+
+def test_study_reader_case_wide_http(
+    client: TestClient,
+    mock_reader_pipeline: None,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("HIVE_READER_ARCHITECTURE_VARIANT", "case_wide")
+    get_settings.cache_clear()
+    response = client.post(
+        "/study/reader",
+        headers=_auth_headers(),
+        json=_sample_request_body(),
+    )
+    assert response.status_code == 200
+    assert response.json()["schemaVersion"] == "study-reader/1"
+
+
 def test_unauthorized_without_token(client: TestClient, mock_reader_pipeline: None) -> None:
     response = client.post("/study/reader", json=_sample_request_body())
     assert response.status_code == 401

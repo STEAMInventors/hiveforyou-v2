@@ -6,6 +6,7 @@ from typing import Annotated, Any
 from fastapi import FastAPI, Header, HTTPException, Request, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
+from starlette.concurrency import run_in_threadpool
 from pydantic import ValidationError
 
 from hive_agents.api_models import (
@@ -490,7 +491,7 @@ async def study_reader(
         ) from exc
 
     try:
-        result, audit = execute_study_reader(request)
+        result, audit = await run_in_threadpool(execute_study_reader, request)
     except HTTPException:
         raise
     except ReaderVerifierError as exc:
