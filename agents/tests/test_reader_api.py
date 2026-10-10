@@ -19,10 +19,13 @@ from hive_agents.reader import (
     InMemoryReaderTools,
     PageWord,
     ReaderError,
+    ReaderExecutionLimits,
     ReaderLimitsExhausted,
     ReaderRunResult,
     SourceEvidence,
 )
+from hive_agents.reader_dedup import DedupStats
+from hive_agents.reader_parallel import ParallelExtractionTaskResult, ReaderExperimentTiming
 from hive_agents.settings import default_study_agents_json_path, get_settings
 from hive_agents.verifier_client import ReaderVerifierClient, ReaderVerifierConfig
 
@@ -320,6 +323,65 @@ def test_response_does_not_leak_secrets_or_prompts(
     assert "last_lm_messages" not in raw
     pack = load_agent_pack(IEP_AGENTS_JSON)
     assert pack.agents.reader[:40].lower() not in raw
+
+
+@pytest.mark.parametrize("architecture", ["case_wide", "parallel_document"])
+def test_execute_study_reader_passes_execution_limits_once(
+    api_env: None,
+    monkeypatch: pytest.MonkeyPatch,
+    architecture: str,
+) -> None:
+    from hive_agents.api_models import StudyReaderRequest
+
+    request_body = _sample_request_body()
+    request_body["limits"] = {"maxReasoningSteps": 7, "maxToolCalls": 3}
+    parsed = StudyReaderRequest.model_validate(request_body)
+    expected_limits = ReaderExecutionLimits(max_reasoning_steps=7, max_tool_calls=3)
+    captured: dict[str, Any] = {}
+
+    monkeypatch.setenv("HIVE_READER_ARCHITECTURE_VARIANT", architecture)
+    get_settings.cache_clear()
+    monkeypatch.setattr("hive_agents.app.create_dspy_lm", lambda: MagicMock(spec=dspy.LM))
+    monkeypatch.setattr(
+        "hive_agents.app._require_verifier_client",
+        lambda: ReaderVerifierClient(
+            ReaderVerifierConfig(base_url="http://127.0.0.1:4319", token="verifier-token-test"),
+        ),
+    )
+    monkeypatch.setenv("HIVE_AGENTS_ALLOW_NONPERSISTENT_AUDIT", "1")
+    monkeypatch.setattr("hive_agents.app.reader_trace_config_from_env", lambda: None)
+
+    if architecture == "case_wide":
+
+        def capture_run_reader(**kwargs: Any) -> ReaderRunResult:
+            captured.update(kwargs)
+            return _mock_reader_run_result()
+
+        monkeypatch.setattr("hive_agents.app.run_reader", capture_run_reader)
+    else:
+
+        def capture_parallel(**kwargs: Any) -> tuple[
+            ReaderRunResult,
+            ReaderExperimentTiming,
+            DedupStats,
+            list[ParallelExtractionTaskResult],
+        ]:
+            captured.update(kwargs)
+            return (
+                _mock_reader_run_result(),
+                ReaderExperimentTiming(),
+                DedupStats(pre_merge_count=0, post_merge_count=0, removed_count=0),
+                [],
+            )
+
+        monkeypatch.setattr("hive_agents.app.run_reader_parallel_document", capture_parallel)
+
+    execute_study_reader(parsed)
+
+    if architecture == "case_wide":
+        assert captured.get("limits") == expected_limits
+    else:
+        assert captured.get("merge_limits") == expected_limits
 
 
 def test_production_path_uses_verifier_not_in_memory(

@@ -192,7 +192,7 @@ def _execute_reader_variant(
             validated_engine1,
             fallback_source_document_ids=fallback_ids,
         )
-        merge_limits = limits.to_execution_limits() if limits else READER_EXPERIMENT_L001_LIMITS
+        merge_limits = limits if limits is not None else READER_EXPERIMENT_L001_LIMITS
         result, timing, dedup_stats, task_results = run_reader_parallel_document(
             pack=pack,
             pages=pages,
@@ -224,7 +224,7 @@ def _execute_reader_variant(
         }
         return result, experiment_audit
 
-    resolved_limits = limits.to_execution_limits() if limits else None
+    resolved_limits = limits
     result = run_reader(
         pack=pack,
         pages=pages,
