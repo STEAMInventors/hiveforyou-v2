@@ -227,14 +227,118 @@ export function loadAgenticReaderQualificationPromptMetadata(input?: {
   };
 }
 
-type L001ManifestFile = { filename: string; sha256: string };
+export type L001QualificationManifestFile = {
+  filename: string;
+  sha256: string;
+  sourceDocumentId?: string;
+};
+
+export type L001QualificationManifest = {
+  sourceIdPrefix?: string;
+  files: L001QualificationManifestFile[];
+};
+
+export function l001QualificationManifestPath(
+  env: Record<string, string | undefined> = process.env,
+): string {
+  const override = env.HIVE_L001_QUALIFICATION_MANIFEST_JSON?.trim();
+  if (override) {
+    return override;
+  }
+  return join(CORE_REPO_ROOT, "engine", "intake", "fixtures", "l001", "manifest.json");
+}
+
+/** Validates committed L001 qualification manifest shape and SHA-256 pins (eight documents). */
+export function parseAndValidateL001QualificationManifest(
+  raw: string,
+  path: string,
+): L001QualificationManifest {
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(raw) as unknown;
+  } catch {
+    throw new Error(`L001_QUALIFICATION_MANIFEST_INVALID:${path}:json`);
+  }
+  if (!parsed || typeof parsed !== "object") {
+    throw new Error(`L001_QUALIFICATION_MANIFEST_INVALID:${path}:shape`);
+  }
+  const filesRaw = (parsed as { files?: unknown }).files;
+  if (!Array.isArray(filesRaw) || filesRaw.length !== L001_QUALIFICATION_SOURCE_SHA256.length) {
+    throw new Error(`L001_QUALIFICATION_MANIFEST_INVALID:${path}:files`);
+  }
+  const filenameByHash = new Map<string, string>();
+  for (const entry of filesRaw) {
+    if (!entry || typeof entry !== "object") {
+      throw new Error(`L001_QUALIFICATION_MANIFEST_INVALID:${path}:file_entry`);
+    }
+    const record = entry as Record<string, unknown>;
+    const filename = record.filename;
+    const sha256 = record.sha256;
+    if (typeof filename !== "string" || !filename.trim()) {
+      throw new Error(`L001_QUALIFICATION_MANIFEST_INVALID:${path}:filename`);
+    }
+    if (typeof sha256 !== "string" || !/^[a-f0-9]{64}$/i.test(sha256.trim())) {
+      throw new Error(`L001_QUALIFICATION_MANIFEST_INVALID:${path}:sha256`);
+    }
+    const normalized = sha256.toLowerCase();
+    if (filenameByHash.has(normalized)) {
+      throw new Error(`L001_QUALIFICATION_MANIFEST_INVALID:${path}:duplicate_sha256`);
+    }
+    filenameByHash.set(normalized, filename);
+  }
+  const expected = new Set(
+    L001_QUALIFICATION_SOURCE_SHA256.map((value) => value.toLowerCase()),
+  );
+  if (filenameByHash.size !== expected.size) {
+    throw new Error(`L001_QUALIFICATION_MANIFEST_PIN_MISMATCH:${path}`);
+  }
+  for (const hash of expected) {
+    if (!filenameByHash.has(hash)) {
+      throw new Error(`L001_QUALIFICATION_MANIFEST_PIN_MISMATCH:${path}`);
+    }
+  }
+  for (const hash of filenameByHash.keys()) {
+    if (!expected.has(hash)) {
+      throw new Error(`L001_QUALIFICATION_MANIFEST_PIN_MISMATCH:${path}`);
+    }
+  }
+  return parsed as L001QualificationManifest;
+}
+
+export function loadL001QualificationManifest(
+  env: Record<string, string | undefined> = process.env,
+): L001QualificationManifest {
+  const path = l001QualificationManifestPath(env);
+  let raw: string;
+  try {
+    raw = readFileSync(path, "utf8");
+  } catch (error) {
+    const errno = error as NodeJS.ErrnoException;
+    if (errno?.code === "ENOENT") {
+      throw new Error(`L001_QUALIFICATION_MANIFEST_MISSING:${path}`);
+    }
+    throw error;
+  }
+  return parseAndValidateL001QualificationManifest(raw, path);
+}
+
+/** Fail closed when Oracle/worker image sets HIVE_L001_QUALIFICATION_MANIFEST_JSON. */
+export function verifyL001QualificationManifestPackaged(
+  env: Record<string, string | undefined> = process.env,
+): void {
+  const override = env.HIVE_L001_QUALIFICATION_MANIFEST_JSON?.trim();
+  if (!override) {
+    return;
+  }
+  loadL001QualificationManifest(env);
+}
 
 /** Map persisted sourceDocumentId → golden corpus filename via SHA-256 pins. */
 export function buildL001QualificationSourceDocumentIdToFilename(
   registered: ReadonlyArray<{ id: string; sha256: string }>,
+  env: Record<string, string | undefined> = process.env,
 ): Map<string, string> {
-  const manifestPath = join(CORE_REPO_ROOT, "engine", "intake", "fixtures", "l001", "manifest.json");
-  const manifest = JSON.parse(readFileSync(manifestPath, "utf8")) as { files: L001ManifestFile[] };
+  const manifest = loadL001QualificationManifest(env);
   const filenameByHash = new Map<string, string>();
   for (const file of manifest.files) {
     filenameByHash.set(file.sha256.toLowerCase(), file.filename);

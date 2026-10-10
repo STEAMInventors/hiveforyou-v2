@@ -1,4 +1,6 @@
-import { readFileSync } from "node:fs";
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 
 import { describe, expect, it } from "vitest";
 
@@ -11,15 +13,21 @@ import {
   AGENTIC_READER_QUALIFICATION_QUESTION_SET_VERSION,
   buildAgenticReaderQualificationEngineFingerprint,
   buildAgenticReaderQualificationRun,
+  buildL001QualificationSourceDocumentIdToFilename,
   computeAgenticReaderQualificationIdempotencyKey,
   defaultStudyAgentsJsonPath,
   fingerprintL001QualificationCorpus,
+  L001_QUALIFICATION_SOURCE_SHA256,
+  l001QualificationManifestPath,
   loadAgenticReaderQualificationPromptMetadata,
   loadEffectiveStudyAgentsPromptMetadata,
+  loadL001QualificationManifest,
   loadReaderExperimentPromptHashes,
+  parseAndValidateL001QualificationManifest,
   readerExperimentPromptHashesPath,
   resolveAgenticReaderModelIdentity,
   resolveEffectiveHiveAgentsModelIdentity,
+  verifyL001QualificationManifestPackaged,
   verifyReaderExperimentPromptHashesPackaged,
 } from "./agentic-reader-qualification";
 
@@ -232,6 +240,70 @@ describe("agentic reader qualification", () => {
 
   it("does not require packaged experiment metadata when the env override is unset", () => {
     expect(() => verifyReaderExperimentPromptHashesPackaged({})).not.toThrow();
+  });
+
+  it("loads committed L001 qualification manifest from the repo tree", () => {
+    const manifest = loadL001QualificationManifest({
+      HIVE_L001_QUALIFICATION_MANIFEST_JSON: undefined,
+    });
+    expect(manifest.files).toHaveLength(L001_QUALIFICATION_SOURCE_SHA256.length);
+  });
+
+  it("honors HIVE_L001_QUALIFICATION_MANIFEST_JSON like the Oracle worker image", () => {
+    const repoPath = l001QualificationManifestPath({});
+    const env = { HIVE_L001_QUALIFICATION_MANIFEST_JSON: repoPath };
+    expect(l001QualificationManifestPath(env)).toBe(repoPath);
+    expect(loadL001QualificationManifest(env).files).toHaveLength(8);
+    expect(() => verifyL001QualificationManifestPackaged(env)).not.toThrow();
+  });
+
+  it("does not require packaged L001 manifest when the env override is unset", () => {
+    expect(() => verifyL001QualificationManifestPackaged({})).not.toThrow();
+  });
+
+  it("fail-closes on missing packaged L001 manifest path", () => {
+    const dir = mkdtempSync(join(tmpdir(), "l001-manifest-"));
+    const missingPath = join(dir, "missing-manifest.json");
+    try {
+      expect(() =>
+        loadL001QualificationManifest({
+          HIVE_L001_QUALIFICATION_MANIFEST_JSON: missingPath,
+        }),
+      ).toThrow(`L001_QUALIFICATION_MANIFEST_MISSING:${missingPath}`);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it("fail-closes on invalid L001 manifest pins", () => {
+    const dir = mkdtempSync(join(tmpdir(), "l001-manifest-"));
+    const manifestPath = join(dir, "manifest.json");
+    try {
+      writeFileSync(
+        manifestPath,
+        JSON.stringify({
+          files: [{ filename: "only.pdf", sha256: "a".repeat(64) }],
+        }),
+        "utf8",
+      );
+      expect(() =>
+        parseAndValidateL001QualificationManifest(readFileSync(manifestPath, "utf8"), manifestPath),
+      ).toThrow(`L001_QUALIFICATION_MANIFEST_INVALID:${manifestPath}:files`);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it("maps all eight L001 registered documents to corpus filenames", () => {
+    const registered = L001_QUALIFICATION_SOURCE_SHA256.map((sha256, index) => ({
+      id: `00000000-0000-4000-8000-${String(index + 1).padStart(12, "0")}`,
+      sha256,
+    }));
+    const map = buildL001QualificationSourceDocumentIdToFilename(registered, {
+      HIVE_L001_QUALIFICATION_MANIFEST_JSON: undefined,
+    });
+    expect(map.size).toBe(8);
+    expect([...map.values()].every((name) => name.endsWith(".pdf"))).toBe(true);
   });
 
   it("uses experiment prompt hash metadata only when HIVE_READER_ARCHITECTURE_VARIANT is set", () => {

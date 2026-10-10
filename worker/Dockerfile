@@ -52,8 +52,10 @@ COPY --from=build /repo/worker/dist/l001-agentic-reader-qualification.js.map ./d
 COPY --from=build /repo/worker/dist/package.json ./package.json
 COPY engine/domain-packs/iep/study/agents.json ./pack/agents.json
 COPY engine/eval/reports/reader-experiment/prompt-hashes.json ./pack/reader-experiment-prompt-hashes.json
+COPY engine/intake/fixtures/l001/manifest.json ./pack/l001-qualification-manifest.json
 
 ENV HIVE_READER_EXPERIMENT_PROMPT_HASHES_JSON=/app/pack/reader-experiment-prompt-hashes.json
+ENV HIVE_L001_QUALIFICATION_MANIFEST_JSON=/app/pack/l001-qualification-manifest.json
 
 RUN node --input-type=module -e "\
 import { readFileSync } from 'node:fs';\
@@ -65,6 +67,35 @@ for (const key of ['promptVersion', 'sharedPromptSha256']) {\
     throw new Error('READER_EXPERIMENT_PROMPT_HASHES_INVALID:' + key);\
   }\
 }\
+"
+
+RUN node --input-type=module -e "\
+import { readFileSync } from 'node:fs';\
+const path = process.env.HIVE_L001_QUALIFICATION_MANIFEST_JSON;\
+if (!path) throw new Error('HIVE_L001_QUALIFICATION_MANIFEST_JSON missing');\
+const expected = new Set([\
+  '8ae4ac0ce3009151dea07f9751e65fab11d9147a67f2eec2f5f1ecd09be4629d',\
+  'ffd4ebe21c06d6e365d9d581b996e17a79a7f81207722e83b1c1005dc70935c6',\
+  '864013b7e57a576ce6587589c67baa03003cf56c7cf0fb4fc01c2f6b43aded9c',\
+  '7496e950f951b666a7d532ad8c8d782946b60688650084c84b5ebebf9b17ef7d',\
+  '5fde3e11eaeb224daa7df5a61e72dd9d351dc6c02ee634e5ee51ee478449ec3f',\
+  '8adc5107634a1be4ab7d9b4f0817b0f254331ce1598de4ac5a859d1257e810fd',\
+  '35b0594bbbbc68239a3dad3a657290b1ea08093e2290a0d093ef716ca1c72ba2',\
+  '1e6b380e4a348029a97d1648228530b8cb060609c1ec30404cc43545d9833e2c',\
+]);\
+let parsed;\
+try { parsed = JSON.parse(readFileSync(path, 'utf8')); } catch { throw new Error('L001_QUALIFICATION_MANIFEST_INVALID:' + path + ':json'); }\
+const files = parsed?.files;\
+if (!Array.isArray(files) || files.length !== expected.size) throw new Error('L001_QUALIFICATION_MANIFEST_INVALID:' + path + ':files');\
+const seen = new Set();\
+for (const entry of files) {\
+  const sha = typeof entry?.sha256 === 'string' ? entry.sha256.toLowerCase() : '';\
+  const filename = typeof entry?.filename === 'string' ? entry.filename.trim() : '';\
+  if (!filename || !/^[a-f0-9]{64}$/.test(sha)) throw new Error('L001_QUALIFICATION_MANIFEST_INVALID:' + path + ':file_entry');\
+  seen.add(sha);\
+}\
+if (seen.size !== expected.size) throw new Error('L001_QUALIFICATION_MANIFEST_PIN_MISMATCH:' + path);\
+for (const hash of expected) { if (!seen.has(hash)) throw new Error('L001_QUALIFICATION_MANIFEST_PIN_MISMATCH:' + path); }\
 "
 
 RUN npm install --omit=dev \

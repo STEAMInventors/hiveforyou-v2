@@ -1,4 +1,7 @@
-import { verifyReaderExperimentPromptHashesPackaged } from "@hiveforyou/core/study";
+import {
+  verifyL001QualificationManifestPackaged,
+  verifyReaderExperimentPromptHashesPackaged,
+} from "@hiveforyou/core/study";
 
 import { runSelfCheck } from "./self-check.js";
 
@@ -6,6 +9,7 @@ import { runSelfCheck } from "./self-check.js";
 export async function runBootCheck(): Promise<void> {
   await runSelfCheck();
   verifyReaderExperimentPromptHashesPackaged();
+  verifyL001QualificationManifestPackaged();
   await import("inngest/connect");
   const { inngest } = await import("./inngest/client.js");
   const { workerFunctions } = await import("./inngest/functions/index.js");
