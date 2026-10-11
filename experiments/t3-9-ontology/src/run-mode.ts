@@ -12,6 +12,7 @@ import type { L001DocumentBundle } from "./corpus.js";
 import { conservativeDeduplicateCandidateFacts } from "./dedup.js";
 import { createLocalReaderVerifier } from "./local-verifier.js";
 import { parseExtractionResponse } from "./parse-proposals.js";
+import { buildExperimentModelRequest } from "./anthropic-model-request.js";
 import {
   buildAtomicExtractionUserPrompt,
   buildCaseWideCatalogUserPrompt,
@@ -83,15 +84,17 @@ async function invokeExtractionCall(input: {
   meta: Omit<CallTrace, "elapsedMs" | "proposed" | "droppedParse" | "inputTokens" | "outputTokens">;
 }): Promise<{ candidates: ReaderExperimentCandidateFact[]; trace: CallTrace }> {
   const started = performance.now();
-  const response = await input.callModel({
-    model: input.modelName,
-    temperature: ONTOLOGY_EXPERIMENT_BUDGET.temperature,
-    maxOutputTokens: ONTOLOGY_EXPERIMENT_BUDGET.maxOutputTokens,
-    systemPrompt: buildStableSystemPrompt(input.catalog),
-    userContent: input.userPrompt,
-    textFormat: OUTPUT_SCHEMA,
-    logLabel: "t3-9-ontology",
-  });
+  const response = await input.callModel(
+    buildExperimentModelRequest({
+      provider: input.provider,
+      model: input.modelName,
+      maxOutputTokens: ONTOLOGY_EXPERIMENT_BUDGET.maxOutputTokens,
+      systemPrompt: buildStableSystemPrompt(input.catalog),
+      userContent: input.userPrompt,
+      textFormat: OUTPUT_SCHEMA,
+      logLabel: "t3-9-ontology",
+    }),
+  );
   const usage = parseModelUsage(response.usage);
   const parsed = parseExtractionResponse(response.outputText, input.catalog);
   return {

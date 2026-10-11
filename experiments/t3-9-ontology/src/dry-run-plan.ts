@@ -1,6 +1,6 @@
 import type { InitialIepFactCatalog } from "./catalog-types.js";
 import type { L001DocumentBundle } from "./corpus.js";
-import { ONTOLOGY_EXPERIMENT_BUDGET } from "./prompt.js";
+import { experimentBudgetMetadata } from "./anthropic-model-request.js";
 import type { ExtractionMode } from "./run-mode.js";
 
 export type PlannedCall = {
@@ -66,7 +66,7 @@ export function estimateDryRun(input: {
     gitHead: "603a192",
     provider: input.provider,
     modelName: input.modelName,
-    budget: ONTOLOGY_EXPERIMENT_BUDGET,
+    budget: experimentBudgetMetadata(input.provider, input.modelName),
     catalogEntries: input.catalog.entries.length,
     l001Documents: input.bundles.length,
     plannedCalls: plans,
