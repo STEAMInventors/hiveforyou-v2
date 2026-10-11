@@ -15,7 +15,9 @@ import {
   verifyAllWithDiagnostics,
   type VerificationDiagnosticsReport,
 } from "./verification-diagnostics.js";
+import { writeModelResponseArtifact } from "./model-response-artifact.js";
 import { parseExtractionResponse } from "./parse-proposals.js";
+import { buildOntologyExtractionOutputSchema } from "./extraction-output-schema.js";
 import { buildExperimentModelRequest } from "./anthropic-model-request.js";
 import {
   buildAtomicExtractionUserPrompt,
@@ -52,26 +54,6 @@ export type ModeRunResult = {
   dedup: { preMergeCount: number; postMergeCount: number; removedCount: number };
 };
 
-const OUTPUT_SCHEMA = {
-  type: "json_schema" as const,
-  name: "ontology_extraction",
-  strict: true,
-  schema: {
-    type: "object",
-    additionalProperties: false,
-    properties: {
-      proposals: {
-        type: "array",
-        items: {
-          type: "object",
-          additionalProperties: true,
-        },
-      },
-    },
-    required: ["proposals"],
-  },
-};
-
 function estimateCostUsd(inputTokens: number, outputTokens: number, provider: string): number {
   if (provider === "anthropic") {
     return (inputTokens / 1_000_000) * 15 + (outputTokens / 1_000_000) * 75;
@@ -95,10 +77,15 @@ async function invokeExtractionCall(input: {
       maxOutputTokens: ONTOLOGY_EXPERIMENT_BUDGET.maxOutputTokens,
       systemPrompt: buildStableSystemPrompt(input.catalog),
       userContent: input.userPrompt,
-      textFormat: OUTPUT_SCHEMA,
+      textFormat: buildOntologyExtractionOutputSchema(input.catalog),
       logLabel: "t3-9-ontology",
     }),
   );
+  writeModelResponseArtifact({
+    resultsDir: input.resultsDir,
+    callId: input.meta.callId,
+    outputText: response.outputText,
+  });
   const usage = parseModelUsage(response.usage);
   const parsed = parseExtractionResponse(response.outputText, input.catalog);
   return {
@@ -217,6 +204,7 @@ export async function runOntologyMode(input: {
           provider: input.provider,
           catalog: input.catalog,
           userPrompt,
+          resultsDir: input.resultsDir,
           meta: {
             callId: `A-doc-${bundle.filename}`,
             mode: input.mode,
@@ -249,6 +237,7 @@ export async function runOntologyMode(input: {
       provider: input.provider,
       catalog: input.catalog,
       userPrompt,
+      resultsDir: input.resultsDir,
       meta: {
         callId: "B-case-wide",
         mode: "B",
@@ -344,6 +333,7 @@ export async function runOntologyMode(input: {
     provider: input.provider,
     catalog: input.catalog,
     userPrompt: relationshipPrompt,
+    resultsDir: input.resultsDir,
     meta: {
       callId: "C-case-relationship",
       mode: "C",

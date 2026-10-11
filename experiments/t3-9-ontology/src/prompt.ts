@@ -2,6 +2,11 @@ import { iepDomainPack } from "@hiveforyou/domain-pack-iep";
 
 import type { FactCatalogEntry, InitialIepFactCatalog } from "./catalog-types.js";
 import type { L001DocumentBundle } from "./corpus.js";
+import {
+  formatCatalogValueHints,
+  formatClaimValueV4Instructions,
+  formatProposalEnvelopeInstructions,
+} from "./extraction-output-schema.js";
 
 /** Shared budget policy across modes A/B/C (matches ontology experiment contract). */
 export const ONTOLOGY_EXPERIMENT_BUDGET = {
@@ -34,6 +39,10 @@ function pagesPayload(bundle: L001DocumentBundle): unknown {
   };
 }
 
+function proposalReturnJsonReminder(): string {
+  return 'Return JSON matching the ontology_extraction schema: { "proposals": [ proposal, ... ] } (see system prompt for ClaimValueV4 and field names).';
+}
+
 export function buildStableSystemPrompt(catalog: InitialIepFactCatalog): string {
   return [
     "You are an IEP document reader in a controlled ontology extraction experiment.",
@@ -50,6 +59,12 @@ export function buildStableSystemPrompt(catalog: InitialIepFactCatalog): string 
     `Target IEP document type: ${catalog.documentType}`,
     "Initial IEP fact catalog (types only — no expected values):",
     formatCatalogEntries(catalog.entries),
+    "",
+    formatClaimValueV4Instructions(),
+    "",
+    formatCatalogValueHints(catalog),
+    "",
+    formatProposalEnvelopeInstructions(),
   ].join("\n");
 }
 
@@ -69,8 +84,8 @@ export function buildAtomicExtractionUserPrompt(input: {
   const blocks: string[] = [
     header,
     `Phase: ${input.phase}`,
-    "Return JSON: { \"proposals\": [ { \"id\", \"catalogTypeId\", \"construct\": { \"measure\", \"task?\", \"administration?\" }, \"value\", \"modality\", \"evidence\": [ { \"sourceDocumentId\", \"page\", \"quote\" } ] } ] }",
-    "Include catalogTypeId matching a catalog typeId when possible.",
+    proposalReturnJsonReminder(),
+    "Include catalogTypeId matching a catalog typeId; construct.measure must equal that row's atomicField.",
     "Catalog slice:",
     formatCatalogEntries(entries),
     "",
@@ -91,7 +106,7 @@ export function buildCaseWideCatalogUserPrompt(input: {
 }): string {
   return [
     "Extract ALL catalog facts (atomic and relationship) across the full L001 case.",
-    "Return JSON: { \"proposals\": [ { \"id\", \"catalogTypeId\", \"construct\", \"value\", \"modality\", \"evidence\": [ { \"sourceDocumentId\", \"page\", \"quote\" } ] } ] }",
+    proposalReturnJsonReminder(),
     "Catalog:",
     formatCatalogEntries(input.catalog.entries),
     "",
@@ -109,7 +124,7 @@ export function buildRelationshipExtractionUserPrompt(input: {
   return [
     "Extract RELATIONSHIP catalog facts for the full case using validated atomics as context.",
     "Do not re-propose atomics unless correcting evidence for a relationship row.",
-    "Return JSON: { \"proposals\": [...] } with the same proposal shape as atomic extraction.",
+    proposalReturnJsonReminder(),
     "Relationship catalog slice:",
     formatCatalogEntries(entries),
     "",

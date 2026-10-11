@@ -1,0 +1,99 @@
+﻿import type { ClaimModality, ClaimValueV4 } from "@hiveforyou/shared/case-intelligence/4";
+import { readerWireFactToCandidateFact } from "../../../engine/eval/src/reader-experiment/fact-match.js";
+import type { ReaderExperimentCandidateFact } from "../../../engine/eval/src/reader-experiment/fact-match.js";
+
+import type { InitialIepFactCatalog } from "./catalog-types.js";
+
+type RawProposal = Record<string, unknown>;
+
+function normalizeValue(raw: unknown): ClaimValueV4 | null {
+  if (!raw || typeof raw !== "object") {
+    return null;
+  }
+  const record = raw as Record<string, unknown>;
+  const kind = record.kind;
+  if (typeof kind !== "string") {
+    return null;
+  }
+  return record as ClaimValueV4;
+}
+
+export function parseExtractionResponse(
+  outputText: string | null,
+  catalog: InitialIepFactCatalog,
+): { proposals: RawProposal[]; candidates: ReaderExperimentCandidateFact[]; dropped: number } {
+  if (!outputText?.trim()) {
+    return { proposals: [], candidates: [], dropped: 0 };
+  }
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(outputText) as unknown;
+  } catch {
+    return { proposals: [], candidates: [], dropped: 0 };
+  }
+  const record = parsed as { proposals?: unknown[] };
+  const proposals = Array.isArray(record.proposals) ? (record.proposals as RawProposal[]) : [];
+  const catalogByType = new Map(catalog.entries.map((e) => [e.typeId, e]));
+  const candidates: ReaderExperimentCandidateFact[] = [];
+  let dropped = 0;
+
+  for (const [index, proposal] of proposals.entries()) {
+    const catalogTypeId =
+      typeof proposal.catalogTypeId === "string"
+        ? proposal.catalogTypeId
+        : typeof proposal.typeId === "string"
+          ? proposal.typeId
+          : null;
+    const catalogEntry = catalogTypeId ? catalogByType.get(catalogTypeId) : undefined;
+    const constructRaw = proposal.construct;
+    const measure =
+      constructRaw && typeof constructRaw === "object" && typeof (constructRaw as { measure?: unknown }).measure === "string"
+        ? (constructRaw as { measure: string }).measure
+        : catalogEntry?.atomicField ?? "unspecified";
+
+    const value = normalizeValue(proposal.value);
+    if (!value) {
+      dropped += 1;
+      continue;
+    }
+
+    const evidence = Array.isArray(proposal.evidence) ? proposal.evidence : [];
+    const wire = {
+      id: typeof proposal.id === "string" ? proposal.id : `ontology-${index + 1}`,
+      construct: {
+        measure,
+        task:
+          constructRaw && typeof constructRaw === "object"
+            ? ((constructRaw as { task?: string | null }).task ?? null)
+            : null,
+        administration:
+          constructRaw && typeof constructRaw === "object"
+            ? ((constructRaw as { administration?: string | null }).administration ?? null)
+            : null,
+      },
+      value,
+      modality: (typeof proposal.modality === "string"
+        ? proposal.modality
+        : catalogEntry?.acceptableModalities[0] ?? "unknown") as ClaimModality,
+      evidenceRefs: evidence.map((ev, evIndex) => {
+        const item = ev as Record<string, unknown>;
+        return {
+          id: `ev-${index}-${evIndex}`,
+          sourceDocumentId: String(item.sourceDocumentId ?? ""),
+          sourceType: "document" as const,
+          page: typeof item.page === "number" ? item.page : undefined,
+          snippet: typeof item.quote === "string" ? item.quote : undefined,
+        };
+      }),
+    };
+
+    const candidate = readerWireFactToCandidateFact(wire);
+    if (!candidate) {
+      dropped += 1;
+      continue;
+    }
+    candidates.push(candidate);
+  }
+
+  return { proposals, candidates, dropped };
+}
