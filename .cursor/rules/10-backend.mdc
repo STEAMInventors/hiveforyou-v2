@@ -12,4 +12,15 @@ alwaysApply: false
 - Prefer engine packages: `core`, `intake`, `canonical`, `shared` under `engine/` — avoid circular dependencies (`shared` has no upstream package deps).
 - Supabase/Postgres access belongs in appropriate layers; migrations in `supabase/migrations`.
 
+## Domain packs and Core boundaries
+
+- No domain-specific conditionals in Hive Core (no `if (domain === …)`, pack-specific branches, or domain-only primitives).
+- Domain Packs must be **declarative**, **typed**, and **versioned**. No arbitrary executable domain callbacks (pack-provided TS/SQL/JS hooks) in the contract.
+- **Proposed v2 default** (see `brain/plan/HIVE-ARCHITECTURE-V2-PROPOSED.md`): **one document per model extraction call**; **cross-document composition, resolution, and case views in code**. Do not implement this pipeline or migrate runtime until explicitly authorized.
+
+## Runtime today vs proposed v2
+
+- **Today:** **Engine 1** validates proposals against Domain Pack rules; **Engine 2** uses the model for semantic Canonical Study with code validating structure, provenance, and integrity.
+- **Proposed target:** the eight-step pack-driven pipeline in `HIVE-ARCHITECTURE-V2-PROPOSED.md`. Rules and specs may align with that document; **do not treat it as current behavior or implement it without approval**.
+
 See `brain/architecture/overview.md`, `brain/architecture/hive-core.md`, ADRs in `brain/decisions/`.

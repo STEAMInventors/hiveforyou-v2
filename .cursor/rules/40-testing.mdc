@@ -9,6 +9,7 @@ alwaysApply: false
 - Test **validation logic** and deterministic behavior heavily; treat model proposals as fixtures to validate.
 - Domain pack rules deserve targeted tests before certification.
 - Prefer small fixtures; large raw corpora belong outside repo (see `.cursorignore`).
-- Run package-level tests before marking work complete.
+- Run package-level tests before marking **executable** work complete.
+- **Documentation-only** or **specification-only** reviews (e.g. Domain Pack v0.2 spec, `.cursor/rules`, authorized brain docs) do **not** require full package test runs unless the change touches executable code or tests.
 
 See `brain/decisions/ADR-003-model-proposes-code-validates.md`.

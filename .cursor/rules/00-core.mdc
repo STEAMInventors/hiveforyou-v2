@@ -14,18 +14,28 @@ alwaysApply: true
 
 Never recursively read `brain/`. Never implement work beyond `NEXT.md` without explicit authorization. Do not redesign architecture while implementing a scoped task.
 
-## Foundational laws
+`brain/status/NEXT.md` and `brain/plan/AGENTIC-PLAN.md` are execution and history references. They do **not** authorize resuming in-flight tickets (e.g. T3.9) during the current specification review unless the user explicitly approves.
+
+## Foundational laws (permanent)
 
 - **Model proposes. Pack defines. Code validates. Professional decides.**
+- Domain Packs are **declarative**, **typed**, and **versioned** data—not executable domain logic in Hive Core.
 - **No chip → no claim.** **No validated claim → no factual representation.**
-- Domain-specific knowledge belongs in **Domain Packs**, not Hive Core.
+- **Hive Core is domain-agnostic.** Domain-specific knowledge and behavior belong in **Domain Packs**, not Hive Core.
 - Customer and Pro use the same validated canonical truth.
 - **Persist intelligence** rather than unnecessarily regenerating it.
 - User intent guides emphasis; it does not alter source truth.
 - Do not create a second truth layer outside the canonical model.
 
+Architectural direction for the v2 target is recorded in `brain/plan/HIVE-ARCHITECTURE-V2-PROPOSED.md`. Treat it as **proposed specification**, not as already-implemented runtime behavior.
+
+## Current authorized scope (temporary)
+
+- **IEP Domain Pack v0.2 review and specification only** (pack contract, taxonomy, checklists, facts, requirements—documentation and rules as directed).
+- No changes to production, application, or engine code; no paid model calls; no deployment; no edits to `brain/plan/` or `brain/status/` without **explicit user approval**.
+
 ## Before completion
 
-- Run relevant tests.
-- Report files changed, tests run, and scope deviations.
-- Update `brain/status/CURRENT.md` when implementation state materially changes.
+- For **executable** changes: run relevant tests; update `brain/status/CURRENT.md` when implementation state materially changes.
+- For **specification-only** review (rules, pack spec, brain docs as authorized): updating `CURRENT.md` is not required.
+- Always report files changed, tests run (if any), and scope deviations.
