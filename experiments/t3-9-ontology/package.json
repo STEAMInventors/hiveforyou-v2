@@ -7,7 +7,8 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "dry-run": "tsx src/cli.ts --dry-run --mode all",
-    "execute": "tsx src/cli.ts --execute --mode all --provider openai"
+    "execute": "tsx src/cli.ts --execute --mode all --provider openai",
+    "golden-fact-comparison": "tsx src/generate-golden-fact-comparison-cli.ts"
   },
   "dependencies": {
     "@hiveforyou/core": "link:../../engine/core",

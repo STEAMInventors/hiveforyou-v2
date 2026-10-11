@@ -60,7 +60,7 @@ describe("parseExtractionResponse contract", () => {
     expect(metrics.matchedCount).toBeGreaterThanOrEqual(1);
   });
 
-  it("drops proposals that omit catalogTypeId or use non-quote evidence fields", () => {
+  it("adapts legacy typeId and snippet evidence into Reader candidates", () => {
     const catalog = loadInitialIepFactCatalog();
     const parsed = parseExtractionResponse(
       JSON.stringify({
@@ -77,7 +77,8 @@ describe("parseExtractionResponse contract", () => {
       }),
       catalog,
     );
-    expect(parsed.candidates).toHaveLength(0);
+    expect(parsed.candidates).toHaveLength(1);
+    expect(parsed.proposals).toHaveLength(0);
     expect(parsed.dropped).toBe(1);
   });
 });
