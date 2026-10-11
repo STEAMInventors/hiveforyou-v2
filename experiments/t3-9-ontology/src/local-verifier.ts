@@ -1,6 +1,7 @@
 import type { ReaderExperimentCandidateFact } from "../../../engine/eval/src/reader-experiment/fact-match.js";
 
 import type { L001DocumentBundle } from "./corpus.js";
+import { evidenceQuoteText } from "./evidence-quote.js";
 import {
   verifyReaderFact,
   type ReaderFactVerifyInput,
@@ -43,7 +44,7 @@ export function createLocalReaderVerifier(bundles: L001DocumentBundle[]) {
         if (!ref.sourceDocumentId || ref.page == null) {
           continue;
         }
-        const quote = ref.snippet?.trim();
+        const quote = evidenceQuoteText(ref);
         if (!quote) {
           continue;
         }

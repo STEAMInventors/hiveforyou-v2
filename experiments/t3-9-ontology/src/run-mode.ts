@@ -10,7 +10,11 @@ import type { ReaderExperimentCandidateFact } from "../../../engine/eval/src/rea
 import type { InitialIepFactCatalog } from "./catalog-types.js";
 import type { L001DocumentBundle } from "./corpus.js";
 import { conservativeDeduplicateCandidateFacts } from "./dedup.js";
-import { createLocalReaderVerifier } from "./local-verifier.js";
+import {
+  buildVerificationDiagnosticsReport,
+  verifyAllWithDiagnostics,
+  type VerificationDiagnosticsReport,
+} from "./verification-diagnostics.js";
 import { parseExtractionResponse } from "./parse-proposals.js";
 import { buildExperimentModelRequest } from "./anthropic-model-request.js";
 import {
@@ -110,22 +114,71 @@ async function invokeExtractionCall(input: {
   };
 }
 
-async function verifyAll(
+export type ModeCVerificationDiagnostics = {
+  schemaVersion: "t3-9-ontology/verification-diagnostics/1";
+  mode: "C";
+  atomic: VerificationDiagnosticsReport;
+  relationship: VerificationDiagnosticsReport;
+};
+
+function proposalPlaceholders(proposalCount: number): { id: string }[] {
+  return Array.from({ length: proposalCount }, (_, index) => ({ id: `proposal-${index + 1}` }));
+}
+
+export async function verifyWithDiagnosticsReport(
   bundles: L001DocumentBundle[],
   candidates: ReaderExperimentCandidateFact[],
-): Promise<{ accepted: ReaderExperimentCandidateFact[]; rejected: number }> {
-  const verifier = createLocalReaderVerifier(bundles);
-  const accepted: ReaderExperimentCandidateFact[] = [];
-  let rejected = 0;
-  for (const candidate of candidates) {
-    const result = await verifier.verifyCandidate(candidate);
-    if (result.accepted) {
-      accepted.push(candidate);
-    } else {
-      rejected += 1;
-    }
+  proposalCount: number,
+  parseDropped: number,
+): Promise<{
+  accepted: ReaderExperimentCandidateFact[];
+  rejected: number;
+  report: VerificationDiagnosticsReport;
+}> {
+  const { accepted, verified } = await verifyAllWithDiagnostics(bundles, candidates);
+  const report = buildVerificationDiagnosticsReport({
+    proposals: proposalPlaceholders(proposalCount),
+    candidates,
+    parseDropped,
+    verified,
+  });
+  const rejected = verified.filter((row) => !row.accepted).length;
+  return { accepted, rejected, report };
+}
+
+export function serializeVerificationDiagnostics(
+  mode: ExtractionMode,
+  input:
+    | { report: VerificationDiagnosticsReport }
+    | { atomic: VerificationDiagnosticsReport; relationship: VerificationDiagnosticsReport },
+): VerificationDiagnosticsReport | ModeCVerificationDiagnostics {
+  if (mode === "C") {
+    const { atomic, relationship } = input as {
+      atomic: VerificationDiagnosticsReport;
+      relationship: VerificationDiagnosticsReport;
+    };
+    return {
+      schemaVersion: "t3-9-ontology/verification-diagnostics/1",
+      mode: "C",
+      atomic,
+      relationship,
+    };
   }
-  return { accepted, rejected };
+  return (input as { report: VerificationDiagnosticsReport }).report;
+}
+
+export function writeVerificationDiagnosticsJson(
+  modeDir: string,
+  mode: ExtractionMode,
+  input:
+    | { report: VerificationDiagnosticsReport }
+    | { atomic: VerificationDiagnosticsReport; relationship: VerificationDiagnosticsReport },
+): void {
+  mkdirSync(modeDir, { recursive: true });
+  writeFileSync(
+    join(modeDir, "verification-diagnostics.json"),
+    JSON.stringify(serializeVerificationDiagnostics(mode, input), null, 2),
+  );
 }
 
 export async function runOntologyMode(input: {
@@ -213,13 +266,23 @@ export async function runOntologyMode(input: {
 
   const atomicVerified =
     input.mode === "A" || input.mode === "C"
-      ? await verifyAll(input.bundles, candidates)
-      : { accepted: [] as ReaderExperimentCandidateFact[], rejected: 0 };
+      ? await verifyWithDiagnosticsReport(input.bundles, candidates, proposed, droppedParse)
+      : {
+          accepted: [] as ReaderExperimentCandidateFact[],
+          rejected: 0,
+          report: buildVerificationDiagnosticsReport({
+            proposals: [],
+            candidates: [],
+            parseDropped: 0,
+            verified: [],
+          }),
+        };
 
   if (input.mode === "A") {
     const deduped = conservativeDeduplicateCandidateFacts(atomicVerified.accepted);
     const modeDir = join(input.resultsDir, "mode-A");
     mkdirSync(modeDir, { recursive: true });
+    writeVerificationDiagnosticsJson(modeDir, "A", { report: atomicVerified.report });
     writeFileSync(join(modeDir, "trace.json"), JSON.stringify({ traces, dedup: deduped.stats }, null, 2));
     for (const trace of traces) {
       if (trace.filename) {
@@ -249,10 +312,11 @@ export async function runOntologyMode(input: {
   }
 
   if (input.mode === "B") {
-    const verified = await verifyAll(input.bundles, candidates);
+    const verified = await verifyWithDiagnosticsReport(input.bundles, candidates, proposed, droppedParse);
     const deduped = conservativeDeduplicateCandidateFacts(verified.accepted);
     const modeDir = join(input.resultsDir, "mode-B");
     mkdirSync(modeDir, { recursive: true });
+    writeVerificationDiagnosticsJson(modeDir, "B", { report: verified.report });
     writeFileSync(join(modeDir, "trace.json"), JSON.stringify({ traces, dedup: deduped.stats }, null, 2));
     const metrics = summarizeModeMetrics({
       golden: input.golden,
@@ -294,12 +358,21 @@ export async function runOntologyMode(input: {
   tokenOutput += rel.trace.outputTokens;
 
   const mergedCandidates = [...dedupAtomics.facts, ...rel.candidates];
-  const relVerified = await verifyAll(input.bundles, rel.candidates);
+  const relVerified = await verifyWithDiagnosticsReport(
+    input.bundles,
+    rel.candidates,
+    rel.trace.proposed,
+    rel.trace.droppedParse,
+  );
   const accepted = [...dedupAtomics.facts, ...relVerified.accepted];
   const finalDedup = conservativeDeduplicateCandidateFacts(accepted);
 
   const modeDir = join(input.resultsDir, "mode-C");
   mkdirSync(modeDir, { recursive: true });
+  writeVerificationDiagnosticsJson(modeDir, "C", {
+    atomic: atomicVerified.report,
+    relationship: relVerified.report,
+  });
   writeFileSync(
     join(modeDir, "trace.json"),
     JSON.stringify({ traces, dedupAtomics: dedupAtomics.stats, dedupFinal: finalDedup.stats }, null, 2),
