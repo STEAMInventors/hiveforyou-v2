@@ -7,11 +7,24 @@ Status: Proposed; no runtime migration authorized.
 
 > This document records the new architectural direction. It does **not** silently supersede the approved `brain/plan/AGENTIC-PLAN.md` v1.1 or change `NEXT.md` ticket status. Reconcile the execution plan only after explicit approval.
 
+## Production execution contract (clarification, 2026-10-11)
+
+**This section governs execution and qualification of the proposed v2 flow.** Per-file extraction is logically isolated but **parallel**, not sequential by default.
+
+1. **Intake → parallel fan-out:** The live Oracle Worker classifies/dispatches each uploaded logical document independently. Each Reader Agent call receives only that document's pages as evidentiary input, plus case manifest metadata and the document-specific checklist generated from the versioned Domain Pack. Multiple independent calls execute in parallel with bounded concurrency, retries and per-document statuses.
+2. **Verification and fan-in:** Each Reader result is independently validated for source/page/quote, types and modalities. The Worker waits for all document tasks to reach terminal states, records failures/unresolved items explicitly, and does not silently claim full-case completeness if some tasks fail. Verified document fact sets remain immutable and traceable.
+3. **Single canonical consolidation:** Once individual document fact sets are available, domain-agnostic code resolves entities, links records, composes operative plans/amendments, chronology, conflicts, changes, series, and conditional missing information. It produces **one canonical case truth**, not one canonical dataset per persona.
+4. **Domain Pack personas → downstream projections:** The pack defines personas/audiences, relevance/priority, terminology and permissible insights. The same canonical facts are projected into Parent/Customer and Pro views. A later explanation model may word only validated facts and IDs; persona differences never alter extraction or source truth.
+5. **Then the rest:** Evidence-backed insight checks, meaning, reporting/screens/export and persistence follow the shared canonical case. Incremental uploads re-run affected document tasks and recompute dependent case projections.
+6. **Production-like qualification:** Going forward, L001 and other qualification runs use the **actual Oracle Worker → live Reader Agent service path** (including parallel fan-out, verification, consolidation and persona projection), safely gated to the qualification case. Standalone local harnesses may serve offline unit/debug purposes, **not** as substitutes for end-to-end production-like qualification. Existing production users must not be silently switched to an unqualified pack/version.
+
+**Convergence:** Domain Pack defines data and personas; Hive Core orchestrates parallelism and universal verification/consolidation/projections. No IEP-specific Core branches. No new implementation or deployment is authorized by this clarification alone; separately approved feature-flagged integration retains its approval gates.
+
 ## 1. Non-negotiable boundary
 
 **One engine, many declarative domain packs.** Hive Core must classify, extract, verify, resolve, combine, check, and render without any `if (domain === "iep")`, bankruptcy-specific logic, or pack-defined executable callbacks. A new pack registers data and uses the same universal versioned contract. If a domain proves an operation missing, add a domain-neutral primitive and conformance tests, never an exception.
 
-**One document per model extraction call by default; case-level reasoning in code.** The model may receive the case manifest for reference, but **only the current document's pages** as its extraction evidence. New upload: process its document classification/extraction/verification, then recompute case projections. Long documents may be partitioned internally only with complete page coverage and deterministic merge, preserving document-level isolation.
+**One document per model extraction call by default, with parallel execution and case-level reasoning in code.** The model may receive the case manifest for reference, but **only the current document's pages** as its extraction evidence. New upload: independently process its document classification/extraction/verification (parallel with other newly uploaded documents), then recompute affected case projections. Long documents may be partitioned internally only with complete page coverage and deterministic merge, preserving document-level isolation.
 
 **Model proposes; code disposes.** Model outputs are untrusted proposals until validated. No chip, no claim; no validated claim, no narrative statement. User intent influences ordering, never what gets extracted. Findings are questions, not legal verdicts.
 
@@ -20,10 +33,10 @@ Status: Proposed; no runtime migration authorized.
 | Step | Name | Owner | Input | Output / hard gate |
 |---|---|---|---|---|
 | 1 | Intake | Code/user | Uploads, intent, selected domain | Case, immutable sources, selected compatible pack/version |
-| 2 | Classify | Model proposes; code validates | One document and pack document catalog | Proposed type, author/authority role, dates, parent/amendment references and **evidence where observable**; uncertainty retained |
-| 3 | Extract | Model proposes; pack declares targets | Generated prompt+schema, case manifest, **one document** | Typed candidate facts, page/quote evidence, visibly blank fields and references to missing documents |
-| 4 | Verify & resolve | Code | Candidates, source page model, pack metadata | Verified quote location, type/value/unit/modality, canonical entity links and permissible derived facts; unresolved links retained |
-| 5 | Compose case | Code | Immutable verified facts, document lineage, effective times | Operative-as-of views, change, conflicts, matches/possiblySame, series and coverage; raw facts never overwritten |
+| 2 | Classify (parallel per document) | Model proposes; code validates | One document and pack document catalog | Proposed type, author/authority role, dates, parent/amendment references and **evidence where observable**; uncertainty retained |
+| 3 | Extract (parallel per document) | Model proposes; pack declares targets | Generated prompt+schema, case manifest, **one document** | Typed candidate facts, page/quote evidence, visibly blank fields and references to missing documents |
+| 4 | Verify per document | Code | Candidates, source page model, pack metadata | Verified quote location, type/value/unit/modality, canonical entity links and permissible derived facts; unresolved links retained |
+| 5 | Consolidate / resolve / compose case after fan-in | Code | Immutable verified facts, document lineage, effective times | Operative-as-of views, change, conflicts, matches/possiblySame, series and coverage; raw facts never overwritten |
 | 6 | Insight checks | Code | Case view + declarative pack rules | Evidence-backed neutral questions; no unsupported conclusions |
 | 7 | Meaning | Model proposes; code validates | Verified facts, findings, audience and intent | Plain language referencing validated IDs only; no new facts |
 | 8 | Screens & export | Code | Validated facts/meaning/intent/persona | Customer and Pro projections, chips, evidence ledger/export |
