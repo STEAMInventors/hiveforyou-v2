@@ -5,6 +5,7 @@ import {
   READER_EXPERIMENT_L001_MAX_TOOL_CALLS,
   buildL001QualificationSourceDocumentIdToFilename,
   resolveReaderArchitectureVariant,
+  resolveReaderMode,
 } from "@hiveforyou/core/study";
 import { buildReaderAcceptedFactsArtifact } from "@hiveforyou/shared/reader-accepted-facts";
 import type { CanonicalStudyRun } from "@hiveforyou/shared/canonical-study";
@@ -45,6 +46,7 @@ export type StudyReaderResponseWire = {
   schemaVersion: "study-reader/1";
   candidateFacts: unknown[];
   acceptedCandidateFacts?: unknown[];
+  perDocumentResults?: unknown[];
   audit?: StudyReaderAuditWire | null;
 };
 
@@ -217,6 +219,7 @@ export async function runAgenticReaderQualification(
       pageCountBySourceDocumentId: pageCountBySource,
     });
     stage = "REQUEST_BUILD";
+    const readerMode = resolveReaderMode(env);
     const request = buildStudyReaderRequestFromTrustedPages({
       caseId,
       userId,
@@ -225,6 +228,7 @@ export async function runAgenticReaderQualification(
       attemptId,
       bundles,
       engine1ReaderContextJson: serializeEngine1ReaderContext(engine1Context),
+      readerMode: readerMode ?? undefined,
       limits: resolveReaderArchitectureVariant(env)
         ? {
             maxToolCalls: READER_EXPERIMENT_L001_MAX_TOOL_CALLS,

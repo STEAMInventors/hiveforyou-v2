@@ -4,6 +4,11 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import type { CanonicalStudyRun } from "@hiveforyou/shared/canonical-study";
+import {
+  PACK_DRIVEN_READER_PROMPT_VERSION,
+  computeProposalPackContentSha256,
+  type ProposalDomainPack,
+} from "@hiveforyou/domain-pack";
 
 import { hashCanonicalJson } from "./fingerprint";
 
@@ -236,9 +241,55 @@ export function resolveReaderArchitecturePromptSha256(
   return hashes.parallel_document_sha256.toLowerCase();
 }
 
+export type ReaderMode = "pack_driven";
+
+export function resolveReaderMode(
+  env: Record<string, string | undefined> = process.env,
+): ReaderMode | null {
+  const raw = env.HIVE_READER_MODE?.trim().toLowerCase();
+  if (!raw) {
+    return null;
+  }
+  if (raw === "pack_driven") {
+    return "pack_driven";
+  }
+  throw new Error(`READER_MODE_UNSUPPORTED:${raw}`);
+}
+
+export function packDrivenProposalPackPath(
+  env: Record<string, string | undefined> = process.env,
+): string {
+  const override = env.HIVE_PACK_DRIVEN_READER_PROPOSAL_JSON?.trim();
+  if (override) {
+    return override;
+  }
+  return join(CORE_REPO_ROOT, "brain", "domain-packs", "iep", "iep-pack.v0.3.proposed.json");
+}
+
+export function loadPackDrivenProposalPackContentSha256(
+  env: Record<string, string | undefined> = process.env,
+): string {
+  const path = packDrivenProposalPackPath(env);
+  let raw: string;
+  try {
+    raw = readFileSync(path, "utf8");
+  } catch (error) {
+    const errno = error as NodeJS.ErrnoException;
+    if (errno?.code === "ENOENT") {
+      throw new Error(`PACK_DRIVEN_PROPOSAL_PACK_MISSING:${path}`);
+    }
+    throw error;
+  }
+  const parsed = JSON.parse(raw) as ProposalDomainPack;
+  return computeProposalPackContentSha256(parsed).toLowerCase();
+}
+
 export function resolveReaderArchitectureVariant(
   env: Record<string, string | undefined> = process.env,
 ): ReaderArchitectureVariant | null {
+  if (resolveReaderMode(env)) {
+    return null;
+  }
   const legacy = env.HIVE_READER_EXPERIMENT_VARIANT?.trim();
   if (legacy) {
     throw new Error(
@@ -268,8 +319,18 @@ export function loadAgenticReaderQualificationPromptMetadata(input?: {
   env?: Record<string, string | undefined>;
 }): AgenticReaderPromptMetadata {
   const env = input?.env ?? process.env;
-  const architecture = resolveReaderArchitectureVariant(env);
+  const readerMode = resolveReaderMode(env);
   const base = loadEffectiveStudyAgentsPromptMetadata(input);
+  if (readerMode === "pack_driven") {
+    return {
+      promptId: "pack-driven-reader/iep-v0.3-proposed",
+      promptVersion: PACK_DRIVEN_READER_PROMPT_VERSION,
+      promptSha256: loadPackDrivenProposalPackContentSha256(env),
+      agentsJsonPath: base.agentsJsonPath,
+      artifact: base.artifact,
+    };
+  }
+  const architecture = resolveReaderArchitectureVariant(env);
   if (!architecture) {
     return base;
   }
@@ -543,6 +604,7 @@ export function buildAgenticReaderQualificationEngineFingerprint(input: {
   promptSha256: string;
   modelIdentity: AgenticReaderModelIdentity;
   readerArchitectureVariant?: ReaderArchitectureVariant | null;
+  readerMode?: ReaderMode | null;
 }): AgenticReaderQualificationEngineFingerprint {
   const base = {
     namespace: AGENTIC_READER_QUALIFICATION_NAMESPACE,
@@ -550,6 +612,15 @@ export function buildAgenticReaderQualificationEngineFingerprint(input: {
     modelName: input.modelIdentity.modelName,
     promptSha256: input.promptSha256,
   };
+  if (input.readerMode === "pack_driven") {
+    return {
+      ...base,
+      promptSha256: hashCanonicalJson({
+        promptSha256: input.promptSha256,
+        readerMode: "pack_driven",
+      }),
+    };
+  }
   if (!input.readerArchitectureVariant) {
     return base;
   }

@@ -10,6 +10,7 @@ import {
   persistStudyRun,
   resolveAgenticReaderModelIdentity,
   resolveReaderArchitectureVariant,
+  resolveReaderMode,
 } from "@hiveforyou/core/study";
 import type { CanonicalStudyRun } from "@hiveforyou/shared/canonical-study";
 
@@ -112,6 +113,7 @@ export async function ensureAgenticReaderQualificationRun(
     promptSha256: prompt.promptSha256,
     modelIdentity,
     readerArchitectureVariant: resolveReaderArchitectureVariant(env),
+    readerMode: resolveReaderMode(env),
   });
   const idempotencyKey = computeAgenticReaderQualificationIdempotencyKey({
     caseId,

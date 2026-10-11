@@ -48,6 +48,15 @@ from hive_agents.trace_client import (
     reader_trace_config_from_env,
 )
 from hive_agents.reader_diagnostics import ReaderExecutionCounts, completed_audit_payload
+from hive_agents.reader_mode import (
+    assert_reader_mode_compatible,
+    resolve_effective_reader_mode,
+    PACK_DRIVEN_READER_MODE,
+)
+from hive_agents.pack_driven_reader.run import (
+    per_document_results_to_wire,
+    run_pack_driven_reader,
+)
 from hive_agents.trace_emitter import ReaderTraceContext, ReaderTraceSession
 from hive_agents.verifier_client import (
     ReaderVerifierClient,
@@ -255,7 +264,7 @@ def execute_study_reader(
     lm_factory=create_dspy_lm,
     verifier_client: ReaderVerifierClient | None = None,
     trace_client: ReaderTraceClient | None = None,
-) -> tuple[ReaderRunResult, StudyReaderAudit]:
+) -> tuple[ReaderRunResult, StudyReaderAudit, list[dict[str, object]] | None]:
     pack = resolve_agent_pack_for_domain(request.domain_id)
     pages = request.flattened_pages()
     if not pages:
@@ -268,6 +277,14 @@ def execute_study_reader(
     )
     limits = request.limits.to_execution_limits() if request.limits else None
     settings = get_settings()
+    try:
+        assert_reader_mode_compatible(settings, request.reader_mode)
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail=_error_body("READER_MODE_INVALID", str(exc)),
+        ) from exc
+    reader_mode = resolve_effective_reader_mode(settings, request.reader_mode)
     trusted_documents = trusted_documents_from_reader_request_documents(request.documents)
     validated_engine1 = None
     if request.engine1_reader_context_json:
@@ -285,10 +302,11 @@ def execute_study_reader(
         engine1_context_json=request.engine1_reader_context_json,
     )
     truncate_verification = settings.reader_experiment_truncate_verification
-    architecture = resolve_reader_architecture(settings)
+    architecture = resolve_reader_architecture(settings) if reader_mode != PACK_DRIVEN_READER_MODE else None
 
     lm = lm_factory()
     trace_session = _build_trace_session(request, pack=pack, trace_client=trace_client)
+    per_document_wire: list[dict[str, object]] | None = None
     audit_not_configured = _audit_for_request(
         request,
         persisted=False,
@@ -303,45 +321,77 @@ def execute_study_reader(
                     "Reader audit trail is required (set HIVE_AGENT_TRACE_TOKEN or HIVE_VERIFIER_TOKEN).",
                 ),
             )
-        result, _experiment = _execute_reader_variant(
-            architecture=architecture,
-            pack=pack,
-            pages=pages,
-            lm=lm,
-            client=client,
-            verify_context=verify_context,
-            limits=limits,
-            request=request,
-            settings=settings,
-            stable_system=stable_system,
-            manifest_block=manifest_block,
-            truncate_verification=truncate_verification,
-            trace_session=None,
-            validated_engine1=validated_engine1,
-        )
-        return result, audit_not_configured
+        if reader_mode == PACK_DRIVEN_READER_MODE:
+            if not request.engine1_reader_context_json:
+                raise Engine1ReaderContextError(
+                    "PACK_DRIVEN_ENGINE1_CONTEXT_REQUIRED",
+                    "Pack-driven Reader requires engine1ReaderContextJson.",
+                )
+            result, per_document, experiment_audit = run_pack_driven_reader(
+                pages=pages,
+                lm=lm,
+                verifier_client=client,
+                verify_context=verify_context,
+                engine1_reader_context_json=request.engine1_reader_context_json,
+                settings=settings,
+            )
+            per_document_wire = per_document_results_to_wire(per_document)
+        else:
+            result, experiment_audit = _execute_reader_variant(
+                architecture=architecture,
+                pack=pack,
+                pages=pages,
+                lm=lm,
+                client=client,
+                verify_context=verify_context,
+                limits=limits,
+                request=request,
+                settings=settings,
+                stable_system=stable_system,
+                manifest_block=manifest_block,
+                truncate_verification=truncate_verification,
+                trace_session=None,
+                validated_engine1=validated_engine1,
+            )
+        return result, audit_not_configured, per_document_wire
 
     import time
 
     started = time.perf_counter()
     trace_session.emit("STARTED", {"modelId": trace_session.context.model_id})
     try:
-        result, experiment_audit = _execute_reader_variant(
-            architecture=architecture,
-            pack=pack,
-            pages=pages,
-            lm=lm,
-            client=client,
-            verify_context=verify_context,
-            limits=limits,
-            request=request,
-            settings=settings,
-            stable_system=stable_system,
-            manifest_block=manifest_block,
-            truncate_verification=truncate_verification,
-            trace_session=trace_session,
-            validated_engine1=validated_engine1,
-        )
+        if reader_mode == PACK_DRIVEN_READER_MODE:
+            if not request.engine1_reader_context_json:
+                raise Engine1ReaderContextError(
+                    "PACK_DRIVEN_ENGINE1_CONTEXT_REQUIRED",
+                    "Pack-driven Reader requires engine1ReaderContextJson.",
+                )
+            result, per_document, experiment_audit = run_pack_driven_reader(
+                pages=pages,
+                lm=lm,
+                verifier_client=client,
+                verify_context=verify_context,
+                engine1_reader_context_json=request.engine1_reader_context_json,
+                settings=settings,
+            )
+            per_document_wire = per_document_results_to_wire(per_document)
+        else:
+            result, experiment_audit = _execute_reader_variant(
+                architecture=architecture,
+                pack=pack,
+                pages=pages,
+                lm=lm,
+                client=client,
+                verify_context=verify_context,
+                limits=limits,
+                request=request,
+                settings=settings,
+                stable_system=stable_system,
+                manifest_block=manifest_block,
+                truncate_verification=truncate_verification,
+                trace_session=trace_session,
+                validated_engine1=validated_engine1,
+            )
         duration_ms = int((time.perf_counter() - started) * 1000)
         counts = result.execution_counts or ReaderExecutionCounts()
         trace_session.emit(
@@ -379,7 +429,7 @@ def execute_study_reader(
             raise
         raise
 
-    return result, _audit_for_request(request, persisted=True, status="persisted")
+    return result, _audit_for_request(request, persisted=True, status="persisted"), per_document_wire
 
 
 def _study_reader_response(
@@ -388,6 +438,7 @@ def _study_reader_response(
     *,
     pack_version: str,
     audit: StudyReaderAudit | None = None,
+    per_document_results: list[dict[str, object]] | None = None,
 ) -> StudyReaderResponse:
     candidate_facts = [
         fact.model_dump(mode="json", by_alias=False) for fact in result.candidate_facts
@@ -404,6 +455,7 @@ def _study_reader_response(
         reasoning_steps=result.reasoning_steps,
         tool_calls=result.tool_calls,
         audit=audit,
+        per_document_results=per_document_results,
     )
 
 
@@ -495,7 +547,7 @@ async def study_reader(
         ) from exc
 
     try:
-        result, audit = await run_in_threadpool(execute_study_reader, request)
+        result, audit, per_document_results = await run_in_threadpool(execute_study_reader, request)
     except HTTPException:
         raise
     except ReaderVerifierError as exc:
@@ -540,4 +592,5 @@ async def study_reader(
         result,
         pack_version=pack.domainPackVersion,
         audit=audit,
+        per_document_results=per_document_results,
     )

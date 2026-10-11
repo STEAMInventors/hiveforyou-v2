@@ -109,17 +109,21 @@ function applyExperimentCliFlags(argv: string[]): {
   live: boolean;
   architecture: string | null;
   parallelPromptVariant: string | null;
+  packDriven: boolean;
 } {
   let dryRun = false;
   let live = false;
   let architecture: string | null = null;
   let parallelPromptVariant: string | null = null;
+  let packDriven = false;
   for (let i = 3; i < argv.length; i += 1) {
     const arg = argv[i]?.trim();
     if (arg === "--dry-run") {
       dryRun = true;
     } else if (arg === "--live") {
       live = true;
+    } else if (arg === "--pack-driven") {
+      packDriven = true;
     } else if (arg === "--architecture") {
       architecture = argv[++i]?.trim() ?? null;
     } else if (arg === "--parallel-prompt-variant") {
@@ -128,9 +132,15 @@ function applyExperimentCliFlags(argv: string[]): {
       throw new Error("--variant retired; use --architecture case_wide|parallel_document");
     }
   }
+  if (packDriven) {
+    process.env.HIVE_READER_MODE = "pack_driven";
+  }
   if (architecture) {
     process.env.HIVE_READER_ARCHITECTURE_VARIANT = architecture;
     process.env.HIVE_READER_EXPERIMENT_TRUNCATE_VERIFICATION = "1";
+  }
+  if (packDriven && architecture) {
+    throw new Error("--pack-driven cannot be combined with --architecture");
   }
   if (parallelPromptVariant) {
     process.env.HIVE_READER_PARALLEL_PROMPT_VARIANT = parallelPromptVariant;
@@ -138,7 +148,7 @@ function applyExperimentCliFlags(argv: string[]): {
   if (live && process.env.HIVE_READER_EXPERIMENT_ALLOW_LIVE !== "1") {
     throw new Error("Live experiment blocked: set HIVE_READER_EXPERIMENT_ALLOW_LIVE=1 explicitly.");
   }
-  return { dryRun, live, architecture, parallelPromptVariant };
+  return { dryRun, live, architecture, parallelPromptVariant, packDriven };
 }
 
 async function cmdDryRun(): Promise<void> {
@@ -201,14 +211,16 @@ async function main(): Promise<void> {
     return;
   }
   if (command === "run") {
-    if (flags.architecture && !flags.live) {
-      throw new Error("Experiment run requires --live (Anthropic) with HIVE_READER_EXPERIMENT_ALLOW_LIVE=1.");
+    if ((flags.architecture || flags.packDriven) && !flags.live) {
+      throw new Error(
+        "Live qualification requires --live with HIVE_READER_EXPERIMENT_ALLOW_LIVE=1 (pack-driven or architecture).",
+      );
     }
     await cmdRun();
     return;
   }
   console.error(
-    "Usage: l001-agentic-reader-qualification <ensure|run|dry-run> [--architecture case_wide|parallel_document] [--parallel-prompt-variant p6] [--dry-run] [--live DO NOT RUN without approval]",
+    "Usage: l001-agentic-reader-qualification <ensure|run|dry-run> [--pack-driven] [--architecture case_wide|parallel_document] [--parallel-prompt-variant p6] [--dry-run] [--live DO NOT RUN without approval]",
   );
   process.exitCode = 1;
 }

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import shutil
 import subprocess
 from dataclasses import dataclass
@@ -30,8 +31,66 @@ class PackDrivenReaderCompileResult:
     blocks: Mapping[str, str]
 
 
+@dataclass(frozen=True)
+class PackDrivenReaderParseResult:
+    ok: bool
+    errors: list[str]
+    record_instances: list[dict[str, Any]]
+
+
+def _repo_root(repo_root: Path | None) -> Path:
+    return repo_root if repo_root is not None else agent_settings.repo_root_from_module_file(
+        agent_settings.__file__
+    )
+
+
 def _compiler_cli_path(repo_root: Path) -> Path:
-    return repo_root / "engine" / "domain-pack" / "scripts" / "pack-driven-reader-compile-stdin.ts"
+    env_override = os.environ.get("HIVE_PACK_DRIVEN_READER_COMPILER_JS", "").strip()
+    if env_override:
+        return Path(env_override).expanduser().resolve()
+    bundled = repo_root / "engine" / "domain-pack" / "dist" / "pack-driven-reader-bridge.mjs"
+    if bundled.is_file():
+        return bundled
+    return repo_root / "engine" / "domain-pack" / "scripts" / "pack-driven-reader-bridge-stdin.ts"
+
+
+def _invoke_bridge(payload: Mapping[str, Any], *, repo_root: Path | None = None) -> dict[str, Any]:
+    root = _repo_root(repo_root)
+    cli = _compiler_cli_path(root)
+    if not cli.is_file():
+        raise PackDrivenReaderCompilerError(f"Compiler bridge missing: {cli}")
+
+    if cli.suffix == ".ts":
+        pnpm = shutil.which("pnpm")
+        if pnpm is None:
+            raise PackDrivenReaderCompilerError(
+                "pnpm not found; build engine/domain-pack/dist/pack-driven-reader-bridge.mjs "
+                "or set HIVE_PACK_DRIVEN_READER_COMPILER_JS",
+            )
+        cmd = [pnpm, "exec", "tsx", str(cli)]
+        cwd = str(root)
+    else:
+        node = shutil.which("node")
+        if node is None:
+            raise PackDrivenReaderCompilerError("node not found; cannot invoke pack-driven compiler bridge")
+        cmd = [node, str(cli)]
+        cwd = str(root)
+
+    proc = subprocess.run(
+        cmd,
+        input=json.dumps(payload).encode("utf-8"),
+        cwd=cwd,
+        capture_output=True,
+        check=False,
+    )
+    if proc.returncode != 0:
+        stderr = proc.stderr.decode("utf-8", errors="replace")
+        raise PackDrivenReaderCompilerError(f"pack-driven bridge failed: {stderr.strip()}")
+
+    raw = json.loads(proc.stdout.decode("utf-8"))
+    if not isinstance(raw, dict):
+        raise PackDrivenReaderCompilerError("pack-driven bridge returned non-object JSON")
+    return raw
 
 
 def compile_pack_driven_reader_prompt_via_node(
@@ -39,27 +98,7 @@ def compile_pack_driven_reader_prompt_via_node(
     *,
     repo_root: Path | None = None,
 ) -> PackDrivenReaderCompileResult:
-    root = repo_root if repo_root is not None else agent_settings.repo_root_from_module_file(agent_settings.__file__)
-    cli = _compiler_cli_path(root)
-    if not cli.is_file():
-        raise PackDrivenReaderCompilerError(f"Compiler CLI missing: {cli}")
-
-    pnpm = shutil.which("pnpm")
-    if pnpm is None:
-        raise PackDrivenReaderCompilerError("pnpm not found; cannot invoke TypeScript pack-driven compiler")
-
-    proc = subprocess.run(
-        [pnpm, "exec", "tsx", str(cli)],
-        input=json.dumps(payload).encode("utf-8"),
-        cwd=str(root),
-        capture_output=True,
-        check=False,
-    )
-    if proc.returncode != 0:
-        stderr = proc.stderr.decode("utf-8", errors="replace")
-        raise PackDrivenReaderCompilerError(f"pack-driven compiler failed: {stderr.strip()}")
-
-    raw = json.loads(proc.stdout.decode("utf-8"))
+    raw = _invoke_bridge({"op": "compile", **dict(payload)}, repo_root=repo_root)
     return PackDrivenReaderCompileResult(
         prompt_version=str(raw["promptVersion"]),
         pack_id=str(raw["packId"]),
@@ -73,4 +112,29 @@ def compile_pack_driven_reader_prompt_via_node(
         case_user_content=str(raw["caseUserContent"]),
         output_json_schema=dict(raw["outputJsonSchema"]),
         blocks=dict(raw["blocks"]),
+    )
+
+
+def parse_pack_driven_extraction_via_node(
+    *,
+    pack: Mapping[str, Any],
+    raw: Mapping[str, Any],
+    expected_source_document_id: str,
+    selected_record_type_ids: list[str],
+    repo_root: Path | None = None,
+) -> PackDrivenReaderParseResult:
+    payload = {
+        "op": "parse",
+        "pack": pack,
+        "raw": raw,
+        "expectedSourceDocumentId": expected_source_document_id,
+        "selectedRecordTypeIds": selected_record_type_ids,
+    }
+    parsed = _invoke_bridge(payload, repo_root=repo_root)
+    errors = parsed.get("errors")
+    record_instances = parsed.get("recordInstances")
+    return PackDrivenReaderParseResult(
+        ok=bool(parsed.get("ok")),
+        errors=list(errors) if isinstance(errors, list) else [],
+        record_instances=list(record_instances) if isinstance(record_instances, list) else [],
     )

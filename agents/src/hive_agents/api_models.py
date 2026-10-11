@@ -156,6 +156,20 @@ class StudyReaderRequest(BaseModel):
         default=None,
         validation_alias=AliasChoices("engine1ReaderContextJson", "engine1_reader_context_json"),
     )
+    reader_mode: Literal["pack_driven"] | None = Field(
+        default=None,
+        validation_alias=AliasChoices("readerMode", "reader_mode"),
+    )
+
+    @field_validator("reader_mode", mode="before")
+    @classmethod
+    def _normalize_reader_mode(cls, value: object) -> object:
+        if value is None:
+            return None
+        if isinstance(value, str):
+            stripped = value.strip().lower()
+            return stripped or None
+        return value
 
     @field_validator("case_id", "user_id", "domain_id", "study_run_id", "attempt_id")
     @classmethod
@@ -220,6 +234,10 @@ class StudyReaderResponse(BaseModel):
     reasoning_steps: int = Field(serialization_alias="reasoningSteps")
     tool_calls: int = Field(serialization_alias="toolCalls")
     audit: StudyReaderAudit | None = None
+    per_document_results: list[dict[str, object]] | None = Field(
+        default=None,
+        serialization_alias="perDocumentResults",
+    )
 
 
 class PackDomainMismatchError(ValueError):

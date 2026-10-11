@@ -280,6 +280,7 @@ describe("agentic reader qualification worker flow", () => {
       domainId: "iep",
       studyRunId: "33333333-3333-4333-8333-333333333333",
       attemptId: "55555555-5555-4555-8555-555555555555",
+      readerMode: "pack_driven",
       bundles: [
         {
           sourceDocumentId: "00000000-0000-4000-8000-000000000001",
@@ -322,6 +323,7 @@ describe("agentic reader qualification worker flow", () => {
         },
       ],
     });
+    expect(request.readerMode).toBe("pack_driven");
     expect(request.documents[0]?.sourceDocumentId).toBe("00000000-0000-4000-8000-000000000001");
     expect(request.documents[0]?.pages[0]?.pageNumber).toBe(2);
     expect(request.documents[0]?.pages[0]?.words[0]).toEqual({ seq: 3, text: "Reading" });

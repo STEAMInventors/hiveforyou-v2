@@ -29,7 +29,18 @@ import {
   resolveEffectiveHiveAgentsModelIdentity,
   verifyL001QualificationManifestPackaged,
   verifyReaderExperimentPromptHashesPackaged,
+  resolveReaderMode,
 } from "./agentic-reader-qualification";
+
+describe("resolveReaderMode", () => {
+  it("defaults off when env unset", () => {
+    expect(resolveReaderMode({})).toBeNull();
+  });
+
+  it("selects pack_driven when env set for qualification only", () => {
+    expect(resolveReaderMode({ HIVE_READER_MODE: "pack_driven" })).toBe("pack_driven");
+  });
+});
 
 const COMMITTED_READER_EXPERIMENT_PROMPT_HASHES = {
   promptVersion: "hive-reader-prompt/2.0.0",

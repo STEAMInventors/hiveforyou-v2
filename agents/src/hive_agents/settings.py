@@ -75,6 +75,14 @@ class Settings(BaseSettings):
         default=False,
         validation_alias="READER_EXPERIMENT_TRUNCATE_VERIFICATION",
     )
+    reader_mode: str | None = Field(
+        default=None,
+        validation_alias="READER_MODE",
+    )
+    pack_driven_reader_proposal_json: Path | None = Field(
+        default=None,
+        validation_alias="PACK_DRIVEN_READER_PROPOSAL_JSON",
+    )
 
     @field_validator("reader_experiment_truncate_verification", mode="before")
     @classmethod
@@ -119,6 +127,27 @@ class Settings(BaseSettings):
             stripped = value.strip()
             return stripped or None
         return value
+
+    @field_validator("reader_mode", mode="before")
+    @classmethod
+    def _normalize_reader_mode(cls, value: object) -> object:
+        if value is None:
+            return None
+        if isinstance(value, str):
+            stripped = value.strip().lower()
+            return stripped or None
+        return value
+
+    @field_validator("pack_driven_reader_proposal_json", mode="before")
+    @classmethod
+    def _parse_pack_driven_reader_proposal_json(cls, value: object) -> object:
+        if value is None or (isinstance(value, str) and not value.strip()):
+            return None
+        if isinstance(value, str):
+            return Path(value.strip())
+        if isinstance(value, Path):
+            return value
+        raise ValueError("PACK_DRIVEN_READER_PROPOSAL_JSON must be a path string")
 
     @field_validator("reader_parallel_concurrency", mode="before")
     @classmethod
