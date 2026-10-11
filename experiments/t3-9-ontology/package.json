@@ -1,0 +1,26 @@
+{
+  "name": "@hiveforyou/t3-9-ontology-experiment",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "dry-run": "tsx src/cli.ts --dry-run --mode all",
+    "execute": "tsx src/cli.ts --execute --mode all --provider openai"
+  },
+  "dependencies": {
+    "@hiveforyou/core": "link:../../engine/core",
+    "@hiveforyou/domain-pack-iep": "link:../../engine/domain-packs/iep",
+    "@hiveforyou/domain-packs": "link:../../engine/domain-packs",
+    "@hiveforyou/eval": "link:../../engine/eval",
+    "@hiveforyou/model-providers": "link:../../engine/model-providers",
+    "@hiveforyou/shared": "link:../../engine/shared"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8",
+    "@types/node": "^22.10.2"
+  }
+}

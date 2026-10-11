@@ -1,0 +1,709 @@
+{
+  "schemaVersion": "t3-9-ontology/initial-iep-fact-catalog/1",
+  "documentType": "Individualized Education Program",
+  "domainId": "iep",
+  "targetDocumentFilename": "08_initial_iep.pdf",
+  "goldenTargetCount": 29,
+  "optionalFieldNotes": {
+    "service_session_length": "Not required when absent; frequency and minutes/week are separate optional-adjacent fields.",
+    "service_sessions_per_week": "Do not infer sessions/week from frequency text alone."
+  },
+  "entries": [
+    {
+      "typeId": "clm_iep_date",
+      "goldenFactId": "clm_iep_date",
+      "atomicField": "iep.meeting_date",
+      "subjectScope": "plan",
+      "extractionPhase": "atomic",
+      "valueKind": "date",
+      "acceptableModalities": [
+        "observed"
+      ],
+      "unit": null,
+      "cardinality": {
+        "min": 1,
+        "max": 1
+      },
+      "required": true,
+      "optionalFieldGroup": null,
+      "evidenceRequirements": {
+        "minQuotes": 1,
+        "requireConsecutiveWords": true,
+        "requirePageLocator": true
+      },
+      "description": "Initial IEP iep meeting_date"
+    },
+    {
+      "typeId": "clm_iep_period",
+      "goldenFactId": "clm_iep_period",
+      "atomicField": "iep.effective_period",
+      "subjectScope": "plan",
+      "extractionPhase": "atomic",
+      "valueKind": "period",
+      "acceptableModalities": [
+        "planned"
+      ],
+      "unit": null,
+      "cardinality": {
+        "min": 1,
+        "max": 1
+      },
+      "required": true,
+      "optionalFieldGroup": null,
+      "evidenceRequirements": {
+        "minQuotes": 1,
+        "requireConsecutiveWords": true,
+        "requirePageLocator": true
+      },
+      "description": "Initial IEP iep effective_period"
+    },
+    {
+      "typeId": "clm_iep_student",
+      "goldenFactId": "clm_iep_student",
+      "atomicField": "student.identity",
+      "subjectScope": "plan",
+      "extractionPhase": "atomic",
+      "valueKind": "entity_ref",
+      "acceptableModalities": [
+        "observed"
+      ],
+      "unit": null,
+      "cardinality": {
+        "min": 1,
+        "max": 1
+      },
+      "required": true,
+      "optionalFieldGroup": null,
+      "evidenceRequirements": {
+        "minQuotes": 1,
+        "requireConsecutiveWords": true,
+        "requirePageLocator": true
+      },
+      "description": "Initial IEP student identity"
+    },
+    {
+      "typeId": "clm_iep_implements_eligibility",
+      "goldenFactId": "clm_iep_implements_eligibility",
+      "atomicField": "iep.implements_eligibility",
+      "subjectScope": "plan",
+      "extractionPhase": "relationship",
+      "valueKind": "entity_ref",
+      "acceptableModalities": [
+        "observed"
+      ],
+      "unit": null,
+      "cardinality": {
+        "min": 1,
+        "max": 1
+      },
+      "required": true,
+      "optionalFieldGroup": null,
+      "evidenceRequirements": {
+        "minQuotes": 1,
+        "requireConsecutiveWords": true,
+        "requirePageLocator": true
+      },
+      "description": "Initial IEP iep implements_eligibility"
+    },
+    {
+      "typeId": "clm_iep_addresses",
+      "goldenFactId": "clm_iep_addresses",
+      "atomicField": "iep.addresses_need_area",
+      "subjectScope": "plan",
+      "extractionPhase": "relationship",
+      "valueKind": "text",
+      "acceptableModalities": [
+        "planned"
+      ],
+      "unit": null,
+      "cardinality": {
+        "min": 1,
+        "max": 1
+      },
+      "required": true,
+      "optionalFieldGroup": null,
+      "evidenceRequirements": {
+        "minQuotes": 1,
+        "requireConsecutiveWords": true,
+        "requirePageLocator": true
+      },
+      "description": "Initial IEP iep addresses_need_area"
+    },
+    {
+      "typeId": "clm_iep_has_goal",
+      "goldenFactId": "clm_iep_has_goal",
+      "atomicField": "iep.has_goal",
+      "subjectScope": "plan",
+      "extractionPhase": "relationship",
+      "valueKind": "entity_ref",
+      "acceptableModalities": [
+        "planned"
+      ],
+      "unit": null,
+      "cardinality": {
+        "min": 1,
+        "max": 1
+      },
+      "required": true,
+      "optionalFieldGroup": null,
+      "evidenceRequirements": {
+        "minQuotes": 1,
+        "requireConsecutiveWords": true,
+        "requirePageLocator": true
+      },
+      "description": "Initial IEP iep has_goal"
+    },
+    {
+      "typeId": "clm_iep_has_service",
+      "goldenFactId": "clm_iep_has_service",
+      "atomicField": "iep.has_service",
+      "subjectScope": "plan",
+      "extractionPhase": "relationship",
+      "valueKind": "entity_ref",
+      "acceptableModalities": [
+        "planned"
+      ],
+      "unit": null,
+      "cardinality": {
+        "min": 1,
+        "max": 1
+      },
+      "required": true,
+      "optionalFieldGroup": null,
+      "evidenceRequirements": {
+        "minQuotes": 1,
+        "requireConsecutiveWords": true,
+        "requirePageLocator": true
+      },
+      "description": "Initial IEP iep has_service"
+    },
+    {
+      "typeId": "clm_iep_accommodation_1",
+      "goldenFactId": "clm_iep_accommodation_1",
+      "atomicField": "iep.accommodation",
+      "subjectScope": "accommodation",
+      "extractionPhase": "atomic",
+      "valueKind": "text",
+      "acceptableModalities": [
+        "planned"
+      ],
+      "unit": null,
+      "cardinality": {
+        "min": 0,
+        "max": 4
+      },
+      "required": false,
+      "optionalFieldGroup": "accommodation",
+      "evidenceRequirements": {
+        "minQuotes": 1,
+        "requireConsecutiveWords": true,
+        "requirePageLocator": true
+      },
+      "description": "Initial IEP iep accommodation"
+    },
+    {
+      "typeId": "clm_iep_accommodation_2",
+      "goldenFactId": "clm_iep_accommodation_2",
+      "atomicField": "iep.accommodation",
+      "subjectScope": "accommodation",
+      "extractionPhase": "atomic",
+      "valueKind": "text",
+      "acceptableModalities": [
+        "planned"
+      ],
+      "unit": null,
+      "cardinality": {
+        "min": 0,
+        "max": 4
+      },
+      "required": false,
+      "optionalFieldGroup": "accommodation",
+      "evidenceRequirements": {
+        "minQuotes": 1,
+        "requireConsecutiveWords": true,
+        "requirePageLocator": true
+      },
+      "description": "Initial IEP iep accommodation"
+    },
+    {
+      "typeId": "clm_iep_team_role_1",
+      "goldenFactId": "clm_iep_team_role_1",
+      "atomicField": "iep.team_role",
+      "subjectScope": "team",
+      "extractionPhase": "atomic",
+      "valueKind": "text",
+      "acceptableModalities": [
+        "observed"
+      ],
+      "unit": null,
+      "cardinality": {
+        "min": 0,
+        "max": 4
+      },
+      "required": false,
+      "optionalFieldGroup": "team_role",
+      "evidenceRequirements": {
+        "minQuotes": 1,
+        "requireConsecutiveWords": true,
+        "requirePageLocator": true
+      },
+      "description": "Initial IEP iep team_role"
+    },
+    {
+      "typeId": "clm_iep_team_role_2",
+      "goldenFactId": "clm_iep_team_role_2",
+      "atomicField": "iep.team_role",
+      "subjectScope": "team",
+      "extractionPhase": "atomic",
+      "valueKind": "text",
+      "acceptableModalities": [
+        "observed"
+      ],
+      "unit": null,
+      "cardinality": {
+        "min": 0,
+        "max": 4
+      },
+      "required": false,
+      "optionalFieldGroup": "team_role",
+      "evidenceRequirements": {
+        "minQuotes": 1,
+        "requireConsecutiveWords": true,
+        "requirePageLocator": true
+      },
+      "description": "Initial IEP iep team_role"
+    },
+    {
+      "typeId": "clm_iep_team_role_3",
+      "goldenFactId": "clm_iep_team_role_3",
+      "atomicField": "iep.team_role",
+      "subjectScope": "team",
+      "extractionPhase": "atomic",
+      "valueKind": "text",
+      "acceptableModalities": [
+        "observed"
+      ],
+      "unit": null,
+      "cardinality": {
+        "min": 0,
+        "max": 4
+      },
+      "required": false,
+      "optionalFieldGroup": "team_role",
+      "evidenceRequirements": {
+        "minQuotes": 1,
+        "requireConsecutiveWords": true,
+        "requirePageLocator": true
+      },
+      "description": "Initial IEP iep team_role"
+    },
+    {
+      "typeId": "clm_iep_team_role_4",
+      "goldenFactId": "clm_iep_team_role_4",
+      "atomicField": "iep.team_role",
+      "subjectScope": "team",
+      "extractionPhase": "atomic",
+      "valueKind": "text",
+      "acceptableModalities": [
+        "observed"
+      ],
+      "unit": null,
+      "cardinality": {
+        "min": 0,
+        "max": 4
+      },
+      "required": false,
+      "optionalFieldGroup": "team_role",
+      "evidenceRequirements": {
+        "minQuotes": 1,
+        "requireConsecutiveWords": true,
+        "requirePageLocator": true
+      },
+      "description": "Initial IEP iep team_role"
+    },
+    {
+      "typeId": "clm_iep_progress_reporting_frequency",
+      "goldenFactId": "clm_iep_progress_reporting_frequency",
+      "atomicField": "goal.progress_reporting_frequency",
+      "subjectScope": "reporting",
+      "extractionPhase": "atomic",
+      "valueKind": "text",
+      "acceptableModalities": [
+        "planned"
+      ],
+      "unit": null,
+      "cardinality": {
+        "min": 0,
+        "max": 1
+      },
+      "required": false,
+      "optionalFieldGroup": null,
+      "evidenceRequirements": {
+        "minQuotes": 1,
+        "requireConsecutiveWords": true,
+        "requirePageLocator": true
+      },
+      "description": "Initial IEP goal progress_reporting_frequency"
+    },
+    {
+      "typeId": "clm_iep_progress_reporting_method",
+      "goldenFactId": "clm_iep_progress_reporting_method",
+      "atomicField": "goal.progress_reporting_method",
+      "subjectScope": "reporting",
+      "extractionPhase": "atomic",
+      "valueKind": "text",
+      "acceptableModalities": [
+        "planned"
+      ],
+      "unit": null,
+      "cardinality": {
+        "min": 0,
+        "max": 1
+      },
+      "required": false,
+      "optionalFieldGroup": null,
+      "evidenceRequirements": {
+        "minQuotes": 1,
+        "requireConsecutiveWords": true,
+        "requirePageLocator": true
+      },
+      "description": "Initial IEP goal progress_reporting_method"
+    },
+    {
+      "typeId": "clm_goal_area",
+      "goldenFactId": "clm_goal_area",
+      "atomicField": "goal.subject_area",
+      "subjectScope": "goal",
+      "extractionPhase": "atomic",
+      "valueKind": "text",
+      "acceptableModalities": [
+        "planned"
+      ],
+      "unit": null,
+      "cardinality": {
+        "min": 1,
+        "max": 1
+      },
+      "required": true,
+      "optionalFieldGroup": null,
+      "evidenceRequirements": {
+        "minQuotes": 1,
+        "requireConsecutiveWords": true,
+        "requirePageLocator": true
+      },
+      "description": "Initial IEP goal subject_area"
+    },
+    {
+      "typeId": "clm_goal_condition",
+      "goldenFactId": "clm_goal_condition",
+      "atomicField": "goal.condition",
+      "subjectScope": "goal",
+      "extractionPhase": "atomic",
+      "valueKind": "text",
+      "acceptableModalities": [
+        "planned"
+      ],
+      "unit": null,
+      "cardinality": {
+        "min": 1,
+        "max": 1
+      },
+      "required": true,
+      "optionalFieldGroup": null,
+      "evidenceRequirements": {
+        "minQuotes": 1,
+        "requireConsecutiveWords": true,
+        "requirePageLocator": true
+      },
+      "description": "Initial IEP goal condition"
+    },
+    {
+      "typeId": "clm_goal_baseline",
+      "goldenFactId": "clm_goal_baseline",
+      "atomicField": "goal.baseline_wcpm",
+      "subjectScope": "goal",
+      "extractionPhase": "atomic",
+      "valueKind": "quantity",
+      "acceptableModalities": [
+        "observed"
+      ],
+      "unit": "WCPM",
+      "cardinality": {
+        "min": 1,
+        "max": 1
+      },
+      "required": true,
+      "optionalFieldGroup": null,
+      "evidenceRequirements": {
+        "minQuotes": 1,
+        "requireConsecutiveWords": true,
+        "requirePageLocator": true
+      },
+      "description": "Initial IEP goal baseline_wcpm"
+    },
+    {
+      "typeId": "clm_goal_baseline_source",
+      "goldenFactId": "clm_goal_baseline_source",
+      "atomicField": "goal.baseline_source",
+      "subjectScope": "goal",
+      "extractionPhase": "relationship",
+      "valueKind": "entity_ref",
+      "acceptableModalities": [
+        "observed"
+      ],
+      "unit": null,
+      "cardinality": {
+        "min": 1,
+        "max": 1
+      },
+      "required": true,
+      "optionalFieldGroup": null,
+      "evidenceRequirements": {
+        "minQuotes": 1,
+        "requireConsecutiveWords": true,
+        "requirePageLocator": true
+      },
+      "description": "Initial IEP goal baseline_source"
+    },
+    {
+      "typeId": "clm_goal_target_wcpm",
+      "goldenFactId": "clm_goal_target_wcpm",
+      "atomicField": "goal.target_wcpm",
+      "subjectScope": "goal",
+      "extractionPhase": "atomic",
+      "valueKind": "quantity",
+      "acceptableModalities": [
+        "planned"
+      ],
+      "unit": "WCPM",
+      "cardinality": {
+        "min": 1,
+        "max": 1
+      },
+      "required": true,
+      "optionalFieldGroup": null,
+      "evidenceRequirements": {
+        "minQuotes": 1,
+        "requireConsecutiveWords": true,
+        "requirePageLocator": true
+      },
+      "description": "Initial IEP goal target_wcpm"
+    },
+    {
+      "typeId": "clm_goal_accuracy",
+      "goldenFactId": "clm_goal_accuracy",
+      "atomicField": "goal.accuracy_criterion",
+      "subjectScope": "goal",
+      "extractionPhase": "atomic",
+      "valueKind": "quantity",
+      "acceptableModalities": [
+        "planned"
+      ],
+      "unit": "%",
+      "cardinality": {
+        "min": 1,
+        "max": 1
+      },
+      "required": true,
+      "optionalFieldGroup": null,
+      "evidenceRequirements": {
+        "minQuotes": 1,
+        "requireConsecutiveWords": true,
+        "requirePageLocator": true
+      },
+      "description": "Initial IEP goal accuracy_criterion"
+    },
+    {
+      "typeId": "clm_goal_mastery",
+      "goldenFactId": "clm_goal_mastery",
+      "atomicField": "goal.mastery_criterion",
+      "subjectScope": "goal",
+      "extractionPhase": "atomic",
+      "valueKind": "text",
+      "acceptableModalities": [
+        "planned"
+      ],
+      "unit": null,
+      "cardinality": {
+        "min": 1,
+        "max": 1
+      },
+      "required": true,
+      "optionalFieldGroup": null,
+      "evidenceRequirements": {
+        "minQuotes": 1,
+        "requireConsecutiveWords": true,
+        "requirePageLocator": true
+      },
+      "description": "Initial IEP goal mastery_criterion"
+    },
+    {
+      "typeId": "clm_goal_start",
+      "goldenFactId": "clm_goal_start",
+      "atomicField": "goal.start_date",
+      "subjectScope": "goal",
+      "extractionPhase": "atomic",
+      "valueKind": "date",
+      "acceptableModalities": [
+        "planned"
+      ],
+      "unit": null,
+      "cardinality": {
+        "min": 1,
+        "max": 1
+      },
+      "required": true,
+      "optionalFieldGroup": null,
+      "evidenceRequirements": {
+        "minQuotes": 1,
+        "requireConsecutiveWords": true,
+        "requirePageLocator": true
+      },
+      "description": "Initial IEP goal start_date"
+    },
+    {
+      "typeId": "clm_goal_target_date",
+      "goldenFactId": "clm_goal_target_date",
+      "atomicField": "goal.target_date",
+      "subjectScope": "goal",
+      "extractionPhase": "atomic",
+      "valueKind": "date",
+      "acceptableModalities": [
+        "planned"
+      ],
+      "unit": null,
+      "cardinality": {
+        "min": 1,
+        "max": 1
+      },
+      "required": true,
+      "optionalFieldGroup": null,
+      "evidenceRequirements": {
+        "minQuotes": 1,
+        "requireConsecutiveWords": true,
+        "requirePageLocator": true
+      },
+      "description": "Initial IEP goal target_date"
+    },
+    {
+      "typeId": "clm_goal_measurement",
+      "goldenFactId": "clm_goal_measurement",
+      "atomicField": "goal.measurement_method",
+      "subjectScope": "goal",
+      "extractionPhase": "atomic",
+      "valueKind": "text",
+      "acceptableModalities": [
+        "planned"
+      ],
+      "unit": null,
+      "cardinality": {
+        "min": 1,
+        "max": 1
+      },
+      "required": true,
+      "optionalFieldGroup": null,
+      "evidenceRequirements": {
+        "minQuotes": 1,
+        "requireConsecutiveWords": true,
+        "requirePageLocator": true
+      },
+      "description": "Initial IEP goal measurement_method"
+    },
+    {
+      "typeId": "clm_service_frequency",
+      "goldenFactId": "clm_service_frequency",
+      "atomicField": "service.frequency",
+      "subjectScope": "service",
+      "extractionPhase": "atomic",
+      "valueKind": "text",
+      "acceptableModalities": [
+        "planned"
+      ],
+      "unit": null,
+      "cardinality": {
+        "min": 1,
+        "max": 1
+      },
+      "required": true,
+      "optionalFieldGroup": null,
+      "evidenceRequirements": {
+        "minQuotes": 1,
+        "requireConsecutiveWords": true,
+        "requirePageLocator": true
+      },
+      "description": "Initial IEP service frequency"
+    },
+    {
+      "typeId": "clm_service_minutes",
+      "goldenFactId": "clm_service_minutes",
+      "atomicField": "service.minutes_per_week",
+      "subjectScope": "service",
+      "extractionPhase": "atomic",
+      "valueKind": "quantity",
+      "acceptableModalities": [
+        "planned"
+      ],
+      "unit": "min/week",
+      "cardinality": {
+        "min": 1,
+        "max": 1
+      },
+      "required": true,
+      "optionalFieldGroup": null,
+      "evidenceRequirements": {
+        "minQuotes": 1,
+        "requireConsecutiveWords": true,
+        "requirePageLocator": true
+      },
+      "description": "Initial IEP service minutes_per_week"
+    },
+    {
+      "typeId": "clm_service_location",
+      "goldenFactId": "clm_service_location",
+      "atomicField": "service.location",
+      "subjectScope": "service",
+      "extractionPhase": "atomic",
+      "valueKind": "text",
+      "acceptableModalities": [
+        "planned"
+      ],
+      "unit": null,
+      "cardinality": {
+        "min": 1,
+        "max": 1
+      },
+      "required": true,
+      "optionalFieldGroup": null,
+      "evidenceRequirements": {
+        "minQuotes": 1,
+        "requireConsecutiveWords": true,
+        "requirePageLocator": true
+      },
+      "description": "Initial IEP service location"
+    },
+    {
+      "typeId": "clm_service_start",
+      "goldenFactId": "clm_service_start",
+      "atomicField": "service.start_date",
+      "subjectScope": "service",
+      "extractionPhase": "atomic",
+      "valueKind": "date",
+      "acceptableModalities": [
+        "planned"
+      ],
+      "unit": null,
+      "cardinality": {
+        "min": 1,
+        "max": 1
+      },
+      "required": true,
+      "optionalFieldGroup": null,
+      "evidenceRequirements": {
+        "minQuotes": 1,
+        "requireConsecutiveWords": true,
+        "requirePageLocator": true
+      },
+      "description": "Initial IEP service start_date"
+    }
+  ]
+}

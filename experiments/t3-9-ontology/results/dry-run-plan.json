@@ -1,0 +1,143 @@
+{
+  "experiment": "t3-9-ontology",
+  "gitHead": "603a192",
+  "provider": "openai",
+  "modelName": "gpt-5.6-sol",
+  "budget": {
+    "temperature": 0,
+    "maxOutputTokens": 16000,
+    "concurrency": 3
+  },
+  "catalogEntries": 29,
+  "l001Documents": 8,
+  "plannedCalls": [
+    {
+      "callId": "A-doc-01_initial_referral.pdf",
+      "mode": "A",
+      "scope": "document",
+      "filename": "01_initial_referral.pdf",
+      "phase": "atomic"
+    },
+    {
+      "callId": "A-doc-02_evaluation_plan.pdf",
+      "mode": "A",
+      "scope": "document",
+      "filename": "02_evaluation_plan.pdf",
+      "phase": "atomic"
+    },
+    {
+      "callId": "A-doc-03_parent_evaluation_consent.pdf",
+      "mode": "A",
+      "scope": "document",
+      "filename": "03_parent_evaluation_consent.pdf",
+      "phase": "atomic"
+    },
+    {
+      "callId": "A-doc-04_psychoeducational_evaluation.pdf",
+      "mode": "A",
+      "scope": "document",
+      "filename": "04_psychoeducational_evaluation.pdf",
+      "phase": "atomic"
+    },
+    {
+      "callId": "A-doc-05_academic_evaluation.pdf",
+      "mode": "A",
+      "scope": "document",
+      "filename": "05_academic_evaluation.pdf",
+      "phase": "atomic"
+    },
+    {
+      "callId": "A-doc-06_speech_language_evaluation.pdf",
+      "mode": "A",
+      "scope": "document",
+      "filename": "06_speech_language_evaluation.pdf",
+      "phase": "atomic"
+    },
+    {
+      "callId": "A-doc-07_eligibility_determination.pdf",
+      "mode": "A",
+      "scope": "document",
+      "filename": "07_eligibility_determination.pdf",
+      "phase": "atomic"
+    },
+    {
+      "callId": "A-doc-08_initial_iep.pdf",
+      "mode": "A",
+      "scope": "document",
+      "filename": "08_initial_iep.pdf",
+      "phase": "atomic"
+    },
+    {
+      "callId": "B-case-wide",
+      "mode": "B",
+      "scope": "case",
+      "phase": "atomic"
+    },
+    {
+      "callId": "C-doc-01_initial_referral.pdf",
+      "mode": "C",
+      "scope": "document",
+      "filename": "01_initial_referral.pdf",
+      "phase": "atomic"
+    },
+    {
+      "callId": "C-doc-02_evaluation_plan.pdf",
+      "mode": "C",
+      "scope": "document",
+      "filename": "02_evaluation_plan.pdf",
+      "phase": "atomic"
+    },
+    {
+      "callId": "C-doc-03_parent_evaluation_consent.pdf",
+      "mode": "C",
+      "scope": "document",
+      "filename": "03_parent_evaluation_consent.pdf",
+      "phase": "atomic"
+    },
+    {
+      "callId": "C-doc-04_psychoeducational_evaluation.pdf",
+      "mode": "C",
+      "scope": "document",
+      "filename": "04_psychoeducational_evaluation.pdf",
+      "phase": "atomic"
+    },
+    {
+      "callId": "C-doc-05_academic_evaluation.pdf",
+      "mode": "C",
+      "scope": "document",
+      "filename": "05_academic_evaluation.pdf",
+      "phase": "atomic"
+    },
+    {
+      "callId": "C-doc-06_speech_language_evaluation.pdf",
+      "mode": "C",
+      "scope": "document",
+      "filename": "06_speech_language_evaluation.pdf",
+      "phase": "atomic"
+    },
+    {
+      "callId": "C-doc-07_eligibility_determination.pdf",
+      "mode": "C",
+      "scope": "document",
+      "filename": "07_eligibility_determination.pdf",
+      "phase": "atomic"
+    },
+    {
+      "callId": "C-doc-08_initial_iep.pdf",
+      "mode": "C",
+      "scope": "document",
+      "filename": "08_initial_iep.pdf",
+      "phase": "atomic"
+    },
+    {
+      "callId": "C-case-relationship",
+      "mode": "C",
+      "scope": "relationship",
+      "phase": "relationship"
+    }
+  ],
+  "callCount": 18,
+  "estimatedInputTokens": 85200,
+  "estimatedOutputTokens": 72000,
+  "note": "Dry-run only — no model provider invoked."
+}

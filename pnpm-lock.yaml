@@ -401,6 +401,40 @@ importers:
         specifier: ^2.1.8
         version: 2.1.9(@types/node@22.20.4)(jsdom@25.0.1)(terser@5.51.2)
 
+  experiments/t3-9-ontology:
+    dependencies:
+      '@hiveforyou/core':
+        specifier: link:../../engine/core
+        version: link:../../engine/core
+      '@hiveforyou/domain-pack-iep':
+        specifier: link:../../engine/domain-packs/iep
+        version: link:../../engine/domain-packs/iep
+      '@hiveforyou/domain-packs':
+        specifier: link:../../engine/domain-packs
+        version: link:../../engine/domain-packs
+      '@hiveforyou/eval':
+        specifier: link:../../engine/eval
+        version: link:../../engine/eval
+      '@hiveforyou/model-providers':
+        specifier: link:../../engine/model-providers
+        version: link:../../engine/model-providers
+      '@hiveforyou/shared':
+        specifier: link:../../engine/shared
+        version: link:../../engine/shared
+    devDependencies:
+      '@types/node':
+        specifier: ^22.10.2
+        version: 22.20.4
+      tsx:
+        specifier: ^4.19.2
+        version: 4.23.15
+      typescript:
+        specifier: ^5.7.2
+        version: 5.9.3
+      vitest:
+        specifier: ^2.1.8
+        version: 2.1.9(@types/node@22.20.4)(jsdom@25.0.1)(terser@5.51.2)
+
   worker:
     dependencies:
       '@gutenye/ocr-node':

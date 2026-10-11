@@ -11,3 +11,4 @@ packages:
   - "engine/domain-pack"
   - "engine/domain-packs/*"
   - "engine/domain-packs/_shared"
+  - "experiments/t3-9-ontology"
