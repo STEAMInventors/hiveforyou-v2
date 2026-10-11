@@ -1,0 +1,3259 @@
+{
+  "schemaVersion": "hive.domain-pack.proposal/0.3.0",
+  "status": "REVIEW_DRAFT_NOT_RUNTIME_COMPATIBLE",
+  "manifest": {
+    "id": "iep",
+    "version": "0.3.0-proposed",
+    "name": "Special Education / IEP",
+    "jurisdictions": [
+      "US-federal-base"
+    ],
+    "supersedes": "0.2.0-proposed",
+    "compatibility": "Requires approved universal DomainPack v0.3 schema; not a drop-in replacement for current pack.ts"
+  },
+  "audiences": [
+    {
+      "id": "customer",
+      "label": "Parent/Caregiver",
+      "defaultQuestions": [
+        "What does the current plan give my child?",
+        "What changed since the last plan?",
+        "Is my child making progress on each goal?",
+        "What is missing or unclear in these documents?",
+        "What should I ask at the next meeting?"
+      ],
+      "priorities": [
+        "current_plan",
+        "changes",
+        "progress",
+        "missing",
+        "questions",
+        "source_documents"
+      ]
+    },
+    {
+      "id": "pro",
+      "label": "Advocate/Attorney",
+      "defaultQuestions": [
+        "Which required IEP contents are present, blank or not found?",
+        "What changed across plan versions and amendments?",
+        "Where do evaluators or documents disagree?",
+        "What does each measure series show over time?"
+      ],
+      "priorities": [
+        "all_verified_facts",
+        "requirement_coverage",
+        "chronology",
+        "plan_changes",
+        "conflicts",
+        "measure_series",
+        "source_evidence",
+        "exports"
+      ]
+    }
+  ],
+  "authorRoles": [
+    {
+      "id": "education_agency",
+      "party": "school"
+    },
+    {
+      "id": "school_evaluator",
+      "party": "school"
+    },
+    {
+      "id": "eligibility_team",
+      "party": "school"
+    },
+    {
+      "id": "independent_evaluator",
+      "party": "independent"
+    },
+    {
+      "id": "parent_guardian",
+      "party": "parent"
+    },
+    {
+      "id": "referrer",
+      "party": "classified_per_document"
+    },
+    {
+      "id": "other",
+      "party": "classified_per_document"
+    }
+  ],
+  "authorPartyPolicy": "change = same key, same party, later ordering date; conflict = same key, different parties. Party is fixed by role unless the role says classified_per_document.",
+  "documentTypes": [
+    {
+      "id": "iep.plan",
+      "label": "Individualized Education Program",
+      "authorRole": "education_agency",
+      "recognitionSignals": [
+        "individualized education program",
+        "IEP",
+        "annual goals",
+        "present levels",
+        "special education services"
+      ],
+      "orderingDate": "document_header.effective_start",
+      "subtypes": [
+        "initial",
+        "annual",
+        "review",
+        "revised"
+      ],
+      "documentLinks": [],
+      "classificationPolicy": "propose_with_evidence_or_unresolved",
+      "checklist": [
+        "document_header",
+        "student",
+        "meeting",
+        "meeting_participant",
+        "eligibility",
+        "present_level",
+        "measurement",
+        "goal",
+        "short_term_objective",
+        "service",
+        "accommodation",
+        "placement",
+        "assessment_participation",
+        "transition",
+        "transfer_of_rights",
+        "extended_school_year",
+        "parent_request"
+      ],
+      "checklistPolicy": "look_for_all_listed; never_invent_if_absent; extract_other_pack_records_if_found"
+    },
+    {
+      "id": "iep.amendment",
+      "label": "IEP Amendment",
+      "authorRole": "education_agency",
+      "recognitionSignals": [
+        "amendment",
+        "amend the IEP",
+        "without a meeting",
+        "names an existing IEP by date"
+      ],
+      "orderingDate": "amendment_change.effective_date",
+      "subtypes": [],
+      "documentLinks": [
+        "amends"
+      ],
+      "classificationPolicy": "propose_with_evidence_or_unresolved",
+      "checklist": [
+        "document_header",
+        "student",
+        "amendment_change",
+        "present_level",
+        "goal",
+        "short_term_objective",
+        "service",
+        "accommodation",
+        "placement",
+        "assessment_participation",
+        "transition",
+        "extended_school_year"
+      ],
+      "checklistPolicy": "look_for_all_listed; never_invent_if_absent; extract_other_pack_records_if_found",
+      "amends": "iep.plan"
+    },
+    {
+      "id": "iep.progress",
+      "label": "IEP Progress Report",
+      "authorRole": "education_agency",
+      "recognitionSignals": [
+        "progress report",
+        "progress toward annual goals",
+        "reporting period",
+        "progress code"
+      ],
+      "orderingDate": "progress_entry.reporting_period.end",
+      "subtypes": [],
+      "documentLinks": [
+        "reports_on_goal",
+        "references_plan"
+      ],
+      "classificationPolicy": "propose_with_evidence_or_unresolved",
+      "checklist": [
+        "document_header",
+        "student",
+        "progress_entry",
+        "measurement"
+      ],
+      "checklistPolicy": "look_for_all_listed; never_invent_if_absent; extract_other_pack_records_if_found"
+    },
+    {
+      "id": "iep.eligibility",
+      "label": "Eligibility Determination",
+      "authorRole": "eligibility_team",
+      "recognitionSignals": [
+        "eligibility determination",
+        "eligibility report",
+        "meets criteria",
+        "disability category"
+      ],
+      "orderingDate": "document_header.document_date",
+      "subtypes": [],
+      "documentLinks": [
+        "supports_plan"
+      ],
+      "classificationPolicy": "propose_with_evidence_or_unresolved",
+      "checklist": [
+        "document_header",
+        "student",
+        "meeting",
+        "meeting_participant",
+        "eligibility"
+      ],
+      "checklistPolicy": "look_for_all_listed; never_invent_if_absent; extract_other_pack_records_if_found"
+    },
+    {
+      "id": "iep.evaluation.academic",
+      "label": "Academic Evaluation",
+      "authorRole": "school_evaluator",
+      "recognitionSignals": [
+        "academic evaluation",
+        "achievement testing",
+        "WIAT",
+        "Woodcock-Johnson",
+        "standard score"
+      ],
+      "orderingDate": "document_header.document_date",
+      "subtypes": [],
+      "documentLinks": [
+        "supports_eligibility",
+        "supports_baseline"
+      ],
+      "classificationPolicy": "propose_with_evidence_or_unresolved",
+      "checklist": [
+        "document_header",
+        "student",
+        "measurement",
+        "evaluation_finding"
+      ],
+      "checklistPolicy": "look_for_all_listed; never_invent_if_absent; extract_other_pack_records_if_found"
+    },
+    {
+      "id": "iep.evaluation.psychoeducational",
+      "label": "Psychoeducational Evaluation",
+      "authorRole": "school_evaluator",
+      "recognitionSignals": [
+        "psychoeducational evaluation",
+        "cognitive",
+        "WISC",
+        "processing",
+        "school psychologist"
+      ],
+      "orderingDate": "document_header.document_date",
+      "subtypes": [],
+      "documentLinks": [
+        "supports_eligibility"
+      ],
+      "classificationPolicy": "propose_with_evidence_or_unresolved",
+      "checklist": [
+        "document_header",
+        "student",
+        "measurement",
+        "evaluation_finding"
+      ],
+      "checklistPolicy": "look_for_all_listed; never_invent_if_absent; extract_other_pack_records_if_found"
+    },
+    {
+      "id": "iep.evaluation.speech_language",
+      "label": "Speech-Language Evaluation",
+      "authorRole": "school_evaluator",
+      "recognitionSignals": [
+        "speech-language evaluation",
+        "CELF",
+        "articulation",
+        "receptive",
+        "expressive",
+        "SLP"
+      ],
+      "orderingDate": "document_header.document_date",
+      "subtypes": [],
+      "documentLinks": [
+        "supports_eligibility"
+      ],
+      "classificationPolicy": "propose_with_evidence_or_unresolved",
+      "checklist": [
+        "document_header",
+        "student",
+        "measurement",
+        "evaluation_finding"
+      ],
+      "checklistPolicy": "look_for_all_listed; never_invent_if_absent; extract_other_pack_records_if_found"
+    },
+    {
+      "id": "iep.evaluation.independent",
+      "label": "Independent Educational Evaluation",
+      "authorRole": "independent_evaluator",
+      "recognitionSignals": [
+        "independent educational evaluation",
+        "IEE",
+        "private evaluation",
+        "evaluator not employed by the district"
+      ],
+      "orderingDate": "document_header.document_date",
+      "subtypes": [],
+      "documentLinks": [
+        "supports_eligibility",
+        "supports_baseline"
+      ],
+      "classificationPolicy": "propose_with_evidence_or_unresolved",
+      "checklist": [
+        "document_header",
+        "student",
+        "measurement",
+        "evaluation_finding"
+      ],
+      "checklistPolicy": "look_for_all_listed; never_invent_if_absent; extract_other_pack_records_if_found"
+    },
+    {
+      "id": "iep.evaluation.plan",
+      "label": "Evaluation Plan",
+      "authorRole": "education_agency",
+      "recognitionSignals": [
+        "evaluation plan",
+        "proposed assessments",
+        "areas to be assessed"
+      ],
+      "orderingDate": "document_header.document_date",
+      "subtypes": [],
+      "documentLinks": [
+        "proposes_evaluation"
+      ],
+      "classificationPolicy": "propose_with_evidence_or_unresolved",
+      "checklist": [
+        "document_header",
+        "student",
+        "evaluation_plan_item"
+      ],
+      "checklistPolicy": "look_for_all_listed; never_invent_if_absent; extract_other_pack_records_if_found"
+    },
+    {
+      "id": "iep.consent",
+      "label": "Parent Consent",
+      "authorRole": "parent_guardian",
+      "recognitionSignals": [
+        "consent",
+        "I give permission",
+        "I do not give permission",
+        "parent signature"
+      ],
+      "orderingDate": "document_header.document_date",
+      "subtypes": [],
+      "documentLinks": [
+        "authorizes_evaluation"
+      ],
+      "classificationPolicy": "propose_with_evidence_or_unresolved",
+      "checklist": [
+        "document_header",
+        "student",
+        "consent"
+      ],
+      "checklistPolicy": "look_for_all_listed; never_invent_if_absent; extract_other_pack_records_if_found"
+    },
+    {
+      "id": "iep.referral",
+      "label": "Referral for Special Education Evaluation",
+      "authorRole": "referrer",
+      "recognitionSignals": [
+        "referral",
+        "request for evaluation",
+        "reason for referral"
+      ],
+      "orderingDate": "document_header.document_date",
+      "subtypes": [],
+      "documentLinks": [
+        "initiates_evaluation"
+      ],
+      "classificationPolicy": "propose_with_evidence_or_unresolved",
+      "checklist": [
+        "document_header",
+        "student",
+        "referral"
+      ],
+      "checklistPolicy": "look_for_all_listed; never_invent_if_absent; extract_other_pack_records_if_found"
+    },
+    {
+      "id": "iep.notice",
+      "label": "Prior Written Notice",
+      "authorRole": "education_agency",
+      "recognitionSignals": [
+        "prior written notice",
+        "PWN",
+        "the district proposes",
+        "the district refuses",
+        "options considered"
+      ],
+      "orderingDate": "school_action.action_date",
+      "subtypes": [],
+      "documentLinks": [
+        "references_action"
+      ],
+      "classificationPolicy": "propose_with_evidence_or_unresolved",
+      "checklist": [
+        "document_header",
+        "student",
+        "school_action",
+        "parent_request"
+      ],
+      "checklistPolicy": "look_for_all_listed; never_invent_if_absent; extract_other_pack_records_if_found"
+    },
+    {
+      "id": "iep.behavior.fba",
+      "label": "Functional Behavioral Assessment",
+      "authorRole": "school_evaluator",
+      "recognitionSignals": [
+        "functional behavioral assessment",
+        "FBA",
+        "antecedent",
+        "function of behavior"
+      ],
+      "orderingDate": "document_header.document_date",
+      "subtypes": [],
+      "documentLinks": [
+        "supports_behavior_plan"
+      ],
+      "classificationPolicy": "propose_with_evidence_or_unresolved",
+      "checklist": [
+        "document_header",
+        "student",
+        "behavior_target",
+        "measurement",
+        "evaluation_finding"
+      ],
+      "checklistPolicy": "look_for_all_listed; never_invent_if_absent; extract_other_pack_records_if_found"
+    },
+    {
+      "id": "iep.behavior.bip",
+      "label": "Behavior Intervention Plan",
+      "authorRole": "education_agency",
+      "recognitionSignals": [
+        "behavior intervention plan",
+        "BIP",
+        "replacement behavior"
+      ],
+      "orderingDate": "document_header.effective_start",
+      "subtypes": [],
+      "documentLinks": [
+        "references_fba"
+      ],
+      "classificationPolicy": "propose_with_evidence_or_unresolved",
+      "checklist": [
+        "document_header",
+        "student",
+        "behavior_target"
+      ],
+      "checklistPolicy": "look_for_all_listed; never_invent_if_absent; extract_other_pack_records_if_found"
+    },
+    {
+      "id": "parent.correspondence",
+      "label": "Parent letter or email",
+      "authorRole": "parent_guardian",
+      "recognitionSignals": [
+        "Dear",
+        "I am writing",
+        "request",
+        "From: (parent)"
+      ],
+      "orderingDate": "document_header.document_date",
+      "subtypes": [],
+      "documentLinks": [
+        "references_plan"
+      ],
+      "classificationPolicy": "propose_with_evidence_or_unresolved",
+      "checklist": [
+        "document_header",
+        "parent_request"
+      ],
+      "checklistPolicy": "look_for_all_listed; never_invent_if_absent; extract_other_pack_records_if_found"
+    }
+  ],
+  "constructs": {
+    "measure": {
+      "description": "One construct key across present levels, evaluations, goals and progress, so a series never mixes measures.",
+      "requiredFields": [
+        "task",
+        "score_type"
+      ],
+      "comparedIfBothPresent": [
+        "instrument",
+        "administration"
+      ],
+      "normalize": [
+        "lowercase",
+        "trim_punctuation",
+        "vocabulary_synonyms"
+      ],
+      "onPartialMatch": "possiblySame"
+    }
+  },
+  "recordTypes": [
+    {
+      "id": "document_header",
+      "label": "Document header",
+      "group": "document",
+      "repeatable": false,
+      "identity": {
+        "scope": "document",
+        "keyFields": [],
+        "keyFieldsIfPresent": [],
+        "disambiguators": [],
+        "versionAxis": "document.orderingDate"
+      },
+      "fields": [
+        {
+          "id": "title",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "document_date",
+          "valueKind": "date",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "effective_start",
+          "valueKind": "date",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed",
+            "planned"
+          ]
+        },
+        {
+          "id": "effective_end",
+          "valueKind": "date",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed",
+            "planned"
+          ]
+        },
+        {
+          "id": "author_role",
+          "valueKind": "code",
+          "source": [
+            "classified"
+          ],
+          "modality": [
+            "observed"
+          ],
+          "enum": [
+            "education_agency",
+            "school_evaluator",
+            "eligibility_team",
+            "independent_evaluator",
+            "parent_guardian",
+            "referrer",
+            "other"
+          ]
+        },
+        {
+          "id": "subtype",
+          "valueKind": "code",
+          "source": [
+            "classified"
+          ],
+          "modality": [
+            "observed"
+          ],
+          "enum": [
+            "initial",
+            "annual",
+            "review",
+            "revised",
+            "reevaluation",
+            "interim",
+            "other"
+          ]
+        },
+        {
+          "id": "refers_to_plan_date",
+          "valueKind": "date",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ],
+          "description": "For amendments, progress reports and notices: the date of the plan they name"
+        }
+      ],
+      "description": "One per document; supplies the ordering date and lineage. Classification fields are verified like any other."
+    },
+    {
+      "id": "student",
+      "label": "Student",
+      "group": "identity",
+      "repeatable": false,
+      "identity": {
+        "scope": "case",
+        "keyFields": [],
+        "keyFieldsIfPresent": [],
+        "disambiguators": [],
+        "versionAxis": "document.orderingDate"
+      },
+      "fields": [
+        {
+          "id": "name",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ],
+          "sensitive": true
+        },
+        {
+          "id": "birth_date",
+          "valueKind": "date",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ],
+          "sensitive": true
+        },
+        {
+          "id": "grade",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "school",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "district",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        }
+      ],
+      "description": "One student per case. A differing name or birth date across documents is shown as possiblySame, never merged."
+    },
+    {
+      "id": "meeting",
+      "label": "Meeting",
+      "group": "meeting",
+      "repeatable": true,
+      "identity": {
+        "scope": "case",
+        "keyFields": [
+          "meeting_date"
+        ],
+        "keyFieldsIfPresent": [],
+        "disambiguators": [],
+        "versionAxis": "document.orderingDate"
+      },
+      "fields": [
+        {
+          "id": "meeting_date",
+          "valueKind": "date",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "meeting_purpose",
+          "valueKind": "code",
+          "source": [
+            "classified"
+          ],
+          "modality": [
+            "observed"
+          ],
+          "enum": [
+            "initial",
+            "annual_review",
+            "reevaluation",
+            "amendment",
+            "eligibility",
+            "other"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "meeting_participant",
+      "label": "Meeting participant",
+      "group": "meeting",
+      "repeatable": true,
+      "identity": {
+        "scope": "case",
+        "keyFields": [
+          "role_code"
+        ],
+        "keyFieldsIfPresent": [],
+        "disambiguators": [
+          "role"
+        ],
+        "versionAxis": "document.orderingDate"
+      },
+      "fields": [
+        {
+          "id": "role",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "role_code",
+          "valueKind": "code",
+          "source": [
+            "classified"
+          ],
+          "modality": [
+            "observed"
+          ],
+          "enum": [
+            "parent_guardian",
+            "general_education_teacher",
+            "special_education_teacher",
+            "district_representative",
+            "evaluation_interpreter",
+            "related_service_provider",
+            "student",
+            "other"
+          ]
+        },
+        {
+          "id": "name",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ],
+          "sensitive": true
+        }
+      ]
+    },
+    {
+      "id": "eligibility",
+      "label": "Eligibility determination",
+      "group": "eligibility",
+      "repeatable": false,
+      "identity": {
+        "scope": "case",
+        "keyFields": [],
+        "keyFieldsIfPresent": [],
+        "disambiguators": [],
+        "versionAxis": "document.orderingDate"
+      },
+      "fields": [
+        {
+          "id": "decision",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "decided"
+          ]
+        },
+        {
+          "id": "category",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "decided"
+          ],
+          "aliases": [
+            "primary disability",
+            "eligibility category",
+            "disability category"
+          ]
+        },
+        {
+          "id": "secondary_category",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "decided"
+          ]
+        },
+        {
+          "id": "basis",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "determination_date",
+          "valueKind": "date",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "present_level",
+      "label": "Present level",
+      "group": "present_levels",
+      "repeatable": true,
+      "identity": {
+        "scope": "case",
+        "keyFields": [
+          "area"
+        ],
+        "keyFieldsIfPresent": [],
+        "disambiguators": [],
+        "versionAxis": "document.orderingDate"
+      },
+      "fields": [
+        {
+          "id": "area",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ],
+          "aliases": [
+            "domain",
+            "area of need"
+          ]
+        },
+        {
+          "id": "statement",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "impact_on_general_curriculum",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ],
+          "description": "How the disability affects involvement and progress in the general curriculum"
+        }
+      ]
+    },
+    {
+      "id": "measurement",
+      "label": "Measurement",
+      "group": "measure",
+      "repeatable": true,
+      "identity": {
+        "scope": "case",
+        "keyFields": [
+          "measure.task",
+          "measure.score_type"
+        ],
+        "keyFieldsIfPresent": [
+          "measure.instrument",
+          "measure.administration"
+        ],
+        "disambiguators": [],
+        "versionAxis": "document.orderingDate"
+      },
+      "fields": [
+        {
+          "id": "measure.instrument",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ],
+          "description": "Named test, probe or tool, e.g. DIBELS ORF, WIAT-4"
+        },
+        {
+          "id": "measure.task",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ],
+          "description": "Skill or subtest measured, e.g. oral reading fluency"
+        },
+        {
+          "id": "measure.administration",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ],
+          "description": "Conditions, e.g. grade-level passage, cold read"
+        },
+        {
+          "id": "measure.score_type",
+          "valueKind": "code",
+          "source": [
+            "classified"
+          ],
+          "modality": [
+            "observed"
+          ],
+          "enum": [
+            "words_correct_per_minute",
+            "percent_accuracy",
+            "percent_of_opportunities",
+            "standard_score",
+            "scaled_score",
+            "t_score",
+            "percentile",
+            "grade_equivalent",
+            "age_equivalent",
+            "raw_score",
+            "rubric_level",
+            "count",
+            "rate_per_period",
+            "duration",
+            "other"
+          ],
+          "description": "Chosen from the list based on the quoted unit or score label"
+        },
+        {
+          "id": "value",
+          "valueKind": "quantity",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ],
+          "unit": "context_defined"
+        },
+        {
+          "id": "unit",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "observed_on",
+          "valueKind": "date",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "area",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "context",
+          "valueKind": "code",
+          "source": [
+            "classified"
+          ],
+          "modality": [
+            "observed"
+          ],
+          "enum": [
+            "present_levels",
+            "evaluation",
+            "progress_report",
+            "other"
+          ]
+        }
+      ],
+      "usesConstructs": [
+        "measure"
+      ],
+      "description": "Every score anywhere in the case. One record type so present levels, evaluations and progress form one series per measure, ordered by observed_on."
+    },
+    {
+      "id": "goal",
+      "label": "Annual goal",
+      "group": "goal",
+      "repeatable": true,
+      "identity": {
+        "scope": "case",
+        "keyFields": [
+          "area",
+          "measure.task",
+          "measure.score_type"
+        ],
+        "keyFieldsIfPresent": [
+          "measure.instrument"
+        ],
+        "disambiguators": [
+          "condition"
+        ],
+        "versionAxis": "document.orderingDate"
+      },
+      "fields": [
+        {
+          "id": "area",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "planned"
+          ]
+        },
+        {
+          "id": "statement",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "planned"
+          ]
+        },
+        {
+          "id": "condition",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "planned"
+          ],
+          "description": "e.g. given a grade-level connected text passage"
+        },
+        {
+          "id": "measure.instrument",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ],
+          "description": "Named test, probe or tool, e.g. DIBELS ORF, WIAT-4"
+        },
+        {
+          "id": "measure.task",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ],
+          "description": "Skill or subtest measured, e.g. oral reading fluency"
+        },
+        {
+          "id": "measure.administration",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ],
+          "description": "Conditions, e.g. grade-level passage, cold read"
+        },
+        {
+          "id": "measure.score_type",
+          "valueKind": "code",
+          "source": [
+            "classified"
+          ],
+          "modality": [
+            "observed"
+          ],
+          "enum": [
+            "words_correct_per_minute",
+            "percent_accuracy",
+            "percent_of_opportunities",
+            "standard_score",
+            "scaled_score",
+            "t_score",
+            "percentile",
+            "grade_equivalent",
+            "age_equivalent",
+            "raw_score",
+            "rubric_level",
+            "count",
+            "rate_per_period",
+            "duration",
+            "other"
+          ],
+          "description": "Chosen from the list based on the quoted unit or score label"
+        },
+        {
+          "id": "baseline_value",
+          "valueKind": "quantity",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ],
+          "unit": "context_defined"
+        },
+        {
+          "id": "baseline_unit",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "baseline_source",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ],
+          "description": "Document or assessment the baseline is attributed to"
+        },
+        {
+          "id": "target_value",
+          "valueKind": "quantity",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "planned"
+          ],
+          "unit": "context_defined"
+        },
+        {
+          "id": "target_unit",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "planned"
+          ]
+        },
+        {
+          "id": "accuracy_criterion",
+          "valueKind": "quantity",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "planned"
+          ],
+          "unit": "%"
+        },
+        {
+          "id": "mastery_criterion",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "planned"
+          ],
+          "description": "e.g. across three consecutive probes"
+        },
+        {
+          "id": "measurement_method",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "planned"
+          ]
+        },
+        {
+          "id": "reporting_frequency",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "planned"
+          ]
+        },
+        {
+          "id": "reporting_method",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "planned"
+          ]
+        },
+        {
+          "id": "start_date",
+          "valueKind": "date",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "planned"
+          ]
+        },
+        {
+          "id": "target_date",
+          "valueKind": "date",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "planned"
+          ]
+        }
+      ],
+      "usesConstructs": [
+        "measure"
+      ],
+      "description": "Baseline and target are separate fields from accuracy. Key is content, so the same goal is matched across plan versions."
+    },
+    {
+      "id": "short_term_objective",
+      "label": "Short-term objective or benchmark",
+      "group": "goal",
+      "repeatable": true,
+      "identity": {
+        "scope": "case",
+        "keyFields": [
+          "goal_area",
+          "statement"
+        ],
+        "keyFieldsIfPresent": [],
+        "disambiguators": [],
+        "versionAxis": "document.orderingDate"
+      },
+      "fields": [
+        {
+          "id": "goal_area",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "planned"
+          ]
+        },
+        {
+          "id": "statement",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "planned"
+          ]
+        },
+        {
+          "id": "target_date",
+          "valueKind": "date",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "planned"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "service",
+      "label": "Service",
+      "group": "service",
+      "repeatable": true,
+      "identity": {
+        "scope": "case",
+        "keyFields": [
+          "category",
+          "service_type"
+        ],
+        "keyFieldsIfPresent": [],
+        "disambiguators": [
+          "delivery",
+          "location",
+          "provider_role"
+        ],
+        "versionAxis": "document.orderingDate"
+      },
+      "fields": [
+        {
+          "id": "category",
+          "valueKind": "code",
+          "source": [
+            "classified"
+          ],
+          "modality": [
+            "planned"
+          ],
+          "enum": [
+            "special_education",
+            "related_service",
+            "supplementary_aid",
+            "program_modification",
+            "support_for_personnel"
+          ]
+        },
+        {
+          "id": "service_type",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "planned"
+          ],
+          "aliases": [
+            "specially designed instruction",
+            "SDI",
+            "speech-language therapy",
+            "OT",
+            "PT"
+          ]
+        },
+        {
+          "id": "provider_role",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "planned"
+          ]
+        },
+        {
+          "id": "delivery",
+          "valueKind": "code",
+          "source": [
+            "classified"
+          ],
+          "modality": [
+            "planned"
+          ],
+          "enum": [
+            "individual",
+            "group",
+            "consultation",
+            "unspecified"
+          ]
+        },
+        {
+          "id": "frequency_text",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "planned"
+          ],
+          "description": "As written, e.g. 30 minutes, 5 times per week"
+        },
+        {
+          "id": "sessions_per_period",
+          "valueKind": "quantity",
+          "source": [
+            "quoted",
+            "derived"
+          ],
+          "modality": [
+            "planned"
+          ],
+          "derivation": {
+            "primitive": "parseFrequency",
+            "operands": [
+              "frequency_text"
+            ],
+            "conditions": [
+              "same_record",
+              "all_operands_verified",
+              "unambiguous_parse"
+            ]
+          }
+        },
+        {
+          "id": "period",
+          "valueKind": "code",
+          "source": [
+            "quoted",
+            "classified"
+          ],
+          "modality": [
+            "planned"
+          ],
+          "enum": [
+            "day",
+            "week",
+            "month",
+            "grading_period",
+            "year"
+          ]
+        },
+        {
+          "id": "minutes_per_session",
+          "valueKind": "quantity",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "planned"
+          ],
+          "unit": "minutes"
+        },
+        {
+          "id": "minutes_per_week",
+          "valueKind": "quantity",
+          "source": [
+            "quoted",
+            "derived"
+          ],
+          "modality": [
+            "planned"
+          ],
+          "unit": "min/week",
+          "derivation": {
+            "primitive": "ratePerWeek",
+            "operands": [
+              "minutes_per_session",
+              "sessions_per_period",
+              "period"
+            ],
+            "conditions": [
+              "same_record",
+              "all_operands_verified",
+              "period_convertible_to_week"
+            ]
+          }
+        },
+        {
+          "id": "location",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "planned"
+          ],
+          "description": "Where the service is delivered; not the same as placement"
+        },
+        {
+          "id": "start_date",
+          "valueKind": "date",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "planned"
+          ]
+        },
+        {
+          "id": "end_date",
+          "valueKind": "date",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "planned"
+          ],
+          "description": "With start_date, this is duration under 34 CFR 300.320(a)(7); not session length"
+        }
+      ],
+      "description": "One service row = one record. Key excludes the plan, so the same service is compared across plan versions."
+    },
+    {
+      "id": "accommodation",
+      "label": "Accommodation or modification",
+      "group": "accommodation",
+      "repeatable": true,
+      "identity": {
+        "scope": "case",
+        "keyFields": [
+          "description",
+          "context"
+        ],
+        "keyFieldsIfPresent": [],
+        "disambiguators": [],
+        "versionAxis": "document.orderingDate"
+      },
+      "fields": [
+        {
+          "id": "description",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "planned"
+          ]
+        },
+        {
+          "id": "context",
+          "valueKind": "code",
+          "source": [
+            "classified"
+          ],
+          "modality": [
+            "planned"
+          ],
+          "enum": [
+            "instruction",
+            "testing",
+            "both",
+            "unspecified"
+          ]
+        },
+        {
+          "id": "conditions",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "planned"
+          ]
+        }
+      ],
+      "description": "Description matched after normalization; near-matches surface as possiblySame."
+    },
+    {
+      "id": "placement",
+      "label": "Placement",
+      "group": "placement",
+      "repeatable": false,
+      "identity": {
+        "scope": "case",
+        "keyFields": [],
+        "keyFieldsIfPresent": [],
+        "disambiguators": [],
+        "versionAxis": "document.orderingDate"
+      },
+      "fields": [
+        {
+          "id": "setting",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "planned"
+          ],
+          "aliases": [
+            "LRE",
+            "least restrictive environment",
+            "educational environment"
+          ]
+        },
+        {
+          "id": "percent_time_general_education",
+          "valueKind": "quantity",
+          "source": [
+            "quoted",
+            "derived"
+          ],
+          "modality": [
+            "planned"
+          ],
+          "unit": "%",
+          "derivation": {
+            "primitive": "shareOfTotal",
+            "operands": [
+              "service.minutes_per_week"
+            ],
+            "conditions": [
+              "same_document",
+              "all_operands_verified",
+              "school_week_minutes_from_reference"
+            ]
+          }
+        },
+        {
+          "id": "nonparticipation_explanation",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "planned"
+          ],
+          "description": "Explanation of the extent the child will not participate with nondisabled children"
+        }
+      ]
+    },
+    {
+      "id": "assessment_participation",
+      "label": "State or district assessment participation",
+      "group": "assessment",
+      "repeatable": true,
+      "identity": {
+        "scope": "case",
+        "keyFields": [
+          "assessment_name"
+        ],
+        "keyFieldsIfPresent": [],
+        "disambiguators": [],
+        "versionAxis": "document.orderingDate"
+      },
+      "fields": [
+        {
+          "id": "assessment_name",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "planned"
+          ]
+        },
+        {
+          "id": "participation",
+          "valueKind": "code",
+          "source": [
+            "classified"
+          ],
+          "modality": [
+            "planned"
+          ],
+          "enum": [
+            "regular",
+            "regular_with_accommodations",
+            "alternate"
+          ]
+        },
+        {
+          "id": "accommodations",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "planned"
+          ]
+        },
+        {
+          "id": "alternate_rationale",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "planned"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "transition",
+      "label": "Transition plan",
+      "group": "transition",
+      "repeatable": true,
+      "identity": {
+        "scope": "case",
+        "keyFields": [
+          "area"
+        ],
+        "keyFieldsIfPresent": [],
+        "disambiguators": [],
+        "versionAxis": "document.orderingDate"
+      },
+      "fields": [
+        {
+          "id": "area",
+          "valueKind": "code",
+          "source": [
+            "classified"
+          ],
+          "modality": [
+            "planned"
+          ],
+          "enum": [
+            "education_or_training",
+            "employment",
+            "independent_living"
+          ]
+        },
+        {
+          "id": "postsecondary_goal",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "planned"
+          ]
+        },
+        {
+          "id": "transition_assessment",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "transition_services",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "planned"
+          ]
+        },
+        {
+          "id": "course_of_study",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "planned"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "transfer_of_rights",
+      "label": "Transfer of rights at age of majority",
+      "group": "transition",
+      "repeatable": false,
+      "identity": {
+        "scope": "case",
+        "keyFields": [],
+        "keyFieldsIfPresent": [],
+        "disambiguators": [],
+        "versionAxis": "document.orderingDate"
+      },
+      "fields": [
+        {
+          "id": "statement",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "date_informed",
+          "valueKind": "date",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "extended_school_year",
+      "label": "Extended school year",
+      "group": "service",
+      "repeatable": false,
+      "identity": {
+        "scope": "case",
+        "keyFields": [],
+        "keyFieldsIfPresent": [],
+        "disambiguators": [],
+        "versionAxis": "document.orderingDate"
+      },
+      "fields": [
+        {
+          "id": "decision",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "decided"
+          ]
+        },
+        {
+          "id": "basis",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "progress_entry",
+      "label": "Progress entry",
+      "group": "progress",
+      "repeatable": true,
+      "identity": {
+        "scope": "case",
+        "keyFields": [
+          "goal_area",
+          "measure.task",
+          "measure.score_type"
+        ],
+        "keyFieldsIfPresent": [
+          "measure.instrument"
+        ],
+        "disambiguators": [],
+        "versionAxis": "document.orderingDate"
+      },
+      "fields": [
+        {
+          "id": "goal_reference",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ],
+          "description": "Goal as named in the report; code joins it to a goal by area and measure"
+        },
+        {
+          "id": "goal_area",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "reporting_period",
+          "valueKind": "period",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "reported_status",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "status_code",
+          "valueKind": "code",
+          "source": [
+            "classified"
+          ],
+          "modality": [
+            "observed"
+          ],
+          "enum": [
+            "mastered",
+            "sufficient_progress",
+            "some_progress",
+            "insufficient_progress",
+            "not_introduced",
+            "other"
+          ]
+        },
+        {
+          "id": "comment",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "measure.instrument",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ],
+          "description": "Named test, probe or tool, e.g. DIBELS ORF, WIAT-4"
+        },
+        {
+          "id": "measure.task",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ],
+          "description": "Skill or subtest measured, e.g. oral reading fluency"
+        },
+        {
+          "id": "measure.administration",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ],
+          "description": "Conditions, e.g. grade-level passage, cold read"
+        },
+        {
+          "id": "measure.score_type",
+          "valueKind": "code",
+          "source": [
+            "classified"
+          ],
+          "modality": [
+            "observed"
+          ],
+          "enum": [
+            "words_correct_per_minute",
+            "percent_accuracy",
+            "percent_of_opportunities",
+            "standard_score",
+            "scaled_score",
+            "t_score",
+            "percentile",
+            "grade_equivalent",
+            "age_equivalent",
+            "raw_score",
+            "rubric_level",
+            "count",
+            "rate_per_period",
+            "duration",
+            "other"
+          ],
+          "description": "Chosen from the list based on the quoted unit or score label"
+        }
+      ],
+      "usesConstructs": [
+        "measure"
+      ],
+      "description": "Scores reported for the goal are also emitted as measurement records with context progress_report."
+    },
+    {
+      "id": "amendment_change",
+      "label": "Amendment change",
+      "group": "amendment",
+      "repeatable": true,
+      "identity": {
+        "scope": "case",
+        "keyFields": [
+          "affected_record_type"
+        ],
+        "keyFieldsIfPresent": [],
+        "disambiguators": [
+          "change_description"
+        ],
+        "versionAxis": "document.orderingDate"
+      },
+      "fields": [
+        {
+          "id": "target_plan_date",
+          "valueKind": "date",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "affected_record_type",
+          "valueKind": "code",
+          "source": [
+            "classified"
+          ],
+          "modality": [
+            "observed"
+          ],
+          "enum": [
+            "goal",
+            "service",
+            "accommodation",
+            "placement",
+            "assessment_participation",
+            "transition",
+            "present_level",
+            "other"
+          ]
+        },
+        {
+          "id": "change_description",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "planned"
+          ]
+        },
+        {
+          "id": "effective_date",
+          "valueKind": "date",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "planned"
+          ]
+        }
+      ],
+      "description": "Records of the affected type in the amendment replace the base plan's records with the same key (compose)."
+    },
+    {
+      "id": "school_action",
+      "label": "Action proposed or refused",
+      "group": "notice",
+      "repeatable": true,
+      "identity": {
+        "scope": "case",
+        "keyFields": [
+          "action",
+          "action_date"
+        ],
+        "keyFieldsIfPresent": [],
+        "disambiguators": [],
+        "versionAxis": "document.orderingDate"
+      },
+      "fields": [
+        {
+          "id": "action",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "decided"
+          ]
+        },
+        {
+          "id": "decision",
+          "valueKind": "code",
+          "source": [
+            "classified"
+          ],
+          "modality": [
+            "decided"
+          ],
+          "enum": [
+            "proposed",
+            "refused"
+          ]
+        },
+        {
+          "id": "explanation",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "evaluation_basis",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "options_considered",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "other_factors",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "action_date",
+          "valueKind": "date",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "parent_request",
+      "label": "Parent request or concern",
+      "group": "parent",
+      "repeatable": true,
+      "identity": {
+        "scope": "case",
+        "keyFields": [
+          "topic",
+          "request_date"
+        ],
+        "keyFieldsIfPresent": [],
+        "disambiguators": [],
+        "versionAxis": "document.orderingDate"
+      },
+      "fields": [
+        {
+          "id": "topic",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "request",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "request_date",
+          "valueKind": "date",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "response",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "consent",
+      "label": "Consent",
+      "group": "consent",
+      "repeatable": true,
+      "identity": {
+        "scope": "case",
+        "keyFields": [
+          "action"
+        ],
+        "keyFieldsIfPresent": [],
+        "disambiguators": [],
+        "versionAxis": "document.orderingDate"
+      },
+      "fields": [
+        {
+          "id": "action",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "decision",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "decided"
+          ]
+        },
+        {
+          "id": "scope",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "consent_date",
+          "valueKind": "date",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "referral",
+      "label": "Referral",
+      "group": "referral",
+      "repeatable": true,
+      "identity": {
+        "scope": "case",
+        "keyFields": [
+          "referral_date"
+        ],
+        "keyFieldsIfPresent": [],
+        "disambiguators": [],
+        "versionAxis": "document.orderingDate"
+      },
+      "fields": [
+        {
+          "id": "concern",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "source",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "requested_action",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "referral_date",
+          "valueKind": "date",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "evaluation_plan_item",
+      "label": "Planned assessment",
+      "group": "evaluation_plan",
+      "repeatable": true,
+      "identity": {
+        "scope": "case",
+        "keyFields": [
+          "area",
+          "assessment"
+        ],
+        "keyFieldsIfPresent": [],
+        "disambiguators": [],
+        "versionAxis": "document.orderingDate"
+      },
+      "fields": [
+        {
+          "id": "area",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "planned"
+          ]
+        },
+        {
+          "id": "assessment",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "planned"
+          ]
+        },
+        {
+          "id": "reason",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "evaluation_finding",
+      "label": "Evaluation finding",
+      "group": "evaluation",
+      "repeatable": true,
+      "identity": {
+        "scope": "case",
+        "keyFields": [
+          "area"
+        ],
+        "keyFieldsIfPresent": [],
+        "disambiguators": [
+          "finding"
+        ],
+        "versionAxis": "document.orderingDate"
+      },
+      "fields": [
+        {
+          "id": "area",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "finding",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "recommendation",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "planned"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "behavior_target",
+      "label": "Target behavior",
+      "group": "behavior",
+      "repeatable": true,
+      "identity": {
+        "scope": "case",
+        "keyFields": [
+          "target_behavior"
+        ],
+        "keyFieldsIfPresent": [],
+        "disambiguators": [],
+        "versionAxis": "document.orderingDate"
+      },
+      "fields": [
+        {
+          "id": "target_behavior",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "antecedent",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "hypothesized_function",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "replacement_behavior",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "planned"
+          ]
+        },
+        {
+          "id": "supports",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "planned"
+          ]
+        }
+      ]
+    }
+  ],
+  "fieldSources": {
+    "quoted": "Value appears verbatim within the record's quoted span on its page.",
+    "derived": "Computed by code from verified quoted fields with a named primitive; never emitted by the model.",
+    "classified": "Model chooses from the field's enum based on quoted text; shown as a labelled, correctable choice."
+  },
+  "modalities": [
+    "observed",
+    "planned",
+    "decided"
+  ],
+  "missingStates": [
+    "field_present_but_empty",
+    "not_found_in_supplied_documents",
+    "not_applicable",
+    "unresolved"
+  ],
+  "evidencePolicy": {
+    "recordQuoteRequired": true,
+    "pageRequired": true,
+    "quotedFieldsMustAppearInRecordQuote": true,
+    "imageEvidence": "region_reference_with_ocr_text (pending engine support)",
+    "onVerificationFailure": "reject_record"
+  },
+  "unclassifiedPolicy": "Unknown documents are read with the generic checklist, never forced into a type, and never counted toward requirements.",
+  "requirements": {
+    "status": "FEDERAL_CONTENT_RULES_CITED_PENDING_LEGAL_REVIEW",
+    "sourcePolicy": "Every rule carries citation, jurisdiction, source effective date and applicability. State rules are not included.",
+    "universalUploadRequirements": [],
+    "uploadPolicy": "No upload is required. Plan-content rules run only when an iep.plan is supplied; otherwise they are not_applicable and the screen says no plan was supplied.",
+    "rules": [
+      {
+        "id": "present_levels",
+        "level": "required",
+        "citation": "34 CFR 300.320(a)(1)",
+        "appliesTo": "operative:iep.plan",
+        "checks": [
+          {
+            "record": "present_level",
+            "minCount": 1,
+            "fields": [
+              "statement",
+              "impact_on_general_curriculum"
+            ]
+          }
+        ],
+        "description": "Present levels, including how the disability affects involvement and progress in the general curriculum.",
+        "source": "34 CFR Part 300",
+        "jurisdiction": "US-federal",
+        "sourceEffectiveDate": "2006-10-13",
+        "verifyAgainst": "eCFR current text",
+        "status": "CITED_PENDING_LEGAL_REVIEW"
+      },
+      {
+        "id": "annual_goals",
+        "level": "required",
+        "citation": "34 CFR 300.320(a)(2)(i)",
+        "appliesTo": "operative:iep.plan",
+        "checks": [
+          {
+            "record": "goal",
+            "minCount": 1,
+            "fields": [
+              "statement"
+            ]
+          }
+        ],
+        "description": "Measurable annual goals, academic and functional.",
+        "source": "34 CFR Part 300",
+        "jurisdiction": "US-federal",
+        "sourceEffectiveDate": "2006-10-13",
+        "verifyAgainst": "eCFR current text",
+        "status": "CITED_PENDING_LEGAL_REVIEW"
+      },
+      {
+        "id": "benchmarks_if_alternate",
+        "level": "required",
+        "citation": "34 CFR 300.320(a)(2)(ii)",
+        "appliesTo": "operative:iep.plan",
+        "checks": [
+          {
+            "record": "short_term_objective",
+            "minCount": 1
+          }
+        ],
+        "description": "Benchmarks or short-term objectives for children taking alternate assessments.",
+        "source": "34 CFR Part 300",
+        "jurisdiction": "US-federal",
+        "sourceEffectiveDate": "2006-10-13",
+        "verifyAgainst": "eCFR current text",
+        "status": "CITED_PENDING_LEGAL_REVIEW",
+        "when": {
+          "primitive": "exists",
+          "record": "assessment_participation",
+          "field": "participation",
+          "equals": "alternate"
+        }
+      },
+      {
+        "id": "progress_measurement",
+        "level": "required",
+        "citation": "34 CFR 300.320(a)(3)",
+        "appliesTo": "operative:iep.plan",
+        "checks": [
+          {
+            "record": "goal",
+            "forEach": true,
+            "fields": [
+              "measurement_method",
+              "reporting_frequency"
+            ]
+          }
+        ],
+        "description": "How progress toward each goal is measured and when periodic reports are provided.",
+        "source": "34 CFR Part 300",
+        "jurisdiction": "US-federal",
+        "sourceEffectiveDate": "2006-10-13",
+        "verifyAgainst": "eCFR current text",
+        "status": "CITED_PENDING_LEGAL_REVIEW"
+      },
+      {
+        "id": "services",
+        "level": "required",
+        "citation": "34 CFR 300.320(a)(4), (a)(7)",
+        "appliesTo": "operative:iep.plan",
+        "checks": [
+          {
+            "record": "service",
+            "minCount": 1,
+            "forEach": true,
+            "fields": [
+              "service_type",
+              "frequency_text",
+              "location",
+              "start_date",
+              "end_date"
+            ]
+          }
+        ],
+        "description": "Services, aids and modifications, with projected start date, frequency, location and duration.",
+        "source": "34 CFR Part 300",
+        "jurisdiction": "US-federal",
+        "sourceEffectiveDate": "2006-10-13",
+        "verifyAgainst": "eCFR current text",
+        "status": "CITED_PENDING_LEGAL_REVIEW"
+      },
+      {
+        "id": "nonparticipation_explanation",
+        "level": "required",
+        "citation": "34 CFR 300.320(a)(5)",
+        "appliesTo": "operative:iep.plan",
+        "checks": [
+          {
+            "record": "placement",
+            "fields": [
+              "nonparticipation_explanation"
+            ]
+          }
+        ],
+        "description": "Explanation of the extent the child will not participate with nondisabled children.",
+        "source": "34 CFR Part 300",
+        "jurisdiction": "US-federal",
+        "sourceEffectiveDate": "2006-10-13",
+        "verifyAgainst": "eCFR current text",
+        "status": "CITED_PENDING_LEGAL_REVIEW"
+      },
+      {
+        "id": "assessment_participation",
+        "level": "required",
+        "citation": "34 CFR 300.320(a)(6)",
+        "appliesTo": "operative:iep.plan",
+        "checks": [
+          {
+            "record": "assessment_participation",
+            "minCount": 1,
+            "fields": [
+              "participation"
+            ]
+          }
+        ],
+        "description": "Accommodations for state and districtwide assessments, or why an alternate assessment is appropriate.",
+        "source": "34 CFR Part 300",
+        "jurisdiction": "US-federal",
+        "sourceEffectiveDate": "2006-10-13",
+        "verifyAgainst": "eCFR current text",
+        "status": "CITED_PENDING_LEGAL_REVIEW"
+      },
+      {
+        "id": "alternate_rationale",
+        "level": "required",
+        "citation": "34 CFR 300.320(a)(6)(ii)",
+        "appliesTo": "operative:iep.plan",
+        "checks": [
+          {
+            "record": "assessment_participation",
+            "fields": [
+              "alternate_rationale"
+            ]
+          }
+        ],
+        "description": "Why the child cannot participate in the regular assessment and why the alternate is appropriate.",
+        "source": "34 CFR Part 300",
+        "jurisdiction": "US-federal",
+        "sourceEffectiveDate": "2006-10-13",
+        "verifyAgainst": "eCFR current text",
+        "status": "CITED_PENDING_LEGAL_REVIEW",
+        "when": {
+          "primitive": "exists",
+          "record": "assessment_participation",
+          "field": "participation",
+          "equals": "alternate"
+        }
+      },
+      {
+        "id": "transition",
+        "level": "required",
+        "citation": "34 CFR 300.320(b)",
+        "appliesTo": "operative:iep.plan",
+        "checks": [
+          {
+            "record": "transition",
+            "minCount": 1,
+            "fields": [
+              "postsecondary_goal",
+              "transition_services"
+            ]
+          }
+        ],
+        "description": "From the first IEP in effect when the child turns 16 (earlier if the team decides; some states start earlier).",
+        "source": "34 CFR Part 300",
+        "jurisdiction": "US-federal",
+        "sourceEffectiveDate": "2006-10-13",
+        "verifyAgainst": "eCFR current text",
+        "status": "CITED_PENDING_LEGAL_REVIEW",
+        "when": {
+          "primitive": "ageOnDate",
+          "birthDate": "student.birth_date",
+          "onDate": "document_header.effective_start",
+          "atLeast": 16
+        }
+      },
+      {
+        "id": "transfer_of_rights",
+        "level": "required_pending_reference",
+        "citation": "34 CFR 300.320(c)",
+        "appliesTo": "operative:iep.plan",
+        "checks": [
+          {
+            "record": "transfer_of_rights",
+            "fields": [
+              "statement"
+            ]
+          }
+        ],
+        "description": "Statement that rights transfer at the age of majority, at least one year before; needs the state age-of-majority table.",
+        "source": "34 CFR Part 300",
+        "jurisdiction": "US-federal",
+        "sourceEffectiveDate": "2006-10-13",
+        "verifyAgainst": "eCFR current text",
+        "status": "CITED_PENDING_LEGAL_REVIEW",
+        "when": {
+          "primitive": "ageOnDate",
+          "birthDate": "student.birth_date",
+          "onDate": "document_header.effective_start",
+          "atLeastFromReference": "age_of_majority_by_state",
+          "offsetYears": -1
+        }
+      },
+      {
+        "id": "pwn_content",
+        "level": "required",
+        "citation": "34 CFR 300.503(b)",
+        "appliesTo": "each:iep.notice",
+        "checks": [
+          {
+            "record": "school_action",
+            "forEach": true,
+            "fields": [
+              "action",
+              "explanation",
+              "evaluation_basis",
+              "options_considered",
+              "other_factors"
+            ]
+          }
+        ],
+        "description": "Prior written notice describes the action, why, the evaluation basis, other options considered and other factors.",
+        "source": "34 CFR Part 300",
+        "jurisdiction": "US-federal",
+        "sourceEffectiveDate": "2006-10-13",
+        "verifyAgainst": "eCFR current text",
+        "status": "CITED_PENDING_LEGAL_REVIEW"
+      }
+    ]
+  },
+  "insightChecks": {
+    "status": "DRAFT_PENDING_GOLDEN_CASES",
+    "policy": "Each check compares verified, keyed facts with an engine primitive and yields a question with chips on both sides. Engine defaults (change, conflict, series, missing) are not repeated here.",
+    "checks": [
+      {
+        "id": "baseline_vs_cited_measure",
+        "primitive": "compareValues",
+        "left": {
+          "record": "goal",
+          "field": "baseline_value",
+          "unitField": "baseline_unit"
+        },
+        "right": {
+          "record": "measurement",
+          "field": "value",
+          "unitField": "unit",
+          "where": {
+            "context": [
+              "evaluation",
+              "present_levels"
+            ]
+          },
+          "pick": "latest_before_left_document"
+        },
+        "joinOn": "measure",
+        "fires": "values_differ_with_compatible_units",
+        "question": "The goal's baseline is {left}; {rightDocument} shows {right} for the same measure. Which is current?"
+      },
+      {
+        "id": "need_without_goal",
+        "primitive": "absenceOf",
+        "present": {
+          "record": "evaluation_finding",
+          "field": "area"
+        },
+        "absent": {
+          "record": "goal",
+          "field": "area",
+          "scope": "operative:iep.plan"
+        },
+        "joinOn": "area_normalized",
+        "question": "{presentDocument} describes a need in {area}. No goal in that area appears in the current plan. Was it discussed?"
+      },
+      {
+        "id": "goal_without_present_level",
+        "primitive": "absenceOf",
+        "present": {
+          "record": "goal",
+          "field": "area"
+        },
+        "absent": {
+          "record": "present_level",
+          "field": "area",
+          "scope": "same_document"
+        },
+        "joinOn": "area_normalized",
+        "question": "There is a goal in {area}, but present levels do not describe {area}. Where does the baseline come from?"
+      },
+      {
+        "id": "services_down_progress_insufficient",
+        "primitive": "coChange",
+        "a": {
+          "record": "service",
+          "field": "minutes_per_week",
+          "direction": "decrease"
+        },
+        "b": {
+          "record": "progress_entry",
+          "field": "status_code",
+          "in": [
+            "insufficient_progress",
+            "some_progress"
+          ],
+          "window": "latest_before_a_change"
+        },
+        "joinOn": "area_normalized",
+        "question": "{service} went from {before} to {after} minutes a week while progress in {area} was reported as {status}. What was the reason for the change?"
+      },
+      {
+        "id": "progress_report_coverage",
+        "primitive": "periodCoverage",
+        "expected": {
+          "record": "goal",
+          "field": "reporting_frequency",
+          "over": "operative_plan_period"
+        },
+        "actual": {
+          "record": "progress_entry",
+          "field": "reporting_period"
+        },
+        "question": "Goals say progress is reported {frequency}. Reports were supplied for {covered} of {expected} periods. Are the others available?"
+      },
+      {
+        "id": "testing_accommodation_not_in_assessment",
+        "primitive": "absenceOf",
+        "present": {
+          "record": "accommodation",
+          "field": "description",
+          "where": {
+            "context": [
+              "testing",
+              "both"
+            ]
+          }
+        },
+        "absent": {
+          "record": "assessment_participation",
+          "field": "accommodations",
+          "scope": "same_document"
+        },
+        "joinOn": "text_normalized",
+        "question": "{accommodation} is listed for testing but not under state or district assessment participation. Should it be?"
+      },
+      {
+        "id": "baseline_target_series",
+        "primitive": "series",
+        "inputs": [
+          {
+            "record": "goal",
+            "field": "baseline_value"
+          },
+          {
+            "record": "measurement",
+            "field": "value"
+          },
+          {
+            "record": "goal",
+            "field": "target_value"
+          }
+        ],
+        "joinOn": "measure",
+        "question": "How do the measurements since the baseline compare with the target of {target}?"
+      },
+      {
+        "id": "reevaluation_interval",
+        "primitive": "elapsedSince",
+        "from": {
+          "record": "document_header",
+          "field": "document_date",
+          "where": {
+            "documentType": [
+              "iep.evaluation.academic",
+              "iep.evaluation.psychoeducational",
+              "iep.evaluation.speech_language"
+            ]
+          },
+          "pick": "latest"
+        },
+        "atLeastYears": 3,
+        "citation": "34 CFR 300.303(b)(2)",
+        "question": "The most recent evaluation supplied is dated {date}, more than three years ago. Is a reevaluation scheduled, or was it agreed to be unnecessary?"
+      }
+    ],
+    "enginePrimitivesRequired": [
+      "compareValues",
+      "absenceOf",
+      "coChange",
+      "periodCoverage",
+      "series",
+      "elapsedSince",
+      "ageOnDate",
+      "exists",
+      "ratePerWeek",
+      "parseFrequency",
+      "shareOfTotal"
+    ]
+  },
+  "plainExplainers": {
+    "status": "NEEDS_OWNER_REVIEW",
+    "byRecordType": {
+      "present_level": "Where your child is now, in words and numbers, and how it affects learning in the regular classroom.",
+      "goal": "What the school plans for your child to learn in a year, how it will be measured, and the starting point (baseline).",
+      "short_term_objective": "Smaller steps toward an annual goal, required when your child takes an alternate state test.",
+      "service": "The help the school provides: what it is, how often, for how long each time, where, and from when to when.",
+      "accommodation": "Changes to how your child learns or is tested, such as extra time. They change how, not what, your child learns.",
+      "placement": "How much of the day your child spends with students without disabilities, and why any time is spent apart.",
+      "assessment_participation": "How your child takes state and district tests, and any changes allowed during them.",
+      "transition": "Plans for life after high school: training or education, work, and independent living. Required from the IEP in effect at age 16.",
+      "progress_entry": "The school's report on how your child is doing on each goal for a period.",
+      "amendment_change": "A change to the existing IEP made without writing a new one. The rest of the IEP stays in effect.",
+      "school_action": "The school's written notice of something it proposes or refuses to do, and why.",
+      "eligibility": "The decision about whether your child qualifies for special education, and under which category."
+    }
+  },
+  "readingNotes": {
+    "global": "Extract every record in this document type's checklist, including repeats. One table row or one goal is one record. Quote the source text that holds the record; every quoted field value must appear in that quote. Do not infer absent numbers, identities, relationships or legal conclusions. Report a labelled but empty field as field_present_but_empty, citing the label. Distinguish what is observed, planned and decided.",
+    "byDocumentType": {
+      "iep.plan": "Session length is not duration: '30 minutes, 2 times a week' is minutes per session and sessions per period; duration is start and end dates. Quote each service row whole. Keep the meeting date and the IEP start date apart. In present levels, one measurement per score with its measure fields; never merge accuracy percentages with words correct per minute. Split a goal's target value and accuracy criterion into separate fields.",
+      "iep.amendment": "Record the date of the IEP being amended. Extract only the records the amendment changes or adds, plus one amendment_change per affected section.",
+      "iep.progress": "One progress_entry per goal per reporting period. Quote progress codes as written and choose the status code from the list. Emit each reported score as a measurement with context progress_report.",
+      "iep.evaluation.academic": "One measurement per reported score, with instrument, subtest as task, and score type. Record the administration date.",
+      "iep.evaluation.psychoeducational": "One measurement per index or subtest score. Composite and subtest scores are separate measurements.",
+      "iep.evaluation.speech_language": "One measurement per subtest or index score; record the instrument and score type.",
+      "iep.evaluation.independent": "Same as other evaluations. Do not judge agreement with district results; code compares them.",
+      "iep.notice": "One school_action per action. Keep 'proposes' and 'refuses' as the decision; quote the reasons and options considered as written.",
+      "parent.correspondence": "One parent_request per distinct request. Quote the request as written; record any response only if it is in this document."
+    },
+    "trainable": [
+      "global",
+      "byDocumentType"
+    ],
+    "sizeLimitChars": 6000
+  },
+  "vocabulary": {
+    "note": "Starter set. The existing repository vocabulary remains authoritative and must be merged before runtime use.",
+    "abbreviations": {
+      "IEP": "Individualized Education Program",
+      "IDEA": "Individuals with Disabilities Education Act",
+      "FAPE": "free appropriate public education",
+      "LRE": "least restrictive environment",
+      "PLAAFP": "present levels of academic achievement and functional performance",
+      "PLOP": "present levels of performance",
+      "SDI": "specially designed instruction",
+      "SLP": "speech-language pathologist",
+      "OT": "occupational therapy",
+      "PT": "physical therapy",
+      "ESY": "extended school year",
+      "IEE": "independent educational evaluation",
+      "PWN": "prior written notice",
+      "FBA": "functional behavioral assessment",
+      "BIP": "behavior intervention plan",
+      "WCPM": "words correct per minute",
+      "ORF": "oral reading fluency",
+      "SLD": "specific learning disability",
+      "OHI": "other health impairment",
+      "ED": "emotional disturbance",
+      "ASD": "autism spectrum disorder",
+      "SS": "standard score",
+      "PR": "percentile rank",
+      "GE": "grade equivalent",
+      "CBM": "curriculum-based measurement"
+    },
+    "fieldSynonyms": [
+      {
+        "field": "service.service_type",
+        "terms": [
+          "specially designed instruction",
+          "SDI",
+          "resource",
+          "pull-out instruction"
+        ],
+        "category": "special_education"
+      },
+      {
+        "field": "service.service_type",
+        "terms": [
+          "speech-language therapy",
+          "speech therapy",
+          "speech services"
+        ],
+        "category": "related_service"
+      },
+      {
+        "field": "placement.setting",
+        "terms": [
+          "LRE",
+          "least restrictive environment",
+          "educational environment",
+          "placement"
+        ]
+      },
+      {
+        "field": "present_level.statement",
+        "terms": [
+          "PLAAFP",
+          "PLOP",
+          "present levels"
+        ]
+      },
+      {
+        "field": "measure.score_type",
+        "terms": [
+          "WCPM",
+          "words correct per minute",
+          "wcpm"
+        ],
+        "value": "words_correct_per_minute"
+      },
+      {
+        "field": "measure.score_type",
+        "terms": [
+          "% accuracy",
+          "percent accuracy",
+          "accuracy"
+        ],
+        "value": "percent_accuracy"
+      }
+    ],
+    "unitAliases": [
+      {
+        "canonical": "min/week",
+        "aliases": [
+          "minutes per week",
+          "min per week",
+          "mins/wk",
+          "min/wk",
+          "minutes weekly"
+        ]
+      },
+      {
+        "canonical": "minutes",
+        "aliases": [
+          "min",
+          "mins",
+          "minute sessions"
+        ]
+      },
+      {
+        "canonical": "sessions/week",
+        "aliases": [
+          "x/week",
+          "times per week",
+          "x weekly",
+          "times weekly"
+        ]
+      },
+      {
+        "canonical": "WCPM",
+        "aliases": [
+          "words correct per minute",
+          "wcpm"
+        ]
+      },
+      {
+        "canonical": "%",
+        "aliases": [
+          "percent",
+          "per cent"
+        ]
+      }
+    ],
+    "definitions": [
+      {
+        "term": "duration",
+        "definition": "How long a service runs, from its start date to its end date. Not the length of one session.",
+        "citation": "34 CFR 300.320(a)(7)"
+      },
+      {
+        "term": "location",
+        "definition": "Where a service is delivered, such as the special education classroom. Different from placement."
+      },
+      {
+        "term": "placement",
+        "definition": "How much of the day a child spends with peers without disabilities, and the setting overall."
+      },
+      {
+        "term": "baseline",
+        "definition": "The starting measurement in a goal. Not the most recent score."
+      },
+      {
+        "term": "amendment",
+        "definition": "A change to the existing IEP. A new IEP replaces the old one; an amendment does not.",
+        "citation": "34 CFR 300.324(a)(4)-(6)"
+      },
+      {
+        "term": "progress",
+        "definition": "Movement toward an annual goal as reported by the school. Not a grade."
+      },
+      {
+        "term": "accommodation",
+        "definition": "A change in how a child learns or is tested, not in what is expected."
+      },
+      {
+        "term": "modification",
+        "definition": "A change in what a child is expected to learn or demonstrate."
+      },
+      {
+        "term": "FAPE",
+        "definition": "A free public education designed to meet the child's individual needs.",
+        "citation": "34 CFR 300.17"
+      }
+    ]
+  },
+  "referenceTables": {
+    "status": "REVIEW_REQUIRED",
+    "policy": "Every entry needs source, jurisdiction, effective date and owner (law, agency or user). Code applies them; the model never quotes them from memory.",
+    "entries": [
+      {
+        "id": "age_of_majority_by_state",
+        "owner": "law",
+        "jurisdiction": "US-state",
+        "status": "EMPTY_REQUIRED_BY:transfer_of_rights",
+        "columns": [
+          "state",
+          "age_of_majority",
+          "source",
+          "effective_date"
+        ],
+        "rows": []
+      },
+      {
+        "id": "transition_start_age_by_state",
+        "owner": "law",
+        "jurisdiction": "US-state",
+        "status": "EMPTY_OPTIONAL",
+        "columns": [
+          "state",
+          "start_age",
+          "source",
+          "effective_date"
+        ],
+        "rows": [],
+        "note": "Federal floor is the IEP in effect at 16; some states start earlier."
+      },
+      {
+        "id": "school_week_minutes",
+        "owner": "agency",
+        "jurisdiction": "district",
+        "status": "EMPTY_REQUIRED_BY:placement.percent_time_general_education_derivation",
+        "columns": [
+          "district",
+          "minutes_per_week",
+          "source",
+          "effective_date"
+        ],
+        "rows": [],
+        "note": "Only needed to derive time in general education when the plan does not state it."
+      }
+    ]
+  },
+  "universalEngineRequirements": [
+    "no_domain_conditional",
+    "no_executable_pack_callbacks",
+    "immutable_verified_facts",
+    "source_and_page_evidence",
+    "content_based_identity_keys",
+    "version_axis_not_in_key",
+    "deterministic_entity_resolution",
+    "possiblySame_never_merges",
+    "deterministic_composition",
+    "no_narrative_without_validated_claim"
+  ],
+  "knownReviewGaps": [
+    "requirements_cited_but_not_legally_reviewed",
+    "state_reference_tables_empty",
+    "legacy_vocabulary_rulebook_story_migration",
+    "insight_checks_untested_against_golden_cases",
+    "engine_primitives_compareValues_absenceOf_coChange_elapsedSince_not_built",
+    "images_and_scanned_tables_require_region_evidence",
+    "taxonomy_beyond_L001_needs_broader_corpus",
+    "accommodation_text_matching_threshold_undefined"
+  ],
+  "changeLogFromV0_2": [
+    "Fact types are records with fields (previously 92 single-field types); one table row or goal is one record with one quote.",
+    "Identity keys are content fields; plan and document are the version axis, not part of the key.",
+    "One shared measure construct across measurement, goal and progress records; measurement is a single record type for all scores.",
+    "Author roles map to parties (school, independent, parent) so change and conflict are distinguishable.",
+    "Added independent evaluation and parent correspondence document types; every document type declares its ordering date.",
+    "Added records for transition, assessment participation, transfer of rights, ESY, short-term objectives; service category added and used in the key.",
+    "Added classified field source; status codes, score types, categories and author role are classified.",
+    "Federal content requirements loaded from 34 CFR 300.320 and 300.503(b), cited and pending legal review; uploads remain unrequired.",
+    "Insight checks rewritten as declarative comparisons; engine-default change check removed; seven IEP checks added.",
+    "Reading notes per document type, explainers per record type, expanded vocabulary with definitions of easily confused terms, two state reference tables declared."
+  ]
+}

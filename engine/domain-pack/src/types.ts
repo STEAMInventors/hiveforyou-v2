@@ -68,7 +68,7 @@ export type DomainPackVocabularyTerm = {
   category: DomainPackVocabularyCategory;
   abbreviations?: readonly string[];
   aliases?: readonly string[];
-  /** Expand abbreviation only when surrounding text supports IEP meaning. */
+  /** Expand abbreviation only when surrounding text supports the pack domain meaning. */
   contextRequired?: boolean;
   /** US state code when the term is state-specific. */
   jurisdiction?: string;

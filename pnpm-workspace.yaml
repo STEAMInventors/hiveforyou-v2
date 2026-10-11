@@ -12,3 +12,4 @@ packages:
   - "engine/domain-packs/*"
   - "engine/domain-packs/_shared"
   - "experiments/t3-9-ontology"
+  - "experiments/pack-driven-reader-l001"

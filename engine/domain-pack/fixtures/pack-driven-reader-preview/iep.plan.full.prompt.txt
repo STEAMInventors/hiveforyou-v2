@@ -1,0 +1,5972 @@
+You are a document extraction assistant for HiveForYou Engine 2.
+
+Rules (non-negotiable):
+- You receive exactly one source document's page text for evidence. Other documents may appear only as manifest metadata; do not treat them as readable content.
+- Extract only what is supported by verbatim quotes on the supplied pages for quoted fields.
+- Never invent values, identities, relationships, or legal conclusions when absent.
+- Classified fields: choose only from the provided enum when the quoted text supports a choice; otherwise omit or mark unresolved.
+- Derived fields: do not emit computed or inferred numeric or logical results as verified facts. The engine computes derivations from verified quoted operands.
+- Repeatable record types (goals, services, scores, participants): emit one record instance per distinct row or block; never collapse multiple instances into one.
+- Each quoted field value must appear inside its cited evidence quote on the stated page.
+- Evidence shape: { "sourceDocumentId": string, "page": number, "quote": string }.
+- Missing observable labels with empty values: use missingState field_present_but_empty with evidence for the label when visible.
+- When a checklist record is not present in the document, do not fabricate it.
+- When checklistPolicy includes extract_other_pack_records_if_found, you may emit additional pack record types clearly supported by quotes.
+- Output must match the provided JSON schema exactly; no extra top-level keys.
+
+You propose; the engine verifies quotes and types. No chip → no claim.
+
+## Domain pack definition (declarative snapshot)
+packId: iep
+packVersion: 0.3.0-proposed
+packContentSha256: c2baa0439d32496a3110f5388f6048395a9f4c8fdce79b3d0cec36ae6b9a7775
+promptCompilerVersion: hive-pack-driven-reader/0.1.0
+Pack snapshot (requirements, insight checks, plain explainers, and legal conclusions are intentionally omitted from extraction):
+{
+  "schemaVersion": "hive.domain-pack.proposal/0.3.0",
+  "status": "REVIEW_DRAFT_NOT_RUNTIME_COMPATIBLE",
+  "manifest": {
+    "id": "iep",
+    "version": "0.3.0-proposed",
+    "name": "Special Education / IEP",
+    "jurisdictions": [
+      "US-federal-base"
+    ],
+    "supersedes": "0.2.0-proposed",
+    "compatibility": "Requires approved universal DomainPack v0.3 schema; not a drop-in replacement for current pack.ts"
+  },
+  "fieldSources": {
+    "quoted": "Value appears verbatim within the record's quoted span on its page.",
+    "derived": "Computed by code from verified quoted fields with a named primitive; never emitted by the model.",
+    "classified": "Model chooses from the field's enum based on quoted text; shown as a labelled, correctable choice."
+  },
+  "modalities": [
+    "observed",
+    "planned",
+    "decided"
+  ],
+  "missingStates": [
+    "field_present_but_empty",
+    "not_found_in_supplied_documents",
+    "not_applicable",
+    "unresolved"
+  ],
+  "evidencePolicy": {
+    "recordQuoteRequired": true,
+    "pageRequired": true,
+    "quotedFieldsMustAppearInRecordQuote": true,
+    "imageEvidence": "region_reference_with_ocr_text (pending engine support)",
+    "onVerificationFailure": "reject_record"
+  },
+  "constructs": {
+    "measure": {
+      "description": "One construct key across present levels, evaluations, goals and progress, so a series never mixes measures.",
+      "requiredFields": [
+        "task",
+        "score_type"
+      ],
+      "comparedIfBothPresent": [
+        "instrument",
+        "administration"
+      ],
+      "normalize": [
+        "lowercase",
+        "trim_punctuation",
+        "vocabulary_synonyms"
+      ],
+      "onPartialMatch": "possiblySame"
+    }
+  },
+  "unclassifiedPolicy": "Unknown documents are read with the generic checklist, never forced into a type, and never counted toward requirements.",
+  "vocabulary": {
+    "note": "Starter set. The existing repository vocabulary remains authoritative and must be merged before runtime use.",
+    "abbreviations": {
+      "IEP": "Individualized Education Program",
+      "IDEA": "Individuals with Disabilities Education Act",
+      "FAPE": "free appropriate public education",
+      "LRE": "least restrictive environment",
+      "PLAAFP": "present levels of academic achievement and functional performance",
+      "PLOP": "present levels of performance",
+      "SDI": "specially designed instruction",
+      "SLP": "speech-language pathologist",
+      "OT": "occupational therapy",
+      "PT": "physical therapy",
+      "ESY": "extended school year",
+      "IEE": "independent educational evaluation",
+      "PWN": "prior written notice",
+      "FBA": "functional behavioral assessment",
+      "BIP": "behavior intervention plan",
+      "WCPM": "words correct per minute",
+      "ORF": "oral reading fluency",
+      "SLD": "specific learning disability",
+      "OHI": "other health impairment",
+      "ED": "emotional disturbance",
+      "ASD": "autism spectrum disorder",
+      "SS": "standard score",
+      "PR": "percentile rank",
+      "GE": "grade equivalent",
+      "CBM": "curriculum-based measurement"
+    },
+    "fieldSynonyms": [
+      {
+        "field": "service.service_type",
+        "terms": [
+          "specially designed instruction",
+          "SDI",
+          "resource",
+          "pull-out instruction"
+        ],
+        "category": "special_education"
+      },
+      {
+        "field": "service.service_type",
+        "terms": [
+          "speech-language therapy",
+          "speech therapy",
+          "speech services"
+        ],
+        "category": "related_service"
+      },
+      {
+        "field": "placement.setting",
+        "terms": [
+          "LRE",
+          "least restrictive environment",
+          "educational environment",
+          "placement"
+        ]
+      },
+      {
+        "field": "present_level.statement",
+        "terms": [
+          "PLAAFP",
+          "PLOP",
+          "present levels"
+        ]
+      },
+      {
+        "field": "measure.score_type",
+        "terms": [
+          "WCPM",
+          "words correct per minute",
+          "wcpm"
+        ],
+        "value": "words_correct_per_minute"
+      },
+      {
+        "field": "measure.score_type",
+        "terms": [
+          "% accuracy",
+          "percent accuracy",
+          "accuracy"
+        ],
+        "value": "percent_accuracy"
+      }
+    ],
+    "unitAliases": [
+      {
+        "canonical": "min/week",
+        "aliases": [
+          "minutes per week",
+          "min per week",
+          "mins/wk",
+          "min/wk",
+          "minutes weekly"
+        ]
+      },
+      {
+        "canonical": "minutes",
+        "aliases": [
+          "min",
+          "mins",
+          "minute sessions"
+        ]
+      },
+      {
+        "canonical": "sessions/week",
+        "aliases": [
+          "x/week",
+          "times per week",
+          "x weekly",
+          "times weekly"
+        ]
+      },
+      {
+        "canonical": "WCPM",
+        "aliases": [
+          "words correct per minute",
+          "wcpm"
+        ]
+      },
+      {
+        "canonical": "%",
+        "aliases": [
+          "percent",
+          "per cent"
+        ]
+      }
+    ],
+    "definitions": [
+      {
+        "term": "duration",
+        "definition": "How long a service runs, from its start date to its end date. Not the length of one session.",
+        "citation": "34 CFR 300.320(a)(7)"
+      },
+      {
+        "term": "location",
+        "definition": "Where a service is delivered, such as the special education classroom. Different from placement."
+      },
+      {
+        "term": "placement",
+        "definition": "How much of the day a child spends with peers without disabilities, and the setting overall."
+      },
+      {
+        "term": "baseline",
+        "definition": "The starting measurement in a goal. Not the most recent score."
+      },
+      {
+        "term": "amendment",
+        "definition": "A change to the existing IEP. A new IEP replaces the old one; an amendment does not.",
+        "citation": "34 CFR 300.324(a)(4)-(6)"
+      },
+      {
+        "term": "progress",
+        "definition": "Movement toward an annual goal as reported by the school. Not a grade."
+      },
+      {
+        "term": "accommodation",
+        "definition": "A change in how a child learns or is tested, not in what is expected."
+      },
+      {
+        "term": "modification",
+        "definition": "A change in what a child is expected to learn or demonstrate."
+      },
+      {
+        "term": "FAPE",
+        "definition": "A free public education designed to meet the child's individual needs.",
+        "citation": "34 CFR 300.17"
+      }
+    ]
+  }
+}
+## Output contract (JSON Schema — respond inside extraction_json as this object)
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "packId",
+    "packVersion",
+    "documentTypeId",
+    "sourceDocumentId",
+    "recordInstances"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "hive.pack-driven-reader-extraction/0.1.0"
+    },
+    "packId": {
+      "type": "string",
+      "const": "iep"
+    },
+    "packVersion": {
+      "type": "string",
+      "const": "0.3.0-proposed"
+    },
+    "documentTypeId": {
+      "type": "string"
+    },
+    "sourceDocumentId": {
+      "type": "string"
+    },
+    "recordInstances": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "recordTypeId",
+          "instanceIndex",
+          "fields"
+        ],
+        "properties": {
+          "recordTypeId": {
+            "type": "string"
+          },
+          "instanceIndex": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "recordEvidence": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "sourceDocumentId",
+              "page",
+              "quote"
+            ],
+            "properties": {
+              "sourceDocumentId": {
+                "type": "string",
+                "minLength": 1
+              },
+              "page": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "quote": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "fields": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "allowedRecordTypeIds": {
+      "type": "string",
+      "enum": [
+        "document_header",
+        "student",
+        "meeting",
+        "meeting_participant",
+        "eligibility",
+        "present_level",
+        "measurement",
+        "goal",
+        "short_term_objective",
+        "service",
+        "accommodation",
+        "placement",
+        "assessment_participation",
+        "transition",
+        "transfer_of_rights",
+        "extended_school_year",
+        "progress_entry",
+        "amendment_change",
+        "school_action",
+        "parent_request",
+        "consent",
+        "referral",
+        "evaluation_plan_item",
+        "evaluation_finding",
+        "behavior_target"
+      ]
+    },
+    "fieldCatalog": [
+      {
+        "recordTypeId": "document_header",
+        "repeatable": false,
+        "fields": [
+          {
+            "fieldId": "title",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "document_date",
+            "valueKind": "date",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "effective_start",
+            "valueKind": "date",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed",
+              "planned"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "effective_end",
+            "valueKind": "date",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed",
+              "planned"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "author_role",
+            "valueKind": "code",
+            "source": [
+              "classified"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": [
+              "education_agency",
+              "school_evaluator",
+              "eligibility_team",
+              "independent_evaluator",
+              "parent_guardian",
+              "referrer",
+              "other"
+            ],
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "subtype",
+            "valueKind": "code",
+            "source": [
+              "classified"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": [
+              "initial",
+              "annual",
+              "review",
+              "revised",
+              "reevaluation",
+              "interim",
+              "other"
+            ],
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "refers_to_plan_date",
+            "valueKind": "date",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": "For amendments, progress reports and notices: the date of the plan they name",
+            "modelMayEmit": true
+          }
+        ]
+      },
+      {
+        "recordTypeId": "student",
+        "repeatable": false,
+        "fields": [
+          {
+            "fieldId": "name",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "birth_date",
+            "valueKind": "date",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "grade",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "school",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "district",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          }
+        ]
+      },
+      {
+        "recordTypeId": "meeting",
+        "repeatable": true,
+        "fields": [
+          {
+            "fieldId": "meeting_date",
+            "valueKind": "date",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "meeting_purpose",
+            "valueKind": "code",
+            "source": [
+              "classified"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": [
+              "initial",
+              "annual_review",
+              "reevaluation",
+              "amendment",
+              "eligibility",
+              "other"
+            ],
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          }
+        ]
+      },
+      {
+        "recordTypeId": "meeting_participant",
+        "repeatable": true,
+        "fields": [
+          {
+            "fieldId": "role",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "role_code",
+            "valueKind": "code",
+            "source": [
+              "classified"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": [
+              "parent_guardian",
+              "general_education_teacher",
+              "special_education_teacher",
+              "district_representative",
+              "evaluation_interpreter",
+              "related_service_provider",
+              "student",
+              "other"
+            ],
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "name",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          }
+        ]
+      },
+      {
+        "recordTypeId": "eligibility",
+        "repeatable": false,
+        "fields": [
+          {
+            "fieldId": "decision",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "decided"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "category",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "decided"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "secondary_category",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "decided"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "basis",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "determination_date",
+            "valueKind": "date",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          }
+        ]
+      },
+      {
+        "recordTypeId": "present_level",
+        "repeatable": true,
+        "fields": [
+          {
+            "fieldId": "area",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "statement",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "impact_on_general_curriculum",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": "How the disability affects involvement and progress in the general curriculum",
+            "modelMayEmit": true
+          }
+        ]
+      },
+      {
+        "recordTypeId": "measurement",
+        "repeatable": true,
+        "fields": [
+          {
+            "fieldId": "measure.instrument",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": "Named test, probe or tool, e.g. DIBELS ORF, WIAT-4",
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "measure.task",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": "Skill or subtest measured, e.g. oral reading fluency",
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "measure.administration",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": "Conditions, e.g. grade-level passage, cold read",
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "measure.score_type",
+            "valueKind": "code",
+            "source": [
+              "classified"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": [
+              "words_correct_per_minute",
+              "percent_accuracy",
+              "percent_of_opportunities",
+              "standard_score",
+              "scaled_score",
+              "t_score",
+              "percentile",
+              "grade_equivalent",
+              "age_equivalent",
+              "raw_score",
+              "rubric_level",
+              "count",
+              "rate_per_period",
+              "duration",
+              "other"
+            ],
+            "unit": null,
+            "description": "Chosen from the list based on the quoted unit or score label",
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "value",
+            "valueKind": "quantity",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": "context_defined",
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "unit",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "observed_on",
+            "valueKind": "date",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "area",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "context",
+            "valueKind": "code",
+            "source": [
+              "classified"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": [
+              "present_levels",
+              "evaluation",
+              "progress_report",
+              "other"
+            ],
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          }
+        ]
+      },
+      {
+        "recordTypeId": "goal",
+        "repeatable": true,
+        "fields": [
+          {
+            "fieldId": "area",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "statement",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "condition",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": "e.g. given a grade-level connected text passage",
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "measure.instrument",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": "Named test, probe or tool, e.g. DIBELS ORF, WIAT-4",
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "measure.task",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": "Skill or subtest measured, e.g. oral reading fluency",
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "measure.administration",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": "Conditions, e.g. grade-level passage, cold read",
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "measure.score_type",
+            "valueKind": "code",
+            "source": [
+              "classified"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": [
+              "words_correct_per_minute",
+              "percent_accuracy",
+              "percent_of_opportunities",
+              "standard_score",
+              "scaled_score",
+              "t_score",
+              "percentile",
+              "grade_equivalent",
+              "age_equivalent",
+              "raw_score",
+              "rubric_level",
+              "count",
+              "rate_per_period",
+              "duration",
+              "other"
+            ],
+            "unit": null,
+            "description": "Chosen from the list based on the quoted unit or score label",
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "baseline_value",
+            "valueKind": "quantity",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": "context_defined",
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "baseline_unit",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "baseline_source",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": "Document or assessment the baseline is attributed to",
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "target_value",
+            "valueKind": "quantity",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": null,
+            "unit": "context_defined",
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "target_unit",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "accuracy_criterion",
+            "valueKind": "quantity",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": null,
+            "unit": "%",
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "mastery_criterion",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": "e.g. across three consecutive probes",
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "measurement_method",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "reporting_frequency",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "reporting_method",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "start_date",
+            "valueKind": "date",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "target_date",
+            "valueKind": "date",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          }
+        ]
+      },
+      {
+        "recordTypeId": "short_term_objective",
+        "repeatable": true,
+        "fields": [
+          {
+            "fieldId": "goal_area",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "statement",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "target_date",
+            "valueKind": "date",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          }
+        ]
+      },
+      {
+        "recordTypeId": "service",
+        "repeatable": true,
+        "fields": [
+          {
+            "fieldId": "category",
+            "valueKind": "code",
+            "source": [
+              "classified"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": [
+              "special_education",
+              "related_service",
+              "supplementary_aid",
+              "program_modification",
+              "support_for_personnel"
+            ],
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "service_type",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "provider_role",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "delivery",
+            "valueKind": "code",
+            "source": [
+              "classified"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": [
+              "individual",
+              "group",
+              "consultation",
+              "unspecified"
+            ],
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "frequency_text",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": "As written, e.g. 30 minutes, 5 times per week",
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "sessions_per_period",
+            "valueKind": "quantity",
+            "source": [
+              "quoted",
+              "derived"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": false
+          },
+          {
+            "fieldId": "period",
+            "valueKind": "code",
+            "source": [
+              "quoted",
+              "classified"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": [
+              "day",
+              "week",
+              "month",
+              "grading_period",
+              "year"
+            ],
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "minutes_per_session",
+            "valueKind": "quantity",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": null,
+            "unit": "minutes",
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "minutes_per_week",
+            "valueKind": "quantity",
+            "source": [
+              "quoted",
+              "derived"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": null,
+            "unit": "min/week",
+            "description": null,
+            "modelMayEmit": false
+          },
+          {
+            "fieldId": "location",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": "Where the service is delivered; not the same as placement",
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "start_date",
+            "valueKind": "date",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "end_date",
+            "valueKind": "date",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": "With start_date, this is duration under 34 CFR 300.320(a)(7); not session length",
+            "modelMayEmit": true
+          }
+        ]
+      },
+      {
+        "recordTypeId": "accommodation",
+        "repeatable": true,
+        "fields": [
+          {
+            "fieldId": "description",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "context",
+            "valueKind": "code",
+            "source": [
+              "classified"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": [
+              "instruction",
+              "testing",
+              "both",
+              "unspecified"
+            ],
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "conditions",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          }
+        ]
+      },
+      {
+        "recordTypeId": "placement",
+        "repeatable": false,
+        "fields": [
+          {
+            "fieldId": "setting",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "percent_time_general_education",
+            "valueKind": "quantity",
+            "source": [
+              "quoted",
+              "derived"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": null,
+            "unit": "%",
+            "description": null,
+            "modelMayEmit": false
+          },
+          {
+            "fieldId": "nonparticipation_explanation",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": "Explanation of the extent the child will not participate with nondisabled children",
+            "modelMayEmit": true
+          }
+        ]
+      },
+      {
+        "recordTypeId": "assessment_participation",
+        "repeatable": true,
+        "fields": [
+          {
+            "fieldId": "assessment_name",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "participation",
+            "valueKind": "code",
+            "source": [
+              "classified"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": [
+              "regular",
+              "regular_with_accommodations",
+              "alternate"
+            ],
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "accommodations",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "alternate_rationale",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          }
+        ]
+      },
+      {
+        "recordTypeId": "transition",
+        "repeatable": true,
+        "fields": [
+          {
+            "fieldId": "area",
+            "valueKind": "code",
+            "source": [
+              "classified"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": [
+              "education_or_training",
+              "employment",
+              "independent_living"
+            ],
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "postsecondary_goal",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "transition_assessment",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "transition_services",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "course_of_study",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          }
+        ]
+      },
+      {
+        "recordTypeId": "transfer_of_rights",
+        "repeatable": false,
+        "fields": [
+          {
+            "fieldId": "statement",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "date_informed",
+            "valueKind": "date",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          }
+        ]
+      },
+      {
+        "recordTypeId": "extended_school_year",
+        "repeatable": false,
+        "fields": [
+          {
+            "fieldId": "decision",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "decided"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "basis",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          }
+        ]
+      },
+      {
+        "recordTypeId": "progress_entry",
+        "repeatable": true,
+        "fields": [
+          {
+            "fieldId": "goal_reference",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": "Goal as named in the report; code joins it to a goal by area and measure",
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "goal_area",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "reporting_period",
+            "valueKind": "period",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "reported_status",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "status_code",
+            "valueKind": "code",
+            "source": [
+              "classified"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": [
+              "mastered",
+              "sufficient_progress",
+              "some_progress",
+              "insufficient_progress",
+              "not_introduced",
+              "other"
+            ],
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "comment",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "measure.instrument",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": "Named test, probe or tool, e.g. DIBELS ORF, WIAT-4",
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "measure.task",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": "Skill or subtest measured, e.g. oral reading fluency",
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "measure.administration",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": "Conditions, e.g. grade-level passage, cold read",
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "measure.score_type",
+            "valueKind": "code",
+            "source": [
+              "classified"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": [
+              "words_correct_per_minute",
+              "percent_accuracy",
+              "percent_of_opportunities",
+              "standard_score",
+              "scaled_score",
+              "t_score",
+              "percentile",
+              "grade_equivalent",
+              "age_equivalent",
+              "raw_score",
+              "rubric_level",
+              "count",
+              "rate_per_period",
+              "duration",
+              "other"
+            ],
+            "unit": null,
+            "description": "Chosen from the list based on the quoted unit or score label",
+            "modelMayEmit": true
+          }
+        ]
+      },
+      {
+        "recordTypeId": "amendment_change",
+        "repeatable": true,
+        "fields": [
+          {
+            "fieldId": "target_plan_date",
+            "valueKind": "date",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "affected_record_type",
+            "valueKind": "code",
+            "source": [
+              "classified"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": [
+              "goal",
+              "service",
+              "accommodation",
+              "placement",
+              "assessment_participation",
+              "transition",
+              "present_level",
+              "other"
+            ],
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "change_description",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "effective_date",
+            "valueKind": "date",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          }
+        ]
+      },
+      {
+        "recordTypeId": "school_action",
+        "repeatable": true,
+        "fields": [
+          {
+            "fieldId": "action",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "decided"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "decision",
+            "valueKind": "code",
+            "source": [
+              "classified"
+            ],
+            "modality": [
+              "decided"
+            ],
+            "enum": [
+              "proposed",
+              "refused"
+            ],
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "explanation",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "evaluation_basis",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "options_considered",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "other_factors",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "action_date",
+            "valueKind": "date",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          }
+        ]
+      },
+      {
+        "recordTypeId": "parent_request",
+        "repeatable": true,
+        "fields": [
+          {
+            "fieldId": "topic",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "request",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "request_date",
+            "valueKind": "date",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "response",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          }
+        ]
+      },
+      {
+        "recordTypeId": "consent",
+        "repeatable": true,
+        "fields": [
+          {
+            "fieldId": "action",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "decision",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "decided"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "scope",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "consent_date",
+            "valueKind": "date",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          }
+        ]
+      },
+      {
+        "recordTypeId": "referral",
+        "repeatable": true,
+        "fields": [
+          {
+            "fieldId": "concern",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "source",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "requested_action",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "referral_date",
+            "valueKind": "date",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          }
+        ]
+      },
+      {
+        "recordTypeId": "evaluation_plan_item",
+        "repeatable": true,
+        "fields": [
+          {
+            "fieldId": "area",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "assessment",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "reason",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          }
+        ]
+      },
+      {
+        "recordTypeId": "evaluation_finding",
+        "repeatable": true,
+        "fields": [
+          {
+            "fieldId": "area",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "finding",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "recommendation",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          }
+        ]
+      },
+      {
+        "recordTypeId": "behavior_target",
+        "repeatable": true,
+        "fields": [
+          {
+            "fieldId": "target_behavior",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "antecedent",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "hypothesized_function",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "replacement_behavior",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "supports",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          }
+        ]
+      }
+    ]
+  }
+}
+Starter set. The existing repository vocabulary remains authoritative and must be merged before runtime use.
+
+### Abbreviations
+- IEP: Individualized Education Program
+- IDEA: Individuals with Disabilities Education Act
+- FAPE: free appropriate public education
+- LRE: least restrictive environment
+- PLAAFP: present levels of academic achievement and functional performance
+- PLOP: present levels of performance
+- SDI: specially designed instruction
+- SLP: speech-language pathologist
+- OT: occupational therapy
+- PT: physical therapy
+- ESY: extended school year
+- IEE: independent educational evaluation
+- PWN: prior written notice
+- FBA: functional behavioral assessment
+- BIP: behavior intervention plan
+- WCPM: words correct per minute
+- ORF: oral reading fluency
+- SLD: specific learning disability
+- OHI: other health impairment
+- ED: emotional disturbance
+- ASD: autism spectrum disorder
+- SS: standard score
+- PR: percentile rank
+- GE: grade equivalent
+- CBM: curriculum-based measurement
+
+### Unit aliases
+- min/week: minutes per week, min per week, mins/wk, min/wk, minutes weekly
+- minutes: min, mins, minute sessions
+- sessions/week: x/week, times per week, x weekly, times weekly
+- WCPM: words correct per minute, wcpm
+- %: percent, per cent
+
+### Field synonyms
+- service.service_type: specially designed instruction, SDI, resource, pull-out instruction
+- service.service_type: speech-language therapy, speech therapy, speech services
+- placement.setting: LRE, least restrictive environment, educational environment, placement
+- present_level.statement: PLAAFP, PLOP, present levels
+- measure.score_type: WCPM, words correct per minute, wcpm
+- measure.score_type: % accuracy, percent accuracy, accuracy
+
+---CASE USER---
+
+## Case document manifest (context only — not readable evidence)
+[
+  {
+    "sourceDocumentId": "00000000-0000-4000-8000-000000000001",
+    "filename": "sample-plan.pdf",
+    "pageCount": null,
+    "logicalDocumentId": null,
+    "documentTypeId": "iep.plan"
+  }
+]
+
+## Document classification and checklist
+documentTypeId: iep.plan
+resolution: classified
+checklistPolicy: look_for_all_listed; never_invent_if_absent; extract_other_pack_records_if_found
+unclassifiedPolicy: Unknown documents are read with the generic checklist, never forced into a type, and never counted toward requirements.
+checklistRecordTypes (17 records, 91 fields): document_header, student, meeting, meeting_participant, eligibility, present_level, measurement, goal, short_term_objective, service, accommodation, placement, assessment_participation, transition, transfer_of_rights, extended_school_year, parent_request
+### Global reading notes
+Extract every record in this document type's checklist, including repeats. One table row or one goal is one record. Quote the source text that holds the record; every quoted field value must appear in that quote. Do not infer absent numbers, identities, relationships or legal conclusions. Report a labelled but empty field as field_present_but_empty, citing the label. Distinguish what is observed, planned and decided.
+
+### Document-type reading notes
+Session length is not duration: '30 minutes, 2 times a week' is minutes per session and sessions per period; duration is start and end dates. Quote each service row whole. Keep the meeting date and the IEP start date apart. In present levels, one measurement per score with its measure fields; never merge accuracy percentages with words correct per minute. Split a goal's target value and accuracy criterion into separate fields.
+### Document-scoped output JSON Schema
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "packId",
+    "packVersion",
+    "documentTypeId",
+    "sourceDocumentId",
+    "recordInstances"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "hive.pack-driven-reader-extraction/0.1.0"
+    },
+    "packId": {
+      "type": "string",
+      "const": "iep"
+    },
+    "packVersion": {
+      "type": "string",
+      "const": "0.3.0-proposed"
+    },
+    "documentTypeId": {
+      "type": "string",
+      "const": "iep.plan"
+    },
+    "sourceDocumentId": {
+      "type": "string",
+      "const": "00000000-0000-4000-8000-000000000099"
+    },
+    "recordInstances": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "recordTypeId",
+          "instanceIndex",
+          "fields"
+        ],
+        "properties": {
+          "recordTypeId": {
+            "type": "string"
+          },
+          "instanceIndex": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "recordEvidence": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "sourceDocumentId",
+              "page",
+              "quote"
+            ],
+            "properties": {
+              "sourceDocumentId": {
+                "type": "string",
+                "minLength": 1
+              },
+              "page": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "quote": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "fields": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "allowedRecordTypeIds": {
+      "type": "string",
+      "enum": [
+        "document_header",
+        "student",
+        "meeting",
+        "meeting_participant",
+        "eligibility",
+        "present_level",
+        "measurement",
+        "goal",
+        "short_term_objective",
+        "service",
+        "accommodation",
+        "placement",
+        "assessment_participation",
+        "transition",
+        "transfer_of_rights",
+        "extended_school_year",
+        "parent_request"
+      ]
+    },
+    "fieldCatalog": [
+      {
+        "recordTypeId": "document_header",
+        "repeatable": false,
+        "fields": [
+          {
+            "fieldId": "title",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "document_date",
+            "valueKind": "date",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "effective_start",
+            "valueKind": "date",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed",
+              "planned"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "effective_end",
+            "valueKind": "date",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed",
+              "planned"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "author_role",
+            "valueKind": "code",
+            "source": [
+              "classified"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": [
+              "education_agency",
+              "school_evaluator",
+              "eligibility_team",
+              "independent_evaluator",
+              "parent_guardian",
+              "referrer",
+              "other"
+            ],
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "subtype",
+            "valueKind": "code",
+            "source": [
+              "classified"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": [
+              "initial",
+              "annual",
+              "review",
+              "revised",
+              "reevaluation",
+              "interim",
+              "other"
+            ],
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "refers_to_plan_date",
+            "valueKind": "date",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": "For amendments, progress reports and notices: the date of the plan they name",
+            "modelMayEmit": true
+          }
+        ]
+      },
+      {
+        "recordTypeId": "student",
+        "repeatable": false,
+        "fields": [
+          {
+            "fieldId": "name",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "birth_date",
+            "valueKind": "date",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "grade",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "school",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "district",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          }
+        ]
+      },
+      {
+        "recordTypeId": "meeting",
+        "repeatable": true,
+        "fields": [
+          {
+            "fieldId": "meeting_date",
+            "valueKind": "date",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "meeting_purpose",
+            "valueKind": "code",
+            "source": [
+              "classified"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": [
+              "initial",
+              "annual_review",
+              "reevaluation",
+              "amendment",
+              "eligibility",
+              "other"
+            ],
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          }
+        ]
+      },
+      {
+        "recordTypeId": "meeting_participant",
+        "repeatable": true,
+        "fields": [
+          {
+            "fieldId": "role",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "role_code",
+            "valueKind": "code",
+            "source": [
+              "classified"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": [
+              "parent_guardian",
+              "general_education_teacher",
+              "special_education_teacher",
+              "district_representative",
+              "evaluation_interpreter",
+              "related_service_provider",
+              "student",
+              "other"
+            ],
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "name",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          }
+        ]
+      },
+      {
+        "recordTypeId": "eligibility",
+        "repeatable": false,
+        "fields": [
+          {
+            "fieldId": "decision",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "decided"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "category",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "decided"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "secondary_category",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "decided"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "basis",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "determination_date",
+            "valueKind": "date",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          }
+        ]
+      },
+      {
+        "recordTypeId": "present_level",
+        "repeatable": true,
+        "fields": [
+          {
+            "fieldId": "area",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "statement",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "impact_on_general_curriculum",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": "How the disability affects involvement and progress in the general curriculum",
+            "modelMayEmit": true
+          }
+        ]
+      },
+      {
+        "recordTypeId": "measurement",
+        "repeatable": true,
+        "fields": [
+          {
+            "fieldId": "measure.instrument",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": "Named test, probe or tool, e.g. DIBELS ORF, WIAT-4",
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "measure.task",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": "Skill or subtest measured, e.g. oral reading fluency",
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "measure.administration",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": "Conditions, e.g. grade-level passage, cold read",
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "measure.score_type",
+            "valueKind": "code",
+            "source": [
+              "classified"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": [
+              "words_correct_per_minute",
+              "percent_accuracy",
+              "percent_of_opportunities",
+              "standard_score",
+              "scaled_score",
+              "t_score",
+              "percentile",
+              "grade_equivalent",
+              "age_equivalent",
+              "raw_score",
+              "rubric_level",
+              "count",
+              "rate_per_period",
+              "duration",
+              "other"
+            ],
+            "unit": null,
+            "description": "Chosen from the list based on the quoted unit or score label",
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "value",
+            "valueKind": "quantity",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": "context_defined",
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "unit",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "observed_on",
+            "valueKind": "date",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "area",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "context",
+            "valueKind": "code",
+            "source": [
+              "classified"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": [
+              "present_levels",
+              "evaluation",
+              "progress_report",
+              "other"
+            ],
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          }
+        ]
+      },
+      {
+        "recordTypeId": "goal",
+        "repeatable": true,
+        "fields": [
+          {
+            "fieldId": "area",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "statement",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "condition",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": "e.g. given a grade-level connected text passage",
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "measure.instrument",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": "Named test, probe or tool, e.g. DIBELS ORF, WIAT-4",
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "measure.task",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": "Skill or subtest measured, e.g. oral reading fluency",
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "measure.administration",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": "Conditions, e.g. grade-level passage, cold read",
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "measure.score_type",
+            "valueKind": "code",
+            "source": [
+              "classified"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": [
+              "words_correct_per_minute",
+              "percent_accuracy",
+              "percent_of_opportunities",
+              "standard_score",
+              "scaled_score",
+              "t_score",
+              "percentile",
+              "grade_equivalent",
+              "age_equivalent",
+              "raw_score",
+              "rubric_level",
+              "count",
+              "rate_per_period",
+              "duration",
+              "other"
+            ],
+            "unit": null,
+            "description": "Chosen from the list based on the quoted unit or score label",
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "baseline_value",
+            "valueKind": "quantity",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": "context_defined",
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "baseline_unit",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "baseline_source",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": "Document or assessment the baseline is attributed to",
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "target_value",
+            "valueKind": "quantity",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": null,
+            "unit": "context_defined",
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "target_unit",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "accuracy_criterion",
+            "valueKind": "quantity",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": null,
+            "unit": "%",
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "mastery_criterion",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": "e.g. across three consecutive probes",
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "measurement_method",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "reporting_frequency",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "reporting_method",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "start_date",
+            "valueKind": "date",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "target_date",
+            "valueKind": "date",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          }
+        ]
+      },
+      {
+        "recordTypeId": "short_term_objective",
+        "repeatable": true,
+        "fields": [
+          {
+            "fieldId": "goal_area",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "statement",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "target_date",
+            "valueKind": "date",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          }
+        ]
+      },
+      {
+        "recordTypeId": "service",
+        "repeatable": true,
+        "fields": [
+          {
+            "fieldId": "category",
+            "valueKind": "code",
+            "source": [
+              "classified"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": [
+              "special_education",
+              "related_service",
+              "supplementary_aid",
+              "program_modification",
+              "support_for_personnel"
+            ],
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "service_type",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "provider_role",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "delivery",
+            "valueKind": "code",
+            "source": [
+              "classified"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": [
+              "individual",
+              "group",
+              "consultation",
+              "unspecified"
+            ],
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "frequency_text",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": "As written, e.g. 30 minutes, 5 times per week",
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "sessions_per_period",
+            "valueKind": "quantity",
+            "source": [
+              "quoted",
+              "derived"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": false
+          },
+          {
+            "fieldId": "period",
+            "valueKind": "code",
+            "source": [
+              "quoted",
+              "classified"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": [
+              "day",
+              "week",
+              "month",
+              "grading_period",
+              "year"
+            ],
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "minutes_per_session",
+            "valueKind": "quantity",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": null,
+            "unit": "minutes",
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "minutes_per_week",
+            "valueKind": "quantity",
+            "source": [
+              "quoted",
+              "derived"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": null,
+            "unit": "min/week",
+            "description": null,
+            "modelMayEmit": false
+          },
+          {
+            "fieldId": "location",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": "Where the service is delivered; not the same as placement",
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "start_date",
+            "valueKind": "date",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "end_date",
+            "valueKind": "date",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": "With start_date, this is duration under 34 CFR 300.320(a)(7); not session length",
+            "modelMayEmit": true
+          }
+        ]
+      },
+      {
+        "recordTypeId": "accommodation",
+        "repeatable": true,
+        "fields": [
+          {
+            "fieldId": "description",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "context",
+            "valueKind": "code",
+            "source": [
+              "classified"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": [
+              "instruction",
+              "testing",
+              "both",
+              "unspecified"
+            ],
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "conditions",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          }
+        ]
+      },
+      {
+        "recordTypeId": "placement",
+        "repeatable": false,
+        "fields": [
+          {
+            "fieldId": "setting",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "percent_time_general_education",
+            "valueKind": "quantity",
+            "source": [
+              "quoted",
+              "derived"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": null,
+            "unit": "%",
+            "description": null,
+            "modelMayEmit": false
+          },
+          {
+            "fieldId": "nonparticipation_explanation",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": "Explanation of the extent the child will not participate with nondisabled children",
+            "modelMayEmit": true
+          }
+        ]
+      },
+      {
+        "recordTypeId": "assessment_participation",
+        "repeatable": true,
+        "fields": [
+          {
+            "fieldId": "assessment_name",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "participation",
+            "valueKind": "code",
+            "source": [
+              "classified"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": [
+              "regular",
+              "regular_with_accommodations",
+              "alternate"
+            ],
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "accommodations",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "alternate_rationale",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          }
+        ]
+      },
+      {
+        "recordTypeId": "transition",
+        "repeatable": true,
+        "fields": [
+          {
+            "fieldId": "area",
+            "valueKind": "code",
+            "source": [
+              "classified"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": [
+              "education_or_training",
+              "employment",
+              "independent_living"
+            ],
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "postsecondary_goal",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "transition_assessment",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "transition_services",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "course_of_study",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "planned"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          }
+        ]
+      },
+      {
+        "recordTypeId": "transfer_of_rights",
+        "repeatable": false,
+        "fields": [
+          {
+            "fieldId": "statement",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "date_informed",
+            "valueKind": "date",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          }
+        ]
+      },
+      {
+        "recordTypeId": "extended_school_year",
+        "repeatable": false,
+        "fields": [
+          {
+            "fieldId": "decision",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "decided"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "basis",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          }
+        ]
+      },
+      {
+        "recordTypeId": "parent_request",
+        "repeatable": true,
+        "fields": [
+          {
+            "fieldId": "topic",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "request",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "request_date",
+            "valueKind": "date",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          },
+          {
+            "fieldId": "response",
+            "valueKind": "text",
+            "source": [
+              "quoted"
+            ],
+            "modality": [
+              "observed"
+            ],
+            "enum": null,
+            "unit": null,
+            "description": null,
+            "modelMayEmit": true
+          }
+        ]
+      }
+    ]
+  }
+}
+### Record and field catalog for this document
+[
+  {
+    "recordTypeId": "document_header",
+    "label": "Document header",
+    "repeatable": false,
+    "identity": {
+      "scope": "document",
+      "keyFields": [],
+      "keyFieldsIfPresent": [],
+      "disambiguators": [],
+      "versionAxis": "document.orderingDate"
+    },
+    "usesConstructs": [],
+    "fields": [
+      {
+        "id": "title",
+        "valueKind": "text",
+        "source": [
+          "quoted"
+        ],
+        "modality": [
+          "observed"
+        ],
+        "enum": null,
+        "unit": null,
+        "description": null,
+        "modelMayEmit": true,
+        "derivation": null
+      },
+      {
+        "id": "document_date",
+        "valueKind": "date",
+        "source": [
+          "quoted"
+        ],
+        "modality": [
+          "observed"
+        ],
+        "enum": null,
+        "unit": null,
+        "description": null,
+        "modelMayEmit": true,
+        "derivation": null
+      },
+      {
+        "id": "effective_start",
+        "valueKind": "date",
+        "source": [
+          "quoted"
+        ],
+        "modality": [
+          "observed",
+          "planned"
+        ],
+        "enum": null,
+        "unit": null,
+        "description": null,
+        "modelMayEmit": true,
+        "derivation": null
+      },
+      {
+        "id": "effective_end",
+        "valueKind": "date",
+        "source": [
+          "quoted"
+        ],
+        "modality": [
+          "observed",
+          "planned"
+        ],
+        "enum": null,
+        "unit": null,
+        "description": null,
+        "modelMayEmit": true,
+        "derivation": null
+      },
+      {
+        "id": "author_role",
+        "valueKind": "code",
+        "source": [
+          "classified"
+        ],
+        "modality": [
+          "observed"
+        ],
+        "enum": [
+          "education_agency",
+          "school_evaluator",
+          "eligibility_team",
+          "independent_evaluator",
+          "parent_guardian",
+          "referrer",
+          "other"
+        ],
+        "unit": null,
+        "description": null,
+        "modelMayEmit": true,
+        "derivation": null
+      },
+      {
+        "id": "subtype",
+        "valueKind": "code",
+        "source": [
+          "classified"
+        ],
+        "modality": [
+          "observed"
+        ],
+        "enum": [
+          "initial",
+          "annual",
+          "review",
+          "revised",
+          "reevaluation",
+          "interim",
+          "other"
+        ],
+        "unit": null,
+        "description": null,
+        "modelMayEmit": true,
+        "derivation": null
+      },
+      {
+        "id": "refers_to_plan_date",
+        "valueKind": "date",
+        "source": [
+          "quoted"
+        ],
+        "modality": [
+          "observed"
+        ],
+        "enum": null,
+        "unit": null,
+        "description": "For amendments, progress reports and notices: the date of the plan they name",
+        "modelMayEmit": true,
+        "derivation": null
+      }
+    ]
+  },
+  {
+    "recordTypeId": "student",
+    "label": "Student",
+    "repeatable": false,
+    "identity": {
+      "scope": "case",
+      "keyFields": [],
+      "keyFieldsIfPresent": [],
+      "disambiguators": [],
+      "versionAxis": "document.orderingDate"
+    },
+    "usesConstructs": [],
+    "fields": [
+      {
+        "id": "name",
+        "valueKind": "text",
+        "source": [
+          "quoted"
+        ],
+        "modality": [
+          "observed"
+        ],
+        "enum": null,
+        "unit": null,
+        "description": null,
+        "modelMayEmit": true,
+        "derivation": null
+      },
+      {
+        "id": "birth_date",
+        "valueKind": "date",
+        "source": [
+          "quoted"
+        ],
+        "modality": [
+          "observed"
+        ],
+        "enum": null,
+        "unit": null,
+        "description": null,
+        "modelMayEmit": true,
+        "derivation": null
+      },
+      {
+        "id": "grade",
+        "valueKind": "text",
+        "source": [
+          "quoted"
+        ],
+        "modality": [
+          "observed"
+        ],
+        "enum": null,
+        "unit": null,
+        "description": null,
+        "modelMayEmit": true,
+        "derivation": null
+      },
+      {
+        "id": "school",
+        "valueKind": "text",
+        "source": [
+          "quoted"
+        ],
+        "modality": [
+          "observed"
+        ],
+        "enum": null,
+        "unit": null,
+        "description": null,
+        "modelMayEmit": true,
+        "derivation": null
+      },
+      {
+        "id": "district",
+        "valueKind": "text",
+        "source": [
+          "quoted"
+        ],
+        "modality": [
+          "observed"
+        ],
+        "enum": null,
+        "unit": null,
+        "description": null,
+        "modelMayEmit": true,
+        "derivation": null
+      }
+    ]
+  },
+  {
+    "recordTypeId": "meeting",
+    "label": "Meeting",
+    "repeatable": true,
+    "identity": {
+      "scope": "case",
+      "keyFields": [
+        "meeting_date"
+      ],
+      "keyFieldsIfPresent": [],
+      "disambiguators": [],
+      "versionAxis": "document.orderingDate"
+    },
+    "usesConstructs": [],
+    "fields": [
+      {
+        "id": "meeting_date",
+        "valueKind": "date",
+        "source": [
+          "quoted"
+        ],
+        "modality": [
+          "observed"
+        ],
+        "enum": null,
+        "unit": null,
+        "description": null,
+        "modelMayEmit": true,
+        "derivation": null
+      },
+      {
+        "id": "meeting_purpose",
+        "valueKind": "code",
+        "source": [
+          "classified"
+        ],
+        "modality": [
+          "observed"
+        ],
+        "enum": [
+          "initial",
+          "annual_review",
+          "reevaluation",
+          "amendment",
+          "eligibility",
+          "other"
+        ],
+        "unit": null,
+        "description": null,
+        "modelMayEmit": true,
+        "derivation": null
+      }
+    ]
+  },
+  {
+    "recordTypeId": "meeting_participant",
+    "label": "Meeting participant",
+    "repeatable": true,
+    "identity": {
+      "scope": "case",
+      "keyFields": [
+        "role_code"
+      ],
+      "keyFieldsIfPresent": [],
+      "disambiguators": [
+        "role"
+      ],
+      "versionAxis": "document.orderingDate"
+    },
+    "usesConstructs": [],
+    "fields": [
+      {
+        "id": "role",
+        "valueKind": "text",
+        "source": [
+          "quoted"
+        ],
+        "modality": [
+          "observed"
+        ],
+        "enum": null,
+        "unit": null,
+        "description": null,
+        "modelMayEmit": true,
+        "derivation": null
+      },
+      {
+        "id": "role_code",
+        "valueKind": "code",
+        "source": [
+          "classified"
+        ],
+        "modality": [
+          "observed"
+        ],
+        "enum": [
+          "parent_guardian",
+          "general_education_teacher",
+          "special_education_teacher",
+          "district_representative",
+          "evaluation_interpreter",
+          "related_service_provider",
+          "student",
+          "other"
+        ],
+        "unit": null,
+        "description": null,
+        "modelMayEmit": true,
+        "derivation": null
+      },
+      {
+        "id": "name",
+        "valueKind": "text",
+        "source": [
+          "quoted"
+        ],
+        "modality": [
+          "observed"
+        ],
+        "enum": null,
+        "unit": null,
+        "description": null,
+        "modelMayEmit": true,
+        "derivation": null
+      }
+    ]
+  },
+  {
+    "recordTypeId": "eligibility",
+    "label": "Eligibility determination",
+    "repeatable": false,
+    "identity": {
+      "scope": "case",
+      "keyFields": [],
+      "keyFieldsIfPresent": [],
+      "disambiguators": [],
+      "versionAxis": "document.orderingDate"
+    },
+    "usesConstructs": [],
+    "fields": [
+      {
+        "id": "decision",
+        "valueKind": "text",
+        "source": [
+          "quoted"
+        ],
+        "modality": [
+          "decided"
+        ],
+        "enum": null,
+        "unit": null,
+        "description": null,
+        "modelMayEmit": true,
+        "derivation": null
+      },
+      {
+        "id": "category",
+        "valueKind": "text",
+        "source": [
+          "quoted"
+        ],
+        "modality": [
+          "decided"
+        ],
+        "enum": null,
+        "unit": null,
+        "description": null,
+        "modelMayEmit": true,
+        "derivation": null
+      },
+      {
+        "id": "secondary_category",
+        "valueKind": "text",
+        "source": [
+          "quoted"
+        ],
+        "modality": [
+          "decided"
+        ],
+        "enum": null,
+        "unit": null,
+        "description": null,
+        "modelMayEmit": true,
+        "derivation": null
+      },
+      {
+        "id": "basis",
+        "valueKind": "text",
+        "source": [
+          "quoted"
+        ],
+        "modality": [
+          "observed"
+        ],
+        "enum": null,
+        "unit": null,
+        "description": null,
+        "modelMayEmit": true,
+        "derivation": null
+      },
+      {
+        "id": "determination_date",
+        "valueKind": "date",
+        "source": [
+          "quoted"
+        ],
+        "modality": [
+          "observed"
+        ],
+        "enum": null,
+        "unit": null,
+        "description": null,
+        "modelMayEmit": true,
+        "derivation": null
+      }
+    ]
+  },
+  {
+    "recordTypeId": "present_level",
+    "label": "Present level",
+    "repeatable": true,
+    "identity": {
+      "scope": "case",
+      "keyFields": [
+        "area"
+      ],
+      "keyFieldsIfPresent": [],
+      "disambiguators": [],
+      "versionAxis": "document.orderingDate"
+    },
+    "usesConstructs": [],
+    "fields": [
+      {
+        "id": "area",
+        "valueKind": "text",
+        "source": [
+          "quoted"
+        ],
+        "modality": [
+          "observed"
+        ],
+        "enum": null,
+        "unit": null,
+        "description": null,
+        "modelMayEmit": true,
+        "derivation": null
+      },
+      {
+        "id": "statement",
+        "valueKind": "text",
+        "source": [
+          "quoted"
+        ],
+        "modality": [
+          "observed"
+        ],
+        "enum": null,
+        "unit": null,
+        "description": null,
+        "modelMayEmit": true,
+        "derivation": null
+      },
+      {
+        "id": "impact_on_general_curriculum",
+        "valueKind": "text",
+        "source": [
+          "quoted"
+        ],
+        "modality": [
+          "observed"
+        ],
+        "enum": null,
+        "unit": null,
+        "description": "How the disability affects involvement and progress in the general curriculum",
+        "modelMayEmit": true,
+        "derivation": null
+      }
+    ]
+  },
+  {
+    "recordTypeId": "measurement",
+    "label": "Measurement",
+    "repeatable": true,
+    "identity": {
+      "scope": "case",
+      "keyFields": [
+        "measure.task",
+        "measure.score_type"
+      ],
+      "keyFieldsIfPresent": [
+        "measure.instrument",
+        "measure.administration"
+      ],
+      "disambiguators": [],
+      "versionAxis": "document.orderingDate"
+    },
+    "usesConstructs": [
+      "measure"
+    ],
+    "fields": [
+      {
+        "id": "measure.instrument",
+        "valueKind": "text",
+        "source": [
+          "quoted"
+        ],
+        "modality": [
+          "observed"
+        ],
+        "enum": null,
+        "unit": null,
+        "description": "Named test, probe or tool, e.g. DIBELS ORF, WIAT-4",
+        "modelMayEmit": true,
+        "derivation": null
+      },
+      {
+        "id": "measure.task",
+        "valueKind": "text",
+        "source": [
+          "quoted"
+        ],
+        "modality": [
+          "observed"
+        ],
+        "enum": null,
+        "unit": null,
+        "description": "Skill or subtest measured, e.g. oral reading fluency",
+        "modelMayEmit": true,
+        "derivation": null
+      },
+      {
+        "id": "measure.administration",
+        "valueKind": "text",
+        "source": [
+          "quoted"
+        ],
+        "modality": [
+          "observed"
+        ],
+        "enum": null,
+        "unit": null,
+        "description": "Conditions, e.g. grade-level passage, cold read",
+        "modelMayEmit": true,
+        "derivation": null
+      },
+      {
+        "id": "measure.score_type",
+        "valueKind": "code",
+        "source": [
+          "classified"
+        ],
+        "modality": [
+          "observed"
+        ],
+        "enum": [
+          "words_correct_per_minute",
+          "percent_accuracy",
+          "percent_of_opportunities",
+          "standard_score",
+          "scaled_score",
+          "t_score",
+          "percentile",
+          "grade_equivalent",
+          "age_equivalent",
+          "raw_score",
+          "rubric_level",
+          "count",
+          "rate_per_period",
+          "duration",
+          "other"
+        ],
+        "unit": null,
+        "description": "Chosen from the list based on the quoted unit or score label",
+        "modelMayEmit": true,
+        "derivation": null
+      },
+      {
+        "id": "value",
+        "valueKind": "quantity",
+        "source": [
+          "quoted"
+        ],
+        "modality": [
+          "observed"
+        ],
+        "enum": null,
+        "unit": "context_defined",
+        "description": null,
+        "modelMayEmit": true,
+        "derivation": null
+      },
+      {
+        "id": "unit",
+        "valueKind": "text",
+        "source": [
+          "quoted"
+        ],
+        "modality": [
+          "observed"
+        ],
+        "enum": null,
+        "unit": null,
+        "description": null,
+        "modelMayEmit": true,
+        "derivation": null
+      },
+      {
+        "id": "observed_on",
+        "valueKind": "date",
+        "source": [
+          "quoted"
+        ],
+        "modality": [
+          "observed"
+        ],
+        "enum": null,
+        "unit": null,
+        "description": null,
+        "modelMayEmit": true,
+        "derivation": null
+      },
+      {
+        "id": "area",
+        "valueKind": "text",
+        "source": [
+          "quoted"
+        ],
+        "modality": [
+          "observed"
+        ],
+        "enum": null,
+        "unit": null,
+        "description": null,
+        "modelMayEmit": true,
+        "derivation": null
+      },
+      {
+        "id": "context",
+        "valueKind": "code",
+        "source": [
+          "classified"
+        ],
+        "modality": [
+          "observed"
+        ],
+        "enum": [
+          "present_levels",
+          "evaluation",
+          "progress_report",
+          "other"
+        ],
+        "unit": null,
+        "description": null,
+        "modelMayEmit": true,
+        "derivation": null
+      }
+    ]
+  },
+  {
+    "recordTypeId": "goal",
+    "label": "Annual goal",
+    "repeatable": true,
+    "identity": {
+      "scope": "case",
+      "keyFields": [
+        "area",
+        "measure.task",
+        "measure.score_type"
+      ],
+      "keyFieldsIfPresent": [
+        "measure.instrument"
+      ],
+      "disambiguators": [
+        "condition"
+      ],
+      "versionAxis": "document.orderingDate"
+    },
+    "usesConstructs": [
+      "measure"
+    ],
+    "fields": [
+      {
+        "id": "area",
+        "valueKind": "text",
+        "source": [
+          "quoted"
+        ],
+        "modality": [
+          "planned"
+        ],
+        "enum": null,
+        "unit": null,
+        "description": null,
+        "modelMayEmit": true,
+        "derivation": null
+      },
+      {
+        "id": "statement",
+        "valueKind": "text",
+        "source": [
+          "quoted"
+        ],
+        "modality": [
+          "planned"
+        ],
+        "enum": null,
+        "unit": null,
+        "description": null,
+        "modelMayEmit": true,
+        "derivation": null
+      },
+      {
+        "id": "condition",
+        "valueKind": "text",
+        "source": [
+          "quoted"
+        ],
+        "modality": [
+          "planned"
+        ],
+        "enum": null,
+        "unit": null,
+        "description": "e.g. given a grade-level connected text passage",
+        "modelMayEmit": true,
+        "derivation": null
+      },
+      {
+        "id": "measure.instrument",
+        "valueKind": "text",
+        "source": [
+          "quoted"
+        ],
+        "modality": [
+          "observed"
+        ],
+        "enum": null,
+        "unit": null,
+        "description": "Named test, probe or tool, e.g. DIBELS ORF, WIAT-4",
+        "modelMayEmit": true,
+        "derivation": null
+      },
+      {
+        "id": "measure.task",
+        "valueKind": "text",
+        "source": [
+          "quoted"
+        ],
+        "modality": [
+          "observed"
+        ],
+        "enum": null,
+        "unit": null,
+        "description": "Skill or subtest measured, e.g. oral reading fluency",
+        "modelMayEmit": true,
+        "derivation": null
+      },
+      {
+        "id": "measure.administration",
+        "valueKind": "text",
+        "source": [
+          "quoted"
+        ],
+        "modality": [
+          "observed"
+        ],
+        "enum": null,
+        "unit": null,
+        "description": "Conditions, e.g. grade-level passage, cold read",
+        "modelMayEmit": true,
+        "derivation": null
+      },
+      {
+        "id": "measure.score_type",
+        "valueKind": "code",
+        "source": [
+          "classified"
+        ],
+        "modality": [
+          "observed"
+        ],
+        "enum": [
+          "words_correct_per_minute",
+          "percent_accuracy",
+          "percent_of_opportunities",
+          "standard_score",
+          "scaled_score",
+          "t_score",
+          "percentile",
+          "grade_equivalent",
+          "age_equivalent",
+          "raw_score",
+          "rubric_level",
+          "count",
+          "rate_per_period",
+          "duration",
+          "other"
+        ],
+        "unit": null,
+        "description": "Chosen from the list based on the quoted unit or score label",
+        "modelMayEmit": true,
+        "derivation": null
+      },
+      {
+        "id": "baseline_value",
+        "valueKind": "quantity",
+        "source": [
+          "quoted"
+        ],
+        "modality": [
+          "observed"
+        ],
+        "enum": null,
+        "unit": "context_defined",
+        "description": null,
+        "modelMayEmit": true,
+        "derivation": null
+      },
+      {
+        "id": "baseline_unit",
+        "valueKind": "text",
+        "source": [
+          "quoted"
+        ],
+        "modality": [
+          "observed"
+        ],
+        "enum": null,
+        "unit": null,
+        "description": null,
+        "modelMayEmit": true,
+        "derivation": null
+      },
+      {
+        "id": "baseline_source",
+        "valueKind": "text",
+        "source": [
+          "quoted"
+        ],
+        "modality": [
+          "observed"
+        ],
+        "enum": null,
+        "unit": null,
+        "description": "Document or assessment the baseline is attributed to",
+        "modelMayEmit": true,
+        "derivation": null
+      },
+      {
+        "id": "target_value",
+        "valueKind": "quantity",
+        "source": [
+          "quoted"
+        ],
+        "modality": [
+          "planned"
+        ],
+        "enum": null,
+        "unit": "context_defined",
+        "description": null,
+        "modelMayEmit": true,
+        "derivation": null
+      },
+      {
+        "id": "target_unit",
+        "valueKind": "text",
+        "source": [
+          "quoted"
+        ],
+        "modality": [
+          "planned"
+        ],
+        "enum": null,
+        "unit": null,
+        "description": null,
+        "modelMayEmit": true,
+        "derivation": null
+      },
+      {
+        "id": "accuracy_criterion",
+        "valueKind": "quantity",
+        "source": [
+          "quoted"
+        ],
+        "modality": [
+          "planned"
+        ],
+        "enum": null,
+        "unit": "%",
+        "description": null,
+        "modelMayEmit": true,
+        "derivation": null
+      },
+      {
+        "id": "mastery_criterion",
+        "valueKind": "text",
+        "source": [
+          "quoted"
+        ],
+        "modality": [
+          "planned"
+        ],
+        "enum": null,
+        "unit": null,
+        "description": "e.g. across three consecutive probes",
+        "modelMayEmit": true,
+        "derivation": null
+      },
+      {
+        "id": "measurement_method",
+        "valueKind": "text",
+        "source": [
+          "quoted"
+        ],
+        "modality": [
+          "planned"
+        ],
+        "enum": null,
+        "unit": null,
+        "description": null,
+        "modelMayEmit": true,
+        "derivation": null
+      },
+      {
+        "id": "reporting_frequency",
+        "valueKind": "text",
+        "source": [
+          "quoted"
+        ],
+        "modality": [
+          "planned"
+        ],
+        "enum": null,
+        "unit": null,
+        "description": null,
+        "modelMayEmit": true,
+        "derivation": null
+      },
+      {
+        "id": "reporting_method",
+        "valueKind": "text",
+        "source": [
+          "quoted"
+        ],
+        "modality": [
+          "planned"
+        ],
+        "enum": null,
+        "unit": null,
+        "description": null,
+        "modelMayEmit": true,
+        "derivation": null
+      },
+      {
+        "id": "start_date",
+        "valueKind": "date",
+        "source": [
+          "quoted"
+        ],
+        "modality": [
+          "planned"
+        ],
+        "enum": null,
+        "unit": null,
+        "description": null,
+        "modelMayEmit": true,
+        "derivation": null
+      },
+      {
+        "id": "target_date",
+        "valueKind": "date",
+        "source": [
+          "quoted"
+        ],
+        "modality": [
+          "planned"
+        ],
+        "enum": null,
+        "unit": null,
+        "description": null,
+        "modelMayEmit": true,
+        "derivation": null
+      }
+    ]
+  },
+  {
+    "recordTypeId": "short_term_objective",
+    "label": "Short-term objective or benchmark",
+    "repeatable": true,
+    "identity": {
+      "scope": "case",
+      "keyFields": [
+        "goal_area",
+        "statement"
+      ],
+      "keyFieldsIfPresent": [],
+      "disambiguators": [],
+      "versionAxis": "document.orderingDate"
+    },
+    "usesConstructs": [],
+    "fields": [
+      {
+        "id": "goal_area",
+        "valueKind": "text",
+        "source": [
+          "quoted"
+        ],
+        "modality": [
+          "planned"
+        ],
+        "enum": null,
+        "unit": null,
+        "description": null,
+        "modelMayEmit": true,
+        "derivation": null
+      },
+      {
+        "id": "statement",
+        "valueKind": "text",
+        "source": [
+          "quoted"
+        ],
+        "modality": [
+          "planned"
+        ],
+        "enum": null,
+        "unit": null,
+        "description": null,
+        "modelMayEmit": true,
+        "derivation": null
+      },
+      {
+        "id": "target_date",
+        "valueKind": "date",
+        "source": [
+          "quoted"
+        ],
+        "modality": [
+          "planned"
+        ],
+        "enum": null,
+        "unit": null,
+        "description": null,
+        "modelMayEmit": true,
+        "derivation": null
+      }
+    ]
+  },
+  {
+    "recordTypeId": "service",
+    "label": "Service",
+    "repeatable": true,
+    "identity": {
+      "scope": "case",
+      "keyFields": [
+        "category",
+        "service_type"
+      ],
+      "keyFieldsIfPresent": [],
+      "disambiguators": [
+        "delivery",
+        "location",
+        "provider_role"
+      ],
+      "versionAxis": "document.orderingDate"
+    },
+    "usesConstructs": [],
+    "fields": [
+      {
+        "id": "category",
+        "valueKind": "code",
+        "source": [
+          "classified"
+        ],
+        "modality": [
+          "planned"
+        ],
+        "enum": [
+          "special_education",
+          "related_service",
+          "supplementary_aid",
+          "program_modification",
+          "support_for_personnel"
+        ],
+        "unit": null,
+        "description": null,
+        "modelMayEmit": true,
+        "derivation": null
+      },
+      {
+        "id": "service_type",
+        "valueKind": "text",
+        "source": [
+          "quoted"
+        ],
+        "modality": [
+          "planned"
+        ],
+        "enum": null,
+        "unit": null,
+        "description": null,
+        "modelMayEmit": true,
+        "derivation": null
+      },
+      {
+        "id": "provider_role",
+        "valueKind": "text",
+        "source": [
+          "quoted"
+        ],
+        "modality": [
+          "planned"
+        ],
+        "enum": null,
+        "unit": null,
+        "description": null,
+        "modelMayEmit": true,
+        "derivation": null
+      },
+      {
+        "id": "delivery",
+        "valueKind": "code",
+        "source": [
+          "classified"
+        ],
+        "modality": [
+          "planned"
+        ],
+        "enum": [
+          "individual",
+          "group",
+          "consultation",
+          "unspecified"
+        ],
+        "unit": null,
+        "description": null,
+        "modelMayEmit": true,
+        "derivation": null
+      },
+      {
+        "id": "frequency_text",
+        "valueKind": "text",
+        "source": [
+          "quoted"
+        ],
+        "modality": [
+          "planned"
+        ],
+        "enum": null,
+        "unit": null,
+        "description": "As written, e.g. 30 minutes, 5 times per week",
+        "modelMayEmit": true,
+        "derivation": null
+      },
+      {
+        "id": "sessions_per_period",
+        "valueKind": "quantity",
+        "source": [
+          "quoted",
+          "derived"
+        ],
+        "modality": [
+          "planned"
+        ],
+        "enum": null,
+        "unit": null,
+        "description": null,
+        "modelMayEmit": false,
+        "derivation": {
+          "primitive": "parseFrequency",
+          "operands": [
+            "frequency_text"
+          ],
+          "conditions": [
+            "same_record",
+            "all_operands_verified",
+            "unambiguous_parse"
+          ]
+        }
+      },
+      {
+        "id": "period",
+        "valueKind": "code",
+        "source": [
+          "quoted",
+          "classified"
+        ],
+        "modality": [
+          "planned"
+        ],
+        "enum": [
+          "day",
+          "week",
+          "month",
+          "grading_period",
+          "year"
+        ],
+        "unit": null,
+        "description": null,
+        "modelMayEmit": true,
+        "derivation": null
+      },
+      {
+        "id": "minutes_per_session",
+        "valueKind": "quantity",
+        "source": [
+          "quoted"
+        ],
+        "modality": [
+          "planned"
+        ],
+        "enum": null,
+        "unit": "minutes",
+        "description": null,
+        "modelMayEmit": true,
+        "derivation": null
+      },
+      {
+        "id": "minutes_per_week",
+        "valueKind": "quantity",
+        "source": [
+          "quoted",
+          "derived"
+        ],
+        "modality": [
+          "planned"
+        ],
+        "enum": null,
+        "unit": "min/week",
+        "description": null,
+        "modelMayEmit": false,
+        "derivation": {
+          "primitive": "ratePerWeek",
+          "operands": [
+            "minutes_per_session",
+            "sessions_per_period",
+            "period"
+          ],
+          "conditions": [
+            "same_record",
+            "all_operands_verified",
+            "period_convertible_to_week"
+          ]
+        }
+      },
+      {
+        "id": "location",
+        "valueKind": "text",
+        "source": [
+          "quoted"
+        ],
+        "modality": [
+          "planned"
+        ],
+        "enum": null,
+        "unit": null,
+        "description": "Where the service is delivered; not the same as placement",
+        "modelMayEmit": true,
+        "derivation": null
+      },
+      {
+        "id": "start_date",
+        "valueKind": "date",
+        "source": [
+          "quoted"
+        ],
+        "modality": [
+          "planned"
+        ],
+        "enum": null,
+        "unit": null,
+        "description": null,
+        "modelMayEmit": true,
+        "derivation": null
+      },
+      {
+        "id": "end_date",
+        "valueKind": "date",
+        "source": [
+          "quoted"
+        ],
+        "modality": [
+          "planned"
+        ],
+        "enum": null,
+        "unit": null,
+        "description": "With start_date, this is duration under 34 CFR 300.320(a)(7); not session length",
+        "modelMayEmit": true,
+        "derivation": null
+      }
+    ]
+  },
+  {
+    "recordTypeId": "accommodation",
+    "label": "Accommodation or modification",
+    "repeatable": true,
+    "identity": {
+      "scope": "case",
+      "keyFields": [
+        "description",
+        "context"
+      ],
+      "keyFieldsIfPresent": [],
+      "disambiguators": [],
+      "versionAxis": "document.orderingDate"
+    },
+    "usesConstructs": [],
+    "fields": [
+      {
+        "id": "description",
+        "valueKind": "text",
+        "source": [
+          "quoted"
+        ],
+        "modality": [
+          "planned"
+        ],
+        "enum": null,
+        "unit": null,
+        "description": null,
+        "modelMayEmit": true,
+        "derivation": null
+      },
+      {
+        "id": "context",
+        "valueKind": "code",
+        "source": [
+          "classified"
+        ],
+        "modality": [
+          "planned"
+        ],
+        "enum": [
+          "instruction",
+          "testing",
+          "both",
+          "unspecified"
+        ],
+        "unit": null,
+        "description": null,
+        "modelMayEmit": true,
+        "derivation": null
+      },
+      {
+        "id": "conditions",
+        "valueKind": "text",
+        "source": [
+          "quoted"
+        ],
+        "modality": [
+          "planned"
+        ],
+        "enum": null,
+        "unit": null,
+        "description": null,
+        "modelMayEmit": true,
+        "derivation": null
+      }
+    ]
+  },
+  {
+    "recordTypeId": "placement",
+    "label": "Placement",
+    "repeatable": false,
+    "identity": {
+      "scope": "case",
+      "keyFields": [],
+      "keyFieldsIfPresent": [],
+      "disambiguators": [],
+      "versionAxis": "document.orderingDate"
+    },
+    "usesConstructs": [],
+    "fields": [
+      {
+        "id": "setting",
+        "valueKind": "text",
+        "source": [
+          "quoted"
+        ],
+        "modality": [
+          "planned"
+        ],
+        "enum": null,
+        "unit": null,
+        "description": null,
+        "modelMayEmit": true,
+        "derivation": null
+      },
+      {
+        "id": "percent_time_general_education",
+        "valueKind": "quantity",
+        "source": [
+          "quoted",
+          "derived"
+        ],
+        "modality": [
+          "planned"
+        ],
+        "enum": null,
+        "unit": "%",
+        "description": null,
+        "modelMayEmit": false,
+        "derivation": {
+          "primitive": "shareOfTotal",
+          "operands": [
+            "service.minutes_per_week"
+          ],
+          "conditions": [
+            "same_document",
+            "all_operands_verified",
+            "school_week_minutes_from_reference"
+          ]
+        }
+      },
+      {
+        "id": "nonparticipation_explanation",
+        "valueKind": "text",
+        "source": [
+          "quoted"
+        ],
+        "modality": [
+          "planned"
+        ],
+        "enum": null,
+        "unit": null,
+        "description": "Explanation of the extent the child will not participate with nondisabled children",
+        "modelMayEmit": true,
+        "derivation": null
+      }
+    ]
+  },
+  {
+    "recordTypeId": "assessment_participation",
+    "label": "State or district assessment participation",
+    "repeatable": true,
+    "identity": {
+      "scope": "case",
+      "keyFields": [
+        "assessment_name"
+      ],
+      "keyFieldsIfPresent": [],
+      "disambiguators": [],
+      "versionAxis": "document.orderingDate"
+    },
+    "usesConstructs": [],
+    "fields": [
+      {
+        "id": "assessment_name",
+        "valueKind": "text",
+        "source": [
+          "quoted"
+        ],
+        "modality": [
+          "planned"
+        ],
+        "enum": null,
+        "unit": null,
+        "description": null,
+        "modelMayEmit": true,
+        "derivation": null
+      },
+      {
+        "id": "participation",
+        "valueKind": "code",
+        "source": [
+          "classified"
+        ],
+        "modality": [
+          "planned"
+        ],
+        "enum": [
+          "regular",
+          "regular_with_accommodations",
+          "alternate"
+        ],
+        "unit": null,
+        "description": null,
+        "modelMayEmit": true,
+        "derivation": null
+      },
+      {
+        "id": "accommodations",
+        "valueKind": "text",
+        "source": [
+          "quoted"
+        ],
+        "modality": [
+          "planned"
+        ],
+        "enum": null,
+        "unit": null,
+        "description": null,
+        "modelMayEmit": true,
+        "derivation": null
+      },
+      {
+        "id": "alternate_rationale",
+        "valueKind": "text",
+        "source": [
+          "quoted"
+        ],
+        "modality": [
+          "planned"
+        ],
+        "enum": null,
+        "unit": null,
+        "description": null,
+        "modelMayEmit": true,
+        "derivation": null
+      }
+    ]
+  },
+  {
+    "recordTypeId": "transition",
+    "label": "Transition plan",
+    "repeatable": true,
+    "identity": {
+      "scope": "case",
+      "keyFields": [
+        "area"
+      ],
+      "keyFieldsIfPresent": [],
+      "disambiguators": [],
+      "versionAxis": "document.orderingDate"
+    },
+    "usesConstructs": [],
+    "fields": [
+      {
+        "id": "area",
+        "valueKind": "code",
+        "source": [
+          "classified"
+        ],
+        "modality": [
+          "planned"
+        ],
+        "enum": [
+          "education_or_training",
+          "employment",
+          "independent_living"
+        ],
+        "unit": null,
+        "description": null,
+        "modelMayEmit": true,
+        "derivation": null
+      },
+      {
+        "id": "postsecondary_goal",
+        "valueKind": "text",
+        "source": [
+          "quoted"
+        ],
+        "modality": [
+          "planned"
+        ],
+        "enum": null,
+        "unit": null,
+        "description": null,
+        "modelMayEmit": true,
+        "derivation": null
+      },
+      {
+        "id": "transition_assessment",
+        "valueKind": "text",
+        "source": [
+          "quoted"
+        ],
+        "modality": [
+          "observed"
+        ],
+        "enum": null,
+        "unit": null,
+        "description": null,
+        "modelMayEmit": true,
+        "derivation": null
+      },
+      {
+        "id": "transition_services",
+        "valueKind": "text",
+        "source": [
+          "quoted"
+        ],
+        "modality": [
+          "planned"
+        ],
+        "enum": null,
+        "unit": null,
+        "description": null,
+        "modelMayEmit": true,
+        "derivation": null
+      },
+      {
+        "id": "course_of_study",
+        "valueKind": "text",
+        "source": [
+          "quoted"
+        ],
+        "modality": [
+          "planned"
+        ],
+        "enum": null,
+        "unit": null,
+        "description": null,
+        "modelMayEmit": true,
+        "derivation": null
+      }
+    ]
+  },
+  {
+    "recordTypeId": "transfer_of_rights",
+    "label": "Transfer of rights at age of majority",
+    "repeatable": false,
+    "identity": {
+      "scope": "case",
+      "keyFields": [],
+      "keyFieldsIfPresent": [],
+      "disambiguators": [],
+      "versionAxis": "document.orderingDate"
+    },
+    "usesConstructs": [],
+    "fields": [
+      {
+        "id": "statement",
+        "valueKind": "text",
+        "source": [
+          "quoted"
+        ],
+        "modality": [
+          "observed"
+        ],
+        "enum": null,
+        "unit": null,
+        "description": null,
+        "modelMayEmit": true,
+        "derivation": null
+      },
+      {
+        "id": "date_informed",
+        "valueKind": "date",
+        "source": [
+          "quoted"
+        ],
+        "modality": [
+          "observed"
+        ],
+        "enum": null,
+        "unit": null,
+        "description": null,
+        "modelMayEmit": true,
+        "derivation": null
+      }
+    ]
+  },
+  {
+    "recordTypeId": "extended_school_year",
+    "label": "Extended school year",
+    "repeatable": false,
+    "identity": {
+      "scope": "case",
+      "keyFields": [],
+      "keyFieldsIfPresent": [],
+      "disambiguators": [],
+      "versionAxis": "document.orderingDate"
+    },
+    "usesConstructs": [],
+    "fields": [
+      {
+        "id": "decision",
+        "valueKind": "text",
+        "source": [
+          "quoted"
+        ],
+        "modality": [
+          "decided"
+        ],
+        "enum": null,
+        "unit": null,
+        "description": null,
+        "modelMayEmit": true,
+        "derivation": null
+      },
+      {
+        "id": "basis",
+        "valueKind": "text",
+        "source": [
+          "quoted"
+        ],
+        "modality": [
+          "observed"
+        ],
+        "enum": null,
+        "unit": null,
+        "description": null,
+        "modelMayEmit": true,
+        "derivation": null
+      }
+    ]
+  },
+  {
+    "recordTypeId": "parent_request",
+    "label": "Parent request or concern",
+    "repeatable": true,
+    "identity": {
+      "scope": "case",
+      "keyFields": [
+        "topic",
+        "request_date"
+      ],
+      "keyFieldsIfPresent": [],
+      "disambiguators": [],
+      "versionAxis": "document.orderingDate"
+    },
+    "usesConstructs": [],
+    "fields": [
+      {
+        "id": "topic",
+        "valueKind": "text",
+        "source": [
+          "quoted"
+        ],
+        "modality": [
+          "observed"
+        ],
+        "enum": null,
+        "unit": null,
+        "description": null,
+        "modelMayEmit": true,
+        "derivation": null
+      },
+      {
+        "id": "request",
+        "valueKind": "text",
+        "source": [
+          "quoted"
+        ],
+        "modality": [
+          "observed"
+        ],
+        "enum": null,
+        "unit": null,
+        "description": null,
+        "modelMayEmit": true,
+        "derivation": null
+      },
+      {
+        "id": "request_date",
+        "valueKind": "date",
+        "source": [
+          "quoted"
+        ],
+        "modality": [
+          "observed"
+        ],
+        "enum": null,
+        "unit": null,
+        "description": null,
+        "modelMayEmit": true,
+        "derivation": null
+      },
+      {
+        "id": "response",
+        "valueKind": "text",
+        "source": [
+          "quoted"
+        ],
+        "modality": [
+          "observed"
+        ],
+        "enum": null,
+        "unit": null,
+        "description": null,
+        "modelMayEmit": true,
+        "derivation": null
+      }
+    ]
+  }
+]
+
+## Current document pages (sole evidence corpus)
+sourceDocumentId: 00000000-0000-4000-8000-000000000099
+{
+  "sourceDocumentId": "00000000-0000-4000-8000-000000000099",
+  "pages": [
+    {
+      "pageNumber": 1,
+      "text": "[Synthetic offline preview — no family document text.]"
+    }
+  ]
+}

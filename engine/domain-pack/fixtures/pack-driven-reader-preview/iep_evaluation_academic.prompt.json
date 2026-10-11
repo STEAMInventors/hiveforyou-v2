@@ -1,0 +1,807 @@
+{
+  "documentTypeId": "iep.evaluation.academic",
+  "selectedRecordTypeIds": [
+    "document_header",
+    "student",
+    "measurement",
+    "evaluation_finding"
+  ],
+  "selectedFieldCount": 24,
+  "stableSystemPrefix": "You are a document extraction assistant for HiveForYou Engine 2.\n\nRules (non-negotiable):\n- You receive exactly one source document's page text for evidence. Other documents may appear only as manifest metadata; do not treat them as readable content.\n- Extract only what is supported by verbatim quotes on the supplied pages for quoted fields.\n- Never invent values, identities, relationships, or legal conclusions when absent.\n- Classified fields: choose only from the provided enum when the quoted text supports a choice; otherwise omit or mark unresolved.\n- Derived fields: do not emit computed or inferred numeric or logical results as verified facts. The engine computes derivations from verified quoted operands.\n- Repeatable record types (goals, services, scores, participants): emit one record instance per distinct row or block; never collapse multiple instances into one.\n- Each quoted field value must appear inside its cited evidence quote on the stated page.\n- Evidence shape: { \"sourceDocumentId\": string, \"page\": number, \"quote\": string }.\n- Missing observable labels with empty values: use missingState field_present_but_empty with evidence for the label when visible.\n- When a checklist record is not present in the document, do not fabricate it.\n- When checklistPolicy includes extract_other_pack_records_if_found, you may emit additional pack record types clearly supported by quotes.\n- Output must match the provided JSON schema exactly; no extra top-level keys.\n\nYou propose; the engine verifies quotes and types. No chip → no claim.\n\n## Domain pack definition (declarative snapshot)\npackId: iep\npackVersion: 0.3.0-proposed\npackContentSha256: c2baa0439d32496a3110f5388f6048395a9f4c8fdce79b3d0cec36ae6b9a7775\npromptCompilerVersion: hive-pack-driven-reader/0.1.0\nPack snapshot (requirements, insight checks, plain explainers, vocabulary JSON, and legal conclusions are intentionally omitted from extraction):\n{\n  \"schemaVersion\": \"hive.domain-pack.proposal/0.3.0\",\n  \"status\": \"REVIEW_DRAFT_NOT_RUNTIME_COMPATIBLE\",\n  \"manifest\": {\n    \"id\": \"iep\",\n    \"version\": \"0.3.0-proposed\",\n    \"name\": \"Special Education / IEP\",\n    \"jurisdictions\": [\n      \"US-federal-base\"\n    ],\n    \"supersedes\": \"0.2.0-proposed\",\n    \"compatibility\": \"Requires approved universal DomainPack v0.3 schema; not a drop-in replacement for current pack.ts\"\n  },\n  \"fieldSources\": {\n    \"quoted\": \"Value appears verbatim within the record's quoted span on its page.\",\n    \"derived\": \"Computed by code from verified quoted fields with a named primitive; never emitted by the model.\",\n    \"classified\": \"Model chooses from the field's enum based on quoted text; shown as a labelled, correctable choice.\"\n  },\n  \"modalities\": [\n    \"observed\",\n    \"planned\",\n    \"decided\"\n  ],\n  \"missingStates\": [\n    \"field_present_but_empty\",\n    \"not_found_in_supplied_documents\",\n    \"not_applicable\",\n    \"unresolved\"\n  ],\n  \"evidencePolicy\": {\n    \"recordQuoteRequired\": true,\n    \"pageRequired\": true,\n    \"quotedFieldsMustAppearInRecordQuote\": true,\n    \"imageEvidence\": \"region_reference_with_ocr_text (pending engine support)\",\n    \"onVerificationFailure\": \"reject_record\"\n  },\n  \"constructs\": {\n    \"measure\": {\n      \"description\": \"One construct key across present levels, evaluations, goals and progress, so a series never mixes measures.\",\n      \"requiredFields\": [\n        \"task\",\n        \"score_type\"\n      ],\n      \"comparedIfBothPresent\": [\n        \"instrument\",\n        \"administration\"\n      ],\n      \"normalize\": [\n        \"lowercase\",\n        \"trim_punctuation\",\n        \"vocabulary_synonyms\"\n      ],\n      \"onPartialMatch\": \"possiblySame\"\n    }\n  },\n  \"unclassifiedPolicy\": \"Unknown documents are read with the generic checklist, never forced into a type, and never counted toward requirements.\"\n}\n## Output contract (JSON Schema — respond inside extraction_json as this object)\n{\n  \"$schema\": \"https://json-schema.org/draft/2020-12/schema\",\n  \"type\": \"object\",\n  \"additionalProperties\": false,\n  \"required\": [\n    \"schemaVersion\",\n    \"packId\",\n    \"packVersion\",\n    \"documentTypeId\",\n    \"sourceDocumentId\",\n    \"recordInstances\"\n  ],\n  \"properties\": {\n    \"schemaVersion\": {\n      \"type\": \"string\",\n      \"const\": \"hive.pack-driven-reader-extraction/0.1.0\"\n    },\n    \"packId\": {\n      \"type\": \"string\",\n      \"const\": \"iep\"\n    },\n    \"packVersion\": {\n      \"type\": \"string\",\n      \"const\": \"0.3.0-proposed\"\n    },\n    \"documentTypeId\": {\n      \"type\": \"string\"\n    },\n    \"sourceDocumentId\": {\n      \"type\": \"string\"\n    },\n    \"recordInstances\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"additionalProperties\": false,\n        \"required\": [\n          \"recordTypeId\",\n          \"instanceIndex\",\n          \"fields\"\n        ],\n        \"properties\": {\n          \"recordTypeId\": {\n            \"type\": \"string\"\n          },\n          \"instanceIndex\": {\n            \"type\": \"integer\",\n            \"minimum\": 0\n          },\n          \"recordEvidence\": {\n            \"type\": \"object\",\n            \"additionalProperties\": false,\n            \"required\": [\n              \"sourceDocumentId\",\n              \"page\",\n              \"quote\"\n            ],\n            \"properties\": {\n              \"sourceDocumentId\": {\n                \"type\": \"string\",\n                \"minLength\": 1\n              },\n              \"page\": {\n                \"type\": \"integer\",\n                \"minimum\": 1\n              },\n              \"quote\": {\n                \"type\": \"string\",\n                \"minLength\": 1\n              }\n            }\n          },\n          \"fields\": {\n            \"type\": \"array\",\n            \"items\": {\n              \"type\": \"object\",\n              \"additionalProperties\": false,\n              \"required\": [\n                \"fieldId\",\n                \"provenance\",\n                \"valueKind\",\n                \"value\",\n                \"modality\",\n                \"missingState\",\n                \"evidence\"\n              ],\n              \"properties\": {\n                \"fieldId\": {\n                  \"type\": \"string\"\n                },\n                \"provenance\": {\n                  \"type\": \"string\",\n                  \"enum\": [\n                    \"quoted\",\n                    \"classified\"\n                  ]\n                },\n                \"valueKind\": {\n                  \"type\": \"string\"\n                },\n                \"value\": {},\n                \"modality\": {\n                  \"type\": \"string\"\n                },\n                \"missingState\": {\n                  \"anyOf\": [\n                    {\n                      \"type\": \"null\"\n                    },\n                    {\n                      \"type\": \"string\",\n                      \"enum\": [\n                        \"field_present_but_empty\",\n                        \"not_found_in_supplied_documents\",\n                        \"not_applicable\",\n                        \"unresolved\"\n                      ]\n                    }\n                  ]\n                },\n                \"evidence\": {\n                  \"anyOf\": [\n                    {\n                      \"type\": \"object\",\n                      \"additionalProperties\": false,\n                      \"required\": [\n                        \"sourceDocumentId\",\n                        \"page\",\n                        \"quote\"\n                      ],\n                      \"properties\": {\n                        \"sourceDocumentId\": {\n                          \"type\": \"string\",\n                          \"minLength\": 1\n                        },\n                        \"page\": {\n                          \"type\": \"integer\",\n                          \"minimum\": 1\n                        },\n                        \"quote\": {\n                          \"type\": \"string\",\n                          \"minLength\": 1\n                        }\n                      }\n                    },\n                    {\n                      \"type\": \"null\"\n                    }\n                  ]\n                }\n              }\n            }\n          }\n        }\n      }\n    }\n  },\n  \"definitions\": {\n    \"evidence\": {\n      \"type\": \"object\",\n      \"additionalProperties\": false,\n      \"required\": [\n        \"sourceDocumentId\",\n        \"page\",\n        \"quote\"\n      ],\n      \"properties\": {\n        \"sourceDocumentId\": {\n          \"type\": \"string\",\n          \"minLength\": 1\n        },\n        \"page\": {\n          \"type\": \"integer\",\n          \"minimum\": 1\n        },\n        \"quote\": {\n          \"type\": \"string\",\n          \"minLength\": 1\n        }\n      }\n    },\n    \"fieldExtraction\": {\n      \"type\": \"object\",\n      \"additionalProperties\": false,\n      \"required\": [\n        \"fieldId\",\n        \"provenance\",\n        \"valueKind\",\n        \"value\",\n        \"modality\",\n        \"missingState\",\n        \"evidence\"\n      ],\n      \"properties\": {\n        \"fieldId\": {\n          \"type\": \"string\"\n        },\n        \"provenance\": {\n          \"type\": \"string\",\n          \"enum\": [\n            \"quoted\",\n            \"classified\"\n          ]\n        },\n        \"valueKind\": {\n          \"type\": \"string\"\n        },\n        \"value\": {},\n        \"modality\": {\n          \"type\": \"string\"\n        },\n        \"missingState\": {\n          \"anyOf\": [\n            {\n              \"type\": \"null\"\n            },\n            {\n              \"type\": \"string\",\n              \"enum\": [\n                \"field_present_but_empty\",\n                \"not_found_in_supplied_documents\",\n                \"not_applicable\",\n                \"unresolved\"\n              ]\n            }\n          ]\n        },\n        \"evidence\": {\n          \"anyOf\": [\n            {\n              \"type\": \"object\",\n              \"additionalProperties\": false,\n              \"required\": [\n                \"sourceDocumentId\",\n                \"page\",\n                \"quote\"\n              ],\n              \"properties\": {\n                \"sourceDocumentId\": {\n                  \"type\": \"string\",\n                  \"minLength\": 1\n                },\n                \"page\": {\n                  \"type\": \"integer\",\n                  \"minimum\": 1\n                },\n                \"quote\": {\n                  \"type\": \"string\",\n                  \"minLength\": 1\n                }\n              }\n            },\n            {\n              \"type\": \"null\"\n            }\n          ]\n        }\n      }\n    },\n    \"recordInstance\": {\n      \"type\": \"object\",\n      \"additionalProperties\": false,\n      \"required\": [\n        \"recordTypeId\",\n        \"instanceIndex\",\n        \"fields\"\n      ],\n      \"properties\": {\n        \"recordTypeId\": {\n          \"type\": \"string\"\n        },\n        \"instanceIndex\": {\n          \"type\": \"integer\",\n          \"minimum\": 0\n        },\n        \"recordEvidence\": {\n          \"type\": \"object\",\n          \"additionalProperties\": false,\n          \"required\": [\n            \"sourceDocumentId\",\n            \"page\",\n            \"quote\"\n          ],\n          \"properties\": {\n            \"sourceDocumentId\": {\n              \"type\": \"string\",\n              \"minLength\": 1\n            },\n            \"page\": {\n              \"type\": \"integer\",\n              \"minimum\": 1\n            },\n            \"quote\": {\n              \"type\": \"string\",\n              \"minLength\": 1\n            }\n          }\n        },\n        \"fields\": {\n          \"type\": \"array\",\n          \"items\": {\n            \"type\": \"object\",\n            \"additionalProperties\": false,\n            \"required\": [\n              \"fieldId\",\n              \"provenance\",\n              \"valueKind\",\n              \"value\",\n              \"modality\",\n              \"missingState\",\n              \"evidence\"\n            ],\n            \"properties\": {\n              \"fieldId\": {\n                \"type\": \"string\"\n              },\n              \"provenance\": {\n                \"type\": \"string\",\n                \"enum\": [\n                  \"quoted\",\n                  \"classified\"\n                ]\n              },\n              \"valueKind\": {\n                \"type\": \"string\"\n              },\n              \"value\": {},\n              \"modality\": {\n                \"type\": \"string\"\n              },\n              \"missingState\": {\n                \"anyOf\": [\n                  {\n                    \"type\": \"null\"\n                  },\n                  {\n                    \"type\": \"string\",\n                    \"enum\": [\n                      \"field_present_but_empty\",\n                      \"not_found_in_supplied_documents\",\n                      \"not_applicable\",\n                      \"unresolved\"\n                    ]\n                  }\n                ]\n              },\n              \"evidence\": {\n                \"anyOf\": [\n                  {\n                    \"type\": \"object\",\n                    \"additionalProperties\": false,\n                    \"required\": [\n                      \"sourceDocumentId\",\n                      \"page\",\n                      \"quote\"\n                    ],\n                    \"properties\": {\n                      \"sourceDocumentId\": {\n                        \"type\": \"string\",\n                        \"minLength\": 1\n                      },\n                      \"page\": {\n                        \"type\": \"integer\",\n                        \"minimum\": 1\n                      },\n                      \"quote\": {\n                        \"type\": \"string\",\n                        \"minLength\": 1\n                      }\n                    }\n                  },\n                  {\n                    \"type\": \"null\"\n                  }\n                ]\n              }\n            }\n          }\n        }\n      }\n    }\n  }\n}\nStarter set. The existing repository vocabulary remains authoritative and must be merged before runtime use.\n\n### Abbreviations\n- IEP: Individualized Education Program\n- IDEA: Individuals with Disabilities Education Act\n- FAPE: free appropriate public education\n- LRE: least restrictive environment\n- PLAAFP: present levels of academic achievement and functional performance\n- PLOP: present levels of performance\n- SDI: specially designed instruction\n- SLP: speech-language pathologist\n- OT: occupational therapy\n- PT: physical therapy\n- ESY: extended school year\n- IEE: independent educational evaluation\n- PWN: prior written notice\n- FBA: functional behavioral assessment\n- BIP: behavior intervention plan\n- WCPM: words correct per minute\n- ORF: oral reading fluency\n- SLD: specific learning disability\n- OHI: other health impairment\n- ED: emotional disturbance\n- ASD: autism spectrum disorder\n- SS: standard score\n- PR: percentile rank\n- GE: grade equivalent\n- CBM: curriculum-based measurement\n\n### Unit aliases\n- min/week: minutes per week, min per week, mins/wk, min/wk, minutes weekly\n- minutes: min, mins, minute sessions\n- sessions/week: x/week, times per week, x weekly, times weekly\n- WCPM: words correct per minute, wcpm\n- %: percent, per cent\n\n### Field synonyms\n- service.service_type: specially designed instruction, SDI, resource, pull-out instruction\n- service.service_type: speech-language therapy, speech therapy, speech services\n- placement.setting: LRE, least restrictive environment, educational environment, placement\n- present_level.statement: PLAAFP, PLOP, present levels\n- measure.score_type: WCPM, words correct per minute, wcpm\n- measure.score_type: % accuracy, percent accuracy, accuracy",
+  "caseUserContent": "## Case document manifest (context only — not readable evidence)\n[\n  {\n    \"sourceDocumentId\": \"00000000-0000-4000-8000-000000000001\",\n    \"filename\": \"sample-plan.pdf\",\n    \"pageCount\": 2,\n    \"logicalDocumentId\": null,\n    \"documentTypeId\": \"iep.plan\"\n  },\n  {\n    \"sourceDocumentId\": \"00000000-0000-4000-8000-000000000002\",\n    \"filename\": \"sample-progress.pdf\",\n    \"pageCount\": 1,\n    \"logicalDocumentId\": null,\n    \"documentTypeId\": \"iep.progress\"\n  }\n]\n\n## Document classification and checklist\ndocumentTypeId: iep.evaluation.academic\nresolution: classified\nchecklistPolicy: look_for_all_listed; never_invent_if_absent; extract_other_pack_records_if_found\nunclassifiedPolicy: Unknown documents are read with the generic checklist, never forced into a type, and never counted toward requirements.\nchecklistRecordTypes (4 records, 24 fields): document_header, student, measurement, evaluation_finding\n### Global reading notes\nExtract every record in this document type's checklist, including repeats. One table row or one goal is one record. Quote the source text that holds the record; every quoted field value must appear in that quote. Do not infer absent numbers, identities, relationships or legal conclusions. Report a labelled but empty field as field_present_but_empty, citing the label. Distinguish what is observed, planned and decided.\n\n### Document-type reading notes\nOne measurement per reported score, with instrument, subtest as task, and score type. Record the administration date.\n### Document-scoped extraction targets\nsourceDocumentId: 00000000-0000-4000-8000-000000000099\nUse the stable output JSON Schema envelope from the system prefix; set documentTypeId and sourceDocumentId to the values above.\nEmit recordInstances only for record types listed below; fieldIds must come from this catalog.\n### Record and field catalog for this document\n[\n  {\n    \"recordTypeId\": \"document_header\",\n    \"label\": \"Document header\",\n    \"repeatable\": false,\n    \"identity\": {\n      \"scope\": \"document\",\n      \"keyFields\": [],\n      \"keyFieldsIfPresent\": [],\n      \"disambiguators\": [],\n      \"versionAxis\": \"document.orderingDate\"\n    },\n    \"usesConstructs\": [],\n    \"fields\": [\n      {\n        \"id\": \"title\",\n        \"valueKind\": \"text\",\n        \"source\": [\n          \"quoted\"\n        ],\n        \"modality\": [\n          \"observed\"\n        ],\n        \"enum\": null,\n        \"unit\": null,\n        \"description\": null,\n        \"modelMayEmit\": true,\n        \"derivation\": null\n      },\n      {\n        \"id\": \"document_date\",\n        \"valueKind\": \"date\",\n        \"source\": [\n          \"quoted\"\n        ],\n        \"modality\": [\n          \"observed\"\n        ],\n        \"enum\": null,\n        \"unit\": null,\n        \"description\": null,\n        \"modelMayEmit\": true,\n        \"derivation\": null\n      },\n      {\n        \"id\": \"effective_start\",\n        \"valueKind\": \"date\",\n        \"source\": [\n          \"quoted\"\n        ],\n        \"modality\": [\n          \"observed\",\n          \"planned\"\n        ],\n        \"enum\": null,\n        \"unit\": null,\n        \"description\": null,\n        \"modelMayEmit\": true,\n        \"derivation\": null\n      },\n      {\n        \"id\": \"effective_end\",\n        \"valueKind\": \"date\",\n        \"source\": [\n          \"quoted\"\n        ],\n        \"modality\": [\n          \"observed\",\n          \"planned\"\n        ],\n        \"enum\": null,\n        \"unit\": null,\n        \"description\": null,\n        \"modelMayEmit\": true,\n        \"derivation\": null\n      },\n      {\n        \"id\": \"author_role\",\n        \"valueKind\": \"code\",\n        \"source\": [\n          \"classified\"\n        ],\n        \"modality\": [\n          \"observed\"\n        ],\n        \"enum\": [\n          \"education_agency\",\n          \"school_evaluator\",\n          \"eligibility_team\",\n          \"independent_evaluator\",\n          \"parent_guardian\",\n          \"referrer\",\n          \"other\"\n        ],\n        \"unit\": null,\n        \"description\": null,\n        \"modelMayEmit\": true,\n        \"derivation\": null\n      },\n      {\n        \"id\": \"subtype\",\n        \"valueKind\": \"code\",\n        \"source\": [\n          \"classified\"\n        ],\n        \"modality\": [\n          \"observed\"\n        ],\n        \"enum\": [\n          \"initial\",\n          \"annual\",\n          \"review\",\n          \"revised\",\n          \"reevaluation\",\n          \"interim\",\n          \"other\"\n        ],\n        \"unit\": null,\n        \"description\": null,\n        \"modelMayEmit\": true,\n        \"derivation\": null\n      },\n      {\n        \"id\": \"refers_to_plan_date\",\n        \"valueKind\": \"date\",\n        \"source\": [\n          \"quoted\"\n        ],\n        \"modality\": [\n          \"observed\"\n        ],\n        \"enum\": null,\n        \"unit\": null,\n        \"description\": \"For amendments, progress reports and notices: the date of the plan they name\",\n        \"modelMayEmit\": true,\n        \"derivation\": null\n      }\n    ]\n  },\n  {\n    \"recordTypeId\": \"student\",\n    \"label\": \"Student\",\n    \"repeatable\": false,\n    \"identity\": {\n      \"scope\": \"case\",\n      \"keyFields\": [],\n      \"keyFieldsIfPresent\": [],\n      \"disambiguators\": [],\n      \"versionAxis\": \"document.orderingDate\"\n    },\n    \"usesConstructs\": [],\n    \"fields\": [\n      {\n        \"id\": \"name\",\n        \"valueKind\": \"text\",\n        \"source\": [\n          \"quoted\"\n        ],\n        \"modality\": [\n          \"observed\"\n        ],\n        \"enum\": null,\n        \"unit\": null,\n        \"description\": null,\n        \"modelMayEmit\": true,\n        \"derivation\": null\n      },\n      {\n        \"id\": \"birth_date\",\n        \"valueKind\": \"date\",\n        \"source\": [\n          \"quoted\"\n        ],\n        \"modality\": [\n          \"observed\"\n        ],\n        \"enum\": null,\n        \"unit\": null,\n        \"description\": null,\n        \"modelMayEmit\": true,\n        \"derivation\": null\n      },\n      {\n        \"id\": \"grade\",\n        \"valueKind\": \"text\",\n        \"source\": [\n          \"quoted\"\n        ],\n        \"modality\": [\n          \"observed\"\n        ],\n        \"enum\": null,\n        \"unit\": null,\n        \"description\": null,\n        \"modelMayEmit\": true,\n        \"derivation\": null\n      },\n      {\n        \"id\": \"school\",\n        \"valueKind\": \"text\",\n        \"source\": [\n          \"quoted\"\n        ],\n        \"modality\": [\n          \"observed\"\n        ],\n        \"enum\": null,\n        \"unit\": null,\n        \"description\": null,\n        \"modelMayEmit\": true,\n        \"derivation\": null\n      },\n      {\n        \"id\": \"district\",\n        \"valueKind\": \"text\",\n        \"source\": [\n          \"quoted\"\n        ],\n        \"modality\": [\n          \"observed\"\n        ],\n        \"enum\": null,\n        \"unit\": null,\n        \"description\": null,\n        \"modelMayEmit\": true,\n        \"derivation\": null\n      }\n    ]\n  },\n  {\n    \"recordTypeId\": \"measurement\",\n    \"label\": \"Measurement\",\n    \"repeatable\": true,\n    \"identity\": {\n      \"scope\": \"case\",\n      \"keyFields\": [\n        \"measure.task\",\n        \"measure.score_type\"\n      ],\n      \"keyFieldsIfPresent\": [\n        \"measure.instrument\",\n        \"measure.administration\"\n      ],\n      \"disambiguators\": [],\n      \"versionAxis\": \"document.orderingDate\"\n    },\n    \"usesConstructs\": [\n      \"measure\"\n    ],\n    \"fields\": [\n      {\n        \"id\": \"measure.instrument\",\n        \"valueKind\": \"text\",\n        \"source\": [\n          \"quoted\"\n        ],\n        \"modality\": [\n          \"observed\"\n        ],\n        \"enum\": null,\n        \"unit\": null,\n        \"description\": \"Named test, probe or tool, e.g. DIBELS ORF, WIAT-4\",\n        \"modelMayEmit\": true,\n        \"derivation\": null\n      },\n      {\n        \"id\": \"measure.task\",\n        \"valueKind\": \"text\",\n        \"source\": [\n          \"quoted\"\n        ],\n        \"modality\": [\n          \"observed\"\n        ],\n        \"enum\": null,\n        \"unit\": null,\n        \"description\": \"Skill or subtest measured, e.g. oral reading fluency\",\n        \"modelMayEmit\": true,\n        \"derivation\": null\n      },\n      {\n        \"id\": \"measure.administration\",\n        \"valueKind\": \"text\",\n        \"source\": [\n          \"quoted\"\n        ],\n        \"modality\": [\n          \"observed\"\n        ],\n        \"enum\": null,\n        \"unit\": null,\n        \"description\": \"Conditions, e.g. grade-level passage, cold read\",\n        \"modelMayEmit\": true,\n        \"derivation\": null\n      },\n      {\n        \"id\": \"measure.score_type\",\n        \"valueKind\": \"code\",\n        \"source\": [\n          \"classified\"\n        ],\n        \"modality\": [\n          \"observed\"\n        ],\n        \"enum\": [\n          \"words_correct_per_minute\",\n          \"percent_accuracy\",\n          \"percent_of_opportunities\",\n          \"standard_score\",\n          \"scaled_score\",\n          \"t_score\",\n          \"percentile\",\n          \"grade_equivalent\",\n          \"age_equivalent\",\n          \"raw_score\",\n          \"rubric_level\",\n          \"count\",\n          \"rate_per_period\",\n          \"duration\",\n          \"other\"\n        ],\n        \"unit\": null,\n        \"description\": \"Chosen from the list based on the quoted unit or score label\",\n        \"modelMayEmit\": true,\n        \"derivation\": null\n      },\n      {\n        \"id\": \"value\",\n        \"valueKind\": \"quantity\",\n        \"source\": [\n          \"quoted\"\n        ],\n        \"modality\": [\n          \"observed\"\n        ],\n        \"enum\": null,\n        \"unit\": \"context_defined\",\n        \"description\": null,\n        \"modelMayEmit\": true,\n        \"derivation\": null\n      },\n      {\n        \"id\": \"unit\",\n        \"valueKind\": \"text\",\n        \"source\": [\n          \"quoted\"\n        ],\n        \"modality\": [\n          \"observed\"\n        ],\n        \"enum\": null,\n        \"unit\": null,\n        \"description\": null,\n        \"modelMayEmit\": true,\n        \"derivation\": null\n      },\n      {\n        \"id\": \"observed_on\",\n        \"valueKind\": \"date\",\n        \"source\": [\n          \"quoted\"\n        ],\n        \"modality\": [\n          \"observed\"\n        ],\n        \"enum\": null,\n        \"unit\": null,\n        \"description\": null,\n        \"modelMayEmit\": true,\n        \"derivation\": null\n      },\n      {\n        \"id\": \"area\",\n        \"valueKind\": \"text\",\n        \"source\": [\n          \"quoted\"\n        ],\n        \"modality\": [\n          \"observed\"\n        ],\n        \"enum\": null,\n        \"unit\": null,\n        \"description\": null,\n        \"modelMayEmit\": true,\n        \"derivation\": null\n      },\n      {\n        \"id\": \"context\",\n        \"valueKind\": \"code\",\n        \"source\": [\n          \"classified\"\n        ],\n        \"modality\": [\n          \"observed\"\n        ],\n        \"enum\": [\n          \"present_levels\",\n          \"evaluation\",\n          \"progress_report\",\n          \"other\"\n        ],\n        \"unit\": null,\n        \"description\": null,\n        \"modelMayEmit\": true,\n        \"derivation\": null\n      }\n    ]\n  },\n  {\n    \"recordTypeId\": \"evaluation_finding\",\n    \"label\": \"Evaluation finding\",\n    \"repeatable\": true,\n    \"identity\": {\n      \"scope\": \"case\",\n      \"keyFields\": [\n        \"area\"\n      ],\n      \"keyFieldsIfPresent\": [],\n      \"disambiguators\": [\n        \"finding\"\n      ],\n      \"versionAxis\": \"document.orderingDate\"\n    },\n    \"usesConstructs\": [],\n    \"fields\": [\n      {\n        \"id\": \"area\",\n        \"valueKind\": \"text\",\n        \"source\": [\n          \"quoted\"\n        ],\n        \"modality\": [\n          \"observed\"\n        ],\n        \"enum\": null,\n        \"unit\": null,\n        \"description\": null,\n        \"modelMayEmit\": true,\n        \"derivation\": null\n      },\n      {\n        \"id\": \"finding\",\n        \"valueKind\": \"text\",\n        \"source\": [\n          \"quoted\"\n        ],\n        \"modality\": [\n          \"observed\"\n        ],\n        \"enum\": null,\n        \"unit\": null,\n        \"description\": null,\n        \"modelMayEmit\": true,\n        \"derivation\": null\n      },\n      {\n        \"id\": \"recommendation\",\n        \"valueKind\": \"text\",\n        \"source\": [\n          \"quoted\"\n        ],\n        \"modality\": [\n          \"planned\"\n        ],\n        \"enum\": null,\n        \"unit\": null,\n        \"description\": null,\n        \"modelMayEmit\": true,\n        \"derivation\": null\n      }\n    ]\n  }\n]\n\n## Current document pages (sole evidence corpus)\nsourceDocumentId: 00000000-0000-4000-8000-000000000099\n{\n  \"sourceDocumentId\": \"00000000-0000-4000-8000-000000000099\",\n  \"pages\": [\n    {\n      \"pageNumber\": 1,\n      \"text\": \"[Synthetic offline preview page for iep.evaluation.academic — no family document text.]\"\n    }\n  ]\n}",
+  "outputJsonSchema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "schemaVersion",
+      "packId",
+      "packVersion",
+      "documentTypeId",
+      "sourceDocumentId",
+      "recordInstances"
+    ],
+    "properties": {
+      "schemaVersion": {
+        "type": "string",
+        "const": "hive.pack-driven-reader-extraction/0.1.0"
+      },
+      "packId": {
+        "type": "string",
+        "const": "iep"
+      },
+      "packVersion": {
+        "type": "string",
+        "const": "0.3.0-proposed"
+      },
+      "documentTypeId": {
+        "type": "string",
+        "const": "iep.evaluation.academic"
+      },
+      "sourceDocumentId": {
+        "type": "string",
+        "const": "00000000-0000-4000-8000-000000000099"
+      },
+      "recordInstances": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "recordTypeId",
+            "instanceIndex",
+            "fields"
+          ],
+          "properties": {
+            "recordTypeId": {
+              "type": "string"
+            },
+            "instanceIndex": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "recordEvidence": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "sourceDocumentId",
+                "page",
+                "quote"
+              ],
+              "properties": {
+                "sourceDocumentId": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "page": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "quote": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            },
+            "fields": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "fieldId",
+                  "provenance",
+                  "valueKind",
+                  "value",
+                  "modality",
+                  "missingState",
+                  "evidence"
+                ],
+                "properties": {
+                  "fieldId": {
+                    "type": "string"
+                  },
+                  "provenance": {
+                    "type": "string",
+                    "enum": [
+                      "quoted",
+                      "classified"
+                    ]
+                  },
+                  "valueKind": {
+                    "type": "string"
+                  },
+                  "value": {},
+                  "modality": {
+                    "type": "string"
+                  },
+                  "missingState": {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "string",
+                        "enum": [
+                          "field_present_but_empty",
+                          "not_found_in_supplied_documents",
+                          "not_applicable",
+                          "unresolved"
+                        ]
+                      }
+                    ]
+                  },
+                  "evidence": {
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "sourceDocumentId",
+                          "page",
+                          "quote"
+                        ],
+                        "properties": {
+                          "sourceDocumentId": {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          "page": {
+                            "type": "integer",
+                            "minimum": 1
+                          },
+                          "quote": {
+                            "type": "string",
+                            "minLength": 1
+                          }
+                        }
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "definitions": {
+      "evidence": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "sourceDocumentId",
+          "page",
+          "quote"
+        ],
+        "properties": {
+          "sourceDocumentId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "quote": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "fieldExtraction": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "fieldId",
+          "provenance",
+          "valueKind",
+          "value",
+          "modality",
+          "missingState",
+          "evidence"
+        ],
+        "properties": {
+          "fieldId": {
+            "type": "string"
+          },
+          "provenance": {
+            "type": "string",
+            "enum": [
+              "quoted",
+              "classified"
+            ]
+          },
+          "valueKind": {
+            "type": "string"
+          },
+          "value": {},
+          "modality": {
+            "type": "string"
+          },
+          "missingState": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string",
+                "enum": [
+                  "field_present_but_empty",
+                  "not_found_in_supplied_documents",
+                  "not_applicable",
+                  "unresolved"
+                ]
+              }
+            ]
+          },
+          "evidence": {
+            "anyOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "sourceDocumentId",
+                  "page",
+                  "quote"
+                ],
+                "properties": {
+                  "sourceDocumentId": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "page": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "quote": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      },
+      "recordInstance": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "recordTypeId",
+          "instanceIndex",
+          "fields"
+        ],
+        "properties": {
+          "recordTypeId": {
+            "type": "string"
+          },
+          "instanceIndex": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "recordEvidence": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "sourceDocumentId",
+              "page",
+              "quote"
+            ],
+            "properties": {
+              "sourceDocumentId": {
+                "type": "string",
+                "minLength": 1
+              },
+              "page": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "quote": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "fields": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "fieldId",
+                "provenance",
+                "valueKind",
+                "value",
+                "modality",
+                "missingState",
+                "evidence"
+              ],
+              "properties": {
+                "fieldId": {
+                  "type": "string"
+                },
+                "provenance": {
+                  "type": "string",
+                  "enum": [
+                    "quoted",
+                    "classified"
+                  ]
+                },
+                "valueKind": {
+                  "type": "string"
+                },
+                "value": {},
+                "modality": {
+                  "type": "string"
+                },
+                "missingState": {
+                  "anyOf": [
+                    {
+                      "type": "null"
+                    },
+                    {
+                      "type": "string",
+                      "enum": [
+                        "field_present_but_empty",
+                        "not_found_in_supplied_documents",
+                        "not_applicable",
+                        "unresolved"
+                      ]
+                    }
+                  ]
+                },
+                "evidence": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "sourceDocumentId",
+                        "page",
+                        "quote"
+                      ],
+                      "properties": {
+                        "sourceDocumentId": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "page": {
+                          "type": "integer",
+                          "minimum": 1
+                        },
+                        "quote": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      }
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "allowedRecordTypeIds": {
+        "type": "string",
+        "enum": [
+          "document_header",
+          "student",
+          "measurement",
+          "evaluation_finding"
+        ]
+      },
+      "fieldCatalog": [
+        {
+          "recordTypeId": "document_header",
+          "repeatable": false,
+          "fields": [
+            {
+              "fieldId": "title",
+              "valueKind": "text",
+              "source": [
+                "quoted"
+              ],
+              "modality": [
+                "observed"
+              ],
+              "enum": null,
+              "unit": null,
+              "description": null,
+              "modelMayEmit": true
+            },
+            {
+              "fieldId": "document_date",
+              "valueKind": "date",
+              "source": [
+                "quoted"
+              ],
+              "modality": [
+                "observed"
+              ],
+              "enum": null,
+              "unit": null,
+              "description": null,
+              "modelMayEmit": true
+            },
+            {
+              "fieldId": "effective_start",
+              "valueKind": "date",
+              "source": [
+                "quoted"
+              ],
+              "modality": [
+                "observed",
+                "planned"
+              ],
+              "enum": null,
+              "unit": null,
+              "description": null,
+              "modelMayEmit": true
+            },
+            {
+              "fieldId": "effective_end",
+              "valueKind": "date",
+              "source": [
+                "quoted"
+              ],
+              "modality": [
+                "observed",
+                "planned"
+              ],
+              "enum": null,
+              "unit": null,
+              "description": null,
+              "modelMayEmit": true
+            },
+            {
+              "fieldId": "author_role",
+              "valueKind": "code",
+              "source": [
+                "classified"
+              ],
+              "modality": [
+                "observed"
+              ],
+              "enum": [
+                "education_agency",
+                "school_evaluator",
+                "eligibility_team",
+                "independent_evaluator",
+                "parent_guardian",
+                "referrer",
+                "other"
+              ],
+              "unit": null,
+              "description": null,
+              "modelMayEmit": true
+            },
+            {
+              "fieldId": "subtype",
+              "valueKind": "code",
+              "source": [
+                "classified"
+              ],
+              "modality": [
+                "observed"
+              ],
+              "enum": [
+                "initial",
+                "annual",
+                "review",
+                "revised",
+                "reevaluation",
+                "interim",
+                "other"
+              ],
+              "unit": null,
+              "description": null,
+              "modelMayEmit": true
+            },
+            {
+              "fieldId": "refers_to_plan_date",
+              "valueKind": "date",
+              "source": [
+                "quoted"
+              ],
+              "modality": [
+                "observed"
+              ],
+              "enum": null,
+              "unit": null,
+              "description": "For amendments, progress reports and notices: the date of the plan they name",
+              "modelMayEmit": true
+            }
+          ]
+        },
+        {
+          "recordTypeId": "student",
+          "repeatable": false,
+          "fields": [
+            {
+              "fieldId": "name",
+              "valueKind": "text",
+              "source": [
+                "quoted"
+              ],
+              "modality": [
+                "observed"
+              ],
+              "enum": null,
+              "unit": null,
+              "description": null,
+              "modelMayEmit": true
+            },
+            {
+              "fieldId": "birth_date",
+              "valueKind": "date",
+              "source": [
+                "quoted"
+              ],
+              "modality": [
+                "observed"
+              ],
+              "enum": null,
+              "unit": null,
+              "description": null,
+              "modelMayEmit": true
+            },
+            {
+              "fieldId": "grade",
+              "valueKind": "text",
+              "source": [
+                "quoted"
+              ],
+              "modality": [
+                "observed"
+              ],
+              "enum": null,
+              "unit": null,
+              "description": null,
+              "modelMayEmit": true
+            },
+            {
+              "fieldId": "school",
+              "valueKind": "text",
+              "source": [
+                "quoted"
+              ],
+              "modality": [
+                "observed"
+              ],
+              "enum": null,
+              "unit": null,
+              "description": null,
+              "modelMayEmit": true
+            },
+            {
+              "fieldId": "district",
+              "valueKind": "text",
+              "source": [
+                "quoted"
+              ],
+              "modality": [
+                "observed"
+              ],
+              "enum": null,
+              "unit": null,
+              "description": null,
+              "modelMayEmit": true
+            }
+          ]
+        },
+        {
+          "recordTypeId": "measurement",
+          "repeatable": true,
+          "fields": [
+            {
+              "fieldId": "measure.instrument",
+              "valueKind": "text",
+              "source": [
+                "quoted"
+              ],
+              "modality": [
+                "observed"
+              ],
+              "enum": null,
+              "unit": null,
+              "description": "Named test, probe or tool, e.g. DIBELS ORF, WIAT-4",
+              "modelMayEmit": true
+            },
+            {
+              "fieldId": "measure.task",
+              "valueKind": "text",
+              "source": [
+                "quoted"
+              ],
+              "modality": [
+                "observed"
+              ],
+              "enum": null,
+              "unit": null,
+              "description": "Skill or subtest measured, e.g. oral reading fluency",
+              "modelMayEmit": true
+            },
+            {
+              "fieldId": "measure.administration",
+              "valueKind": "text",
+              "source": [
+                "quoted"
+              ],
+              "modality": [
+                "observed"
+              ],
+              "enum": null,
+              "unit": null,
+              "description": "Conditions, e.g. grade-level passage, cold read",
+              "modelMayEmit": true
+            },
+            {
+              "fieldId": "measure.score_type",
+              "valueKind": "code",
+              "source": [
+                "classified"
+              ],
+              "modality": [
+                "observed"
+              ],
+              "enum": [
+                "words_correct_per_minute",
+                "percent_accuracy",
+                "percent_of_opportunities",
+                "standard_score",
+                "scaled_score",
+                "t_score",
+                "percentile",
+                "grade_equivalent",
+                "age_equivalent",
+                "raw_score",
+                "rubric_level",
+                "count",
+                "rate_per_period",
+                "duration",
+                "other"
+              ],
+              "unit": null,
+              "description": "Chosen from the list based on the quoted unit or score label",
+              "modelMayEmit": true
+            },
+            {
+              "fieldId": "value",
+              "valueKind": "quantity",
+              "source": [
+                "quoted"
+              ],
+              "modality": [
+                "observed"
+              ],
+              "enum": null,
+              "unit": "context_defined",
+              "description": null,
+              "modelMayEmit": true
+            },
+            {
+              "fieldId": "unit",
+              "valueKind": "text",
+              "source": [
+                "quoted"
+              ],
+              "modality": [
+                "observed"
+              ],
+              "enum": null,
+              "unit": null,
+              "description": null,
+              "modelMayEmit": true
+            },
+            {
+              "fieldId": "observed_on",
+              "valueKind": "date",
+              "source": [
+                "quoted"
+              ],
+              "modality": [
+                "observed"
+              ],
+              "enum": null,
+              "unit": null,
+              "description": null,
+              "modelMayEmit": true
+            },
+            {
+              "fieldId": "area",
+              "valueKind": "text",
+              "source": [
+                "quoted"
+              ],
+              "modality": [
+                "observed"
+              ],
+              "enum": null,
+              "unit": null,
+              "description": null,
+              "modelMayEmit": true
+            },
+            {
+              "fieldId": "context",
+              "valueKind": "code",
+              "source": [
+                "classified"
+              ],
+              "modality": [
+                "observed"
+              ],
+              "enum": [
+                "present_levels",
+                "evaluation",
+                "progress_report",
+                "other"
+              ],
+              "unit": null,
+              "description": null,
+              "modelMayEmit": true
+            }
+          ]
+        },
+        {
+          "recordTypeId": "evaluation_finding",
+          "repeatable": true,
+          "fields": [
+            {
+              "fieldId": "area",
+              "valueKind": "text",
+              "source": [
+                "quoted"
+              ],
+              "modality": [
+                "observed"
+              ],
+              "enum": null,
+              "unit": null,
+              "description": null,
+              "modelMayEmit": true
+            },
+            {
+              "fieldId": "finding",
+              "valueKind": "text",
+              "source": [
+                "quoted"
+              ],
+              "modality": [
+                "observed"
+              ],
+              "enum": null,
+              "unit": null,
+              "description": null,
+              "modelMayEmit": true
+            },
+            {
+              "fieldId": "recommendation",
+              "valueKind": "text",
+              "source": [
+                "quoted"
+              ],
+              "modality": [
+                "planned"
+              ],
+              "enum": null,
+              "unit": null,
+              "description": null,
+              "modelMayEmit": true
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

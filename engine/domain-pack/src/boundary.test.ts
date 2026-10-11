@@ -11,7 +11,11 @@ function sourceFiles(dir: string): string[] {
     const stat = statSync(path);
     if (stat.isDirectory()) {
       files.push(...sourceFiles(path));
-    } else if (entry.endsWith(".ts") && entry !== "boundary.test.ts") {
+    } else if (
+      entry.endsWith(".ts") &&
+      !entry.endsWith(".test.ts") &&
+      entry !== "boundary.test.ts"
+    ) {
       files.push(path);
     }
   }

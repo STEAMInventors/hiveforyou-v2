@@ -1,0 +1,19 @@
+{
+  "packStatus": "REVIEW_DRAFT_NOT_RUNTIME_COMPATIBLE",
+  "schemaVersion": "hive.domain-pack.proposal/0.3.0",
+  "documentTypes": 15,
+  "recordTypes": 25,
+  "fields": 131,
+  "recordTypesWithContentKeys": 19,
+  "requirementRules": 11,
+  "insightChecks": 8,
+  "l001ConceptsMapped": "29/29",
+  "noVersionAxisInKeys": true,
+  "allReferencesValid": true,
+  "noExecutableCallbacks": true,
+  "requirementsLegallyReviewed": false,
+  "runtimeCompatible": false,
+  "errors": [],
+  "warnings": [],
+  "note": "Structural checks only; no legal certification."
+}

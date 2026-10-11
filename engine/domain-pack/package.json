@@ -9,13 +9,15 @@
   "scripts": {
     "typecheck": "tsc --noEmit",
     "lint": "node -e \"process.exit(0)\"",
-    "test": "vitest run"
+    "test": "vitest run",
+    "pack-driven-reader:preview": "tsx scripts/pack-driven-reader-preview.ts"
   },
   "dependencies": {
     "@hiveforyou/domain-pack-shared": "workspace:*",
     "@hiveforyou/shared": "workspace:*"
   },
   "devDependencies": {
+    "tsx": "^4.19.2",
     "typescript": "^5.7.2",
     "vitest": "^2.1.8"
   }

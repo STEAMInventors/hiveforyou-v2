@@ -93,3 +93,16 @@ export {
   type PacketSegmentationResolver,
   type ValidateLogicalPageBoundariesResult,
 } from "./logical-page-segmentation";
+export {
+  PACK_DRIVEN_READER_PROMPT_VERSION,
+  UNCLASSIFIED_DOCUMENT_TYPE_SENTINEL,
+  compilePackDrivenReaderPrompt,
+  computeProposalPackContentSha256,
+  parseAndValidatePackDrivenExtraction,
+  renderPackDrivenReaderPreviewReport,
+  validateProposalDomainPack,
+  PackDrivenReaderDocumentTypeError,
+  type CompilePackDrivenReaderPromptInput,
+  type CompilePackDrivenReaderPromptResult,
+  type ProposalDomainPack,
+} from "./pack-driven-reader/index.js";
