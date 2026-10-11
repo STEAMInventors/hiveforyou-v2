@@ -10,13 +10,15 @@
     "typecheck": "tsc --noEmit",
     "lint": "node -e \"process.exit(0)\"",
     "test": "vitest run",
-    "pack-driven-reader:preview": "tsx scripts/pack-driven-reader-preview.ts"
+    "pack-driven-reader:preview": "tsx scripts/pack-driven-reader-preview.ts",
+    "build:pack-driven-bridge": "esbuild scripts/pack-driven-reader-bridge-stdin.ts --bundle --platform=node --format=esm --outfile=dist/pack-driven-reader-bridge.mjs"
   },
   "dependencies": {
     "@hiveforyou/domain-pack-shared": "workspace:*",
     "@hiveforyou/shared": "workspace:*"
   },
   "devDependencies": {
+    "esbuild": "^0.21.5",
     "tsx": "^4.19.2",
     "typescript": "^5.7.2",
     "vitest": "^2.1.8"
