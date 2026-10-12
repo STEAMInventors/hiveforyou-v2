@@ -1,9 +1,6 @@
 import { randomUUID } from "node:crypto";
 
-import {
-  loadAgenticReaderQualificationPromptMetadata,
-  loadProposalDomainPack,
-} from "@hiveforyou/core/study";
+import { loadAgenticReaderQualificationPromptMetadata } from "@hiveforyou/core/study";
 import { buildReaderAcceptedFactsArtifact } from "@hiveforyou/shared/reader-accepted-facts";
 import type { CanonicalStudyContext } from "@hiveforyou/shared/canonical-study";
 
@@ -88,7 +85,6 @@ export async function runProductionPackDrivenReader(
   const env = { ...(input.env ?? process.env), HIVE_READER_MODE: "pack_driven" };
   const now = input.now ?? (() => new Date().toISOString());
   const attemptId = randomUUID();
-  const { pack: proposalPack } = loadProposalDomainPack(env);
   const prompt = loadAgenticReaderQualificationPromptMetadata({ env });
   const registeredDocuments = input.registeredDocuments.map((doc) => ({ ...doc }));
 
@@ -116,7 +112,6 @@ export async function runProductionPackDrivenReader(
     filenameBySourceDocumentId: filenameBySource,
     pageCountBySourceDocumentId: pageCountBySource,
     structureMap: input.context.structureMap ?? null,
-    proposalPack,
     requirePersistedDiscover: true,
   });
 

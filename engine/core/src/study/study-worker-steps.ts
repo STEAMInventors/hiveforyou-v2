@@ -139,11 +139,19 @@ async function ensureStudyContext(
 
   const uploadedSourceDocuments = context.sourceDocuments;
   let structureMap: StructureMap | null = null;
-  if (processingMode === "pack_driven_v1" && deps.loadStructureMapForDiscoverRun && request.discoveryRunId) {
-    structureMap = await deps.loadStructureMapForDiscoverRun(
-      request.discoveryRunId,
-      request.caseId,
-    );
+  if (processingMode === "pack_driven_v1") {
+    if (deps.loadStructureMapForDiscoverRun && request.discoveryRunId?.trim()) {
+      structureMap = await deps.loadStructureMapForDiscoverRun(
+        request.discoveryRunId.trim(),
+        request.caseId,
+      );
+    }
+    if (!structureMap && deps.loadStructureMapForIntakeRun && request.intakeRunId?.trim()) {
+      structureMap = await deps.loadStructureMapForIntakeRun(
+        request.intakeRunId.trim(),
+        request.caseId,
+      );
+    }
   } else if (deps.loadStructureMapForIntakeRun && request.intakeRunId?.trim()) {
     structureMap = await deps.loadStructureMapForIntakeRun(
       request.intakeRunId.trim(),

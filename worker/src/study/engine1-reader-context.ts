@@ -1,8 +1,3 @@
-import {
-  DiscoverDocumentTypeResolutionError,
-  resolveProposalDocumentTypeIdFromDiscoverLabel,
-  type ProposalDomainPack,
-} from "@hiveforyou/domain-pack";
 import type { StructureMap } from "@hiveforyou/shared/discover/structure-map";
 
 import { loadLatestStructureMapForCase } from "../persistence/supabase-case-projections.js";
@@ -10,6 +5,7 @@ import type { HiveGateway } from "../persistence/hive-gateway.js";
 
 export type Engine1ReaderContextProvenance =
   | "persisted_discover_structure_map"
+  | "intake_pack_execution"
   | "test_only_minimal";
 
 export type Engine1ReaderContextLogicalDocument = {
@@ -17,10 +13,6 @@ export type Engine1ReaderContextLogicalDocument = {
   filename?: string;
   pageCount?: number;
   logicalDocumentId?: string;
-  /** Discover vocabulary label from the structure map. */
-  documentType?: string;
-  /** Stable pack document type id for pack-driven Reader checklists. */
-  documentTypeId?: string;
   pageStart?: number;
   pageEnd?: number;
 };
@@ -46,49 +38,24 @@ export class Engine1ReaderContextError extends Error {
 
 function mapLogicalDocuments(input: {
   structureMap: StructureMap;
-  proposalPack: ProposalDomainPack | null;
-  requireClassifications: boolean;
   filenameBySourceDocumentId?: ReadonlyMap<string, string>;
   pageCountBySourceDocumentId?: ReadonlyMap<string, number>;
 }): Engine1ReaderContextLogicalDocument[] {
-  return input.structureMap.logicalDocuments.map((doc) => {
-    const discoverLabel = doc.documentType?.trim() ?? "";
-    let documentTypeId: string | undefined;
-    if (input.requireClassifications && !discoverLabel) {
-      throw new Engine1ReaderContextError(
-        `Missing documentType for logical document ${doc.id}.`,
-        "ENGINE1_MISSING_DOCUMENT_CLASSIFICATION",
-      );
-    }
-    if (input.proposalPack && discoverLabel) {
-      try {
-        documentTypeId = resolveProposalDocumentTypeIdFromDiscoverLabel(
-          input.proposalPack,
-          discoverLabel,
-        );
-      } catch (error) {
-        if (error instanceof DiscoverDocumentTypeResolutionError && input.requireClassifications) {
-          throw new Engine1ReaderContextError(error.message, "ENGINE1_UNKNOWN_DOCUMENT_CLASSIFICATION");
-        }
-        throw error;
-      }
-    } else if (input.requireClassifications && discoverLabel) {
-      throw new Engine1ReaderContextError(
-        `Could not resolve document type for label ${discoverLabel}.`,
-        "ENGINE1_UNKNOWN_DOCUMENT_CLASSIFICATION",
-      );
-    }
-    return {
-      sourceDocumentId: doc.sourceDocumentId,
-      logicalDocumentId: doc.id,
-      documentType: discoverLabel || undefined,
-      documentTypeId,
-      pageStart: doc.pageStart,
-      pageEnd: doc.pageEnd,
-      filename: input.filenameBySourceDocumentId?.get(doc.sourceDocumentId),
-      pageCount: input.pageCountBySourceDocumentId?.get(doc.sourceDocumentId),
-    };
-  });
+  return input.structureMap.logicalDocuments.map((doc) => ({
+    sourceDocumentId: doc.sourceDocumentId,
+    logicalDocumentId: doc.id,
+    pageStart: doc.pageStart,
+    pageEnd: doc.pageEnd,
+    filename: input.filenameBySourceDocumentId?.get(doc.sourceDocumentId),
+    pageCount: input.pageCountBySourceDocumentId?.get(doc.sourceDocumentId),
+  }));
+}
+
+function readerContextProvenance(structureMap: StructureMap): Engine1ReaderContextProvenance {
+  if (structureMap.provenance?.providerId === "intake-domain-pack") {
+    return "intake_pack_execution";
+  }
+  return "persisted_discover_structure_map";
 }
 
 export async function resolveEngine1ReaderContext(input: {
@@ -103,8 +70,7 @@ export async function resolveEngine1ReaderContext(input: {
   pageCountBySourceDocumentId?: ReadonlyMap<string, number>;
   /** When set, use this structure map instead of loading from persistence. */
   structureMap?: StructureMap | null;
-  proposalPack?: ProposalDomainPack | null;
-  /** Production pack-driven path: fail closed without Discover map and classifications. */
+  /** Production pack-driven path: fail closed without a persisted structure map (Intake or Discover). */
   requirePersistedDiscover?: boolean;
 }): Promise<Engine1ReaderContext> {
   const structureMap: StructureMap | null =
@@ -112,22 +78,22 @@ export async function resolveEngine1ReaderContext(input: {
     (await loadLatestStructureMapForCase(input.gateway, input.userId, input.caseId));
 
   if (structureMap?.logicalDocuments?.length) {
-    const requireClassifications = Boolean(input.requirePersistedDiscover || input.proposalPack);
     const logicalDocuments = mapLogicalDocuments({
       structureMap,
-      proposalPack: input.proposalPack ?? null,
-      requireClassifications,
       filenameBySourceDocumentId: input.filenameBySourceDocumentId,
       pageCountBySourceDocumentId: input.pageCountBySourceDocumentId,
     });
+    const provenance = readerContextProvenance(structureMap);
     return {
-      provenance: "persisted_discover_structure_map",
+      provenance,
       resolvedDomainId: structureMap.domainResolution.domainId ?? input.domainId,
       domainPackId: input.domainPackId,
       domainPackVersion: input.domainPackVersion,
       logicalDocuments,
       notes: [
-        "logicalDocuments sourced from hive.discover_artifacts.structure_map_json (latest row for case).",
+        provenance === "intake_pack_execution"
+          ? "logicalDocuments sourced from Intake pack execution (boundaries and provenance only; no document-type hints for Reader)."
+          : "logicalDocuments sourced from persisted structure map (boundaries and provenance only; no document-type hints for Reader).",
       ],
     };
   }

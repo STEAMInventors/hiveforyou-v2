@@ -253,13 +253,14 @@ async function runHiveStudyHandler({
       runTimedStep("discover-ensure", (result) => (result.ok ? "ok" : "skipped"), async () => {
         return ensureDiscoverForPackDrivenStudy({
           gateway,
+          intake: built.intake,
           documents: built.documents,
           userId: data.userId,
           caseId: data.caseId,
           intakeRunId: data.intakeRunId,
           domainId: intakeRun.resolvedDomainId ?? "iep",
+          domainLabel: intakeRun.rawIntent ?? undefined,
           request,
-          env: workerEnvStrings(env),
         });
       }),
     )) as EnsureDiscoverForStudyResult;
@@ -269,10 +270,12 @@ async function runHiveStudyHandler({
       }
       throw new NonRetriableError(discoverOutcome.code);
     }
-    request = applyDiscoverToStudyRequest(request, {
-      discoverRunId: discoverOutcome.discoverRunId,
-      documentDiscovery: discoverOutcome.documentDiscovery,
-    });
+    if (discoverOutcome.engine1Source === "discover_artifact") {
+      request = applyDiscoverToStudyRequest(request, {
+        discoverRunId: discoverOutcome.discoverRunId,
+        documentDiscovery: discoverOutcome.documentDiscovery,
+      });
+    }
   }
 
   const resolvedPack = resolveDomainPackFromDiscoveryLabel(request.engine1Result.domainLabel);

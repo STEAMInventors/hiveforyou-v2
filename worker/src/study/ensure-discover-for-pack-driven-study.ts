@@ -1,27 +1,30 @@
 import {
-  buildDiscoverIdempotencyKey,
-  fingerprintDiscoverStudyMaterial,
-  loadDiscoverPrompt,
+  buildEngine1ResultFromIntakePack,
+  fingerprintIntakeStudyMaterial,
+  intakePackExecutionToStructureMap,
   mapStructureMapToDocumentDiscovery,
-  runDiscover,
+  resolveIntakeStudyDomain,
 } from "@hiveforyou/core";
 import { getDiscoverPackByDomainId } from "@hiveforyou/domain-packs";
+import { parsePackExecution } from "@hiveforyou/intake";
 import type { StartCanonicalStudyRequest } from "@hiveforyou/shared/canonical-study";
 import type { StructureMap } from "@hiveforyou/shared/discover/structure-map";
 import type { DocumentDiscoveryResult } from "@hiveforyou/shared/discovery";
 
 import type { WorkerSourceDocumentRepository } from "../intake/worker-source-documents.js";
+import type { WorkerIntakeRepository } from "../persistence/worker-intake-repository.js";
 import type { HiveGateway } from "../persistence/hive-gateway.js";
 import {
   WorkerDiscoverArtifactRepository,
 } from "../persistence/worker-discover-repositories.js";
 import { loadLatestStructureMapForCase } from "../persistence/supabase-case-projections.js";
-import { buildWorkerDiscoverDeps } from "../discover/build-worker-discover-deps.js";
+export type PackDrivenEngine1Source = "discover_artifact" | "intake_pack_execution";
 
 export type EnsureDiscoverForStudyResult =
   | {
       ok: true;
       reused: boolean;
+      engine1Source: PackDrivenEngine1Source;
       discoverRunId: string;
       structureMap: StructureMap;
       documentDiscovery: DocumentDiscoveryResult;
@@ -95,7 +98,11 @@ async function loadReusableDiscover(input: {
     input.userId,
     input.caseId,
   );
-  if (fallbackMap && structureMapCoversSources(fallbackMap, input.present)) {
+  if (
+    fallbackMap &&
+    structureMapCoversSources(fallbackMap, input.present) &&
+    fallbackMap.provenance?.providerId !== "intake-domain-pack"
+  ) {
     const pack = getDiscoverPackByDomainId(fallbackMap.domainResolution.domainId);
     if (!pack) {
       return null;
@@ -110,133 +117,157 @@ async function loadReusableDiscover(input: {
   return null;
 }
 
-export async function ensureDiscoverForPackDrivenStudy(input: {
-  gateway: HiveGateway;
+async function loadEngine1FromIntakePackExecution(input: {
+  intake: WorkerIntakeRepository;
   documents: WorkerSourceDocumentRepository;
   userId: string;
   caseId: string;
   intakeRunId: string;
   domainId: string;
+  domainLabel: string;
+  present: ReadonlyArray<{ sourceDocumentId: string; sha256: string }>;
   request: StartCanonicalStudyRequest;
-  env: Record<string, string | undefined>;
-  discoverPromptVersion?: string;
+}): Promise<{
+  structureMap: StructureMap;
+  documentDiscovery: DocumentDiscoveryResult;
+  discoverStructureFingerprint: string;
+} | null> {
+  const run = await input.intake.getById(input.userId, input.intakeRunId);
+  if (!run?.packExecutionJson) {
+    return null;
+  }
+  const packExecution = parsePackExecution(run.packExecutionJson);
+  if (!packExecution) {
+    return null;
+  }
+  const domain = resolveIntakeStudyDomain({
+    resolvedDomainId: run.resolvedDomainId ?? input.domainId,
+    domainLabel: input.domainLabel,
+  });
+  if (!domain) {
+    return null;
+  }
+
+  const identities = await input.intake.listByRun(input.userId, input.intakeRunId);
+  const presentIds = new Set(input.present.map((row) => row.sourceDocumentId));
+  const sources = (await input.documents.listByCase(input.userId, input.caseId)).map((doc) => ({
+    id: doc.id,
+    originalFilename: doc.originalFilename ?? "Document",
+    sizeBytes: doc.sizeBytes ?? 0,
+    mimeType: doc.mimeType,
+    sha256: doc.sha256,
+    storageBucket: doc.storageBucket,
+    storagePath: doc.storagePath,
+  }));
+
+  const structureMap = intakePackExecutionToStructureMap({
+    caseId: input.caseId,
+    intakeRunId: input.intakeRunId,
+    domainId: domain.domainId,
+    domainLabel: domain.domainLabel,
+    domainPackId: domain.domainPackId,
+    domainPackVersion: domain.domainPackVersion,
+    packExecution,
+    sources: sources as unknown as Parameters<typeof intakePackExecutionToStructureMap>[0]["sources"],
+    presentSourceIds: presentIds,
+  });
+
+  if (!structureMapCoversSources(structureMap, input.present)) {
+    return null;
+  }
+
+  const documentDiscovery = buildEngine1ResultFromIntakePack({
+    domainId: domain.domainId,
+    domainLabel: domain.domainLabel,
+    packExecution,
+    presentSourceIds: presentIds,
+  });
+
+  const discoverStructureFingerprint =
+    input.request.intakeStudyMaterialFingerprint ??
+    fingerprintIntakeStudyMaterial({
+      intakeRunId: input.intakeRunId,
+      packExecution,
+      identities: identities.map((row) => ({
+        sourceDocumentId: row.sourceDocumentId,
+        analysisDisposition: row.analysisDisposition,
+      })),
+      sources: sources as unknown as Parameters<typeof fingerprintIntakeStudyMaterial>[0]["sources"],
+    });
+
+  return { structureMap, documentDiscovery, discoverStructureFingerprint };
+}
+
+export async function ensureDiscoverForPackDrivenStudy(input: {
+  gateway: HiveGateway;
+  intake: WorkerIntakeRepository;
+  documents: WorkerSourceDocumentRepository;
+  userId: string;
+  caseId: string;
+  intakeRunId: string;
+  domainId: string;
+  domainLabel?: string;
+  request: StartCanonicalStudyRequest;
 }): Promise<EnsureDiscoverForStudyResult> {
   const present = presentSourceRows(input.request);
   if (!present.length) {
     return { ok: false, code: "DISCOVER_FAILED", message: "No source documents for discover." };
   }
 
-  const promptVersion = input.discoverPromptVersion?.trim() || input.env.HIVE_DISCOVER_PROMPT_VERSION?.trim() || "v2";
-  const prompt = loadDiscoverPrompt(promptVersion);
   const discoverPack = getDiscoverPackByDomainId(input.domainId);
   if (!discoverPack) {
     return { ok: false, code: "DISCOVER_FAILED", message: "Discover pack missing for domain." };
   }
 
-  const materialFingerprint = fingerprintDiscoverStudyMaterial({
-    domainId: input.domainId,
-    presentSources: present,
-    discoverPromptSha256: prompt.sha256,
-    discoverPackVersion: discoverPack.domainPackVersion,
-  });
-
-  const reused = await loadReusableDiscover({
+  const reusedDiscover = await loadReusableDiscover({
     gateway: input.gateway,
     userId: input.userId,
     caseId: input.caseId,
     present,
   });
-  if (reused) {
+  if (reusedDiscover) {
+    const fingerprint =
+      input.request.intakeStudyMaterialFingerprint ??
+      reusedDiscover.structureMap.provenance?.promptSha256 ??
+      "discover-artifact";
     return {
       ok: true,
       reused: true,
-      discoverRunId: reused.discoverRunId,
-      structureMap: reused.structureMap,
-      documentDiscovery: reused.documentDiscovery,
-      discoverStructureFingerprint: materialFingerprint,
+      engine1Source: "discover_artifact",
+      discoverRunId: reusedDiscover.discoverRunId,
+      structureMap: reusedDiscover.structureMap,
+      documentDiscovery: reusedDiscover.documentDiscovery,
+      discoverStructureFingerprint: fingerprint,
     };
   }
 
-  const { deps: discoverDeps } = buildWorkerDiscoverDeps({
-    gateway: input.gateway,
+  const fromIntake = await loadEngine1FromIntakePackExecution({
+    intake: input.intake,
     documents: input.documents,
     userId: input.userId,
     caseId: input.caseId,
-    env: input.env,
+    intakeRunId: input.intakeRunId,
+    domainId: input.domainId,
+    domainLabel: input.domainLabel ?? input.request.engine1Result.domainLabel,
+    present,
+    request: input.request,
   });
-  if (discoverDeps.engineConfig.mode === "unconfigured") {
+  if (fromIntake) {
     return {
-      ok: false,
-      code: "DISCOVER_ENGINE_UNAVAILABLE",
-      message: "Discover engine is not configured.",
-    };
-  }
-
-  const sourceDocumentIds = present.map((row) => row.sourceDocumentId);
-  void buildDiscoverIdempotencyKey(input.caseId, sourceDocumentIds);
-
-  const outcome = await runDiscover(
-    {
-      caseId: input.caseId,
-      sourceDocumentIds,
-      caseCustomerContextIntake: {
-        domains: [
-          {
-            domainId: input.domainId,
-            objective: (() => {
-              const stated = input.request.answerSnapshot.userContext?.statedWorkPurpose;
-              return typeof stated === "string" && stated.trim()
-                ? stated.trim()
-                : "Review uploaded documents.";
-            })(),
-            shareIntent: "yes",
-          },
-        ],
-      },
-    },
-    discoverDeps,
-  );
-
-  if (
-    outcome.run.status === "NEEDS_OBJECTIVE_INPUT" ||
-    outcome.run.status === "NEEDS_DISCOVERY_INPUT"
-  ) {
-    return {
-      ok: false,
-      code: "DISCOVER_AWAITING_INPUT",
-      discoverRunId: outcome.run.discoverRunId,
-      message: "Discover requires customer input before study can continue.",
-    };
-  }
-
-  if (outcome.run.status !== "SUCCEEDED" || !outcome.documentDiscovery) {
-    return {
-      ok: false,
-      code: "DISCOVER_FAILED",
-      discoverRunId: outcome.run.discoverRunId,
-      message: outcome.run.errorMessage ?? "Discover did not succeed.",
-    };
-  }
-
-  const structureMap = await loadLatestStructureMapForCase(
-    input.gateway,
-    input.userId,
-    input.caseId,
-  );
-  if (!structureMap) {
-    return {
-      ok: false,
-      code: "DISCOVER_FAILED",
-      message: "Discover succeeded but structure map was not persisted.",
+      ok: true,
+      reused: false,
+      engine1Source: "intake_pack_execution",
+      discoverRunId: input.intakeRunId,
+      structureMap: fromIntake.structureMap,
+      documentDiscovery: fromIntake.documentDiscovery,
+      discoverStructureFingerprint: fromIntake.discoverStructureFingerprint,
     };
   }
 
   return {
-    ok: true,
-    reused: false,
-    discoverRunId: outcome.run.discoverRunId,
-    structureMap,
-    documentDiscovery: outcome.documentDiscovery,
-    discoverStructureFingerprint: materialFingerprint,
+    ok: false,
+    code: "DISCOVER_FAILED",
+    message:
+      "Pack-driven study requires a persisted structure map from Intake pack execution or a prior Discover run.",
   };
 }

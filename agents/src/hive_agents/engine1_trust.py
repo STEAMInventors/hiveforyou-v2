@@ -23,7 +23,9 @@ class ValidatedEngine1ReaderContext:
     logical_document_ids: tuple[str, ...]
 
 
-_ALLOWED_PROVENANCE = frozenset({"persisted_discover_structure_map", "test_only_minimal"})
+_ALLOWED_PROVENANCE = frozenset(
+    {"persisted_discover_structure_map", "intake_pack_execution", "test_only_minimal"}
+)
 
 
 def _require_str_field(payload: dict[str, Any], key: str) -> str:

@@ -860,3 +860,166 @@ describe("AgenticReaderQualificationError", () => {
     expect(error.code).toBe("CODE");
   });
 });
+
+describe("pack-driven Engine 1 boundary", () => {
+  it("omits document-type hints from engine1ReaderContextJson", async () => {
+    const { resolveEngine1ReaderContext, serializeEngine1ReaderContext } = await import(
+      "./engine1-reader-context.js"
+    );
+    const structureMap = {
+      schemaVersion: "hive.structure-map/1",
+      discoverRunId: "intake-1",
+      caseId: CASE_A,
+      producedAt: "2026-01-01T00:00:00.000Z",
+      domainResolution: {
+        status: "SINGLE_DOMAIN",
+        domainLabel: "Special education records",
+        domainId: "iep",
+        domainPackId: "domain-pack/iep",
+        domainPackVersion: "0.0.0-test",
+      },
+      domainGroups: [],
+      sourceDocuments: [
+        { sourceDocumentId: "src-1", originalFilename: "iep.pdf", sizeBytes: 1, sha256: "abc" },
+      ],
+      logicalDocuments: [
+        {
+          id: "logic-1",
+          domainId: "iep",
+          sourceDocumentId: "src-1",
+          pageStart: 1,
+          pageEnd: 4,
+          documentType: "IEP",
+          title: "Individualized Education Program",
+          groupId: "uploaded_evidence",
+          recognitionStatus: "recognized",
+          sequenceOrder: 1,
+          provenance: "UPLOADED_EVIDENCE",
+        },
+      ],
+      relationships: [],
+      chronology: [],
+      discoveryAnswers: [],
+      unresolved: [],
+      completeness: { status: "complete", expectations: [] },
+      provenance: {
+        promptVersion: "intake-pack-execution",
+        promptSha256: "deadbeef",
+        providerId: "intake-domain-pack",
+      },
+    } as unknown as import("@hiveforyou/shared/discover/structure-map").StructureMap;
+
+    const context = await resolveEngine1ReaderContext({
+      gateway: { selectWhere: async () => [] } as never,
+      userId: USER_A,
+      caseId: CASE_A,
+      domainId: "iep",
+      domainPackId: "domain-pack/iep",
+      domainPackVersion: "0.0.0-test",
+      registeredDocuments: [{ id: "src-1", sha256: "abc", filename: "iep.pdf" }],
+      structureMap,
+      requirePersistedDiscover: true,
+    });
+
+    const parsed = JSON.parse(serializeEngine1ReaderContext(context)) as {
+      logicalDocuments: Array<Record<string, unknown>>;
+    };
+    expect(context.provenance).toBe("intake_pack_execution");
+    expect(parsed.logicalDocuments[0]).not.toHaveProperty("documentType");
+    expect(parsed.logicalDocuments[0]).not.toHaveProperty("documentTypeId");
+  });
+
+  it("ensureDiscoverForPackDrivenStudy uses Intake pack execution without OpenAI Discover", async () => {
+    const { assembleIntakeStudyRequest } = await import("@hiveforyou/core");
+    const { ensureDiscoverForPackDrivenStudy } = await import(
+      "./ensure-discover-for-pack-driven-study.js"
+    );
+    const packExecutionJson = JSON.stringify({
+      schemaVersion: "intake-pack-execution/1",
+      domainPackId: "domain-pack/iep",
+      domainPackVersion: "0.0.0-test",
+      logicalDocuments: [
+        {
+          logicalDocumentId: "logic-1",
+          sourceDocumentId: "src-1",
+          pageStart: 1,
+          pageEnd: 2,
+          documentFamily: "IEP",
+          documentSubtype: null,
+          processingDisposition: "PROCESS",
+          classificationConfidence: 0.9,
+          classificationReason: "test",
+          customerLabel: "Individualized Education Program",
+        },
+      ],
+      completeness: { expectations: [], collectionNeedsReview: false },
+    });
+    const request = assembleIntakeStudyRequest({
+      caseId: CASE_A,
+      intakeRunId: "intake-1",
+      domainId: "iep",
+      domainLabel: "Special education records",
+      domainPackVersion: "0.0.0-test",
+      packExecution: JSON.parse(packExecutionJson),
+      sources: [
+        {
+          id: "src-1",
+          caseId: CASE_A,
+          userId: USER_A,
+          clientStagedId: null,
+          originalFilename: "iep.pdf",
+          mimeType: "application/pdf",
+          sizeBytes: 100,
+          sha256: "abc",
+          storageBucket: "b",
+          storagePath: "p",
+          status: "stored",
+          intakeRunId: "intake-1",
+          studyRunId: null,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        },
+      ],
+      identities: [{ sourceDocumentId: "src-1", analysisDisposition: "PRESENT" }],
+    });
+
+    const outcome = await ensureDiscoverForPackDrivenStudy({
+      gateway: { selectWhere: async () => [] } as never,
+      intake: {
+        getById: async () => ({
+          id: "intake-1",
+          caseId: CASE_A,
+          resolvedDomainId: "iep",
+          rawIntent: "Special education records",
+          packExecutionJson,
+        }),
+        listByRun: async () => [{ sourceDocumentId: "src-1", analysisDisposition: "PRESENT" }],
+      } as never,
+      documents: {
+        listByCase: async () => [
+          {
+            id: "src-1",
+            sha256: "abc",
+            originalFilename: "iep.pdf",
+            sizeBytes: 100,
+            mimeType: "application/pdf",
+            storageBucket: "b",
+            storagePath: "p",
+          },
+        ],
+      } as never,
+      userId: USER_A,
+      caseId: CASE_A,
+      intakeRunId: "intake-1",
+      domainId: "iep",
+      request,
+    });
+
+    expect(outcome.ok).toBe(true);
+    if (!outcome.ok) {
+      return;
+    }
+    expect(outcome.engine1Source).toBe("intake_pack_execution");
+    expect(outcome.structureMap.provenance?.providerId).toBe("intake-domain-pack");
+  });
+});

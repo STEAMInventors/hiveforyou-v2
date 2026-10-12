@@ -53,6 +53,21 @@ def test_validate_engine1_context_rejects_domain_mismatch() -> None:
     assert exc.value.code == "ENGINE1_CONTEXT_MISMATCH"
 
 
+def test_validate_engine1_context_accepts_intake_pack_execution_provenance() -> None:
+    trusted = [TrustedDocumentMeta("doc-a", filename="a.pdf", page_count=2)]
+    validated = validate_engine1_reader_context_json(
+        _context(
+            provenance="intake_pack_execution",
+            logicalDocuments=[{"sourceDocumentId": "doc-a", "pageCount": 2, "filename": "a.pdf"}],
+        ),
+        domain_id="iep",
+        domain_pack_id="iep-pack",
+        domain_pack_version="1.0.0",
+        trusted_documents=trusted,
+    )
+    assert validated.provenance == "intake_pack_execution"
+
+
 def test_validate_engine1_context_allows_missing_document_type_id_for_discover() -> None:
     trusted = [
         TrustedDocumentMeta("doc-a", filename="a.pdf", page_count=2),
