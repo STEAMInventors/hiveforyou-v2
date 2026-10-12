@@ -7,9 +7,13 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 /** Temporary for staging: allow Vercel deploy while shared type debt is cleared. */
 const allowTypeErrors = process.env.HIVE_ALLOW_TYPE_ERRORS === "1";
 
-/** Pack-driven study idempotency reads this file at queue time (see queueCanonicalStudyRun). */
-const packDrivenProposalPackTracePath = path.join(
-  __dirname,
+/**
+ * Pack-driven study idempotency reads this file at queue time (see queueCanonicalStudyRun).
+ * Include globs are resolved from the Next project dir (`app/`), not `outputFileTracingRoot`.
+ * Use a monorepo-relative path (`../brain/…`); absolute paths duplicate on Vercel
+ * (`…/app/vercel/path0/brain/…`).
+ */
+const packDrivenProposalPackTracePath = path.posix.join(
   "..",
   "brain",
   "domain-packs",
