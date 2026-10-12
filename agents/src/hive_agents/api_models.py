@@ -238,6 +238,10 @@ class StudyReaderResponse(BaseModel):
         default=None,
         serialization_alias="perDocumentResults",
     )
+    document_extractions: list[dict[str, object]] | None = Field(
+        default=None,
+        serialization_alias="documentExtractions",
+    )
 
 
 class PackDomainMismatchError(ValueError):

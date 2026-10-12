@@ -54,6 +54,7 @@ from hive_agents.reader_mode import (
     PACK_DRIVEN_READER_MODE,
 )
 from hive_agents.pack_driven_reader.run import (
+    PackDrivenRunCorrelation,
     per_document_results_to_wire,
     run_pack_driven_reader,
 )
@@ -72,7 +73,12 @@ app = FastAPI(title="Hive Agents")
 
 @app.get("/health")
 def health() -> dict[str, str]:
-    return {"status": "ok"}
+    settings = get_settings()
+    return {
+        "status": "ok",
+        "modelProvider": settings.model_provider,
+        "modelName": settings.model_name,
+    }
 
 
 @app.on_event("startup")
@@ -150,6 +156,28 @@ def _build_trace_session(
         source_document_ids=source_document_ids,
     )
     return ReaderTraceSession(context=context, client=client)
+
+
+def _pack_driven_run_correlation(
+    request: StudyReaderRequest,
+    settings: Any,
+) -> PackDrivenRunCorrelation:
+    return PackDrivenRunCorrelation(
+        study_run_id=request.study_run_id,
+        attempt_id=request.attempt_id,
+        case_id=request.case_id,
+        user_id=request.user_id,
+        domain_id=request.domain_id,
+        model_provider=settings.model_provider,
+        model_id=settings.model_name,
+    )
+
+
+def _trace_persist_failure_error_code(exc: ReaderTraceError) -> str:
+    details = exc.details
+    if details is not None and details.server_error_code:
+        return details.server_error_code
+    return "TRACE_PERSIST_FAILED"
 
 
 def _audit_for_request(
@@ -264,7 +292,12 @@ def execute_study_reader(
     lm_factory=create_dspy_lm,
     verifier_client: ReaderVerifierClient | None = None,
     trace_client: ReaderTraceClient | None = None,
-) -> tuple[ReaderRunResult, StudyReaderAudit, list[dict[str, object]] | None]:
+) -> tuple[
+    ReaderRunResult,
+    StudyReaderAudit,
+    list[dict[str, object]] | None,
+    list[dict[str, object]] | None,
+]:
     pack = resolve_agent_pack_for_domain(request.domain_id)
     pages = request.flattened_pages()
     if not pages:
@@ -327,13 +360,14 @@ def execute_study_reader(
                     "PACK_DRIVEN_ENGINE1_CONTEXT_REQUIRED",
                     "Pack-driven Reader requires engine1ReaderContextJson.",
                 )
-            result, per_document, experiment_audit = run_pack_driven_reader(
+            result, per_document, experiment_audit, document_extractions = run_pack_driven_reader(
                 pages=pages,
                 lm=lm,
                 verifier_client=client,
                 verify_context=verify_context,
                 engine1_reader_context_json=request.engine1_reader_context_json,
                 settings=settings,
+                correlation=_pack_driven_run_correlation(request, settings),
             )
             per_document_wire = per_document_results_to_wire(per_document)
         else:
@@ -353,12 +387,14 @@ def execute_study_reader(
                 trace_session=None,
                 validated_engine1=validated_engine1,
             )
-        return result, audit_not_configured, per_document_wire
+            document_extractions = None
+        return result, audit_not_configured, per_document_wire, document_extractions
 
     import time
 
     started = time.perf_counter()
     trace_session.emit("STARTED", {"modelId": trace_session.context.model_id})
+    reader_completed = False
     try:
         if reader_mode == PACK_DRIVEN_READER_MODE:
             if not request.engine1_reader_context_json:
@@ -366,13 +402,14 @@ def execute_study_reader(
                     "PACK_DRIVEN_ENGINE1_CONTEXT_REQUIRED",
                     "Pack-driven Reader requires engine1ReaderContextJson.",
                 )
-            result, per_document, experiment_audit = run_pack_driven_reader(
+            result, per_document, experiment_audit, document_extractions = run_pack_driven_reader(
                 pages=pages,
                 lm=lm,
                 verifier_client=client,
                 verify_context=verify_context,
                 engine1_reader_context_json=request.engine1_reader_context_json,
                 settings=settings,
+                correlation=_pack_driven_run_correlation(request, settings),
             )
             per_document_wire = per_document_results_to_wire(per_document)
         else:
@@ -392,6 +429,8 @@ def execute_study_reader(
                 trace_session=trace_session,
                 validated_engine1=validated_engine1,
             )
+            document_extractions = None
+        reader_completed = True
         duration_ms = int((time.perf_counter() - started) * 1000)
         counts = result.execution_counts or ReaderExecutionCounts()
         trace_session.emit(
@@ -410,9 +449,27 @@ def execute_study_reader(
         )
         trace_session.flush()
     except ReaderTraceError as exc:
+        if reader_completed:
+            logger.warning(
+                "reader trace flush failed after extraction studyRunId=%s attemptId=%s errorCode=%s",
+                request.study_run_id,
+                request.attempt_id,
+                _trace_persist_failure_error_code(exc),
+            )
+            return (
+                result,
+                _audit_for_request(
+                    request,
+                    persisted=False,
+                    status="failed",
+                    error_code=_trace_persist_failure_error_code(exc),
+                ),
+                per_document_wire,
+                document_extractions,
+            )
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail=_error_body("TRACE_PERSIST_FAILED", str(exc)),
+            detail=_error_body("TRACE_PERSIST_FAILED", "Reader audit trail could not be persisted."),
         ) from exc
     except Exception as exc:
         duration_ms = int((time.perf_counter() - started) * 1000)
@@ -429,7 +486,12 @@ def execute_study_reader(
             raise
         raise
 
-    return result, _audit_for_request(request, persisted=True, status="persisted"), per_document_wire
+    return (
+        result,
+        _audit_for_request(request, persisted=True, status="persisted"),
+        per_document_wire,
+        document_extractions,
+    )
 
 
 def _study_reader_response(
@@ -439,6 +501,7 @@ def _study_reader_response(
     pack_version: str,
     audit: StudyReaderAudit | None = None,
     per_document_results: list[dict[str, object]] | None = None,
+    document_extractions: list[dict[str, object]] | None = None,
 ) -> StudyReaderResponse:
     candidate_facts = [
         fact.model_dump(mode="json", by_alias=False) for fact in result.candidate_facts
@@ -456,6 +519,7 @@ def _study_reader_response(
         tool_calls=result.tool_calls,
         audit=audit,
         per_document_results=per_document_results,
+        document_extractions=document_extractions,
     )
 
 
@@ -547,7 +611,10 @@ async def study_reader(
         ) from exc
 
     try:
-        result, audit, per_document_results = await run_in_threadpool(execute_study_reader, request)
+        result, audit, per_document_results, document_extractions = await run_in_threadpool(
+            execute_study_reader,
+            request,
+        )
     except HTTPException:
         raise
     except ReaderVerifierError as exc:
@@ -558,7 +625,7 @@ async def study_reader(
     except ReaderTraceError as exc:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail=_error_body("TRACE_PERSIST_FAILED", str(exc)),
+            detail=_error_body("TRACE_PERSIST_FAILED", "Reader audit trail could not be persisted."),
         ) from exc
     except ReaderLimitsExhausted as exc:
         raise HTTPException(
@@ -593,4 +660,5 @@ async def study_reader(
         pack_version=pack.domainPackVersion,
         audit=audit,
         per_document_results=per_document_results,
+        document_extractions=document_extractions,
     )

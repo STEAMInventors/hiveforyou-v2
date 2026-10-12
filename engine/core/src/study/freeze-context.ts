@@ -4,6 +4,7 @@ import type { CaseCustomerContextSnapshot } from "@hiveforyou/shared/case-custom
 import { scopeDiscoveryResultToDomain } from "../discover/domain-workstream";
 import { customerContextForEngine2 } from "../persistence/case-customer-context-repository";
 import type {
+  ReaderPreflightSnapshot,
   StartCanonicalStudyRequest,
   StudyProcessingMode,
 } from "@hiveforyou/shared/canonical-study";
@@ -25,13 +26,16 @@ export type FreezeContextParams = {
   resolvedPack: ResolvedDomainPack;
   idempotencyKey: string;
   providerId: string;
-  providerMode: "fixture" | "openai" | "unconfigured";
+  providerMode: "fixture" | "openai" | "unconfigured" | "reader_delegated";
   previousCaseIntelligenceVersion?: number;
   prompt?: {
     id: string;
     version: string;
     sha256: string;
   };
+  proposalPackContentSha256?: string;
+  readerCompilerVersion?: string;
+  readerPreflight?: ReaderPreflightSnapshot;
   customerContext?: CaseCustomerContextSnapshot | null;
 };
 
@@ -70,6 +74,7 @@ export function studyEngineFingerprintFromDeps(input: {
   providerId: string;
   modelId?: string;
   prompt?: { version: string; sha256: string };
+  readerCompilerVersion?: string;
 }): StudyEngineFingerprint {
   return {
     providerMode: input.providerMode,
@@ -77,6 +82,7 @@ export function studyEngineFingerprintFromDeps(input: {
     modelId: input.modelId,
     promptVersion: input.prompt?.version,
     promptSha256: input.prompt?.sha256,
+    readerCompilerVersion: input.readerCompilerVersion,
   };
 }
 
@@ -126,6 +132,9 @@ export function freezeCanonicalStudyContext(
       promptId: params.prompt?.id,
       promptVersion: params.prompt?.version,
       promptSha256: params.prompt?.sha256,
+      proposalPackContentSha256: params.proposalPackContentSha256,
+      readerCompilerVersion: params.readerCompilerVersion,
+      readerPreflight: params.readerPreflight,
     },
   };
 }

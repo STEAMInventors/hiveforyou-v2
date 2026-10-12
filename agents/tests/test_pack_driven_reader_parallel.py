@@ -6,9 +6,21 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from hive_agents.pack_driven_reader.run import run_pack_driven_reader
+from hive_agents.pack_driven_reader.run import PackDrivenRunCorrelation, run_pack_driven_reader
 from hive_agents.reader import DocumentPage, PageWord, ReaderVerifyContext
 from hive_agents.settings import Settings
+
+
+def _test_correlation() -> PackDrivenRunCorrelation:
+    return PackDrivenRunCorrelation(
+        study_run_id="study-run-1",
+        attempt_id="attempt-1",
+        case_id="case-1",
+        user_id="user-1",
+        domain_id="iep",
+        model_provider="anthropic",
+        model_id="claude-test",
+    )
 
 
 def _engine1_context(*source_ids: str) -> str:
@@ -66,13 +78,14 @@ def test_pack_driven_fan_in_preserves_document_order(monkeypatch: pytest.MonkeyP
         fake_process,
     )
 
-    _result, per_document, _audit = run_pack_driven_reader(
+    _result, per_document, _audit, _extractions = run_pack_driven_reader(
         pages=[_page(doc_id) for doc_id in ids],
         lm=MagicMock(),
         verifier_client=MagicMock(),
         verify_context=ReaderVerifyContext(case_id="case-1", user_id="user-1"),
         engine1_reader_context_json=_engine1_context(*ids),
         settings=Settings(reader_parallel_concurrency=3),
+        correlation=_test_correlation(),
     )
 
     assert [row.source_document_id for row in per_document] == ids
@@ -104,14 +117,16 @@ def test_pack_driven_reports_failed_document_tasks(monkeypatch: pytest.MonkeyPat
         fake_process,
     )
 
-    _result, per_document, _audit = run_pack_driven_reader(
+    _result, per_document, _audit, extractions = run_pack_driven_reader(
         pages=[_page("doc-ok"), _page("doc-fail")],
         lm=MagicMock(),
         verifier_client=MagicMock(),
         verify_context=ReaderVerifyContext(case_id="case-1", user_id="user-1"),
         engine1_reader_context_json=_engine1_context("doc-ok", "doc-fail"),
         settings=Settings(reader_parallel_concurrency=2),
+        correlation=_test_correlation(),
     )
+    assert len(extractions) == 1
 
     failed = next(row for row in per_document if row.source_document_id == "doc-fail")
     assert failed.execution_error == "RuntimeError"
@@ -156,13 +171,14 @@ def test_pack_driven_bounded_parallelism(monkeypatch: pytest.MonkeyPatch) -> Non
     )
 
     ids = [f"doc-{index}" for index in range(4)]
-    _result, _per_document, audit = run_pack_driven_reader(
+    _result, _per_document, audit, _extractions = run_pack_driven_reader(
         pages=[_page(doc_id) for doc_id in ids],
         lm=MagicMock(),
         verifier_client=MagicMock(),
         verify_context=ReaderVerifyContext(case_id="case-1", user_id="user-1"),
         engine1_reader_context_json=_engine1_context(*ids),
         settings=Settings(reader_parallel_concurrency=2),
+        correlation=_test_correlation(),
     )
 
     assert peak <= 2
@@ -190,15 +206,24 @@ def test_wrong_engine1_classification_does_not_block_extraction(monkeypatch: pyt
             blocks={},
         )
 
-    def fake_extract(**kwargs: object) -> tuple[dict[str, object], dict[str, int]]:
+    def fake_extract(**kwargs: object) -> object:
+        from hive_agents.pack_driven_reader.lm_extract import PackDrivenExtractionCallResult
+
         extract_calls.append(dict(kwargs))
-        return (
-            {
+        return PackDrivenExtractionCallResult(
+            assistant_text=json.dumps(
+                {
+                    "documentTypeId": "iep.referral",
+                    "sourceDocumentId": "doc-a",
+                    "recordInstances": [],
+                }
+            ),
+            parsed_model_json={
                 "documentTypeId": "iep.referral",
                 "sourceDocumentId": "doc-a",
                 "recordInstances": [],
             },
-            {"input_tokens": 1, "output_tokens": 1},
+            usage={"input_tokens": 1, "output_tokens": 1},
         )
 
     def fake_parse(**kwargs: object) -> object:
@@ -243,17 +268,130 @@ def test_wrong_engine1_classification_does_not_block_extraction(monkeypatch: pyt
     )
 
     page = DocumentPage(documentId="doc-a", pageNumber=1, words=[PageWord(seq=0, text="Referral text")])
-    _result, per_document, audit = run_pack_driven_reader(
+    _result, per_document, audit, extractions = run_pack_driven_reader(
         pages=[page],
         lm=MagicMock(),
         verifier_client=MagicMock(),
         verify_context=ReaderVerifyContext(case_id="case-1", user_id="user-1"),
         engine1_reader_context_json=context,
         settings=Settings(),
+        correlation=_test_correlation(),
     )
+    assert extractions[0]["status"] == "SUCCEEDED"
+    assert extractions[0]["parsedModelJson"]["documentTypeId"] == "iep.referral"
 
     assert len(compile_calls) == 1
     assert len(extract_calls) == 1
     assert "document_type_id" not in compile_calls[0]
     assert per_document[0].document_type_id == "iep.referral"
     assert per_document[0].engine1_document_type_id == "iep.plan"
+
+
+def test_successful_and_failed_sibling_documents_both_available(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    raw_model = {"documentTypeId": "iep.plan", "recordInstances": []}
+    raw_ok = json.dumps(raw_model)
+
+    class FakeCompiled:
+        prompt_version = "hive-pack-driven-reader/test"
+        pack_content_sha256 = "b" * 64
+
+    def fake_compile(**kwargs: object) -> FakeCompiled:
+        _ = kwargs
+        return FakeCompiled()
+
+    def fake_extract(**_kwargs: object) -> object:
+        from hive_agents.pack_driven_reader.lm_extract import PackDrivenExtractionCallResult
+
+        return PackDrivenExtractionCallResult(
+            assistant_text=raw_ok,
+            parsed_model_json=dict(raw_model),
+            usage={},
+        )
+
+    def fake_parse(**_kwargs: object) -> object:
+        from hive_agents.pack_driven_reader.compiler_bridge import PackDrivenReaderParseResult
+
+        return PackDrivenReaderParseResult(
+            ok=True,
+            needs_review=False,
+            document_type_id="iep.plan",
+            document_type_resolved="classified",
+            errors=[],
+            record_instances=[],
+        )
+
+    import hive_agents.pack_driven_reader.run as run_module
+
+    original_process = run_module._process_single_document
+
+    def fake_process(**kwargs: object) -> object:
+        source_document_id = str(kwargs["source_document_id"])
+        if source_document_id == "doc-bad":
+            from hive_agents.pack_driven_reader.document_extraction_envelope import (
+                build_reader_document_extraction_envelope,
+            )
+            from hive_agents.pack_driven_reader.run import PackDrivenDocumentResult
+
+            correlation = _test_correlation()
+            envelope = build_reader_document_extraction_envelope(
+                study_run_id=correlation.study_run_id,
+                attempt_id=correlation.attempt_id,
+                case_id=correlation.case_id,
+                user_id=correlation.user_id,
+                source_document_id="doc-bad",
+                domain_id="iep",
+                pack={"manifest": {"id": "iep", "version": "0.3"}},
+                pack_content_sha256="c" * 64,
+                prompt_version="test",
+                model_provider="anthropic",
+                model_id="claude-test",
+                status="INVALID_JSON",
+                raw_assistant_text="<<broken>>",
+                parsed_model_json=None,
+                usage={},
+                latency_ms=1,
+                error_code="INVALID_JSON",
+                error_message="bad json",
+            )
+            return PackDrivenDocumentResult(
+                source_document_id="doc-bad",
+                document_type_id=None,
+                engine1_document_type_id="iep.plan",
+                classification_needs_review=False,
+                parse_ok=False,
+                parse_errors=["invalid_json_response"],
+                document_extraction_envelope=envelope,
+            )
+        return original_process(**kwargs)
+
+    monkeypatch.setattr(
+        "hive_agents.pack_driven_reader.run.load_proposal_domain_pack",
+        lambda _path: {"schemaVersion": "pack/0", "manifest": {"id": "iep", "version": "0.3"}},
+    )
+    monkeypatch.setattr("hive_agents.pack_driven_reader.run.compile_pack_driven_reader_prompt", fake_compile)
+    monkeypatch.setattr("hive_agents.pack_driven_reader.run.call_pack_driven_extraction", fake_extract)
+    monkeypatch.setattr(
+        "hive_agents.pack_driven_reader.compiler_bridge.parse_pack_driven_extraction_via_node",
+        fake_parse,
+    )
+    monkeypatch.setattr("hive_agents.pack_driven_reader.run._process_single_document", fake_process)
+
+    _result, per_document, _audit, extractions = run_pack_driven_reader(
+        pages=[_page("doc-ok"), _page("doc-bad")],
+        lm=MagicMock(),
+        verifier_client=MagicMock(),
+        verify_context=ReaderVerifyContext(case_id="case-1", user_id="user-1"),
+        engine1_reader_context_json=_engine1_context("doc-ok", "doc-bad"),
+        settings=Settings(reader_parallel_concurrency=2),
+        correlation=_test_correlation(),
+    )
+
+    by_id = {row.source_document_id: row for row in per_document}
+    assert by_id["doc-ok"].parse_ok is True
+    assert by_id["doc-bad"].parse_ok is False
+    assert len(extractions) == 2
+    statuses = {env["sourceDocumentId"]: env["status"] for env in extractions}
+    assert statuses["doc-ok"] == "SUCCEEDED"
+    assert statuses["doc-bad"] == "INVALID_JSON"

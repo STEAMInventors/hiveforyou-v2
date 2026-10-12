@@ -119,6 +119,10 @@ export type StudyServiceDeps = {
     context: import("@hiveforyou/shared/canonical-study").CanonicalStudyContext,
   ) => Promise<Map<string, NormalizedDocumentExtraction>>;
   studyArtifactRepo?: StudyArtifactRepository;
+  /** Non-authoritative hive-agents /health snapshot for pack-driven preflight. */
+  resolveReaderPreflight?: () => Promise<
+    import("@hiveforyou/shared/canonical-study").ReaderPreflightSnapshot | null
+  >;
   /** When set, runs client-writer/2 and merges copy into case-view/2 (Engine 2 pass 2). */
   clientWriterPass?: (input: {
     caseView: import("@hiveforyou/shared/projections").CaseViewV2;

@@ -5,7 +5,7 @@ import {
   serializeRecognitionVocabularyForPrompt,
 } from "@hiveforyou/domain-packs";
 import { readStatedWorkPurpose } from "@hiveforyou/shared/canonical-study";
-import type { CanonicalStudyRun } from "@hiveforyou/shared/canonical-study";
+import type { CanonicalStudyRun, StudyRunStatus } from "@hiveforyou/shared/canonical-study";
 import { isTerminalStudyRunStatus } from "@hiveforyou/shared/canonical-study";
 import type { CanonicalCaseSnapshot } from "@hiveforyou/shared/case-intelligence/3";
 import type { CanonicalStudyProposal } from "@hiveforyou/shared/case-intelligence/3";
@@ -33,6 +33,13 @@ import {
   freezeCanonicalStudyContext,
   resolveStudyProcessingMode,
 } from "./freeze-context";
+import {
+  buildPackDrivenReaderIntentFingerprint,
+  PACK_DRIVEN_READER_ORCHESTRATION_ID,
+  READER_DELEGATED_PROVIDER_MODE,
+  type ObservedReaderIdentitySummary,
+  type ReaderPreflightSnapshot,
+} from "./reader-engine-identity";
 import { consolidateVerifiedReaderFacts } from "./consolidate-verified-reader-facts";
 import { voiceProposalForProjection } from "./extract-voice-proposal";
 import { loadStudySourceDocumentBytes } from "./load-study-source-bytes";
@@ -45,6 +52,12 @@ import type { StudyServiceDeps } from "./run-canonical-study";
 import { validateCanonicalStudyProposalV3 } from "./validate-proposal-v3";
 import { validateCanonicalStudyProposalV4 } from "./validate-proposal-v4";
 import { createStudyArtifactProposePlaceholderValidation } from "./study-artifact-persistence";
+import {
+  buildStudyRawExtractionValidationResult,
+  STUDY_RAW_EXTRACTION_ARTIFACT_SCHEMA_VERSION,
+  type StudyRawExtractionArtifact,
+  type StudyRawExtractionOutcome,
+} from "./study-artifact-persistence";
 import { isStudyNonRetriableErrorCode } from "./study-worker-non-retriable";
 
 export type StudyWorkerEvent = {
@@ -124,6 +137,13 @@ async function ensureStudyContext(
       ? storedContext
       : null;
 
+  const packDrivenIntent =
+    processingMode === "pack_driven_v1" ? buildPackDrivenReaderIntentFingerprint() : null;
+  const readerPreflight =
+    processingMode === "pack_driven_v1"
+      ? ((await deps.resolveReaderPreflight?.()) ?? undefined)
+      : undefined;
+
   let context =
     existingContext ??
     freezeCanonicalStudyContext({
@@ -131,11 +151,32 @@ async function ensureStudyContext(
       studyRunId: run.studyRunId,
       resolvedPack,
       idempotencyKey: run.idempotencyKey,
-      providerId: deps.providerId,
-      providerMode: deps.providerMode,
+      providerId:
+        processingMode === "pack_driven_v1"
+          ? PACK_DRIVEN_READER_ORCHESTRATION_ID
+          : deps.providerId,
+      providerMode:
+        processingMode === "pack_driven_v1"
+          ? READER_DELEGATED_PROVIDER_MODE
+          : deps.providerMode,
       prompt: processingMode === "pack_driven_v1" ? undefined : prompt,
+      proposalPackContentSha256: packDrivenIntent?.promptSha256,
+      readerCompilerVersion: packDrivenIntent?.readerCompilerVersion,
+      readerPreflight,
       customerContext: deps.customerContext ?? undefined,
     });
+
+  if (
+    processingMode === "pack_driven_v1" &&
+    (run.providerMode !== READER_DELEGATED_PROVIDER_MODE ||
+      run.providerId !== PACK_DRIVEN_READER_ORCHESTRATION_ID)
+  ) {
+    await deps.runRepo.save({
+      ...run,
+      providerId: PACK_DRIVEN_READER_ORCHESTRATION_ID,
+      providerMode: READER_DELEGATED_PROVIDER_MODE,
+    });
+  }
 
   const uploadedSourceDocuments = context.sourceDocuments;
   let structureMap: StructureMap | null = null;
@@ -558,6 +599,108 @@ export async function runStudyWorkerStoryStep(
   });
 
   return { storyPresent: caseView.validatedStory?.kind === "prose" };
+}
+
+export async function runStudyWorkerCompleteRawExtractionStep(
+  deps: StudyServiceDeps,
+  event: StudyWorkerEvent,
+  input: {
+    attemptId: string;
+    rawExtractionOutcome: StudyRawExtractionOutcome;
+    succeededDocumentIds: readonly string[];
+    failedDocumentIds: readonly string[];
+    documentExtractionAttemptManifestPath?: string;
+    documentExtractionStudyRunManifestPath?: string;
+    audit: {
+      persisted: boolean;
+      status: string;
+      errorCode?: string;
+    };
+    acceptedVerifierFactCount: number;
+    promptSha256: string;
+    observedReaderIdentity?: ObservedReaderIdentitySummary;
+    readerPreflight?: ReaderPreflightSnapshot;
+    now?: () => string;
+  },
+): Promise<{ status: StudyRunStatus }> {
+  const now = input.now ?? (() => new Date().toISOString());
+
+  const run = await deps.runRepo.getByStudyRunId(event.studyRunId);
+  const context = await deps.contextRepo.getByStudyRunId(event.studyRunId);
+  if (!run || !context) {
+    throw new Error("STUDY_RAW_EXTRACTION_COMPLETE_PREREQUISITE_MISSING");
+  }
+
+  const validation = buildStudyRawExtractionValidationResult({
+    outcome: input.rawExtractionOutcome,
+    failedDocumentIds: input.failedDocumentIds,
+  });
+
+  const artifact: StudyRawExtractionArtifact = {
+    schemaVersion: STUDY_RAW_EXTRACTION_ARTIFACT_SCHEMA_VERSION,
+    studyRunId: event.studyRunId,
+    caseId: run.caseId,
+    attemptId: input.attemptId,
+    outcome: input.rawExtractionOutcome,
+    succeededDocumentIds: [...input.succeededDocumentIds],
+    failedDocumentIds: [...input.failedDocumentIds],
+    documentExtractionAttemptManifestPath: input.documentExtractionAttemptManifestPath,
+    documentExtractionStudyRunManifestPath: input.documentExtractionStudyRunManifestPath,
+    audit: {
+      persisted: input.audit.persisted,
+      status: input.audit.status,
+      errorCode: input.audit.errorCode,
+    },
+    acceptedVerifierFactCount: input.acceptedVerifierFactCount,
+    ...(input.observedReaderIdentity
+      ? { observedReaderIdentity: input.observedReaderIdentity }
+      : {}),
+    ...(input.readerPreflight ? { readerPreflight: input.readerPreflight } : {}),
+    createdAt: now(),
+  };
+
+  await deps.studyArtifactRepo?.save({
+    studyRunId: event.studyRunId,
+    caseId: run.caseId,
+    userId: event.userId,
+    rawProposalJson: artifact,
+    validationResultJson: validation,
+  });
+
+  await deps.eventRepo.append(
+    createStudyRunEvent("study_run.validation_completed", run.studyRunId, run.caseId, {
+      status: validation.status,
+      source: "pack_driven_raw_extraction",
+    }),
+  );
+
+  const finalStatus: StudyRunStatus =
+    input.rawExtractionOutcome === "succeeded" ? "SUCCEEDED" : "FAILED";
+  const completed: CanonicalStudyRun = {
+    ...run,
+    status: finalStatus,
+    completedAt: now(),
+    promptSha256: input.promptSha256,
+    errorCode: input.rawExtractionOutcome === "succeeded" ? undefined : "STUDY_WORKER_FAILED",
+    errorMessage:
+      input.rawExtractionOutcome === "succeeded"
+        ? undefined
+        : validation.validationErrors[0]?.message,
+  };
+  await deps.runRepo.save(completed);
+  await deps.eventRepo.append(
+    createStudyRunEvent("study_run.completed", run.studyRunId, run.caseId, {
+      status: finalStatus,
+      source: "pack_driven_raw_extraction",
+      rawExtractionOutcome: input.rawExtractionOutcome,
+      auditPersisted: input.audit.persisted,
+      auditStatus: input.audit.status,
+      acceptedVerifierFactCount: input.acceptedVerifierFactCount,
+    }),
+  );
+
+  void context;
+  return { status: finalStatus };
 }
 
 export async function runStudyWorkerCompleteStep(

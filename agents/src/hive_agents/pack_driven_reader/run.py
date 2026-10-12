@@ -15,6 +15,9 @@ from hive_agents.pack_driven_reader.adapter import (
     load_proposal_domain_pack,
     pages_to_pack_driven_payload,
 )
+from hive_agents.pack_driven_reader.document_extraction_envelope import (
+    build_reader_document_extraction_envelope,
+)
 from hive_agents.pack_driven_reader.engine1_manifest import (
     build_case_manifest,
     parse_engine1_logical_documents,
@@ -33,6 +36,17 @@ from hive_agents.reader_diagnostics import ReaderExecutionCounts, fact_has_usabl
 from hive_agents.verifier_client import ReaderVerifierClient
 
 
+@dataclass(frozen=True)
+class PackDrivenRunCorrelation:
+    study_run_id: str
+    attempt_id: str
+    case_id: str
+    user_id: str
+    domain_id: str
+    model_provider: str
+    model_id: str
+
+
 @dataclass
 class PackDrivenDocumentResult:
     source_document_id: str
@@ -49,6 +63,87 @@ class PackDrivenDocumentResult:
     execution_error: str | None = None
     prompt_version: str | None = None
     pack_content_sha256: str | None = None
+    document_extraction_envelope: dict[str, Any] | None = None
+
+
+def _model_error_document_result(
+    *,
+    source_document_id: str,
+    engine1_document_type_id: str | None,
+    correlation: PackDrivenRunCorrelation,
+    proposal_pack: Any,
+    error_code: str,
+    error_message: str,
+    parse_errors: list[str],
+    execution_error: str | None = None,
+    raw_assistant_text: str | None = None,
+    parsed_model_json: dict[str, Any] | None = None,
+    prompt_version: str | None = None,
+    pack_content_sha256: str | None = None,
+    usage: dict[str, int | None] | None = None,
+    latency_ms: int | None = None,
+) -> PackDrivenDocumentResult:
+    envelope = build_reader_document_extraction_envelope(
+        study_run_id=correlation.study_run_id,
+        attempt_id=correlation.attempt_id,
+        case_id=correlation.case_id,
+        user_id=correlation.user_id,
+        source_document_id=source_document_id,
+        domain_id=correlation.domain_id,
+        pack=proposal_pack,
+        pack_content_sha256=pack_content_sha256,
+        prompt_version=prompt_version,
+        model_provider=correlation.model_provider,
+        model_id=correlation.model_id,
+        status="MODEL_ERROR",
+        raw_assistant_text=raw_assistant_text,
+        parsed_model_json=parsed_model_json,
+        usage=usage,
+        latency_ms=latency_ms,
+        error_code=error_code,
+        error_message=error_message,
+    )
+    return PackDrivenDocumentResult(
+        source_document_id=source_document_id,
+        document_type_id=None,
+        engine1_document_type_id=engine1_document_type_id,
+        classification_needs_review=False,
+        parse_ok=False,
+        parse_errors=parse_errors,
+        execution_error=execution_error,
+        prompt_version=prompt_version,
+        pack_content_sha256=pack_content_sha256,
+        usage=usage or {},
+        model_call_ms=latency_ms or 0,
+        document_extraction_envelope=envelope,
+    )
+
+
+def _post_extraction_processing_failure_result(
+    *,
+    source_document_id: str,
+    engine1_document_type_id: str | None,
+    captured_envelope: dict[str, Any],
+    exc: Exception,
+    call_ms: int,
+    usage: dict[str, int | None],
+    prompt_version: str | None,
+    pack_content_sha256: str | None,
+) -> PackDrivenDocumentResult:
+    return PackDrivenDocumentResult(
+        source_document_id=source_document_id,
+        document_type_id=None,
+        engine1_document_type_id=engine1_document_type_id,
+        classification_needs_review=False,
+        parse_ok=False,
+        parse_errors=[f"post_extraction_processing_failed:{exc.__class__.__name__}"],
+        execution_error=exc.__class__.__name__,
+        model_call_ms=call_ms,
+        usage=usage,
+        prompt_version=prompt_version,
+        pack_content_sha256=pack_content_sha256,
+        document_extraction_envelope=captured_envelope,
+    )
 
 
 def resolve_proposal_pack_path(settings: Any) -> Path:
@@ -84,20 +179,23 @@ def _process_single_document(
     proposal_pack: Any,
     case_manifest: Any,
     engine1_document_type_id: str | None,
+    correlation: PackDrivenRunCorrelation,
     lm: dspy.LM,
     verifier_client: ReaderVerifierClient,
     verify_context: ReaderVerifyContext,
 ) -> PackDrivenDocumentResult:
     if not doc_pages:
-        return PackDrivenDocumentResult(
+        return _model_error_document_result(
             source_document_id=source_document_id,
-            document_type_id=None,
             engine1_document_type_id=engine1_document_type_id,
-            classification_needs_review=False,
-            parse_ok=False,
+            correlation=correlation,
+            proposal_pack=proposal_pack,
+            error_code="MISSING_PAGES",
+            error_message="No trusted pages were supplied for this logical document.",
             parse_errors=["missing_pages_for_logical_document"],
         )
 
+    compiled: Any = None
     try:
         compiled = compile_pack_driven_reader_prompt(
             pack=proposal_pack,
@@ -106,73 +204,183 @@ def _process_single_document(
             pages=pages_to_pack_driven_payload(doc_pages),
         )
         call_started = time.perf_counter()
-        raw, usage = call_pack_driven_extraction(lm=lm, compiled=compiled)
-        call_ms = int((time.perf_counter() - call_started) * 1000)
-
-        from hive_agents.pack_driven_reader.compiler_bridge import parse_pack_driven_extraction_via_node
-
-        parsed = parse_pack_driven_extraction_via_node(
-            pack=proposal_pack,
-            raw=raw,
-            expected_source_document_id=source_document_id,
-        )
-        candidates: list[CandidateFact] = []
-        if parsed.ok and not parsed.needs_review:
-            candidates = pack_extraction_to_candidate_facts(
+        try:
+            extraction = call_pack_driven_extraction(lm=lm, compiled=compiled)
+        except Exception as exc:
+            call_ms = int((time.perf_counter() - call_started) * 1000)
+            return _model_error_document_result(
                 source_document_id=source_document_id,
-                record_instances=parsed.record_instances,
+                engine1_document_type_id=engine1_document_type_id,
+                correlation=correlation,
+                proposal_pack=proposal_pack,
+                error_code=exc.__class__.__name__,
+                error_message="Model call failed for document extraction.",
+                parse_errors=[f"document_extraction_failed:{exc.__class__.__name__}"],
+                execution_error=exc.__class__.__name__,
+                prompt_version=compiled.prompt_version,
+                pack_content_sha256=compiled.pack_content_sha256,
+                latency_ms=call_ms,
+            )
+        call_ms = int((time.perf_counter() - call_started) * 1000)
+        assistant_text = extraction.assistant_text
+        parsed_model_json = extraction.parsed_model_json
+        usage = extraction.usage
+
+        if not assistant_text.strip():
+            return _model_error_document_result(
+                source_document_id=source_document_id,
+                engine1_document_type_id=engine1_document_type_id,
+                correlation=correlation,
+                proposal_pack=proposal_pack,
+                error_code="EMPTY_MODEL_RESPONSE",
+                error_message="Model returned no assistant text.",
+                parse_errors=["empty_model_response"],
+                prompt_version=compiled.prompt_version,
+                pack_content_sha256=compiled.pack_content_sha256,
+                usage=usage,
+                latency_ms=call_ms,
             )
 
-        tools = VerifierBackedReaderTools(
-            doc_pages,
-            verifier_client,
-            verify_context,
-        )
-        for candidate in candidates:
-            if not candidate.evidence:
-                continue
-            tools.propose_fact(
-                CandidateFactDraft(
-                    subjectEntityId=candidate.subjectEntityId,
-                    construct=candidate.construct,
-                    value=candidate.value,
-                    modality=candidate.modality,
-                    evidence=candidate.evidence,
-                )
+        if parsed_model_json is None:
+            envelope = build_reader_document_extraction_envelope(
+                study_run_id=correlation.study_run_id,
+                attempt_id=correlation.attempt_id,
+                case_id=correlation.case_id,
+                user_id=correlation.user_id,
+                source_document_id=source_document_id,
+                domain_id=correlation.domain_id,
+                pack=proposal_pack,
+                pack_content_sha256=compiled.pack_content_sha256,
+                prompt_version=compiled.prompt_version,
+                model_provider=correlation.model_provider,
+                model_id=correlation.model_id,
+                status="INVALID_JSON",
+                raw_assistant_text=assistant_text,
+                parsed_model_json=None,
+                usage=usage,
+                latency_ms=call_ms,
+                error_code="INVALID_JSON",
+                error_message="Assistant response was not a JSON object.",
             )
-        accepted = list(tools.proposed_facts)
-        rejected = len(candidates) - len(accepted)
+            return PackDrivenDocumentResult(
+                source_document_id=source_document_id,
+                document_type_id=None,
+                engine1_document_type_id=engine1_document_type_id,
+                classification_needs_review=False,
+                parse_ok=False,
+                parse_errors=["invalid_json_response"],
+                model_call_ms=call_ms,
+                usage=usage,
+                prompt_version=compiled.prompt_version,
+                pack_content_sha256=compiled.pack_content_sha256,
+                document_extraction_envelope=envelope,
+            )
 
-        return PackDrivenDocumentResult(
+        captured_envelope = build_reader_document_extraction_envelope(
+            study_run_id=correlation.study_run_id,
+            attempt_id=correlation.attempt_id,
+            case_id=correlation.case_id,
+            user_id=correlation.user_id,
             source_document_id=source_document_id,
-            document_type_id=parsed.document_type_id,
-            engine1_document_type_id=engine1_document_type_id,
-            classification_needs_review=parsed.needs_review,
-            parse_ok=parsed.ok,
-            parse_errors=list(parsed.errors),
-            candidate_facts=candidates,
-            accepted_candidate_facts=accepted,
-            verifier_rejected_count=rejected,
-            model_call_ms=call_ms,
-            usage=usage,
-            prompt_version=compiled.prompt_version,
+            domain_id=correlation.domain_id,
+            pack=proposal_pack,
             pack_content_sha256=compiled.pack_content_sha256,
+            prompt_version=compiled.prompt_version,
+            model_provider=correlation.model_provider,
+            model_id=correlation.model_id,
+            status="SUCCEEDED",
+            raw_assistant_text=assistant_text,
+            parsed_model_json=parsed_model_json,
+            usage=usage,
+            latency_ms=call_ms,
         )
+
+        try:
+            from hive_agents.pack_driven_reader.compiler_bridge import parse_pack_driven_extraction_via_node
+
+            parsed = parse_pack_driven_extraction_via_node(
+                pack=proposal_pack,
+                raw=parsed_model_json,
+                expected_source_document_id=source_document_id,
+            )
+            candidates: list[CandidateFact] = []
+            if parsed.ok and not parsed.needs_review:
+                candidates = pack_extraction_to_candidate_facts(
+                    source_document_id=source_document_id,
+                    record_instances=parsed.record_instances,
+                )
+
+            tools = VerifierBackedReaderTools(
+                doc_pages,
+                verifier_client,
+                verify_context,
+            )
+            for candidate in candidates:
+                if not candidate.evidence:
+                    continue
+                tools.propose_fact(
+                    CandidateFactDraft(
+                        subjectEntityId=candidate.subjectEntityId,
+                        construct=candidate.construct,
+                        value=candidate.value,
+                        modality=candidate.modality,
+                        evidence=candidate.evidence,
+                    )
+                )
+            accepted = list(tools.proposed_facts)
+            rejected = len(candidates) - len(accepted)
+
+            return PackDrivenDocumentResult(
+                source_document_id=source_document_id,
+                document_type_id=parsed.document_type_id,
+                engine1_document_type_id=engine1_document_type_id,
+                classification_needs_review=parsed.needs_review,
+                parse_ok=parsed.ok,
+                parse_errors=list(parsed.errors),
+                candidate_facts=candidates,
+                accepted_candidate_facts=accepted,
+                verifier_rejected_count=rejected,
+                model_call_ms=call_ms,
+                usage=usage,
+                prompt_version=compiled.prompt_version,
+                pack_content_sha256=compiled.pack_content_sha256,
+                document_extraction_envelope=captured_envelope,
+            )
+        except Exception as exc:
+            return _post_extraction_processing_failure_result(
+                source_document_id=source_document_id,
+                engine1_document_type_id=engine1_document_type_id,
+                captured_envelope=captured_envelope,
+                exc=exc,
+                call_ms=call_ms,
+                usage=usage,
+                prompt_version=compiled.prompt_version,
+                pack_content_sha256=compiled.pack_content_sha256,
+            )
     except Exception as exc:
-        return PackDrivenDocumentResult(
+        prompt_version = compiled.prompt_version if compiled is not None else None
+        pack_hash = compiled.pack_content_sha256 if compiled is not None else None
+        return _model_error_document_result(
             source_document_id=source_document_id,
-            document_type_id=None,
             engine1_document_type_id=engine1_document_type_id,
-            classification_needs_review=False,
-            parse_ok=False,
+            correlation=correlation,
+            proposal_pack=proposal_pack,
+            error_code=exc.__class__.__name__,
+            error_message="Document extraction pipeline failed.",
             parse_errors=[f"document_extraction_failed:{exc.__class__.__name__}"],
             execution_error=exc.__class__.__name__,
+            prompt_version=prompt_version,
+            pack_content_sha256=pack_hash,
         )
 
 
 def _fan_in_document_results(
     document_order: list[str],
     results_by_id: dict[str, PackDrivenDocumentResult],
+    *,
+    correlation: PackDrivenRunCorrelation,
+    proposal_pack: Any,
+    engine1_type_by_id: dict[str, str | None],
 ) -> list[PackDrivenDocumentResult]:
     per_document: list[PackDrivenDocumentResult] = []
     for source_document_id in document_order:
@@ -181,12 +389,13 @@ def _fan_in_document_results(
             per_document.append(existing)
             continue
         per_document.append(
-            PackDrivenDocumentResult(
+            _model_error_document_result(
                 source_document_id=source_document_id,
-                document_type_id=None,
-                engine1_document_type_id=None,
-                classification_needs_review=False,
-                parse_ok=False,
+                engine1_document_type_id=engine1_type_by_id.get(source_document_id),
+                correlation=correlation,
+                proposal_pack=proposal_pack,
+                error_code="DOCUMENT_TASK_MISSING_FROM_FAN_IN",
+                error_message="Document task did not complete in parallel fan-in.",
                 parse_errors=["document_task_missing_from_fan_in"],
             )
         )
@@ -201,7 +410,8 @@ def run_pack_driven_reader(
     verify_context: ReaderVerifyContext,
     engine1_reader_context_json: str,
     settings: Any,
-) -> tuple[ReaderRunResult, list[PackDrivenDocumentResult], dict[str, Any]]:
+    correlation: PackDrivenRunCorrelation,
+) -> tuple[ReaderRunResult, list[PackDrivenDocumentResult], dict[str, Any], list[dict[str, Any]]]:
     if not engine1_reader_context_json.strip():
         raise Engine1ReaderContextError(
             "PACK_DRIVEN_ENGINE1_CONTEXT_REQUIRED",
@@ -238,17 +448,19 @@ def run_pack_driven_reader(
                     proposal_pack=proposal_pack,
                     case_manifest=case_manifest,
                     engine1_document_type_id=engine1_type_by_id.get(source_document_id),
+                    correlation=correlation,
                     lm=lm,
                     verifier_client=verifier_client,
                     verify_context=verify_context,
                 )
             except Exception as exc:
-                result = PackDrivenDocumentResult(
+                result = _model_error_document_result(
                     source_document_id=source_document_id,
-                    document_type_id=None,
                     engine1_document_type_id=engine1_type_by_id.get(source_document_id),
-                    classification_needs_review=False,
-                    parse_ok=False,
+                    correlation=correlation,
+                    proposal_pack=proposal_pack,
+                    error_code=exc.__class__.__name__,
+                    error_message="Document extraction task failed.",
                     parse_errors=[f"document_task_failed:{exc.__class__.__name__}"],
                     execution_error=exc.__class__.__name__,
                 )
@@ -262,7 +474,18 @@ def run_pack_driven_reader(
 
     asyncio.run(_run_all())
 
-    per_document = _fan_in_document_results(document_order, results_by_id)
+    per_document = _fan_in_document_results(
+        document_order,
+        results_by_id,
+        correlation=correlation,
+        proposal_pack=proposal_pack,
+        engine1_type_by_id=engine1_type_by_id,
+    )
+    document_extractions = [
+        row.document_extraction_envelope
+        for row in per_document
+        if row.document_extraction_envelope is not None
+    ]
     all_candidates: list[CandidateFact] = []
     all_accepted: list[CandidateFact] = []
     prompt_version: str | None = None
@@ -310,6 +533,11 @@ def run_pack_driven_reader(
                 "parseOk": row.parse_ok,
                 "parseErrorCount": len(row.parse_errors),
                 "executionError": row.execution_error,
+                "extractionStatus": (
+                    row.document_extraction_envelope.get("status")
+                    if row.document_extraction_envelope is not None
+                    else None
+                ),
                 "candidateFactCount": len(row.candidate_facts),
                 "acceptedFactCount": len(row.accepted_candidate_facts),
                 "verifierRejectedCount": row.verifier_rejected_count,
@@ -334,7 +562,15 @@ def run_pack_driven_reader(
         model_usage_cache_write_input_tokens=usage_totals.get("cache_write_input_tokens") or None,
         execution_counts=execution_counts,
     )
-    return result, per_document, experiment_audit
+    return result, per_document, experiment_audit, document_extractions
+
+
+def document_extractions_to_wire(rows: list[PackDrivenDocumentResult]) -> list[dict[str, Any]]:
+    wire: list[dict[str, Any]] = []
+    for row in rows:
+        if row.document_extraction_envelope is not None:
+            wire.append(row.document_extraction_envelope)
+    return wire
 
 
 def per_document_results_to_wire(rows: list[PackDrivenDocumentResult]) -> list[dict[str, Any]]:

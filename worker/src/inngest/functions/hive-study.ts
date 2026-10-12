@@ -9,8 +9,9 @@ import {
   isStudyNonRetriableErrorCode,
   markStudyRunWorkerFailed,
   resolveStudyProcessingMode,
+  hasCompletedPackDrivenRawExtraction,
+  runStudyWorkerCompleteRawExtractionStep,
   runStudyWorkerCompleteStep,
-  runStudyWorkerConsolidateFromReaderStep,
   runStudyWorkerLoadContext,
   runStudyWorkerProposeStep,
   runStudyWorkerProjectionsStep,
@@ -46,12 +47,9 @@ import type { WorkerEnv } from "../../env.js";
 import type { ShadowStudyStepRunner } from "../../study/run-study-shadow-steps.js";
 import { createReaderHttpClient } from "../../study/create-reader-http-client.js";
 import {
-  PackDrivenReaderNeedsReviewError,
   PackDrivenReaderProductionError,
   runProductionPackDrivenReader,
 } from "../../study/run-production-pack-driven-reader.js";
-import { patchStudyArtifactForReaderNeedsReview } from "../../study/patch-pack-driven-validation-needs-review.js";
-import { ReaderAcceptedFactsStorage } from "../../study/reader-accepted-facts-storage.js";
 
 const GLOBAL_STUDY_MODEL_CONCURRENCY = 3;
 
@@ -63,7 +61,7 @@ type StudyWorkerStepId =
   | "discover-ensure"
   | "load-context"
   | "reader"
-  | "consolidate"
+  | "complete-raw-extraction"
   | "propose"
   | "validate"
   | "projections"
@@ -299,9 +297,12 @@ async function runHiveStudyHandler({
 
   const artifactBeforePropose = await deps.studyArtifactRepo?.getByStudyRunId(data.studyRunId);
   const validationComplete = hasCompletedStudyValidation(artifactBeforePropose);
+  const rawExtractionComplete = hasCompletedPackDrivenRawExtraction(
+    artifactBeforePropose?.rawProposalJson,
+  );
 
-  if (processingMode === "pack_driven_v1" && !validationComplete) {
-    const readerStep = (await step.run("reader", async () =>
+  if (processingMode === "pack_driven_v1" && !rawExtractionComplete) {
+    const readerResult = (await step.run("reader", async () =>
       runTimedStep("reader", () => "ok", async () => {
         const context = await deps.contextRepo.getByStudyRunId(data.studyRunId);
         if (!context) {
@@ -323,7 +324,7 @@ async function runHiveStudyHandler({
           }));
         const documentPagesBucket = env.HIVE_DOCUMENT_PAGES_BUCKET?.trim() || "document-pages";
         try {
-          await runProductionPackDrivenReader({
+          return await runProductionPackDrivenReader({
             gateway,
             documentPagesBucket,
             context,
@@ -333,47 +334,43 @@ async function runHiveStudyHandler({
             readerClient: createReaderHttpClient(workerEnvStrings(env)),
           });
         } catch (error) {
-          if (error instanceof PackDrivenReaderNeedsReviewError) {
-            return {
-              ok: true,
-              needsReview: true,
-              affectedDocumentIds: [...error.affectedDocumentIds],
-            };
-          }
           if (error instanceof PackDrivenReaderProductionError) {
             throw new NonRetriableError(error.errorCode);
           }
           throw error;
         }
-        return { ok: true, needsReview: false, affectedDocumentIds: [] as string[] };
       }),
-    )) as { needsReview?: boolean; affectedDocumentIds?: string[] };
+    )) as Awaited<ReturnType<typeof runProductionPackDrivenReader>>;
 
-    await step.run("consolidate", async () =>
-      runTimedStep("consolidate", () => "ok", async () => {
-        const documentPagesBucket = env.HIVE_DOCUMENT_PAGES_BUCKET?.trim() || "document-pages";
-        const storage = new ReaderAcceptedFactsStorage(gateway, documentPagesBucket);
-        const raw = await storage.load(data.userId, data.studyRunId);
-        if (!raw) {
-          throw new Error("READER_ACCEPTED_FACTS_MISSING");
-        }
-        const consolidated = await runStudyWorkerConsolidateFromReaderStep(deps, data, {
-          acceptedFacts: raw,
+    const completed = await step.run("complete-raw-extraction", async () =>
+      runTimedStep("complete-raw-extraction", () => "ok", async () => {
+        return runStudyWorkerCompleteRawExtractionStep(deps, data, {
+          attemptId: readerResult.attemptId,
+          rawExtractionOutcome: readerResult.rawExtractionOutcome,
+          succeededDocumentIds: readerResult.succeededDocumentIds,
+          failedDocumentIds: readerResult.failedDocumentIds,
+          documentExtractionAttemptManifestPath: readerResult.documentExtractionAttemptManifestPath,
+          documentExtractionStudyRunManifestPath: readerResult.documentExtractionStudyRunManifestPath,
+          audit: readerResult.audit,
+          acceptedVerifierFactCount: readerResult.acceptedVerifierFactCount,
+          promptSha256: readerResult.promptSha256,
+          observedReaderIdentity: readerResult.observedReaderIdentity,
+          readerPreflight: readerResult.readerPreflight,
         });
-        const reviewDocumentIds = readerStep.affectedDocumentIds ?? [];
-        if (readerStep.needsReview && reviewDocumentIds.length > 0) {
-          const artifact = await deps.studyArtifactRepo?.getByStudyRunId(data.studyRunId);
-          const patched = artifact
-            ? patchStudyArtifactForReaderNeedsReview(artifact, reviewDocumentIds)
-            : null;
-          if (patched) {
-            await deps.studyArtifactRepo?.saveValidated(patched);
-          }
-        }
-        return consolidated;
       }),
     );
-  } else if (!validationComplete) {
+
+    return { completed };
+  }
+
+  if (processingMode === "pack_driven_v1" && rawExtractionComplete) {
+    logSkippedStep("reader");
+    logSkippedStep("complete-raw-extraction");
+    const terminalRun = await deps.runRepo.getByStudyRunId(data.studyRunId);
+    return { completed: { status: terminalRun?.status ?? "SUCCEEDED" } };
+  }
+
+  if (!validationComplete) {
     await step.run("propose", async () =>
       runTimedStep(
         "propose",

@@ -4,6 +4,7 @@ import {
   evaluatePackDrivenReaderDocumentOutcomes,
   PackDrivenReaderProductionError,
 } from "./pack-driven-reader-document-outcomes.js";
+import { evaluatePackDrivenRawExtractionOutcome } from "./pack-driven-reader-document-outcomes.js";
 
 describe("evaluatePackDrivenReaderDocumentOutcomes", () => {
   it("fails when a registered document is missing from perDocumentResults", () => {
@@ -42,6 +43,31 @@ describe("evaluatePackDrivenReaderDocumentOutcomes", () => {
       ],
     });
     expect(outcome.kind).toBe("failed");
+  });
+
+  it("raw extraction succeeds for eight persisted SUCCEEDED envelopes", () => {
+    const ids = ["d1", "d2", "d3", "d4", "d5", "d6", "d7", "d8"];
+    const outcome = evaluatePackDrivenRawExtractionOutcome({
+      expectedSourceDocumentIds: ids,
+      documents: ids.map((sourceDocumentId) => ({ sourceDocumentId, status: "SUCCEEDED" as const })),
+    });
+    expect(outcome.kind).toBe("succeeded");
+  });
+
+  it("raw extraction partial failure keeps seven siblings successful", () => {
+    const ids = ["d1", "d2", "d3", "d4", "d5", "d6", "d7", "d8"];
+    const outcome = evaluatePackDrivenRawExtractionOutcome({
+      expectedSourceDocumentIds: ids,
+      documents: ids.map((sourceDocumentId, index) => ({
+        sourceDocumentId,
+        status: index === 4 ? ("MODEL_ERROR" as const) : ("SUCCEEDED" as const),
+      })),
+    });
+    expect(outcome.kind).toBe("partial_failure");
+    if (outcome.kind === "partial_failure") {
+      expect(outcome.succeededDocumentIds).toHaveLength(7);
+      expect(outcome.failedDocumentIds).toEqual(["d5"]);
+    }
   });
 
   it("PackDrivenReaderProductionError preserves affected document ids", () => {

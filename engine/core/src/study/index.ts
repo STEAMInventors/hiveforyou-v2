@@ -2,6 +2,7 @@ export * from "./engine";
 export * from "./event-repository";
 export * from "./fingerprint";
 export * from "./agentic-reader-qualification";
+export * from "./reader-engine-identity";
 export * from "./freeze-context";
 export * from "./readiness";
 export * from "./repositories";
@@ -25,6 +26,23 @@ export * from "./intake-study-context";
 export * from "./discover-structure-fingerprint";
 export * from "./load-proposal-domain-pack";
 export * from "./consolidate-verified-reader-facts";
+export {
+  STUDY_RAW_EXTRACTION_ARTIFACT_SCHEMA_VERSION,
+  buildStudyRawExtractionValidationResult,
+  hasCompletedPackDrivenRawExtraction,
+  isStudyRawExtractionArtifact,
+  type StudyRawExtractionArtifact,
+  type StudyRawExtractionOutcome,
+} from "./study-artifact-persistence";
+export {
+  assertReaderDocumentExtractionAttemptManifestObjectKey,
+  assertReaderDocumentExtractionEnvelopeObjectKey,
+  buildRawExtractionInspectorBundle,
+  extractInspectorRecordsFromParsedModel,
+  orderSourceDocumentIdsForEngine1,
+  type RawExtractionInspectorBundle,
+  type RawExtractionInspectorDocument,
+} from "./raw-extraction-inspector";
 export * from "./engine-v3";
 export * from "./validate-proposal-v4";
 export * from "./openai-engine-v4";

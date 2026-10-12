@@ -234,3 +234,100 @@ def test_fact_has_usable_evidence() -> None:
     )
     assert fact_has_usable_evidence(good) is True
     assert fact_has_usable_evidence(bad) is False
+
+
+def test_trace_events_exclude_raw_document_contents(monkeypatch: pytest.MonkeyPatch) -> None:
+    import logging
+
+    from hive_agents.trace_client import ReaderTraceError
+
+    sensitive_page_text = "SECRET-IEP-QUOTE-ARCH02-xyzzy"
+    raw_model_json = {"documentTypeId": "iep.plan", "recordInstances": []}
+
+    monkeypatch.setenv("HIVE_READER_MODE", "pack_driven")
+    monkeypatch.setenv("HIVE_AGENTS_ALLOW_NONPERSISTENT_AUDIT", "0")
+    monkeypatch.setenv("HIVE_AGENTS_SERVICE_TOKEN", "token")
+    monkeypatch.setenv("HIVE_VERIFIER_TOKEN", "verifier")
+    monkeypatch.setenv("HIVE_ANTHROPIC_API_KEY", "test-key")
+    get_settings.cache_clear()
+
+    emitted: list[tuple[str, dict[str, Any]]] = []
+
+    class FakeContext:
+        model_id = "claude-test"
+
+    class FakeSession:
+        context = FakeContext()
+
+        def emit(self, event_type: str, payload: dict[str, Any] | None = None) -> None:
+            emitted.append((event_type, payload or {}))
+
+        def flush(self) -> None:
+            raise ReaderTraceError("trace ingest failed")
+
+    def fake_run_pack_driven_reader(**_kwargs: object) -> tuple[ReaderRunResult, list, dict, list]:
+        return (
+            ReaderRunResult(candidate_facts=[], accepted_candidate_facts=[]),
+            [],
+            {"readerMode": "pack_driven"},
+            [
+                {
+                    "sourceDocumentId": "doc-a",
+                    "status": "SUCCEEDED",
+                    "rawAssistantText": json.dumps(raw_model_json),
+                }
+            ],
+        )
+
+    monkeypatch.setattr("hive_agents.app.run_pack_driven_reader", fake_run_pack_driven_reader)
+    monkeypatch.setattr("hive_agents.app.create_dspy_lm", lambda: MagicMock(spec=dspy.LM))
+    monkeypatch.setattr("hive_agents.app._require_verifier_client", lambda: MagicMock())
+    monkeypatch.setattr("hive_agents.app._build_trace_session", lambda *_args, **_kwargs: FakeSession())
+
+    request = StudyReaderRequest.model_validate(
+        {
+            "caseId": "case-1",
+            "userId": "user-1",
+            "domainId": "iep",
+            "studyRunId": "run-1",
+            "attemptId": "attempt-1",
+            "readerMode": "pack_driven",
+            "engine1ReaderContextJson": json.dumps(
+                {
+                    "provenance": "test_only_minimal",
+                    "resolvedDomainId": "iep",
+                    "domainPackId": "hive.domain.iep",
+                    "domainPackVersion": "0.0.0-scaffold",
+                    "logicalDocuments": [
+                        {
+                            "sourceDocumentId": "doc-a",
+                            "filename": "plan.pdf",
+                            "pageCount": 1,
+                            "documentType": "iep.plan",
+                        }
+                    ],
+                }
+            ),
+            "documents": [
+                {
+                    "sourceDocumentId": "doc-a",
+                    "pages": [
+                        {
+                            "pageNumber": 1,
+                            "words": [{"seq": 0, "text": sensitive_page_text}],
+                        }
+                    ],
+                }
+            ],
+        }
+    )
+
+    with patch("hive_agents.app.logger") as mock_logger:
+        execute_study_reader(request)
+        log_args = " ".join(str(call) for call in mock_logger.warning.call_args_list)
+
+    trace_blob = json.dumps(emitted)
+    assert sensitive_page_text not in trace_blob
+    assert json.dumps(raw_model_json) not in trace_blob
+    assert sensitive_page_text not in log_args
+    assert json.dumps(raw_model_json) not in log_args

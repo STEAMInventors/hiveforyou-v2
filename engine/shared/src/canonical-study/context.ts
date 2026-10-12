@@ -18,17 +18,28 @@ export type DomainPackVocabularySnapshot = {
 
 export type StudyProcessingMode = "canonical_openai_v4" | "pack_driven_v1";
 
+export type ReaderPreflightSnapshot = {
+  modelProvider: string;
+  modelName: string;
+  observedAt: string;
+  source: "hive-agents/health";
+};
+
 export type StudyProcessingPolicy = {
   /** User/analysis intent must never alter factual acceptance rules. */
   intentAffectsFacts: false;
   processingMode?: StudyProcessingMode;
   providerId: string;
-  providerMode: "fixture" | "openai" | "unconfigured";
+  providerMode: "fixture" | "openai" | "unconfigured" | "reader_delegated";
   promptId?: string;
   promptVersion?: string;
   promptSha256?: string;
   /** Pack-driven reader proposal pack content hash when processingMode is pack_driven_v1. */
   proposalPackContentSha256?: string;
+  /** Domain-agnostic Reader prompt compiler version when processingMode is pack_driven_v1. */
+  readerCompilerVersion?: string;
+  /** Non-authoritative hive-agents /health snapshot captured at load-context. */
+  readerPreflight?: ReaderPreflightSnapshot;
   /** Discover structure map material fingerprint when bound from Discover. */
   discoverStructureFingerprint?: string;
 };

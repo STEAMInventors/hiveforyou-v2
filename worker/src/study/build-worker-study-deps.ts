@@ -1,6 +1,7 @@
 import "@hiveforyou/domain-packs";
 import {
   createCanonicalStudyEngineFromEnv,
+  fetchReaderPreflightFromAgentsHealth,
   enrichCaseViewWithValidatedStory,
   intakePackExecutionToStructureMap,
   loadCaseCustomerContextSnapshot,
@@ -153,6 +154,14 @@ export function buildWorkerStudyDeps(
     intelligenceRepo: new SupabaseCaseIntelligenceRepository(gateway, userId),
     projectionRepo: new SupabaseCaseProjectionRepository(gateway, userId),
     studyArtifactRepo: new SupabaseStudyArtifactRepository(gateway, userId),
+    resolveReaderPreflight: async () => {
+      const host = env.HIVE_AGENTS_HOST?.trim() || "127.0.0.1";
+      const port =
+        env.HIVE_AGENTS_PORT?.trim() ||
+        (env as { HIVE_AGENTS_BIND_PORT?: string }).HIVE_AGENTS_BIND_PORT?.trim() ||
+        "4320";
+      return fetchReaderPreflightFromAgentsHealth(`http://${host}:${port}`);
+    },
     domainLearning: createSupabaseDomainLearningPort(gateway, gateway, userId),
     loadStructureMapForDiscoverRun: async (discoverRunId, _caseId) => {
       const { WorkerDiscoverArtifactRepository } = await import(

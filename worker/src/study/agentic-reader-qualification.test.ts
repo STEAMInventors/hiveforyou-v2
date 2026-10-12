@@ -28,6 +28,14 @@ import {
 import { loadTrustedDocumentPageBundle } from "./load-trusted-document-pages.js";
 import { ReaderHttpInvocationError } from "./reader-qualification-pipeline-error.js";
 import { runAgenticReaderQualification } from "./run-agentic-reader-qualification.js";
+import {
+  PackDrivenReaderAuditNotPersistedError,
+  runProductionPackDrivenReader,
+} from "./run-production-pack-driven-reader.js";
+import { READER_DOCUMENT_EXTRACTION_SCHEMA_VERSION } from "@hiveforyou/shared/reader-document-extraction";
+import * as engine1 from "./engine1-reader-context.js";
+import * as loadPages from "./load-trusted-document-pages.js";
+import * as coreStudy from "@hiveforyou/core/study";
 
 const READER_QUALIFICATION_MODEL_ENV: Record<string, string> = {
   MODEL_PROVIDER: "openai",
@@ -1021,5 +1029,248 @@ describe("pack-driven Engine 1 boundary", () => {
     }
     expect(outcome.engine1Source).toBe("intake_pack_execution");
     expect(outcome.structureMap.provenance?.providerId).toBe("intake-domain-pack");
+  });
+});
+
+describe("runProductionPackDrivenReader ARCH-03 raw extraction", () => {
+  const EIGHT = ["d1", "d2", "d3", "d4", "d5", "d6", "d7", "d8"] as const;
+
+  function productionGateway(): HiveGateway {
+    const objects = new Map<string, Uint8Array>();
+    return {
+      selectWhere: vi.fn(async () => []),
+      uploadObject: vi.fn(async (_bucket: string, path: string, bytes: Uint8Array) => {
+        objects.set(path, bytes);
+      }),
+      downloadObject: vi.fn(async (_bucket: string, path: string) => {
+        const value = objects.get(path);
+        if (!value) {
+          throw new Error("NOT_FOUND");
+        }
+        return value;
+      }),
+    } as unknown as HiveGateway;
+  }
+
+  function extractionEnvelope(
+    sourceDocumentId: string,
+    attemptId: string,
+    status: "SUCCEEDED" | "MODEL_ERROR",
+  ) {
+    return {
+      schemaVersion: READER_DOCUMENT_EXTRACTION_SCHEMA_VERSION,
+      studyRunId: "study-1",
+      attemptId,
+      caseId: "case-1",
+      userId: USER_A,
+      sourceDocumentId,
+      domainId: "iep",
+      packId: "iep",
+      packVersion: "0.3.0-proposed",
+      packContentSha256: "a".repeat(64),
+      promptVersion: "hive-pack-driven-reader/0.2.0",
+      modelProvider: "anthropic",
+      modelId: "claude-test",
+      status,
+      occurredAt: "2026-10-12T12:00:00Z",
+      rawAssistantText: status === "SUCCEEDED" ? '{"documentTypeId":"iep.plan"}' : "err",
+      parsedModelJson: status === "SUCCEEDED" ? { documentTypeId: "iep.plan" } : undefined,
+    };
+  }
+
+  it("succeeds for eight simulated documents with zero accepted verifier facts", async () => {
+    vi.spyOn(loadPages, "loadTrustedDocumentPageBundle").mockResolvedValue(
+      EIGHT.map((sourceDocumentId) => ({
+        sourceDocumentId,
+        documentPages: { pages: [{ pageNumber: 1, words: [{ seq: 0, text: "x" }] }] },
+      })) as never,
+    );
+    vi.spyOn(engine1, "resolveEngine1ReaderContext").mockResolvedValue({
+      provenance: "persisted_discover_structure_map",
+      resolvedDomainId: "iep",
+      domainPackId: "hive.domain.iep",
+      domainPackVersion: "0.0.0-scaffold",
+      logicalDocuments: EIGHT.map((sourceDocumentId) => ({
+        sourceDocumentId,
+        filename: `${sourceDocumentId}.pdf`,
+        pageCount: 1,
+        documentTypeId: "iep.plan",
+      })),
+    } as never);
+    vi.spyOn(engine1, "serializeEngine1ReaderContext").mockReturnValue("{}");
+    vi.spyOn(coreStudy, "loadAgenticReaderQualificationPromptMetadata").mockReturnValue({
+      promptSha256: "abc".repeat(21).slice(0, 64),
+    } as never);
+
+    const readerClient = vi.fn(async (request) => ({
+      schemaVersion: "study-reader/1" as const,
+      caseId: "case-1",
+      domainId: "iep",
+      packVersion: "0.0.0-scaffold",
+      candidateFacts: [],
+      acceptedCandidateFacts: [],
+      reasoningSteps: 0,
+      toolCalls: 0,
+      documentExtractions: EIGHT.map((sourceDocumentId) =>
+        extractionEnvelope(sourceDocumentId, request.attemptId, "SUCCEEDED"),
+      ),
+      audit: {
+        studyRunId: request.studyRunId,
+        attemptId: request.attemptId,
+        persisted: true,
+        status: "persisted",
+      },
+    }));
+
+    const result = await runProductionPackDrivenReader({
+      gateway: productionGateway(),
+      documentPagesBucket: "document-pages",
+      context: {
+        caseId: "case-1",
+        studyRunId: "study-1",
+        domainId: "iep",
+        domainPackId: "hive.domain.iep",
+        domainPackVersion: "0.0.0-scaffold",
+      },
+      userId: USER_A,
+      registeredDocuments: EIGHT.map((id) => ({ id, sha256: "a".repeat(64) })),
+      readerClient,
+      attemptId: "attempt-eight",
+    });
+
+    expect(result.rawExtractionOutcome).toBe("succeeded");
+    expect(result.acceptedVerifierFactCount).toBe(0);
+    expect(readerClient.mock.calls[0]?.[0]?.readerMode).toBe("pack_driven");
+  });
+
+  it("returns partial failure without dropping sibling extractions", async () => {
+    vi.spyOn(loadPages, "loadTrustedDocumentPageBundle").mockResolvedValue(
+      EIGHT.map((sourceDocumentId) => ({
+        sourceDocumentId,
+        documentPages: { pages: [{ pageNumber: 1, words: [{ seq: 0, text: "x" }] }] },
+      })) as never,
+    );
+    vi.spyOn(engine1, "resolveEngine1ReaderContext").mockResolvedValue({
+      provenance: "persisted_discover_structure_map",
+      resolvedDomainId: "iep",
+      domainPackId: "hive.domain.iep",
+      domainPackVersion: "0.0.0-scaffold",
+      logicalDocuments: EIGHT.map((sourceDocumentId) => ({
+        sourceDocumentId,
+        filename: `${sourceDocumentId}.pdf`,
+        pageCount: 1,
+        documentTypeId: "iep.plan",
+      })),
+    } as never);
+    vi.spyOn(engine1, "serializeEngine1ReaderContext").mockReturnValue("{}");
+    vi.spyOn(coreStudy, "loadAgenticReaderQualificationPromptMetadata").mockReturnValue({
+      promptSha256: "abc".repeat(21).slice(0, 64),
+    } as never);
+
+    const readerClient = vi.fn(async (request) => ({
+      schemaVersion: "study-reader/1" as const,
+      caseId: "case-1",
+      domainId: "iep",
+      packVersion: "0.0.0-scaffold",
+      candidateFacts: [],
+      acceptedCandidateFacts: [],
+      reasoningSteps: 0,
+      toolCalls: 0,
+      documentExtractions: EIGHT.map((sourceDocumentId, index) =>
+        extractionEnvelope(
+          sourceDocumentId,
+          request.attemptId,
+          index === 4 ? "MODEL_ERROR" : "SUCCEEDED",
+        ),
+      ),
+      audit: {
+        studyRunId: request.studyRunId,
+        attemptId: request.attemptId,
+        persisted: true,
+        status: "persisted",
+      },
+    }));
+
+    const result = await runProductionPackDrivenReader({
+      gateway: productionGateway(),
+      documentPagesBucket: "document-pages",
+      context: {
+        caseId: "case-1",
+        studyRunId: "study-1",
+        domainId: "iep",
+        domainPackId: "hive.domain.iep",
+        domainPackVersion: "0.0.0-scaffold",
+      },
+      userId: USER_A,
+      registeredDocuments: EIGHT.map((id) => ({ id, sha256: "a".repeat(64) })),
+      readerClient,
+    });
+
+    expect(result.rawExtractionOutcome).toBe("partial_failure");
+    expect(result.failedDocumentIds).toEqual(["d5"]);
+    expect(result.succeededDocumentIds).toHaveLength(7);
+  });
+
+  it("persists extractions before surfacing audit failure", async () => {
+    vi.spyOn(loadPages, "loadTrustedDocumentPageBundle").mockResolvedValue([
+      {
+        sourceDocumentId: "doc-a",
+        documentPages: { pages: [{ pageNumber: 1, words: [{ seq: 0, text: "x" }] }] },
+      },
+    ] as never);
+    vi.spyOn(engine1, "resolveEngine1ReaderContext").mockResolvedValue({
+      provenance: "persisted_discover_structure_map",
+      resolvedDomainId: "iep",
+      domainPackId: "hive.domain.iep",
+      domainPackVersion: "0.0.0-scaffold",
+      logicalDocuments: [
+        {
+          sourceDocumentId: "doc-a",
+          filename: "plan.pdf",
+          pageCount: 1,
+          documentTypeId: "iep.plan",
+        },
+      ],
+    } as never);
+    vi.spyOn(engine1, "serializeEngine1ReaderContext").mockReturnValue("{}");
+    vi.spyOn(coreStudy, "loadAgenticReaderQualificationPromptMetadata").mockReturnValue({
+      promptSha256: "abc".repeat(21).slice(0, 64),
+    } as never);
+
+    const readerClient = vi.fn(async (request) => ({
+      schemaVersion: "study-reader/1" as const,
+      caseId: "case-1",
+      domainId: "iep",
+      packVersion: "0.0.0-scaffold",
+      candidateFacts: [],
+      acceptedCandidateFacts: [],
+      reasoningSteps: 0,
+      toolCalls: 0,
+      documentExtractions: [extractionEnvelope("doc-a", request.attemptId, "SUCCEEDED")],
+      audit: {
+        studyRunId: request.studyRunId,
+        attemptId: request.attemptId,
+        persisted: false,
+        status: "failed",
+        errorCode: "TRACE_PERSIST_FAILED",
+      },
+    }));
+
+    await expect(
+      runProductionPackDrivenReader({
+        gateway: productionGateway(),
+        documentPagesBucket: "document-pages",
+        context: {
+          caseId: "case-1",
+          studyRunId: "study-1",
+          domainId: "iep",
+          domainPackId: "hive.domain.iep",
+          domainPackVersion: "0.0.0-scaffold",
+        },
+        userId: USER_A,
+        registeredDocuments: [{ id: "doc-a", sha256: "a".repeat(64) }],
+        readerClient,
+      }),
+    ).rejects.toBeInstanceOf(PackDrivenReaderAuditNotPersistedError);
   });
 });

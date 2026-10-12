@@ -1,6 +1,12 @@
 import type { CanonicalStudyValidationResultV3 } from "@hiveforyou/shared/case-intelligence/3/validation-result";
 
 import { hashCanonicalJson } from "./fingerprint";
+import type {
+  ObservedReaderIdentitySummary,
+  ReaderPreflightSnapshot,
+} from "./reader-engine-identity";
+
+export type { ObservedReaderIdentitySummary, ReaderPreflightSnapshot } from "./reader-engine-identity";
 
 export type StudyArtifactSaveInput = {
   rawProposalJson: unknown | null;
@@ -157,6 +163,95 @@ export function decideStudyArtifactSave(
     existingValidationFp,
     incomingValidationFp,
   );
+}
+
+export const STUDY_RAW_EXTRACTION_ARTIFACT_SCHEMA_VERSION = "study-raw-extraction/1" as const;
+
+export type StudyRawExtractionOutcome = "succeeded" | "partial_failure" | "failed";
+
+export type StudyRawExtractionArtifact = {
+  schemaVersion: typeof STUDY_RAW_EXTRACTION_ARTIFACT_SCHEMA_VERSION;
+  studyRunId: string;
+  caseId: string;
+  attemptId: string;
+  outcome: StudyRawExtractionOutcome;
+  succeededDocumentIds: string[];
+  failedDocumentIds: string[];
+  documentExtractionAttemptManifestPath?: string;
+  documentExtractionStudyRunManifestPath?: string;
+  audit: {
+    persisted: boolean;
+    status: string;
+    errorCode?: string;
+  };
+  acceptedVerifierFactCount: number;
+  observedReaderIdentity?: ObservedReaderIdentitySummary;
+  readerPreflight?: ReaderPreflightSnapshot;
+  createdAt: string;
+};
+
+export function isStudyRawExtractionArtifact(raw: unknown): raw is StudyRawExtractionArtifact {
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) {
+    return false;
+  }
+  return (raw as Record<string, unknown>).schemaVersion === STUDY_RAW_EXTRACTION_ARTIFACT_SCHEMA_VERSION;
+}
+
+export function hasCompletedPackDrivenRawExtraction(rawProposalJson: unknown | null | undefined): boolean {
+  return isStudyRawExtractionArtifact(rawProposalJson);
+}
+
+export function buildStudyRawExtractionValidationResult(input: {
+  outcome: StudyRawExtractionOutcome;
+  failedDocumentIds: readonly string[];
+}): CanonicalStudyValidationResultV3 {
+  const emptyAccepted = {
+    entities: [],
+    claims: [],
+    conflicts: [],
+    missingInformation: [],
+  };
+  if (input.outcome === "succeeded") {
+    return {
+      status: "SUCCEEDED",
+      accepted: emptyAccepted,
+      rejected: [],
+      warnings: [
+        {
+          severity: "warning",
+          code: "PACK_DRIVEN_RAW_EXTRACTION_COMPLETE",
+          message: "Pack-driven raw extraction persisted for all logical documents.",
+          requiresHumanAdjudication: false,
+        },
+      ],
+      unresolved: [],
+      validationErrors: [],
+      provenanceErrors: [],
+      integrityErrors: [],
+    };
+  }
+
+  const partial = input.outcome === "partial_failure";
+  return {
+    status: "FAILED",
+    accepted: emptyAccepted,
+    rejected: [],
+    warnings: [],
+    unresolved: [],
+    validationErrors: [
+      {
+        severity: "fatal",
+        code: partial
+          ? "PACK_DRIVEN_RAW_EXTRACTION_PARTIAL_FAILURE"
+          : "PACK_DRIVEN_RAW_EXTRACTION_FAILED",
+        message: partial
+          ? `Raw extraction partial failure; failed document(s): ${input.failedDocumentIds.join(", ")}`
+          : `Raw extraction failed for all document(s): ${input.failedDocumentIds.join(", ")}`,
+      },
+    ],
+    provenanceErrors: [],
+    integrityErrors: [],
+  };
 }
 
 export function isStudyArtifactDuplicateKeyError(error: unknown): boolean {

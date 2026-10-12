@@ -10,7 +10,11 @@ import {
   resolveStudyProcessingMode,
   studyEngineFingerprintFromDeps,
 } from "./freeze-context";
-import { loadPackDrivenProposalPackContentSha256 } from "./agentic-reader-qualification.js";
+import {
+  buildPackDrivenReaderIntentFingerprint,
+  PACK_DRIVEN_READER_ORCHESTRATION_ID,
+  READER_DELEGATED_PROVIDER_MODE,
+} from "./reader-engine-identity.js";
 import { fingerprintAnswerSnapshot } from "./fingerprint";
 import { persistStudyRun } from "./persist-study-run";
 import { validateStudyReadiness } from "./readiness";
@@ -79,14 +83,11 @@ export async function queueCanonicalStudyRun(
 
   function engineFingerprintForRequest(): ReturnType<typeof studyEngineFingerprintFromDeps> {
     if (processingMode === "pack_driven_v1") {
-      const proposalSha = loadPackDrivenProposalPackContentSha256(
-        typeof process !== "undefined" ? (process.env as Record<string, string | undefined>) : {},
-      );
-      return studyEngineFingerprintFromDeps({
-        providerMode: deps.providerMode,
-        providerId: deps.providerId,
-        modelId: deps.modelId,
-        prompt: { version: "pack_driven_v1", sha256: proposalSha },
+      return buildPackDrivenReaderIntentFingerprint({
+        env:
+          typeof process !== "undefined"
+            ? (process.env as Record<string, string | undefined>)
+            : {},
       });
     }
     return studyEngineFingerprintFromDeps({
@@ -95,6 +96,22 @@ export async function queueCanonicalStudyRun(
       modelId: deps.modelId,
       prompt: deps.prompt,
     });
+  }
+
+  function runProviderFieldsForRequest(): Pick<
+    CanonicalStudyRun,
+    "providerId" | "providerMode"
+  > {
+    if (processingMode === "pack_driven_v1") {
+      return {
+        providerId: PACK_DRIVEN_READER_ORCHESTRATION_ID,
+        providerMode: READER_DELEGATED_PROVIDER_MODE,
+      };
+    }
+    return {
+      providerId: deps.providerId,
+      providerMode: deps.providerMode,
+    };
   }
 
   if (deps.providerMode === "unconfigured" && processingMode !== "pack_driven_v1") {
@@ -146,6 +163,8 @@ export async function queueCanonicalStudyRun(
       ? resolveStudyRunIdForRetry(existingRun, () => input.studyRunId)
       : input.studyRunId;
 
+  const runProvider = runProviderFieldsForRequest();
+
   const run: CanonicalStudyRun = {
     studyRunId,
     caseId: request.caseId,
@@ -157,8 +176,8 @@ export async function queueCanonicalStudyRun(
     domainPackVersion: resolvedPack.domainPackVersion,
     questionSetVersion: request.questionSet.id,
     answerSnapshotHash: fingerprintAnswerSnapshot(request),
-    providerId: deps.providerId,
-    providerMode: deps.providerMode,
+    providerId: runProvider.providerId,
+    providerMode: runProvider.providerMode,
     promptId:
       processingMode === "pack_driven_v1" ? "pack-driven-reader" : deps.prompt!.id,
     promptVersion:

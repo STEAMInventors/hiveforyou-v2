@@ -23,6 +23,7 @@ import {
 } from "./study-artifact-persistence";
 import { InMemoryStudyArtifactRepository } from "./study-artifact-repository";
 import {
+  runStudyWorkerCompleteRawExtractionStep,
   runStudyWorkerCompleteStep,
   runStudyWorkerProposeStep,
   runStudyWorkerProjectionsStep,
@@ -207,6 +208,78 @@ describe("study worker steps (fixture engine)", () => {
 
     const run = await deps.runRepo.getByStudyRunId(STUDY_RUN_ID);
     expect(run?.status).toBe("SUCCEEDED");
+  });
+
+  it("runStudyWorkerCompleteRawExtractionStep completes without canonical intelligence", async () => {
+    const runRepo = new InMemoryStudyRunRepository();
+    const contextRepo = new InMemoryStudyContextRepository();
+    const artifactRepo = new InMemoryStudyArtifactRepository();
+    const eventRepo = new InMemoryStudyRunEventRepository();
+    await runRepo.save({
+      studyRunId: STUDY_RUN_ID,
+      caseId: CASE_ID,
+      idempotencyKey: "raw-key",
+      studyContextId: "ctx-raw",
+      domainId: "iep",
+      domainPackId: "hive.domain.iep",
+      domainPackVersion: "0.0.0-scaffold",
+      questionSetVersion: "qs-1",
+      answerSnapshotHash: "hash",
+      providerId: "pack-driven-reader",
+      providerMode: "reader_delegated",
+      startedAt: "2026-10-12T12:00:00Z",
+      status: "RUNNING",
+    });
+    await contextRepo.save({
+      caseId: CASE_ID,
+      studyRunId: STUDY_RUN_ID,
+      domainId: "iep",
+      domainPackId: "hive.domain.iep",
+      domainPackVersion: "0.0.0-scaffold",
+      processingPolicy: { processingMode: "pack_driven_v1" },
+    } as never);
+    const deps: StudyServiceDeps = {
+      engine: new FixtureCanonicalStudyEngineV4(),
+      providerId: "anthropic",
+      providerMode: "fixture",
+      runRepo,
+      contextRepo,
+      studyArtifactRepo: artifactRepo,
+      eventRepo,
+      intelligenceRepo: new InMemoryCaseIntelligenceRepository(),
+    };
+    const event: StudyWorkerEvent = {
+      studyRunId: STUDY_RUN_ID,
+      caseId: CASE_ID,
+      userId: USER_ID,
+      intakeRunId: "intake-raw",
+    };
+    const completed = await runStudyWorkerCompleteRawExtractionStep(deps, event, {
+      attemptId: "attempt-raw",
+      rawExtractionOutcome: "succeeded",
+      succeededDocumentIds: ["d1"],
+      failedDocumentIds: [],
+      audit: { persisted: true, status: "persisted" },
+      acceptedVerifierFactCount: 0,
+      promptSha256: "a".repeat(64),
+      observedReaderIdentity: {
+        attemptId: "attempt-raw",
+        distinctModelProviders: ["anthropic"],
+        distinctModelIds: ["claude-test"],
+        documentCount: 1,
+        succeededDocumentCount: 1,
+        failedDocumentCount: 0,
+        source: "hive.reader-document-extraction/1",
+      },
+    });
+    expect(completed.status).toBe("SUCCEEDED");
+    const artifact = await artifactRepo.getByStudyRunId(STUDY_RUN_ID);
+    expect(
+      (artifact?.rawProposalJson as { observedReaderIdentity?: { attemptId: string } })
+        ?.observedReaderIdentity?.attemptId,
+    ).toBe("attempt-raw");
+    const run = await runRepo.getByStudyRunId(STUDY_RUN_ID);
+    expect(run?.caseIntelligenceVersion).toBeUndefined();
   });
 
   it("markStudyRunWorkerFailed surfaces FAILED for spinning UI", async () => {

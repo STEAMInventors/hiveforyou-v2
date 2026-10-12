@@ -3,11 +3,13 @@ import { createHash } from "node:crypto";
 import type { StartCanonicalStudyRequest } from "@hiveforyou/shared/canonical-study";
 
 export type StudyEngineFingerprint = {
-  providerMode: "fixture" | "openai" | "unconfigured";
+  providerMode: "fixture" | "openai" | "unconfigured" | "reader_delegated";
   providerId: string;
   modelId?: string;
   promptVersion?: string;
   promptSha256?: string;
+  /** Pack-driven Reader compiler contract version (code-pinned; not runtime LM id). */
+  readerCompilerVersion?: string;
 };
 
 export type IdempotencyInput = {

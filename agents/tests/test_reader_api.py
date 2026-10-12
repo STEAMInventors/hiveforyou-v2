@@ -643,3 +643,19 @@ def test_study_reader_wire_rejects_page_document_id_mismatch() -> None:
                 ],
             }
         )
+
+
+def test_health_exposes_reader_model_identity(
+    api_env: None,
+    client: TestClient,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("MODEL_PROVIDER", "anthropic")
+    monkeypatch.setenv("MODEL_NAME", "claude-opus-5-5")
+    get_settings.cache_clear()
+    response = client.get("/health")
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["status"] == "ok"
+    assert payload["modelProvider"] == "anthropic"
+    assert payload["modelName"] == "claude-opus-5-5"

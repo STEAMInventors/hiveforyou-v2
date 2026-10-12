@@ -2,15 +2,19 @@
 
 Branch: **refactor/engine-boundary**. Legacy slice scope: [NEXT-v2-slices.md](NEXT-v2-slices.md).
 
-**Current ticket:** **T3.9** Reader architecture experiment (case_wide vs parallel_document) — P1–P6 implemented in repo; **STOP** before Oracle deploy or live Anthropic. T1.5 paused — do not extend without new authorization.
+**Current ticket:** **None** — **ARCH-02 complete locally** (2026-10-12). Local verification: **148** Agent tests passed; Worker audit-gate test passed; **five** durability scenarios passed. **Uncommitted; not deployed; production behavior unchanged.** Authoritative specs: [HIVE-ARCHITECTURE-V2-PROPOSED.md](../plan/HIVE-ARCHITECTURE-V2-PROPOSED.md), [AGENTIC-PLAN.md](../plan/AGENTIC-PLAN.md) (v1.2 amendment). Frozen v1.1 sources: [AGENTIC-PLAN-v1.1.md](../plan/AGENTIC-PLAN-v1.1.md), [REPO-MAP-v1.1.md](../plan/REPO-MAP-v1.1.md).
+
+**Parked (not authorized):** ARCH-03 … ARCH-06 implementation tickets listed in [AGENTIC-PLAN.md](../plan/AGENTIC-PLAN.md) v1.2. **Canonical Study** on the new extraction/consolidation path **deferred** (ARCH-05).
+
+**Historical — T3.9:** Reader architecture experiment (case_wide vs parallel_document) — repo P1–P6 **Done**; **STOP** before Oracle deploy or live Anthropic unless explicitly lifted. T1.5 paused — do not extend without new authorization.
 
 **Phase 0:** implementation and live verification complete.
 
-**Phase 1:** in progress.
+**Phase 1:** extraction architecture specified (ARCH-01); ARCH-02 envelope **verified locally** (uncommitted); **ARCH-03+ paused** pending explicit authorization.
 
-## Plan amendment — 2026-10-08
+## Plan amendment — 2026-10-08 (superseded for plan location only)
 
-**Authoritative plan file:** `AGENTIC-PLAN.md` is **not** in the working tree (repo search: no match). Agentic T1.2 scope is recorded here in `brain/status/NEXT.md` until a plan file is added on the branch.
+**Authoritative plan file:** [AGENTIC-PLAN.md](../plan/AGENTIC-PLAN.md) (restored v1.2 with ARCH-01). T1.2 scope history remains in this file's log below.
 
 Amendments (Aryya-authorized):
 
@@ -24,6 +28,12 @@ Amendments (Aryya-authorized):
 
 | Ticket | Scope | Status |
 |--------|-------|--------|
+| ARCH-01 | Document simplified pack-driven extraction path (Engine 1 → parallel Reader → raw persistence → Inspector; config inventory; deferred consolidation) | **Done (documentation only)** |
+| ARCH-02 | Raw extraction persistence envelope + APIs | **Done (local, 2026-10-12)** — 148 Agent tests; Worker audit-gate; 5 durability scenarios; **uncommitted / not deployed** |
+| ARCH-03 | Reader path without pre-persistence verifier/normalization; retire experiment envs in prod templates | Parked |
+| ARCH-04 | Temporary Extraction Inspector | Parked |
+| ARCH-05 | Phase B consolidation + canonical intelligence + projections | Parked |
+| ARCH-06 | Reader env simplification | Parked |
 | T0.1 | canonical-study **v4.1** prompt/schema alignment with `canonical-study-proposal/4`; route v4.1 through v4 validation/runtime (`isV4PromptVersion`) | Ready for review |
 | T0.2 | Baseline capture: L001 + caleb9 under v4 and v4.1, recorded model calls, no scoring | Done |
 | T0.3 | Prompt caching in Anthropic provider; cache system prompt + document attachments and record cache read/write tokens | Done |
@@ -77,6 +87,9 @@ Review packages: `engine/eval/golden/_review/<case>/` with `*-golden.v4.json`, `
 
 | Date | Ticket | SHA | Notes |
 |------|--------|-----|-------|
+| 2026-10-12 | ARCH-02 | — | **ARCH-02 status closure (documentation only):** Marked complete locally on 2026-10-12. Verification recorded: **148** Agent pytest passed; Worker audit-gate test passed; **five** durability scenarios passed. **Implementation uncommitted, not deployed; production behavior unchanged.** ARCH-03–ARCH-06 remain parked; Canonical Study on consolidation path deferred. No commit, push, or deployment. |
+| 2026-10-12 | ARCH-01 | — | **ARCH-01 final historical reconciliation (documentation only):** Reconciled `AGENTIC-PLAN.md` v1.2 as explicit amendment atop frozen `AGENTIC-PLAN-v1.1.md` + `REPO-MAP-v1.1.md`; updated `HIVE-ARCHITECTURE-V2-PROPOSED.md` historical/superseded references; aligned CURRENT/NEXT (ARCH-01 done; ARCH-02–06 parked). No code, SQL, env, deployment, commit, or push. |
+| 2026-10-12 | ARCH-01 | — | **ARCH-01 Done (documentation only):** Updated `brain/plan/HIVE-ARCHITECTURE-V2-PROPOSED.md` (ARCH-01 path, superseded provisions, persistence envelope, config inventory, acceptance criteria, open questions); restored `brain/plan/AGENTIC-PLAN.md` v1.2; parked ARCH-02–ARCH-06. No code, env, migration, or model calls. |
 | 2026-10-08 | T1.2 | — | **T1.2 Done:** L003/L004/L005 certified after Aryya verification. L004 review package in `_review/l004/`; provenance rebuild 173/173 on `engine/intake/fixtures/l004/` (regenerated v4 + index match reviewed package). Core set 6/6, 782 GoldenFacts, all anchors OK. Eval 47/47; typecheck OK; `git diff --check` OK. iep-e-1 remains robustness-only; injection still mandatory later; no L007; no commit. |
 | 2026-10-08 | T1.2 | — | L003/L005 technical review: provenance 194/194 and 208/208 on committed document-pages; counts match REVIEW; conversion mapping ready; REVIEW remains draft. L004: fixture complete; **external review package missing** (empty `_review/l004/`). No certified goldens written. Eval 47/47; typecheck OK. |
 | 2026-10-08 | T1.2 | — | Plan amendment: core L001–L006; iep-e-1 robustness; L007 dropped; injection deferred to pre-promotion safety gate. Inventory reconciled on disk; 3/6 core certified; L003/L004/L005 remain blockers. `draft-golden.ts`: removed L007 split mapping. Eval typecheck + 47 tests pass. |

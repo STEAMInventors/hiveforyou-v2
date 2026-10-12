@@ -1,8 +1,10 @@
 # Current State
 
-Repository: HiveForYou V2  
+Repository: HiveForYou V2
 
 Status: **V2-001E.1 COMPLETE** + **Engine 1 OpenAI Discover** (**frozen**) + **Engine 2 Canonical Study** (runtime prompt `canonical-study-v4` → validated `case-intelligence/3`; legacy `/2` rows may remain in DB but are not read)
+
+**Architecture:** **ARCH-01 complete** (2026-10-12, documentation only). **ARCH-02 complete locally** (2026-10-12): raw extraction persistence envelope (`hive.reader-document-extraction/1`) + storage/API wiring verified in the working tree — **148** Agent pytest passed; Worker **audit-gate** test passed; **five** durability scenarios passed. **Implementation is uncommitted, not deployed; production behavior is unchanged** (committed runtime still follows existing paths, including pack_driven production step with verifier + `reader-accepted-facts/1`). Approved direction in [HIVE-ARCHITECTURE-V2-PROPOSED.md](../plan/HIVE-ARCHITECTURE-V2-PROPOSED.md); living plan amendment [AGENTIC-PLAN.md](../plan/AGENTIC-PLAN.md) v1.2 (not a silent replacement of v1.1). Historical snapshots preserved unchanged: [AGENTIC-PLAN-v1.1.md](../plan/AGENTIC-PLAN-v1.1.md), [REPO-MAP-v1.1.md](../plan/REPO-MAP-v1.1.md). **ARCH-03–ARCH-06 parked** (Extraction Inspector, Reader path simplification, consolidation, env simplification). **Canonical Study on the new extraction/consolidation path deferred** (ARCH-05); running Engine 2 canonical study (`canonical-study-v4` → `/3`) unchanged in production.
 
 ## Implemented
 

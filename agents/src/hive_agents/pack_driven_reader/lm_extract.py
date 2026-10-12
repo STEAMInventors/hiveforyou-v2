@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from dataclasses import dataclass
 from typing import Any
 
 import dspy
@@ -42,30 +43,37 @@ def _extract_assistant_text(response: Any) -> str:
     return str(response)
 
 
-def _parse_json_object(text: str) -> dict[str, Any]:
+def try_parse_json_object(text: str) -> dict[str, Any] | None:
     stripped = text.strip()
     if not stripped:
-        return {}
+        return None
     try:
         parsed = json.loads(stripped)
-        return parsed if isinstance(parsed, dict) else {}
+        return parsed if isinstance(parsed, dict) else None
     except json.JSONDecodeError:
         start = stripped.find("{")
         end = stripped.rfind("}")
         if start >= 0 and end > start:
             try:
                 parsed = json.loads(stripped[start : end + 1])
-                return parsed if isinstance(parsed, dict) else {}
+                return parsed if isinstance(parsed, dict) else None
             except json.JSONDecodeError:
-                return {}
-    return {}
+                return None
+    return None
+
+
+@dataclass(frozen=True)
+class PackDrivenExtractionCallResult:
+    assistant_text: str
+    parsed_model_json: dict[str, Any] | None
+    usage: dict[str, int | None]
 
 
 def call_pack_driven_extraction(
     *,
     lm: dspy.LM,
     compiled: PackDrivenReaderCompileResult,
-) -> tuple[dict[str, Any], dict[str, int | None]]:
+) -> PackDrivenExtractionCallResult:
     messages = build_dspy_lm_messages(
         stable_system=compiled.stable_system_prefix,
         case_user_content=compiled.case_user_content,
@@ -76,7 +84,7 @@ def call_pack_driven_extraction(
     else:
         response = lm(messages=messages)
     text = _extract_assistant_text(response)
-    raw = _parse_json_object(text)
+    parsed = try_parse_json_object(text)
     usage = normalize_model_usage(
         lm.history[-1].get("usage") if getattr(lm, "history", None) else None
     )
@@ -86,4 +94,8 @@ def call_pack_driven_extraction(
         "cache_read_input_tokens": usage.cache_read_input_tokens,
         "cache_write_input_tokens": usage.cache_write_input_tokens,
     }
-    return raw, usage_dict
+    return PackDrivenExtractionCallResult(
+        assistant_text=text,
+        parsed_model_json=parsed,
+        usage=usage_dict,
+    )

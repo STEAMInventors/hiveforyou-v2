@@ -47,6 +47,7 @@ export type StudyReaderResponseWire = {
   candidateFacts: unknown[];
   acceptedCandidateFacts?: unknown[];
   perDocumentResults?: unknown[];
+  documentExtractions?: unknown[];
   audit?: StudyReaderAuditWire | null;
 };
 
