@@ -240,7 +240,7 @@ describe("IntakeEvidenceWorkspace", () => {
 
 
 
-  it("starts canonical study from Build my hive when workspace is ready", async () => {
+  it("routes pack_driven intake study completion to extraction-debug", async () => {
 
     vi.mocked(startIntakeStudy).mockResolvedValue({
 
@@ -302,10 +302,56 @@ describe("IntakeEvidenceWorkspace", () => {
 
     await waitFor(() => {
 
-      expect(mockPush).toHaveBeenCalledWith("/study/study-1/map");
+      expect(mockPush).toHaveBeenCalledWith(
+        "/hives/case-1/extraction-debug?studyRunId=study-1",
+      );
 
     });
 
+  });
+
+  it("routes generic intake study completion to the study map", async () => {
+    vi.mocked(fetchIntakeRun).mockResolvedValue({
+      ...workspaceView,
+      studyPath: "GENERIC_STUDY",
+    });
+
+    vi.mocked(startIntakeStudy).mockResolvedValue({
+      run: {
+        studyRunId: "study-1",
+        caseId: "case-1",
+        intakeRunId: "run-1",
+        idempotencyKey: "key",
+        studyContextId: "ctx-1",
+        domainId: "iep",
+        domainPackId: "pack",
+        domainPackVersion: "1",
+        questionSetVersion: "intake-study-empty/1",
+        answerSnapshotHash: "hash",
+        providerId: "fixture",
+        providerMode: "fixture",
+        startedAt: new Date().toISOString(),
+        status: "SUCCEEDED",
+      },
+      stage: "complete",
+      reusedExistingRun: false,
+    });
+
+    render(<IntakeEvidenceWorkspace intakeRunId="run-1" />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId("intake-build-my-study")).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByTestId("intake-build-my-study"));
+
+    await waitFor(() => {
+      expect(startIntakeStudy).toHaveBeenCalledWith("run-1");
+    });
+
+    await waitFor(() => {
+      expect(mockPush).toHaveBeenCalledWith("/study/study-1/map");
+    });
   });
 
 

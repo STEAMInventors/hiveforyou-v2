@@ -75,6 +75,11 @@ export async function loadCaseMapViewBundle(studyRunId: string): Promise<CaseMap
     throw new CaseNotFoundError();
   }
 
+  const context = await new SupabaseStudyContextRepository(gateway, sessionUserId).getByStudyRunId(
+    run.studyRunId,
+  );
+  const processingMode = context?.processingPolicy.processingMode;
+
   const base: CaseMapViewBundle = {
     studyRunId: run.studyRunId,
     caseId: run.caseId,
@@ -87,6 +92,7 @@ export async function loadCaseMapViewBundle(studyRunId: string): Promise<CaseMap
     canonicalSnapshot: null,
     projectionsPending: false,
     studyStartedAt: run.startedAt,
+    processingMode,
   };
 
   if (isStudyRunProcessing(run.status)) {

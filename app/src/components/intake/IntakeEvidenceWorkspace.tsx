@@ -9,6 +9,7 @@ import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { formatFileSize } from "@/lib/format-file-metadata";
 import { commitStagedDocuments } from "@/lib/documents/commit-client";
 import { fetchCaseMapViewBundle } from "@/lib/case-map/case-map-client";
+import { fetchRawExtractionInspectorBundle } from "@/lib/extraction-debug/raw-extraction-inspector-client";
 import {
   appendIntakeSources,
   fetchIntakeRun,
@@ -16,6 +17,12 @@ import {
   setIntakeSourceDisposition,
   startIntakeStudy,
 } from "@/lib/intake/intake-client";
+import {
+  buildPostStudyCompletionHref,
+  isCanonicalStudyPresentationReady,
+  isPackDrivenStudyAwaitingRawExtraction,
+  resolveStudyProcessingModeFromStudyPath,
+} from "@/lib/intake/study-completion-navigation";
 import { useStagedDocuments } from "@/lib/intake/staged-documents-context";
 import { HiveBuildingModal } from "@/components/hive/HiveBuildingModal";
 import { BuildingHiveSvg } from "@/components/hive-lifecycle/BuildingHiveSvg";
@@ -326,13 +333,65 @@ export function IntakeEvidenceWorkspace({ intakeRunId }: { intakeRunId: string }
   const [dragOver, setDragOver] = useState(false);
   const [studyDelayedMessage, setStudyDelayedMessage] = useState<string | null>(null);
 
+  const navigateToStudyCompletion = useCallback(
+    (studyRunId: string) => {
+      if (!view?.caseId) {
+        return;
+      }
+      const processingMode = resolveStudyProcessingModeFromStudyPath(view.studyPath);
+      router.push(
+        buildPostStudyCompletionHref({
+          processingMode,
+          caseId: view.caseId,
+          studyRunId,
+        }),
+      );
+    },
+    [router, view?.caseId, view?.studyPath],
+  );
+
   useEffect(() => {
     const studyRunId = studyBuild?.studyRunId;
-    if (!studyRunId || studyBuild?.target === "complete") {
+    const caseId = view?.caseId;
+    if (!studyRunId || !caseId || studyBuild?.target === "complete") {
       setStudyDelayedMessage(null);
       return;
     }
+    const processingMode = resolveStudyProcessingModeFromStudyPath(view?.studyPath);
     const timer = setInterval(() => {
+      if (processingMode === "pack_driven_v1") {
+        void Promise.all([
+          fetchRawExtractionInspectorBundle(caseId, studyRunId),
+          fetchCaseMapViewBundle(studyRunId),
+        ])
+          .then(([rawBundle, bundle]) => {
+            if (isStudyProcessingDelayed(bundle.status, bundle.studyStartedAt)) {
+              setStudyDelayedMessage(
+                "This is taking longer than expected. Your hive is still building — you can leave this page open or come back in a few minutes.",
+              );
+            } else {
+              setStudyDelayedMessage(null);
+            }
+            if (rawBundle || bundle.status === "SUCCEEDED") {
+              setStudyBuild((prev) =>
+                prev ? { ...prev, target: "complete", studyRunId } : prev,
+              );
+              studyStartInFlight.current = false;
+              return;
+            }
+            if (isPackDrivenStudyAwaitingRawExtraction(bundle.status)) {
+              return;
+            }
+            if (bundle.status === "FAILED") {
+              studyStartInFlight.current = false;
+              setStudyBuild(null);
+              setErrorMessage("We couldn't complete the study. Please try again in a moment.");
+            }
+          })
+          .catch(() => {});
+        return;
+      }
+
       void fetchCaseMapViewBundle(studyRunId)
         .then((bundle) => {
           if (isStudyProcessingDelayed(bundle.status, bundle.studyStartedAt)) {
@@ -342,11 +401,9 @@ export function IntakeEvidenceWorkspace({ intakeRunId }: { intakeRunId: string }
           } else {
             setStudyDelayedMessage(null);
           }
-          if (bundle.status === "SUCCEEDED" || bundle.status === "NEEDS_REVIEW") {
+          if (isCanonicalStudyPresentationReady(bundle.status)) {
             setStudyBuild((prev) =>
-              prev
-                ? { ...prev, target: "complete", studyRunId: bundle.studyRunId }
-                : prev,
+              prev ? { ...prev, target: "complete", studyRunId: bundle.studyRunId } : prev,
             );
             studyStartInFlight.current = false;
           }
@@ -359,7 +416,14 @@ export function IntakeEvidenceWorkspace({ intakeRunId }: { intakeRunId: string }
         .catch(() => {});
     }, 2500);
     return () => clearInterval(timer);
-  }, [studyBuild?.studyRunId, studyBuild?.target]);
+  }, [studyBuild?.studyRunId, studyBuild?.target, view?.caseId, view?.studyPath]);
+
+  useEffect(() => {
+    if (studyBuild?.target !== "complete" || !studyBuild.studyRunId) {
+      return;
+    }
+    navigateToStudyCompletion(studyBuild.studyRunId);
+  }, [navigateToStudyCompletion, studyBuild?.studyRunId, studyBuild?.target]);
 
   const reload = useCallback(async () => {
     const next = await fetchIntakeRun(intakeRunId);
@@ -886,10 +950,20 @@ export function IntakeEvidenceWorkspace({ intakeRunId }: { intakeRunId: string }
                 setErrorMessage(null);
                 void startIntakeStudy(intakeRunId)
                   .then((outcome) => {
+                    const processingMode = resolveStudyProcessingModeFromStudyPath(view?.studyPath);
                     if (
-                      outcome.run.status === "SUCCEEDED" ||
-                      outcome.run.status === "NEEDS_REVIEW"
+                      processingMode === "pack_driven_v1" &&
+                      (outcome.run.status === "SUCCEEDED" || outcome.run.status === "FAILED")
                     ) {
+                      setStudyBuild({
+                        session,
+                        target: "complete",
+                        studyRunId: outcome.run.studyRunId,
+                      });
+                      studyStartInFlight.current = false;
+                      return;
+                    }
+                    if (isCanonicalStudyPresentationReady(outcome.run.status)) {
                       setStudyBuild({
                         session,
                         target: "complete",
@@ -966,7 +1040,7 @@ export function IntakeEvidenceWorkspace({ intakeRunId }: { intakeRunId: string }
             if (!studyBuild.studyRunId) {
               return;
             }
-            router.push(`/study/${encodeURIComponent(studyBuild.studyRunId)}/map`);
+            navigateToStudyCompletion(studyBuild.studyRunId);
           }}
         />
       ) : null}

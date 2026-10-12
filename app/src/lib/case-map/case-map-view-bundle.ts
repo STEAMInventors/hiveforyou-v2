@@ -1,4 +1,8 @@
-import type { StudyRunErrorCode, StudyRunStatus } from "@hiveforyou/shared/canonical-study";
+import type {
+  StudyProcessingMode,
+  StudyRunErrorCode,
+  StudyRunStatus,
+} from "@hiveforyou/shared/canonical-study";
 import type { CanonicalCaseSnapshot } from "@hiveforyou/shared/case-intelligence/3";
 import type { CaseMap, CaseProvenanceBundle, CaseViewV2, ProView } from "@hiveforyou/shared/projections";
 
@@ -17,4 +21,5 @@ export type CaseMapViewBundle = {
   /** True when intelligence exists but persisted projections are not ready yet. */
   projectionsPending?: boolean;
   studyStartedAt?: string;
+  processingMode?: StudyProcessingMode;
 };
