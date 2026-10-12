@@ -1,7 +1,6 @@
 import { createHash, randomUUID } from "node:crypto";
 import { readFileSync } from "node:fs";
-import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
+import { join } from "node:path";
 
 import type { CanonicalStudyRun } from "@hiveforyou/shared/canonical-study";
 import type { ProposalDomainPack } from "@hiveforyou/domain-pack";
@@ -11,6 +10,7 @@ import {
 } from "@hiveforyou/domain-pack/pack-driven-reader";
 
 import { hashCanonicalJson } from "./fingerprint";
+import { hiveMonorepoRoot } from "./resolve-hive-monorepo-root.js";
 
 export const AGENTIC_READER_QUALIFICATION_NAMESPACE = "agentic-reader-qualification/1" as const;
 
@@ -69,10 +69,8 @@ export const AGENTIC_READER_QUALIFICATION_ANSWER_SNAPSHOT_HASH = hashCanonicalJs
   answers: {},
 });
 
-const CORE_REPO_ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..", "..");
-
 export function defaultStudyAgentsJsonPath(domainId = "iep"): string {
-  return join(CORE_REPO_ROOT, "engine", "domain-packs", domainId, "study", "agents.json");
+  return join(hiveMonorepoRoot(), "engine", "domain-packs", domainId, "study", "agents.json");
 }
 
 export function resolveStudyAgentsJsonPath(
@@ -176,7 +174,14 @@ export function readerExperimentPromptHashesPath(
   if (override) {
     return override;
   }
-  return join(CORE_REPO_ROOT, "engine", "eval", "reports", "reader-experiment", "prompt-hashes.json");
+  return join(
+    hiveMonorepoRoot(),
+    "engine",
+    "eval",
+    "reports",
+    "reader-experiment",
+    "prompt-hashes.json",
+  );
 }
 
 /** Fail closed when Oracle/worker image sets HIVE_READER_EXPERIMENT_PROMPT_HASHES_JSON. */
@@ -263,7 +268,7 @@ export function packDrivenProposalPackPath(
   if (override) {
     return override;
   }
-  return join(CORE_REPO_ROOT, "brain", "domain-packs", "iep", "iep-pack.v0.3.proposed.json");
+  return join(hiveMonorepoRoot(), "brain", "domain-packs", "iep", "iep-pack.v0.3.proposed.json");
 }
 
 export function loadPackDrivenProposalPackContentSha256(
@@ -378,7 +383,7 @@ export function l001QualificationManifestPath(
   if (override) {
     return override;
   }
-  return join(CORE_REPO_ROOT, "engine", "intake", "fixtures", "l001", "manifest.json");
+  return join(hiveMonorepoRoot(), "engine", "intake", "fixtures", "l001", "manifest.json");
 }
 
 /** Validates committed L001 qualification manifest shape and SHA-256 pins (eight documents). */

@@ -1,4 +1,4 @@
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { copyFileSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
@@ -31,8 +31,10 @@ import {
   verifyReaderExperimentPromptHashesPackaged,
   resolveReaderMode,
   packDrivenProposalPackPath,
+  loadPackDrivenProposalPackContentSha256,
 } from "./agentic-reader-qualification";
 import { loadProposalDomainPack, verifyPackDrivenProposalPackPackaged } from "./load-proposal-domain-pack";
+import { PROPOSAL_PACK_RELATIVE_PATH } from "./resolve-hive-monorepo-root";
 
 const COMMITTED_IEP_V03_PROPOSED_PACK_CONTENT_SHA256 =
   "c2baa0439d32496a3110f5388f6048395a9f4c8fdce79b3d0cec36ae6b9a7775";
@@ -309,6 +311,25 @@ describe("agentic reader qualification", () => {
   it("loads committed IEP v0.3 proposed pack with stable content SHA", () => {
     const loaded = loadProposalDomainPack({});
     expect(loaded.contentSha256).toBe(COMMITTED_IEP_V03_PROPOSED_PACK_CONTENT_SHA256);
+  });
+
+  it("loads proposal pack from cwd when only a Vercel-style traced brain tree exists", () => {
+    const sourcePack = packDrivenProposalPackPath({});
+    const fakeTaskRoot = mkdtempSync(join(tmpdir(), "vercel-task-"));
+    const packDir = join(fakeTaskRoot, ...PROPOSAL_PACK_RELATIVE_PATH.split(/[/\\]/).slice(0, -1));
+    mkdirSync(packDir, { recursive: true });
+    copyFileSync(sourcePack, join(packDir, "iep-pack.v0.3.proposed.json"));
+
+    const previousCwd = process.cwd();
+    try {
+      process.chdir(fakeTaskRoot);
+      expect(loadPackDrivenProposalPackContentSha256({})).toBe(
+        COMMITTED_IEP_V03_PROPOSED_PACK_CONTENT_SHA256,
+      );
+    } finally {
+      process.chdir(previousCwd);
+      rmSync(fakeTaskRoot, { recursive: true, force: true });
+    }
   });
 
   it("honors HIVE_PACK_DRIVEN_READER_PROPOSAL_JSON like the Oracle worker image", () => {

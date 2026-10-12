@@ -14,6 +14,19 @@ type RouteContext = {
   params: Promise<{ intakeRunId: string }>;
 };
 
+function logStudyStartUnexpected(error: unknown): void {
+  if (error instanceof Error) {
+    const errno = error as NodeJS.ErrnoException;
+    console.error("[api/intake/study] UNEXPECTED", {
+      name: error.name,
+      message: error.message,
+      ...(errno.code ? { code: errno.code } : {}),
+    });
+    return;
+  }
+  console.error("[api/intake/study] UNEXPECTED", { detail: "non-Error throw" });
+}
+
 export async function POST(_request: Request, context: RouteContext) {
   try {
     readServerEnv();
@@ -80,9 +93,7 @@ export async function POST(_request: Request, context: RouteContext) {
         { status: 500 },
       );
     }
-    if (process.env.NODE_ENV === "development") {
-      console.error("[api/intake/study] UNEXPECTED", error);
-    }
+    logStudyStartUnexpected(error);
     return NextResponse.json(
       { error: "UNEXPECTED", message: "Canonical study could not be started from intake." },
       { status: 500 },
