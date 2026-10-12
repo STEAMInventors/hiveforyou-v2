@@ -44,6 +44,8 @@ export type WorkerEnv = {
   HIVE_AGENTS_SERVICE_TOKEN?: string;
   HIVE_AGENTS_HOST?: string;
   HIVE_AGENTS_PORT?: string;
+  /** Oracle/runtime mount for study agents export (e.g. `/app/pack/agents.json`). */
+  HIVE_AGENTS_JSON?: string;
   HIVE_PACK_DRIVEN_READER_PROPOSAL_JSON?: string;
   /** Dev-only: `extract-once` fails the first extract step once per document id. */
   HIVE_FAULT_INJECT?: "extract-once";
@@ -101,6 +103,7 @@ export function readWorkerEnv(
     HIVE_AGENTS_SERVICE_TOKEN: source.HIVE_AGENTS_SERVICE_TOKEN?.trim() || undefined,
     HIVE_AGENTS_HOST: source.HIVE_AGENTS_HOST?.trim() || undefined,
     HIVE_AGENTS_PORT: source.HIVE_AGENTS_PORT?.trim() || undefined,
+    HIVE_AGENTS_JSON: source.HIVE_AGENTS_JSON?.trim() || undefined,
     HIVE_PACK_DRIVEN_READER_PROPOSAL_JSON:
       source.HIVE_PACK_DRIVEN_READER_PROPOSAL_JSON?.trim() || undefined,
     HIVE_FAULT_INJECT,

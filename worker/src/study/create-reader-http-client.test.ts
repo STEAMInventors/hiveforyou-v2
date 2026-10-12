@@ -1,4 +1,9 @@
-﻿import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
+
+import {
+  defaultStudyAgentsJsonPath,
+  loadAgenticReaderQualificationPromptMetadata,
+} from "@hiveforyou/core/study";
 
 import { readWorkerEnv } from "../env.js";
 import { createReaderHttpClient } from "./create-reader-http-client.js";
@@ -24,13 +29,35 @@ describe("pack-driven Reader env handoff", () => {
       HIVE_AGENTS_SERVICE_TOKEN: "  reader-token  ",
       HIVE_AGENTS_HOST: "  hive-agents  ",
       HIVE_AGENTS_PORT: " 4321 ",
+      HIVE_AGENTS_JSON: " /app/pack/agents.json ",
       HIVE_PACK_DRIVEN_READER_PROPOSAL_JSON: " /app/pack/proposal.json ",
     });
 
     expect(env.HIVE_AGENTS_SERVICE_TOKEN).toBe("reader-token");
     expect(env.HIVE_AGENTS_HOST).toBe("hive-agents");
     expect(env.HIVE_AGENTS_PORT).toBe("4321");
+    expect(env.HIVE_AGENTS_JSON).toBe("/app/pack/agents.json");
     expect(env.HIVE_PACK_DRIVEN_READER_PROPOSAL_JSON).toBe("/app/pack/proposal.json");
+  });
+
+  it("readWorkerEnv drops blank HIVE_AGENTS_JSON", () => {
+    const env = readWorkerEnv({
+      ...REQUIRED_WORKER_ENV,
+      HIVE_AGENTS_JSON: "   ",
+    });
+    expect(env.HIVE_AGENTS_JSON).toBeUndefined();
+  });
+
+  it("loadAgenticReaderQualificationPromptMetadata receives HIVE_AGENTS_JSON from parsed worker env", () => {
+    const agentsJsonPath = defaultStudyAgentsJsonPath("iep");
+    const env = readWorkerEnv({
+      ...REQUIRED_WORKER_ENV,
+      HIVE_AGENTS_JSON: `  ${agentsJsonPath}  `,
+    });
+    const prompt = loadAgenticReaderQualificationPromptMetadata({
+      env: workerEnvStrings(env),
+    });
+    expect(prompt.agentsJsonPath).toBe(agentsJsonPath);
   });
 
   it("createReaderHttpClient receives the service token from parsed worker env", async () => {
