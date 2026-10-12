@@ -314,8 +314,8 @@ export function RawExtractionInspector({
                     <ul className="space-y-1 text-sm">
                       {doc.evidenceRefs.map((evidence) => (
                         <li key={`${evidence.fieldPath}-${evidence.page}-${evidence.quote}`} className="font-mono text-xs">
-                          {evidence.fieldPath}: doc={evidence.sourceDocumentId} page={evidence.page ?? "?"} quote="
-                          {evidence.quote ?? ""}"
+                          {evidence.fieldPath}: doc={evidence.sourceDocumentId} page={evidence.page ?? "?"} quote=&quot;
+                          {evidence.quote ?? ""}&quot;
                         </li>
                       ))}
                     </ul>
