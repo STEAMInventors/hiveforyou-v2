@@ -59,7 +59,10 @@ function atomKeyFromStatement(statement: Statement): string {
     documentId: statement.documentId,
     tier: statement.tier,
     attributeRaw: statement.attributeRaw,
-    valueNorm: statement.valueNorm,
+    valueNorm:
+      statement.valueNorm == null || typeof statement.valueNorm === "string"
+        ? statement.valueNorm
+        : String(statement.valueNorm),
     valueRaw: statement.valueRaw,
     quote: ev?.quote ?? statement.valueRaw ?? "",
     pageNumber: ev?.pageNumber ?? 0,

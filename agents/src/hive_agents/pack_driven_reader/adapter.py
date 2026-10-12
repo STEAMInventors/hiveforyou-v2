@@ -23,7 +23,6 @@ class PackDrivenReaderDiagnostics:
     cache_read_input_tokens: int | None
     model_name: str | None
     pack_hash: str
-    document_type_id: str
     prompt_version: str
 
 
@@ -39,21 +38,17 @@ def load_proposal_domain_pack(path: Path) -> dict[str, Any]:
 def compile_pack_driven_reader_prompt(
     *,
     pack: Mapping[str, Any],
-    document_type_id: str | None,
     case_manifest: list[Mapping[str, Any]],
     source_document_id: str,
     pages: list[Mapping[str, Any]],
-    allow_generic_unclassified_fallback: bool = True,
 ) -> PackDrivenReaderCompileResult:
     payload = {
         "pack": pack,
-        "documentTypeId": document_type_id,
         "caseManifest": case_manifest,
         "document": {
             "sourceDocumentId": source_document_id,
             "pages": pages,
         },
-        "allowGenericUnclassifiedFallback": allow_generic_unclassified_fallback,
         "emitCacheBoundaryHints": True,
     }
     return compile_pack_driven_reader_prompt_via_node(payload)
@@ -62,7 +57,7 @@ def compile_pack_driven_reader_prompt(
 def build_pack_driven_lm_messages(
     compiled: PackDrivenReaderCompileResult,
 ) -> list[dict[str, str]]:
-    """Stable prefix = universal + pack; user = manifest + checklist + this document only."""
+    """Stable prefix = universal + pack catalog; user = manifest + task + this document only."""
     return build_dspy_lm_messages(
         stable_system=compiled.stable_system_prefix,
         case_user_content=compiled.case_user_content,
@@ -97,7 +92,6 @@ def pack_driven_reader_diagnostics_from_usage(
         cache_read_input_tokens=normalized.get("cache_read_input_tokens"),
         model_name=model_name,
         pack_hash=compiled.pack_content_sha256,
-        document_type_id=compiled.document_type_id,
         prompt_version=compiled.prompt_version,
     )
 

@@ -3,7 +3,10 @@ import type { ResolvedDomainPack } from "@hiveforyou/domain-packs";
 import type { CaseCustomerContextSnapshot } from "@hiveforyou/shared/case-customer-context";
 import { scopeDiscoveryResultToDomain } from "../discover/domain-workstream";
 import { customerContextForEngine2 } from "../persistence/case-customer-context-repository";
-import type { StartCanonicalStudyRequest } from "@hiveforyou/shared/canonical-study";
+import type {
+  StartCanonicalStudyRequest,
+  StudyProcessingMode,
+} from "@hiveforyou/shared/canonical-study";
 import {
   CANONICAL_STUDY_CONTEXT_SCHEMA,
   type CanonicalStudyContext,
@@ -51,8 +54,15 @@ export function buildIdempotencyKeyFromRequest(
     answerFingerprint: fingerprintAnswerSnapshot(request),
     intakeRunId: request.intakeRunId ?? null,
     intakeStudyMaterialFingerprint: intakeMaterial,
+    processingMode: request.processingMode ?? "canonical_openai_v4",
     engine,
   });
+}
+
+export function resolveStudyProcessingMode(
+  request: StartCanonicalStudyRequest,
+): StudyProcessingMode {
+  return request.processingMode ?? "canonical_openai_v4";
 }
 
 export function studyEngineFingerprintFromDeps(input: {
@@ -110,6 +120,7 @@ export function freezeCanonicalStudyContext(
     logicalDocuments: [],
     processingPolicy: {
       intentAffectsFacts: false,
+      processingMode: resolveStudyProcessingMode(request),
       providerId,
       providerMode,
       promptId: params.prompt?.id,

@@ -57,7 +57,7 @@ export type EnsureAgenticReaderQualificationRunResult = {
   run: CanonicalStudyRun;
   idempotencyKey: string;
   registeredDocuments: Array<{ id: string; sha256: string }>;
-  prompt: ReturnType<typeof loadEffectiveStudyAgentsPromptMetadata>;
+  prompt: ReturnType<typeof loadAgenticReaderQualificationPromptMetadata>;
   modelIdentity: ReturnType<typeof resolveAgenticReaderModelIdentity>;
 };
 

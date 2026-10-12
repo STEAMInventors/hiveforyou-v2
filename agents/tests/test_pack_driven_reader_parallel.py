@@ -51,6 +51,8 @@ def test_pack_driven_fan_in_preserves_document_order(monkeypatch: pytest.MonkeyP
         return PackDrivenDocumentResult(
             source_document_id=source_document_id,
             document_type_id="iep.plan",
+            engine1_document_type_id="iep.plan",
+            classification_needs_review=False,
             parse_ok=True,
             parse_errors=[],
         )
@@ -87,6 +89,8 @@ def test_pack_driven_reports_failed_document_tasks(monkeypatch: pytest.MonkeyPat
         return PackDrivenDocumentResult(
             source_document_id=source_document_id,
             document_type_id="iep.plan",
+            engine1_document_type_id="iep.plan",
+            classification_needs_review=False,
             parse_ok=True,
             parse_errors=[],
         )
@@ -136,6 +140,8 @@ def test_pack_driven_bounded_parallelism(monkeypatch: pytest.MonkeyPatch) -> Non
         return PackDrivenDocumentResult(
             source_document_id=str(kwargs["source_document_id"]),
             document_type_id="iep.plan",
+            engine1_document_type_id="iep.plan",
+            classification_needs_review=False,
             parse_ok=True,
             parse_errors=[],
         )
@@ -161,3 +167,93 @@ def test_pack_driven_bounded_parallelism(monkeypatch: pytest.MonkeyPatch) -> Non
 
     assert peak <= 2
     assert audit["parallelConcurrency"] == 2
+
+
+def test_wrong_engine1_classification_does_not_block_extraction(monkeypatch: pytest.MonkeyPatch) -> None:
+    compile_calls: list[dict[str, object]] = []
+    extract_calls: list[dict[str, object]] = []
+
+    def fake_compile(**kwargs: object) -> object:
+        from hive_agents.pack_driven_reader.compiler_bridge import PackDrivenReaderCompileResult
+
+        compile_calls.append(dict(kwargs))
+        return PackDrivenReaderCompileResult(
+            prompt_version="hive-pack-driven-reader/0.2.0",
+            pack_id="iep",
+            pack_version="0.3.0-proposed",
+            pack_content_sha256="abc",
+            pack_document_type_count=10,
+            pack_record_type_count=20,
+            stable_system_prefix="stable",
+            case_user_content="user",
+            output_json_schema={},
+            blocks={},
+        )
+
+    def fake_extract(**kwargs: object) -> tuple[dict[str, object], dict[str, int]]:
+        extract_calls.append(dict(kwargs))
+        return (
+            {
+                "documentTypeId": "iep.referral",
+                "sourceDocumentId": "doc-a",
+                "recordInstances": [],
+            },
+            {"input_tokens": 1, "output_tokens": 1},
+        )
+
+    def fake_parse(**kwargs: object) -> object:
+        from hive_agents.pack_driven_reader.compiler_bridge import PackDrivenReaderParseResult
+
+        _ = kwargs
+        return PackDrivenReaderParseResult(
+            ok=True,
+            needs_review=False,
+            document_type_id="iep.referral",
+            document_type_resolved="classified",
+            errors=[],
+            record_instances=[],
+        )
+
+    monkeypatch.setattr(
+        "hive_agents.pack_driven_reader.run.load_proposal_domain_pack",
+        lambda _path: {"schemaVersion": "pack/0", "documentTypes": [], "recordTypes": []},
+    )
+    monkeypatch.setattr("hive_agents.pack_driven_reader.run.compile_pack_driven_reader_prompt", fake_compile)
+    monkeypatch.setattr("hive_agents.pack_driven_reader.run.call_pack_driven_extraction", fake_extract)
+    monkeypatch.setattr(
+        "hive_agents.pack_driven_reader.compiler_bridge.parse_pack_driven_extraction_via_node",
+        fake_parse,
+    )
+
+    context = json.dumps(
+        {
+            "provenance": "persisted_discover_structure_map",
+            "resolvedDomainId": "iep",
+            "domainPackId": "hive.domain.iep",
+            "domainPackVersion": "0.0.0-scaffold",
+            "logicalDocuments": [
+                {
+                    "sourceDocumentId": "doc-a",
+                    "filename": "doc.pdf",
+                    "pageCount": 1,
+                    "documentTypeId": "iep.plan",
+                }
+            ],
+        }
+    )
+
+    page = DocumentPage(documentId="doc-a", pageNumber=1, words=[PageWord(seq=0, text="Referral text")])
+    _result, per_document, audit = run_pack_driven_reader(
+        pages=[page],
+        lm=MagicMock(),
+        verifier_client=MagicMock(),
+        verify_context=ReaderVerifyContext(case_id="case-1", user_id="user-1"),
+        engine1_reader_context_json=context,
+        settings=Settings(),
+    )
+
+    assert len(compile_calls) == 1
+    assert len(extract_calls) == 1
+    assert "document_type_id" not in compile_calls[0]
+    assert per_document[0].document_type_id == "iep.referral"
+    assert per_document[0].engine1_document_type_id == "iep.plan"

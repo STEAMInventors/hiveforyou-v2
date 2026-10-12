@@ -4,10 +4,13 @@ import {
 } from "@hiveforyou/shared/events";
 import { resolveDomainPackFromDiscoveryLabel } from "@hiveforyou/domain-packs";
 import {
+  applyDiscoverToStudyRequest,
   isStudyArtifactProposePlaceholder,
   isStudyNonRetriableErrorCode,
   markStudyRunWorkerFailed,
+  resolveStudyProcessingMode,
   runStudyWorkerCompleteStep,
+  runStudyWorkerConsolidateFromReaderStep,
   runStudyWorkerLoadContext,
   runStudyWorkerProposeStep,
   runStudyWorkerProjectionsStep,
@@ -35,11 +38,32 @@ import {
 import { ShadowWorkStorage } from "../../study/shadow-work-storage.js";
 import { createWorkerAdminSupabase } from "../../supabase/admin.js";
 import { inngest } from "../client.js";
+import {
+  ensureDiscoverForPackDrivenStudy,
+  type EnsureDiscoverForStudyResult,
+} from "../../study/ensure-discover-for-pack-driven-study.js";
+import type { WorkerEnv } from "../../env.js";
+import type { ShadowStudyStepRunner } from "../../study/run-study-shadow-steps.js";
+import { createReaderHttpClient } from "../../study/create-reader-http-client.js";
+import {
+  PackDrivenReaderNeedsReviewError,
+  PackDrivenReaderProductionError,
+  runProductionPackDrivenReader,
+} from "../../study/run-production-pack-driven-reader.js";
+import { patchStudyArtifactForReaderNeedsReview } from "../../study/patch-pack-driven-validation-needs-review.js";
+import { ReaderAcceptedFactsStorage } from "../../study/reader-accepted-facts-storage.js";
 
 const GLOBAL_STUDY_MODEL_CONCURRENCY = 3;
 
+function workerEnvStrings(env: WorkerEnv): Record<string, string | undefined> {
+  return env as unknown as Record<string, string | undefined>;
+}
+
 type StudyWorkerStepId =
+  | "discover-ensure"
   | "load-context"
+  | "reader"
+  | "consolidate"
   | "propose"
   | "validate"
   | "projections"
@@ -126,15 +150,17 @@ function readAttempt(ctx: { attempt?: number } | undefined): number {
   return typeof raw === "number" && Number.isFinite(raw) ? raw : 0;
 }
 
+type HiveStudyInngestStep = {
+  run: (id: string, fn: () => Promise<unknown>) => Promise<unknown>;
+};
+
 async function runHiveStudyHandler({
   event,
   step,
   attempt = 0,
 }: {
   event: { data: unknown };
-  step: {
-    run: <T>(id: string, fn: () => Promise<T>) => Promise<T>;
-  };
+  step: HiveStudyInngestStep;
   attempt?: number;
 }) {
   const data = hiveStudyRequestedEventDataSchema.parse(event.data);
@@ -205,19 +231,56 @@ async function runHiveStudyHandler({
     return { skipped: "intake-missing" as const };
   }
 
-  const request = await loadIntakeStudyRequest({
+  let request = await loadIntakeStudyRequest({
     intake: built.intake,
     documents: built.documents,
     userId: data.userId,
     run: intakeRun,
   });
+  const storedContextMode = (await deps.contextRepo.getByStudyRunId(data.studyRunId))?.processingPolicy
+    .processingMode;
+  request = {
+    ...request,
+    processingMode:
+      data.processingMode ?? request.processingMode ?? storedContextMode ?? "canonical_openai_v4",
+  };
+
+  const processingMode = resolveStudyProcessingMode(request);
+  const gateway = createSupabaseHiveGateway(supabase);
+
+  if (processingMode === "pack_driven_v1") {
+    const discoverOutcome = (await step.run("discover-ensure", async () =>
+      runTimedStep("discover-ensure", (result) => (result.ok ? "ok" : "skipped"), async () => {
+        return ensureDiscoverForPackDrivenStudy({
+          gateway,
+          documents: built.documents,
+          userId: data.userId,
+          caseId: data.caseId,
+          intakeRunId: data.intakeRunId,
+          domainId: intakeRun.resolvedDomainId ?? "iep",
+          request,
+          env: workerEnvStrings(env),
+        });
+      }),
+    )) as EnsureDiscoverForStudyResult;
+    if (!discoverOutcome.ok) {
+      if (discoverOutcome.code === "DISCOVER_AWAITING_INPUT") {
+        throw new NonRetriableError("DISCOVER_AWAITING_INPUT");
+      }
+      throw new NonRetriableError(discoverOutcome.code);
+    }
+    request = applyDiscoverToStudyRequest(request, {
+      discoverRunId: discoverOutcome.discoverRunId,
+      documentDiscovery: discoverOutcome.documentDiscovery,
+    });
+  }
 
   const resolvedPack = resolveDomainPackFromDiscoveryLabel(request.engine1Result.domainLabel);
   if (!resolvedPack) {
     throw new NonRetriableError("MISSING_DOMAIN_PACK");
   }
 
-  const loaded = await step.run("load-context", async () =>
+  const loaded = (await step.run("load-context", async () =>
     runTimedStep("load-context", (result) => (result.skipped ? "skipped" : "ok"), async () => {
       try {
         return await runStudyWorkerLoadContext(deps, data, request, resolvedPack);
@@ -225,7 +288,7 @@ async function runHiveStudyHandler({
         rethrowStepError(error);
       }
     }),
-  );
+  )) as Awaited<ReturnType<typeof runStudyWorkerLoadContext>>;
 
   if (loaded.skipped) {
     return { skipped: loaded.skipped };
@@ -234,7 +297,80 @@ async function runHiveStudyHandler({
   const artifactBeforePropose = await deps.studyArtifactRepo?.getByStudyRunId(data.studyRunId);
   const validationComplete = hasCompletedStudyValidation(artifactBeforePropose);
 
-  if (!validationComplete) {
+  if (processingMode === "pack_driven_v1" && !validationComplete) {
+    const readerStep = (await step.run("reader", async () =>
+      runTimedStep("reader", () => "ok", async () => {
+        const context = await deps.contextRepo.getByStudyRunId(data.studyRunId);
+        if (!context) {
+          throw new Error("STUDY_CONTEXT_NOT_FOUND");
+        }
+        const sources = await built.documents.listByCase(data.userId, data.caseId);
+        const identities = await built.intake.listByRun(data.userId, data.intakeRunId);
+        const presentIds = new Set(
+          identities
+            .filter((row) => row.analysisDisposition === "PRESENT")
+            .map((row) => row.sourceDocumentId),
+        );
+        const registeredDocuments = sources
+          .filter((row) => presentIds.has(row.id))
+          .map((row) => ({
+            id: row.id,
+            sha256: row.sha256,
+            filename: row.originalFilename,
+          }));
+        const documentPagesBucket = env.HIVE_DOCUMENT_PAGES_BUCKET?.trim() || "document-pages";
+        try {
+          await runProductionPackDrivenReader({
+            gateway,
+            documentPagesBucket,
+            context,
+            userId: data.userId,
+            registeredDocuments,
+            env: workerEnvStrings(env),
+            readerClient: createReaderHttpClient(workerEnvStrings(env)),
+          });
+        } catch (error) {
+          if (error instanceof PackDrivenReaderNeedsReviewError) {
+            return {
+              ok: true,
+              needsReview: true,
+              affectedDocumentIds: [...error.affectedDocumentIds],
+            };
+          }
+          if (error instanceof PackDrivenReaderProductionError) {
+            throw new NonRetriableError(error.errorCode);
+          }
+          throw error;
+        }
+        return { ok: true, needsReview: false, affectedDocumentIds: [] as string[] };
+      }),
+    )) as { needsReview?: boolean; affectedDocumentIds?: string[] };
+
+    await step.run("consolidate", async () =>
+      runTimedStep("consolidate", () => "ok", async () => {
+        const documentPagesBucket = env.HIVE_DOCUMENT_PAGES_BUCKET?.trim() || "document-pages";
+        const storage = new ReaderAcceptedFactsStorage(gateway, documentPagesBucket);
+        const raw = await storage.load(data.userId, data.studyRunId);
+        if (!raw) {
+          throw new Error("READER_ACCEPTED_FACTS_MISSING");
+        }
+        const consolidated = await runStudyWorkerConsolidateFromReaderStep(deps, data, {
+          acceptedFacts: raw,
+        });
+        const reviewDocumentIds = readerStep.affectedDocumentIds ?? [];
+        if (readerStep.needsReview && reviewDocumentIds.length > 0) {
+          const artifact = await deps.studyArtifactRepo?.getByStudyRunId(data.studyRunId);
+          const patched = artifact
+            ? patchStudyArtifactForReaderNeedsReview(artifact, reviewDocumentIds)
+            : null;
+          if (patched) {
+            await deps.studyArtifactRepo?.saveValidated(patched);
+          }
+        }
+        return consolidated;
+      }),
+    );
+  } else if (!validationComplete) {
     await step.run("propose", async () =>
       runTimedStep(
         "propose",
@@ -314,7 +450,7 @@ async function runHiveStudyHandler({
           documentPages: new DocumentPagesStorage(gateway, documentPagesBucket),
           shadowWork: new ShadowWorkStorage(gateway, documentPagesBucket),
         },
-        step,
+        step: step as unknown as ShadowStudyStepRunner,
       });
     } catch (error) {
       console.info(

@@ -134,3 +134,6 @@ export class SupabaseCaseCustomerContextRepository implements CaseCustomerContex
     return record;
   }
 }
+
+/** @deprecated Use `SupabaseCaseCustomerContextRepository` — alias for discover worker deps. */
+export { SupabaseCaseCustomerContextRepository as WorkerCaseCustomerContextRepository };

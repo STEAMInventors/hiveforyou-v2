@@ -10,6 +10,7 @@ import { loadCanonicalCaseByStudyRunId } from "@/lib/case/load-case-by-study-run
 import type { CaseMapViewBundle } from "@/lib/case-map/case-map-view-bundle";
 import { emitStudyRequestedEvent } from "@/lib/intake/emit-study-requested";
 import { createSupabaseHiveGateway } from "@/lib/persistence/hive-gateway";
+import { SupabaseStudyContextRepository } from "@/lib/persistence/supabase-repositories";
 import {
   loadLatestStructureMapForCase,
   SupabaseCaseProjectionRepository,
@@ -45,7 +46,13 @@ async function requestProjectionRegeneration(
   }
   regenerationInFlight.add(key);
   try {
-    await emitStudyRequestedEvent(run, userId);
+    const gateway = createSupabaseHiveGateway(await createServerSupabaseClient());
+    const context = await new SupabaseStudyContextRepository(gateway, userId).getByStudyRunId(
+      run.studyRunId,
+    );
+    await emitStudyRequestedEvent(run, userId, {
+      processingMode: context?.processingPolicy.processingMode,
+    });
   } catch {
     // best-effort; page shows preparing state
   } finally {

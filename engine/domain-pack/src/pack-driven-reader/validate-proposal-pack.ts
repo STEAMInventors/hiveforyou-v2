@@ -45,6 +45,9 @@ export function validateProposalDomainPack(pack: ProposalDomainPack): ValidatePr
 
   function hasPath(path: string): boolean {
     const [rec, ...rest] = path.split(".");
+    if (!rec) {
+      return false;
+    }
     const r = records.get(rec);
     if (!r) return false;
     const ids = fieldIds(r);
@@ -64,6 +67,9 @@ export function validateProposalDomainPack(pack: ProposalDomainPack): ValidatePr
     if (ids.size !== r.fields.length) err(`${r.id}: duplicate field ids`);
     const id = r.identity;
     if (!id?.versionAxis) err(`${r.id}: no versionAxis`);
+    if (!id) {
+      continue;
+    }
     for (const k of [...(id.keyFields ?? []), ...(id.keyFieldsIfPresent ?? []), ...(id.disambiguators ?? [])]) {
       if (!ids.has(k)) err(`${r.id}: key or disambiguator '${k}' is not a field`);
       if (FORBIDDEN_KEY.test(k)) err(`${r.id}: key '${k}' is a version axis, not content`);

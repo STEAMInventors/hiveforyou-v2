@@ -20,13 +20,6 @@ registerDomainPack(bankruptcyDomainPack);
 export { classifyIepDocumentLocally } from "@hiveforyou/domain-pack-iep";
 
 export {
-  clearPackFileCacheForTests,
-  loadAllPacks,
-  loadCoreDefaults,
-  loadPack,
-  packsV2Directory,
-} from "./packs-v2/load";
-export {
   PACK_PRIMITIVE_MAP,
   PACK_STUDY_PRIMITIVES,
   isPackStudyPrimitive,

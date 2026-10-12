@@ -5,7 +5,6 @@ import { describe, expect, it } from "vitest";
 
 import { compilePackDrivenReaderPrompt } from "./compile-prompt.js";
 import { parseAndValidatePackDrivenExtraction } from "./parse-extraction.js";
-import { selectRecordDefinitions } from "./select-checklist.js";
 import type { ProposalDomainPack } from "./types.js";
 
 const repoRoot = resolve(fileURLToPath(new URL(".", import.meta.url)), "../../../..");
@@ -30,7 +29,6 @@ const manifest = [
 function compileFor(sourceDocumentId: string, text: string) {
   return compilePackDrivenReaderPrompt({
     pack: iepPack,
-    documentTypeId: "iep.plan",
     caseManifest: manifest,
     document: {
       sourceDocumentId,
@@ -55,25 +53,19 @@ describe("pack-driven reader document isolation", () => {
     expect(docB.caseUserContent).toContain("Beta-only page text.");
     expect(docB.caseUserContent).not.toContain("Alpha-only page text.");
 
-    expect(docA.outputJsonSchema).not.toEqual(docB.outputJsonSchema);
-    expect(docA.outputJsonSchema).toMatchObject({
-      properties: {
-        sourceDocumentId: { const: "11111111-1111-4111-8111-111111111111" },
-      },
+    expect(docA.outputJsonSchema.properties).toMatchObject({
+      sourceDocumentId: { const: "11111111-1111-4111-8111-111111111111" },
+    });
+    expect(docB.outputJsonSchema.properties).toMatchObject({
+      sourceDocumentId: { const: "22222222-2222-4222-8222-222222222222" },
     });
   });
 
-  it("parse rejects cross-document evidence and derived fields (document-scoped only)", () => {
-    const compiled = compileFor("11111111-1111-4111-8111-111111111111", "Speech therapy 2x week.");
-    const selected = selectRecordDefinitions(iepPack, compiled.selectedRecordTypeIds);
-
+  it("parse rejects cross-document evidence (document-scoped only)", () => {
     const crossDoc = parseAndValidatePackDrivenExtraction({
+      pack: iepPack,
       expectedSourceDocumentId: "11111111-1111-4111-8111-111111111111",
-      selectedRecords: selected,
       raw: {
-        schemaVersion: "hive.pack-driven-reader-extraction/0.1.0",
-        packId: "iep",
-        packVersion: iepPack.manifest.version,
         documentTypeId: "iep.plan",
         sourceDocumentId: "11111111-1111-4111-8111-111111111111",
         recordInstances: [

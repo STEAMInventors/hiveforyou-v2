@@ -1,4 +1,9 @@
-import type { SelectedRecordDefinition } from "./types.js";
+import {
+  PACK_DRIVEN_CLASSIFICATION_AMBIGUOUS,
+  PACK_DRIVEN_CLASSIFICATION_UNKNOWN,
+} from "./constants.js";
+import type { ProposalDomainPack, SelectedRecordDefinition } from "./types.js";
+import { resolveDocumentTypeSpec, selectRecordDefinitions } from "./select-checklist.js";
 
 export type PackDrivenEvidence = {
   sourceDocumentId: string;
@@ -25,6 +30,9 @@ export type ParsedRecordInstance = {
 
 export type ParsePackDrivenExtractionResult = {
   ok: boolean;
+  needsReview: boolean;
+  documentTypeId: string | null;
+  documentTypeResolved: "classified" | "generic_fallback" | "explicit_unclassified" | "unknown" | "ambiguous" | null;
   errors: string[];
   recordInstances: ParsedRecordInstance[];
 };
@@ -70,28 +78,34 @@ function parseEvidence(raw: unknown, errors: string[], where: string): PackDrive
   return { sourceDocumentId, page, quote: quote.trim() };
 }
 
-export function parseAndValidatePackDrivenExtraction(input: {
-  raw: unknown;
+function resolveSelectedRecordsForModelType(input: {
+  pack: ProposalDomainPack;
+  documentTypeId: string;
+}): { selectedRecords: SelectedRecordDefinition[]; typeSpec: ReturnType<typeof resolveDocumentTypeSpec> } {
+  const typeSpec = resolveDocumentTypeSpec({
+    pack: input.pack,
+    documentTypeId: input.documentTypeId,
+    allowGenericUnclassifiedFallback: false,
+  });
+  const selectedRecords = selectRecordDefinitions(input.pack, typeSpec.checklistRecordTypeIds);
+  return { selectedRecords, typeSpec };
+}
+
+function validateRecordInstances(input: {
+  instances: unknown;
   expectedSourceDocumentId: string;
   selectedRecords: SelectedRecordDefinition[];
-}): ParsePackDrivenExtractionResult {
-  const errors: string[] = [];
+  errors: string[];
+}): ParsedRecordInstance[] {
   const recordInstances: ParsedRecordInstance[] = [];
+  const { instances, expectedSourceDocumentId, selectedRecords, errors } = input;
 
-  if (!input.raw || typeof input.raw !== "object") {
-    return { ok: false, errors: ["extraction root must be object"], recordInstances: [] };
-  }
-  const root = input.raw as Record<string, unknown>;
-  if (root.sourceDocumentId !== input.expectedSourceDocumentId) {
-    errors.push("sourceDocumentId mismatch");
-  }
-
-  const instances = root.recordInstances;
   if (!Array.isArray(instances)) {
-    return { ok: false, errors: ["recordInstances must be array"], recordInstances: [] };
+    errors.push("recordInstances must be array");
+    return recordInstances;
   }
 
-  const allowedRecordIds = new Set(input.selectedRecords.map((r) => r.recordTypeId));
+  const allowedRecordIds = new Set(selectedRecords.map((r) => r.recordTypeId));
 
   for (const [ri, inst] of instances.entries()) {
     if (!inst || typeof inst !== "object") {
@@ -102,7 +116,7 @@ export function parseAndValidatePackDrivenExtraction(input: {
     const recordTypeId = row.recordTypeId;
     const instanceIndex = row.instanceIndex;
     if (typeof recordTypeId !== "string" || !allowedRecordIds.has(recordTypeId)) {
-      errors.push(`recordInstances[${ri}].recordTypeId invalid`);
+      errors.push(`recordInstances[${ri}].recordTypeId invalid for classified document type`);
       continue;
     }
     if (typeof instanceIndex !== "number" || !Number.isInteger(instanceIndex) || instanceIndex < 0) {
@@ -134,7 +148,7 @@ export function parseAndValidatePackDrivenExtraction(input: {
         errors.push(`recordInstances[${ri}].fields[${fi}].fieldId required`);
         continue;
       }
-      const def = fieldDef(input.selectedRecords, recordTypeId, fieldId);
+      const def = fieldDef(selectedRecords, recordTypeId, fieldId);
       if (!def) {
         errors.push(`recordInstances[${ri}].fields[${fi}] unknown field ${fieldId}`);
         continue;
@@ -170,7 +184,7 @@ export function parseAndValidatePackDrivenExtraction(input: {
       if ((provenance === "quoted" || provenance === "classified") && !evidence) {
         errors.push(`recordInstances[${ri}].fields[${fi}]: evidence required for ${provenance}`);
       }
-      if (evidence && evidence.sourceDocumentId !== input.expectedSourceDocumentId) {
+      if (evidence && evidence.sourceDocumentId !== expectedSourceDocumentId) {
         errors.push(`recordInstances[${ri}].fields[${fi}]: evidence sourceDocumentId must match document`);
       }
       if (evidence && provenance === "quoted" && typeof f.value === "string") {
@@ -200,5 +214,157 @@ export function parseAndValidatePackDrivenExtraction(input: {
     });
   }
 
-  return { ok: errors.length === 0, errors, recordInstances };
+  return recordInstances;
+}
+
+/** @deprecated Prefer parseAndValidatePackDrivenExtraction with full pack (model-selected type). */
+export function parseAndValidatePackDrivenExtractionLegacy(input: {
+  raw: unknown;
+  expectedSourceDocumentId: string;
+  selectedRecords: SelectedRecordDefinition[];
+}): ParsePackDrivenExtractionResult {
+  const errors: string[] = [];
+  if (!input.raw || typeof input.raw !== "object") {
+    return {
+      ok: false,
+      needsReview: false,
+      documentTypeId: null,
+      documentTypeResolved: null,
+      errors: ["extraction root must be object"],
+      recordInstances: [],
+    };
+  }
+  const root = input.raw as Record<string, unknown>;
+  if (root.sourceDocumentId !== input.expectedSourceDocumentId) {
+    errors.push("sourceDocumentId mismatch");
+  }
+  const recordInstances = validateRecordInstances({
+    instances: root.recordInstances,
+    expectedSourceDocumentId: input.expectedSourceDocumentId,
+    selectedRecords: input.selectedRecords,
+    errors,
+  });
+  return {
+    ok: errors.length === 0,
+    needsReview: false,
+    documentTypeId: typeof root.documentTypeId === "string" ? root.documentTypeId : null,
+    documentTypeResolved: "classified",
+    errors,
+    recordInstances,
+  };
+}
+
+export function parseAndValidatePackDrivenExtraction(input: {
+  pack: ProposalDomainPack;
+  raw: unknown;
+  expectedSourceDocumentId: string;
+}): ParsePackDrivenExtractionResult {
+  const errors: string[] = [];
+
+  if (!input.raw || typeof input.raw !== "object") {
+    return {
+      ok: false,
+      needsReview: false,
+      documentTypeId: null,
+      documentTypeResolved: null,
+      errors: ["extraction root must be object"],
+      recordInstances: [],
+    };
+  }
+  const root = input.raw as Record<string, unknown>;
+  if (root.sourceDocumentId !== input.expectedSourceDocumentId) {
+    errors.push("sourceDocumentId mismatch");
+  }
+
+  const documentTypeRaw = root.documentTypeId;
+  if (typeof documentTypeRaw !== "string" || !documentTypeRaw.trim()) {
+    errors.push("documentTypeId required");
+    return {
+      ok: false,
+      needsReview: true,
+      documentTypeId: null,
+      documentTypeResolved: null,
+      errors,
+      recordInstances: [],
+    };
+  }
+  const documentTypeId = documentTypeRaw.trim();
+
+  if (documentTypeId === PACK_DRIVEN_CLASSIFICATION_UNKNOWN) {
+    errors.push("classification disposition UNKNOWN — NEEDS_REVIEW");
+    if (Array.isArray(root.recordInstances) && root.recordInstances.length > 0) {
+      errors.push("recordInstances must be empty for UNKNOWN");
+    }
+    return {
+      ok: false,
+      needsReview: true,
+      documentTypeId,
+      documentTypeResolved: "unknown",
+      errors,
+      recordInstances: [],
+    };
+  }
+
+  if (documentTypeId === PACK_DRIVEN_CLASSIFICATION_AMBIGUOUS) {
+    errors.push("classification disposition AMBIGUOUS — NEEDS_REVIEW");
+    if (Array.isArray(root.recordInstances) && root.recordInstances.length > 0) {
+      errors.push("recordInstances must be empty for AMBIGUOUS");
+    }
+    return {
+      ok: false,
+      needsReview: true,
+      documentTypeId,
+      documentTypeResolved: "ambiguous",
+      errors,
+      recordInstances: [],
+    };
+  }
+
+  const packType = input.pack.documentTypes.find((d) => d.id === documentTypeId);
+  if (!packType) {
+    errors.push(`documentTypeId ${documentTypeId} is not in pack documentTypes`);
+    return {
+      ok: false,
+      needsReview: true,
+      documentTypeId,
+      documentTypeResolved: null,
+      errors,
+      recordInstances: [],
+    };
+  }
+
+  let selectedRecords: SelectedRecordDefinition[];
+  let typeSpec: ReturnType<typeof resolveDocumentTypeSpec>;
+  try {
+    ({ selectedRecords, typeSpec } = resolveSelectedRecordsForModelType({
+      pack: input.pack,
+      documentTypeId,
+    }));
+  } catch (err) {
+    errors.push(err instanceof Error ? err.message : "document type resolution failed");
+    return {
+      ok: false,
+      needsReview: true,
+      documentTypeId,
+      documentTypeResolved: null,
+      errors,
+      recordInstances: [],
+    };
+  }
+
+  const recordInstances = validateRecordInstances({
+    instances: root.recordInstances,
+    expectedSourceDocumentId: input.expectedSourceDocumentId,
+    selectedRecords,
+    errors,
+  });
+
+  return {
+    ok: errors.length === 0,
+    needsReview: false,
+    documentTypeId,
+    documentTypeResolved: typeSpec.resolution,
+    errors,
+    recordInstances,
+  };
 }

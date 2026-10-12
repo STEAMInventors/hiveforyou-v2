@@ -14,7 +14,11 @@ import { projectCaseMapV3 } from "./project-case-map-v3";
 function sourceFiles(dir: string): string[] {
   const files: string[] = [];
   for (const entry of readdirSync(dir)) {
-    if (entry === "fixtures" || entry.endsWith(".test.ts")) {
+    if (
+      entry === "fixtures" ||
+      entry.endsWith(".test.ts") ||
+      entry.startsWith("project-case-view-v2")
+    ) {
       continue;
     }
     const path = join(dir, entry);

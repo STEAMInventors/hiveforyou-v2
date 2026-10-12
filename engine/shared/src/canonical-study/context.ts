@@ -16,14 +16,21 @@ export type DomainPackVocabularySnapshot = {
   userResponseFactualClaimTypes?: string[];
 };
 
+export type StudyProcessingMode = "canonical_openai_v4" | "pack_driven_v1";
+
 export type StudyProcessingPolicy = {
   /** User/analysis intent must never alter factual acceptance rules. */
   intentAffectsFacts: false;
+  processingMode?: StudyProcessingMode;
   providerId: string;
   providerMode: "fixture" | "openai" | "unconfigured";
   promptId?: string;
   promptVersion?: string;
   promptSha256?: string;
+  /** Pack-driven reader proposal pack content hash when processingMode is pack_driven_v1. */
+  proposalPackContentSha256?: string;
+  /** Discover structure map material fingerprint when bound from Discover. */
+  discoverStructureFingerprint?: string;
 };
 
 /**

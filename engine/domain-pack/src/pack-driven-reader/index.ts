@@ -1,4 +1,7 @@
 export {
+  PACK_DRIVEN_CLASSIFICATION_AMBIGUOUS,
+  PACK_DRIVEN_CLASSIFICATION_UNKNOWN,
+  PACK_DRIVEN_READER_EXTRACTION_SCHEMA_VERSION,
   PACK_DRIVEN_READER_PROMPT_VERSION,
   UNCLASSIFIED_DOCUMENT_TYPE_SENTINEL,
   UNIVERSAL_PACK_DRIVEN_READER_INSTRUCTIONS,
@@ -7,8 +10,13 @@ export { compilePackDrivenReaderPrompt } from "./compile-prompt.js";
 export { computeProposalPackContentSha256 } from "./pack-hash.js";
 export {
   buildPackDrivenReaderOutputJsonSchema,
+  buildUniversalPackDrivenReaderOutputJsonSchema,
   summarizeOutputSchemaStructure,
 } from "./output-schema.js";
+export {
+  resolveProposalDocumentTypeIdFromDiscoverLabel,
+  DiscoverDocumentTypeResolutionError,
+} from "./resolve-discover-document-type.js";
 export {
   intersectAllDocumentChecklists,
   resolveDocumentTypeSpec,

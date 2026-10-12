@@ -99,7 +99,7 @@ describe("agent run trace ingest batch limits", () => {
     );
     const append = vi.fn();
     const deps: AgentRunTraceIngestDeps = {
-      repository: { appendWithScopeValidation: append } as AgentRunTraceRepository,
+      repository: { appendWithScopeValidation: append } as unknown as AgentRunTraceRepository,
     };
     await expect(ingestAgentRunTraceEvents({ events }, deps)).rejects.toBeInstanceOf(
       AgentRunTraceValidationError,
@@ -137,7 +137,7 @@ describe("agent run trace ingest HTTP route", () => {
       async (_event: AgentRunTraceEventInput): Promise<AgentRunTraceAppendResult> => "inserted",
     );
     const traceDeps: AgentRunTraceIngestDeps = {
-      repository: { appendWithScopeValidation: append } as AgentRunTraceRepository,
+      repository: { appendWithScopeValidation: append } as unknown as AgentRunTraceRepository,
     };
 
     const server = createVerifierServer({

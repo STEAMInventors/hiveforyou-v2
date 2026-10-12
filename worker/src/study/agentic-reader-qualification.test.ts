@@ -619,7 +619,10 @@ describe("agentic reader qualification worker flow", () => {
         };
       },
     });
-    expect(withoutEvidence.code).toBe("READER_CANDIDATES_WITHOUT_EVIDENCE");
+    expect(withoutEvidence.outcome).toBe("failed");
+    if (withoutEvidence.outcome === "failed") {
+      expect(withoutEvidence.code).toBe("READER_CANDIDATES_WITHOUT_EVIDENCE");
+    }
   });
 
   it("run succeeds with persisted audit and correlated trace acceptance", async () => {

@@ -4,7 +4,7 @@ import { INTAKE_STUDY_ANSWER_SNAPSHOT, INTAKE_STUDY_QUESTION_SET } from "@hivefo
 import type { CanonicalStudyContext } from "@hiveforyou/shared/canonical-study";
 import { getRecognitionVocabularyByDomainId, serializeRecognitionVocabularyForPrompt } from "@hiveforyou/domain-packs";
 
-import { loadCanonicalStudyPrompt } from "../prompts/load-canonical-study-prompt";
+import { isV4PromptVersion, loadCanonicalStudyPrompt } from "../prompts/load-canonical-study-prompt";
 import { composeCanonicalStudyPromptInputs } from "../prompts/compose-canonical-study-inputs";
 
 import { buildCanonicalStudyUserMessage } from "./openai-engine-v3";
@@ -66,7 +66,10 @@ describe("buildCanonicalStudyUserMessage", () => {
     expect(message).toContain("My child's IEP is next week");
     expect(message).toContain("Domain pack (JSON");
     expect(message).toContain("Domain recognition vocabulary");
-    expect(message).toContain("Runtime proposal contract");
+    if (!isV4PromptVersion(prompt.version)) {
+      expect(message).toContain("Runtime proposal contract");
+    }
+    expect(message).toContain("Return canonical-study-proposal/4");
     expect(message).toContain('"termId": "iep"');
     expect(message).toContain('"IEP"');
     expect(message).toContain("PLAAFP");

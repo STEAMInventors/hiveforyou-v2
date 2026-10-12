@@ -4,11 +4,11 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import type { CanonicalStudyRun } from "@hiveforyou/shared/canonical-study";
+import type { ProposalDomainPack } from "@hiveforyou/domain-pack";
 import {
   PACK_DRIVEN_READER_PROMPT_VERSION,
   computeProposalPackContentSha256,
-  type ProposalDomainPack,
-} from "@hiveforyou/domain-pack";
+} from "@hiveforyou/domain-pack/pack-driven-reader";
 
 import { hashCanonicalJson } from "./fingerprint";
 

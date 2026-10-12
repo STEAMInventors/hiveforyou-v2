@@ -332,6 +332,20 @@ export function intakePackExecutionToStructureMap(input: {
   };
 }
 
+export function applyDiscoverToStudyRequest(
+  request: StartCanonicalStudyRequest,
+  input: {
+    discoverRunId: string;
+    documentDiscovery: DocumentDiscoveryResult;
+  },
+): StartCanonicalStudyRequest {
+  return {
+    ...request,
+    discoveryRunId: input.discoverRunId,
+    engine1Result: input.documentDiscovery,
+  };
+}
+
 export function assembleIntakeStudyRequest(input: AssembleIntakeStudyInput): StartCanonicalStudyRequest {
   const presentSourceIds = new Set(
     input.identities

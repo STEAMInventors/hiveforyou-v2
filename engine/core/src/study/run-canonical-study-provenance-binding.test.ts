@@ -179,7 +179,10 @@ describe("runCanonicalStudy provenance binding", () => {
     expect(frozen?.logicalDocuments).toHaveLength(LOGICAL_DOCUMENT_COUNT);
 
     expect(capturedProposal).toBeDefined();
-    const validation = validateCanonicalStudyProposalV3(frozen!, capturedProposal!);
+    const validation = validateCanonicalStudyProposalV3(
+      frozen!,
+      structuredClone(capturedProposal!),
+    );
     expect(
       validation.rejected.filter((issue) => issue.code === "UNKNOWN_LOGICAL_DOCUMENT"),
     ).toHaveLength(0);

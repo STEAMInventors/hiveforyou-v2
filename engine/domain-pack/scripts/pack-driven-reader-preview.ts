@@ -35,11 +35,10 @@ const samplePage = (label: string) => ({
   text: `[Synthetic offline preview page for ${label} — no family document text.]`,
 });
 
-const documentTypes = [
-  "iep.plan",
-  "iep.progress",
-  "iep.amendment",
-  "iep.evaluation.academic",
+const previewDocuments = [
+  "00000000-0000-4000-8000-000000000001",
+  "00000000-0000-4000-8000-000000000002",
+  "00000000-0000-4000-8000-000000000099",
 ] as const;
 
 mkdirSync(outDir, { recursive: true });
@@ -47,32 +46,30 @@ mkdirSync(outDir, { recursive: true });
 const report = renderPackDrivenReaderPreviewReport({
   pack,
   caseManifest: manifest,
-  documents: documentTypes.map((documentTypeId) => ({
-    documentTypeId,
-    sourceDocumentId: "00000000-0000-4000-8000-000000000099",
-    samplePages: [samplePage(documentTypeId)],
+  documents: previewDocuments.map((sourceDocumentId) => ({
+    sourceDocumentId,
+    samplePages: [samplePage(sourceDocumentId)],
   })),
 });
 
 writeFileSync(join(outDir, "iep-v0.3-preview-report.md"), report, "utf8");
 
-for (const documentTypeId of documentTypes) {
+for (const sourceDocumentId of previewDocuments) {
   const compiled = compilePackDrivenReaderPrompt({
     pack,
-    documentTypeId,
     caseManifest: manifest,
     document: {
-      sourceDocumentId: "00000000-0000-4000-8000-000000000099",
-      pages: [samplePage(documentTypeId)],
+      sourceDocumentId,
+      pages: [samplePage(sourceDocumentId)],
     },
   });
   writeFileSync(
-    join(outDir, `${documentTypeId.replace(/\./g, "_")}.prompt.json`),
+    join(outDir, `${sourceDocumentId}.prompt.json`),
     JSON.stringify(
       {
-        documentTypeId,
-        selectedRecordTypeIds: compiled.selectedRecordTypeIds,
-        selectedFieldCount: compiled.selectedFieldCount,
+        sourceDocumentId,
+        packDocumentTypeCount: compiled.packDocumentTypeCount,
+        packRecordTypeCount: compiled.packRecordTypeCount,
         stableSystemPrefix: compiled.stableSystemPrefix,
         caseUserContent: compiled.caseUserContent,
         outputJsonSchema: compiled.outputJsonSchema,

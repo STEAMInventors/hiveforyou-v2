@@ -31,6 +31,15 @@ const nextConfig: NextConfig = {
     "@hiveforyou/intake",
     "@hiveforyou/intake-node",
   ],
+  webpack(config) {
+    config.resolve ??= {};
+    config.resolve.extensionAlias = {
+      ".js": [".ts", ".tsx", ".js"],
+      ".mjs": [".mts", ".mjs"],
+      ".cjs": [".cts", ".cjs"],
+    };
+    return config;
+  },
 };
 
 export default nextConfig;

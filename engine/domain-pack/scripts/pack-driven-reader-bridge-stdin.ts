@@ -7,7 +7,6 @@ import {
   type CompilePackDrivenReaderPromptInput,
 } from "../src/pack-driven-reader/index.js";
 import { parseAndValidatePackDrivenExtraction } from "../src/pack-driven-reader/parse-extraction.js";
-import { selectRecordDefinitions } from "../src/pack-driven-reader/select-checklist.js";
 import type { ProposalDomainPack } from "../src/pack-driven-reader/types.js";
 
 type BridgeRequest =
@@ -17,7 +16,6 @@ type BridgeRequest =
       pack: ProposalDomainPack;
       raw: unknown;
       expectedSourceDocumentId: string;
-      selectedRecordTypeIds: string[];
     };
 
 async function readStdin(): Promise<string> {
@@ -36,11 +34,10 @@ if (input.op === "compile") {
   const result = compilePackDrivenReaderPrompt(compileInput);
   process.stdout.write(JSON.stringify(result));
 } else if (input.op === "parse") {
-  const selectedRecords = selectRecordDefinitions(input.pack, input.selectedRecordTypeIds);
   const result = parseAndValidatePackDrivenExtraction({
+    pack: input.pack,
     raw: input.raw,
     expectedSourceDocumentId: input.expectedSourceDocumentId,
-    selectedRecords,
   });
   process.stdout.write(JSON.stringify(result));
 } else {

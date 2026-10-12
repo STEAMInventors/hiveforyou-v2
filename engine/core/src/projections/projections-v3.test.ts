@@ -70,6 +70,6 @@ describe("v3 projections", () => {
     expect(built.proView.claims[0]?.isFactual).toBe(true);
     expect(built.caseMap.schemaVersion).toBe("case-map/1");
     expect(built.caseView.schemaVersion).toBe("case-view/2");
-    expect(built.caseView.story.length).toBeGreaterThan(0);
+    expect(built.caseView.storyNarrative?.movements.length ?? 0).toBeGreaterThan(0);
   });
 });

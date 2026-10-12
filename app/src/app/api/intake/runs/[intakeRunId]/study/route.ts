@@ -29,8 +29,25 @@ export async function POST(_request: Request, context: RouteContext) {
     );
   }
 
+  let processingMode: "canonical_openai_v4" | "pack_driven_v1" | undefined;
   try {
-    const outcome = await startIntakeCanonicalStudyFromRun(intakeRunId.trim());
+    const body = (await _request.json().catch(() => null)) as {
+      processingMode?: "canonical_openai_v4" | "pack_driven_v1";
+    } | null;
+    if (
+      body?.processingMode === "canonical_openai_v4" ||
+      body?.processingMode === "pack_driven_v1"
+    ) {
+      processingMode = body.processingMode;
+    }
+  } catch {
+    processingMode = undefined;
+  }
+
+  try {
+    const outcome = await startIntakeCanonicalStudyFromRun(intakeRunId.trim(), {
+      ...(processingMode ? { processingMode } : {}),
+    });
     return NextResponse.json(outcome);
   } catch (error) {
     if (error instanceof UnauthenticatedError) {

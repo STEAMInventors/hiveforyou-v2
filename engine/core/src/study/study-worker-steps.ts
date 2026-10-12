@@ -31,7 +31,9 @@ import { enrichStudyContextWithStructureMap } from "./enrich-study-context";
 import { createStudyRunEvent } from "./event-repository";
 import {
   freezeCanonicalStudyContext,
+  resolveStudyProcessingMode,
 } from "./freeze-context";
+import { consolidateVerifiedReaderFacts } from "./consolidate-verified-reader-facts";
 import { voiceProposalForProjection } from "./extract-voice-proposal";
 import { loadStudySourceDocumentBytes } from "./load-study-source-bytes";
 import type { CanonicalStudyEngineProposal } from "./engine-v3";
@@ -107,13 +109,18 @@ async function ensureStudyContext(
     >
   >,
 ) {
-  if (!deps.prompt) {
+  const processingMode = resolveStudyProcessingMode(request);
+  if (!deps.prompt && processingMode !== "pack_driven_v1") {
     await failWorkerRun(deps, run, "INVALID_STUDY_CONTEXT", "Canonical study prompt is required.");
   }
-  const prompt = deps.prompt!;
+  const prompt = deps.prompt;
   let storedContext = await deps.contextRepo.getByStudyRunId(run.studyRunId);
   const existingContext =
-    storedContext && storedContext.processingPolicy.promptSha256 === prompt.sha256
+    storedContext &&
+    (processingMode === "pack_driven_v1"
+      ? storedContext.processingPolicy.processingMode === "pack_driven_v1"
+      : prompt &&
+        storedContext.processingPolicy.promptSha256 === prompt.sha256)
       ? storedContext
       : null;
 
@@ -126,24 +133,24 @@ async function ensureStudyContext(
       idempotencyKey: run.idempotencyKey,
       providerId: deps.providerId,
       providerMode: deps.providerMode,
-      prompt,
+      prompt: processingMode === "pack_driven_v1" ? undefined : prompt,
       customerContext: deps.customerContext ?? undefined,
     });
 
   const uploadedSourceDocuments = context.sourceDocuments;
-  if (deps.loadStructureMapForIntakeRun && request.intakeRunId?.trim()) {
-    const structureMap = await deps.loadStructureMapForIntakeRun(
+  let structureMap: StructureMap | null = null;
+  if (processingMode === "pack_driven_v1" && deps.loadStructureMapForDiscoverRun && request.discoveryRunId) {
+    structureMap = await deps.loadStructureMapForDiscoverRun(
+      request.discoveryRunId,
+      request.caseId,
+    );
+  } else if (deps.loadStructureMapForIntakeRun && request.intakeRunId?.trim()) {
+    structureMap = await deps.loadStructureMapForIntakeRun(
       request.intakeRunId.trim(),
       request.caseId,
     );
-    if (!structureMap) {
-      await failWorkerRun(
-        deps,
-        run,
-        "INVALID_STUDY_CONTEXT",
-        "Structure Map could not be loaded for this study run.",
-      );
-    }
+  }
+  if (structureMap) {
     context = enrichStudyContextWithStructureMap({
       context,
       structureMap: structureMap as StructureMap,
@@ -151,22 +158,35 @@ async function ensureStudyContext(
       customerContext: deps.customerContext,
     });
     context = { ...context, sourceDocuments: uploadedSourceDocuments };
-  }
-
-  const composedForBinding = composeCanonicalStudyPromptInputs(prompt, context);
-  const frozenHash = context.processingPolicy.promptSha256;
-  const promptMismatch =
-    composedForBinding.prompt.version === "latest" ||
-    composedForBinding.system !== prompt.content ||
-    composedForBinding.prompt.sha256 !== prompt.sha256 ||
-    (frozenHash !== undefined && frozenHash !== prompt.sha256);
-  if (promptMismatch) {
+  } else if (processingMode === "pack_driven_v1") {
     await failWorkerRun(
       deps,
       run,
       "INVALID_STUDY_CONTEXT",
-      "Canonical study prompt could not be bound.",
+      "Discover structure map is required for pack-driven study.",
     );
+  }
+
+  if (processingMode !== "pack_driven_v1") {
+    if (!prompt) {
+      await failWorkerRun(deps, run, "INVALID_STUDY_CONTEXT", "Canonical study prompt is required.");
+      throw new Error("Canonical study prompt is required.");
+    }
+    const composedForBinding = composeCanonicalStudyPromptInputs(prompt, context);
+    const frozenHash = context.processingPolicy.promptSha256;
+    const promptMismatch =
+      composedForBinding.prompt.version === "latest" ||
+      composedForBinding.system !== prompt.content ||
+      composedForBinding.prompt.sha256 !== prompt.sha256 ||
+      (frozenHash !== undefined && frozenHash !== prompt.sha256);
+    if (promptMismatch) {
+      await failWorkerRun(
+        deps,
+        run,
+        "INVALID_STUDY_CONTEXT",
+        "Canonical study prompt could not be bound.",
+      );
+    }
   }
 
   if (!existingContext) {
@@ -402,7 +422,7 @@ export async function runStudyWorkerProjectionsStep(
   const run = await deps.runRepo.getByStudyRunId(event.studyRunId);
   const context = await deps.contextRepo.getByStudyRunId(event.studyRunId);
   const artifact = await deps.studyArtifactRepo?.getByStudyRunId(event.studyRunId);
-  if (!run || !context || !artifact?.rawProposalJson || !artifact.validationResultJson) {
+  if (!run || !context || !artifact?.validationResultJson) {
     throw new Error("STUDY_PROJECTIONS_PREREQUISITE_MISSING");
   }
   const validation = artifact.validationResultJson as CanonicalStudyValidationResultV3;
@@ -410,7 +430,10 @@ export async function runStudyWorkerProjectionsStep(
     throw new Error("STUDY_VALIDATION_NOT_READY");
   }
 
-  const proposal = artifact.rawProposalJson as CanonicalStudyEngineProposal;
+  const proposal = (artifact.rawProposalJson ?? {
+    schemaVersion: "study-consolidation/1",
+    packDriven: true,
+  }) as CanonicalStudyEngineProposal;
   let nextVersion = run.caseIntelligenceVersion ?? null;
   let snapshot: CanonicalCaseSnapshot | null = null;
   if (nextVersion != null) {
@@ -574,6 +597,56 @@ export async function runStudyWorkerCompleteStep(
 
   void event;
   return { status: finalStatus };
+}
+
+export async function runStudyWorkerConsolidateFromReaderStep(
+  deps: StudyServiceDeps,
+  event: StudyWorkerEvent,
+  input: { acceptedFacts: import("@hiveforyou/shared/reader-accepted-facts").ReaderAcceptedFactsArtifact },
+): Promise<{ status: string; acceptedClaimCount: number }> {
+  const run = await deps.runRepo.getByStudyRunId(event.studyRunId);
+  const context = await deps.contextRepo.getByStudyRunId(event.studyRunId);
+  if (!run || !context) {
+    throw new Error("STUDY_CONSOLIDATE_PREREQUISITE_MISSING");
+  }
+
+  const validation = consolidateVerifiedReaderFacts({
+    context,
+    acceptedFacts: input.acceptedFacts,
+  });
+
+  await deps.studyArtifactRepo?.saveValidated({
+    studyRunId: event.studyRunId,
+    caseId: run.caseId,
+    userId: event.userId,
+    rawProposalJson: {
+      schemaVersion: "study-consolidation/1",
+      packDriven: true,
+      studyRunId: event.studyRunId,
+    },
+    validationResultJson: validation,
+  });
+
+  await deps.eventRepo.append(
+    createStudyRunEvent("study_run.validation_completed", run.studyRunId, run.caseId, {
+      status: validation.status,
+      source: "pack_driven_consolidation",
+    }),
+  );
+
+  if (validation.status === "FAILED") {
+    await failWorkerRun(
+      deps,
+      run,
+      "MALFORMED_PROPOSAL",
+      validation.validationErrors[0]?.message ?? "Consolidation produced no valid claims.",
+    );
+  }
+
+  return {
+    status: validation.status,
+    acceptedClaimCount: validation.accepted.claims.length,
+  };
 }
 
 export { isStudyNonRetriableErrorCode };

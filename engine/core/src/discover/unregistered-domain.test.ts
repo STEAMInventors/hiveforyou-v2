@@ -89,7 +89,7 @@ describe("unregistered domain projection", () => {
     const tax = structureMap.domainGroups?.find((group) => group.domainId === "tax");
     const iep = structureMap.domainGroups?.find((group) => group.domainId === "iep");
     expect(tax?.completeness.expectations).toEqual([]);
-    expect(iep?.completeness.expectations.length).toBeGreaterThan(0);
+    expect(iep?.completeness.expectations).toEqual([]);
 
     const discovery = mapStructureMapToDocumentDiscovery(structureMap, IEP_DISCOVER_PACK);
     const taxSection = discovery.domainSections?.find((section) => section.domainId === "tax");

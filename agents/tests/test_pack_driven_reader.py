@@ -28,7 +28,6 @@ def iep_v03_pack() -> dict:
 def test_compile_pack_driven_reader_prompt_via_node(iep_v03_pack: dict) -> None:
     compiled = compile_pack_driven_reader_prompt(
         pack=iep_v03_pack,
-        document_type_id="iep.plan",
         case_manifest=[
             {
                 "sourceDocumentId": "doc-a",
@@ -40,11 +39,11 @@ def test_compile_pack_driven_reader_prompt_via_node(iep_v03_pack: dict) -> None:
         source_document_id="doc-a",
         pages=[{"pageNumber": 1, "text": "Offline synthetic page for compiler bridge test."}],
     )
-    assert compiled.document_type_id == "iep.plan"
-    assert "goal" in compiled.selected_record_type_ids
-    assert compiled.selected_field_count > 50
-    assert "hive-pack-driven-reader/0.1.0" in compiled.prompt_version
+    assert compiled.pack_document_type_count > 8
+    assert compiled.pack_record_type_count > 20
+    assert "hive-pack-driven-reader/0.2.0" in compiled.prompt_version
     assert "insightChecks" not in compiled.stable_system_prefix
+    assert "Document-type catalog" in compiled.stable_system_prefix
 
 
 def test_production_reader_stable_system_unchanged() -> None:

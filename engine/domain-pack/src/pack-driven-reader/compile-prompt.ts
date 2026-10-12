@@ -5,15 +5,12 @@ import {
 import { computeProposalPackContentSha256 } from "./pack-hash.js";
 import {
   buildPackDrivenReaderOutputJsonSchema,
-  buildStablePackDrivenReaderOutputJsonSchema,
+  buildUniversalPackDrivenReaderOutputJsonSchema,
 } from "./output-schema.js";
-import {
-  resolveDocumentTypeSpec,
-  selectRecordDefinitions,
-} from "./select-checklist.js";
 import type {
   CompilePackDrivenReaderPromptInput,
   CompilePackDrivenReaderPromptResult,
+  ProposalDomainPack,
 } from "./types.js";
 import { validateProposalDomainPack } from "./validate-proposal-pack.js";
 
@@ -24,7 +21,7 @@ const EXCLUDED_PROMPT_KEYS = new Set([
   "audiences",
 ]);
 
-function buildVocabularySection(pack: CompilePackDrivenReaderPromptInput["pack"]): string {
+function buildVocabularySection(pack: ProposalDomainPack): string {
   const vocab = pack.vocabulary;
   if (!vocab) return "";
   const parts: string[] = [];
@@ -75,8 +72,48 @@ function buildVocabularySection(pack: CompilePackDrivenReaderPromptInput["pack"]
   return parts.join("\n\n");
 }
 
+function buildDocumentTypeCatalog(pack: ProposalDomainPack): string {
+  const catalog = pack.documentTypes.map((dt) => ({
+    id: dt.id,
+    label: dt.label ?? null,
+    discoverLabels: dt.discoverLabels ?? [],
+    authorRole: dt.authorRole ?? null,
+    checklist: dt.checklist,
+    checklistPolicy: dt.checklistPolicy ?? null,
+    classificationPolicy: dt.classificationPolicy ?? null,
+    orderingDate: dt.orderingDate ?? null,
+    readingNotes: pack.readingNotes.byDocumentType[dt.id] ?? null,
+  }));
+  return [
+    "## Document-type catalog (classify using these ids)",
+    JSON.stringify(catalog, null, 2),
+  ].join("\n");
+}
+
+function buildRecordTypeCatalog(pack: ProposalDomainPack): string {
+  const records = pack.recordTypes.map((record) => ({
+    recordTypeId: record.id,
+    label: record.label ?? null,
+    repeatable: record.repeatable ?? false,
+    identity: record.identity ?? null,
+    usesConstructs: record.usesConstructs ?? [],
+    fields: record.fields.map((f) => ({
+      id: f.id,
+      valueKind: f.valueKind,
+      source: f.source,
+      modality: f.modality ?? [],
+      enum: f.enum ?? null,
+      unit: f.unit ?? null,
+      description: f.description ?? null,
+      modelMayEmit: !f.source.includes("derived"),
+      derivation: f.source.includes("derived") ? f.derivation ?? null : null,
+    })),
+  }));
+  return ["## Record-type and field catalog", JSON.stringify(records, null, 2)].join("\n");
+}
+
 function buildPackDefinitionBlock(
-  pack: CompilePackDrivenReaderPromptInput["pack"],
+  pack: ProposalDomainPack,
   packHash: string,
   outputSchema: Record<string, unknown>,
 ): string {
@@ -90,6 +127,7 @@ function buildPackDefinitionBlock(
     evidencePolicy: pack.evidencePolicy,
     constructs: pack.constructs,
     unclassifiedPolicy: pack.unclassifiedPolicy,
+    genericUnclassifiedChecklist: pack.genericUnclassifiedChecklist ?? null,
   };
 
   return [
@@ -99,13 +137,20 @@ function buildPackDefinitionBlock(
     `packContentSha256: ${packHash}`,
     `promptCompilerVersion: ${PACK_DRIVEN_READER_PROMPT_VERSION}`,
     "",
-    "Pack snapshot (requirements, insight checks, plain explainers, vocabulary JSON, and legal conclusions are intentionally omitted from extraction):",
+    "Pack snapshot (requirements, insight checks, plain explainers, and legal conclusions are intentionally omitted from extraction):",
     JSON.stringify(packSnapshot, null, 2),
     "",
-    "## Output contract (JSON Schema — respond inside extraction_json as this object)",
-    JSON.stringify(outputSchema, null, 2),
+    buildDocumentTypeCatalog(pack),
+    "",
+    buildRecordTypeCatalog(pack),
+    "",
+    "### Global reading notes",
+    pack.readingNotes.global,
     "",
     buildVocabularySection(pack),
+    "",
+    "## Output contract (JSON Schema — respond as this object)",
+    JSON.stringify(outputSchema, null, 2),
   ]
     .filter(Boolean)
     .join("\n");
@@ -114,6 +159,7 @@ function buildPackDefinitionBlock(
 function buildManifestBlock(manifest: CompilePackDrivenReaderPromptInput["caseManifest"]): string {
   return [
     "## Case document manifest (context only — not readable evidence)",
+    "Engine 1 documentTypeId values when present are diagnostic hints only; classify from page text.",
     JSON.stringify(
       manifest.map((entry) => ({
         sourceDocumentId: entry.sourceDocumentId,
@@ -128,62 +174,16 @@ function buildManifestBlock(manifest: CompilePackDrivenReaderPromptInput["caseMa
   ].join("\n");
 }
 
-function buildDocumentTypeBlock(input: {
-  documentTypeId: string;
-  resolution: string;
-  checklistPolicy: string;
-  selectedRecords: ReturnType<typeof selectRecordDefinitions>;
-  sourceDocumentId: string;
-  readingNotesGlobal: string;
-  readingNotesForType: string | null;
-  unclassifiedPolicy?: string;
-}): string {
-  const fieldCount = input.selectedRecords.reduce((n, r) => n + r.fields.length, 0);
+function buildDocumentTaskBlock(sourceDocumentId: string): string {
   return [
-    "## Document classification and checklist",
-    `documentTypeId: ${input.documentTypeId}`,
-    `resolution: ${input.resolution}`,
-    `checklistPolicy: ${input.checklistPolicy}`,
-    input.unclassifiedPolicy ? `unclassifiedPolicy: ${input.unclassifiedPolicy}` : "",
-    `checklistRecordTypes (${input.selectedRecords.length} records, ${fieldCount} fields): ${input.selectedRecords.map((r) => r.recordTypeId).join(", ")}`,
-    "",
-    "### Global reading notes",
-    input.readingNotesGlobal,
-    input.readingNotesForType
-      ? `\n### Document-type reading notes\n${input.readingNotesForType}`
-      : "",
-    "",
-    "### Document-scoped extraction targets",
-    `sourceDocumentId: ${input.sourceDocumentId}`,
-    "Use the stable output JSON Schema envelope from the system prefix; set documentTypeId and sourceDocumentId to the values above.",
-    "Emit recordInstances only for record types listed below; fieldIds must come from this catalog.",
-    "",
-    "### Record and field catalog for this document",
-    JSON.stringify(
-      input.selectedRecords.map((record) => ({
-        recordTypeId: record.recordTypeId,
-        label: record.label ?? null,
-        repeatable: record.repeatable,
-        identity: record.identity ?? null,
-        usesConstructs: record.usesConstructs ?? [],
-        fields: record.fields.map((f) => ({
-          id: f.id,
-          valueKind: f.valueKind,
-          source: f.source,
-          modality: f.modality ?? [],
-          enum: f.enum ?? null,
-          unit: f.unit ?? null,
-          description: f.description ?? null,
-          modelMayEmit: !f.source.includes("derived"),
-          derivation: f.source.includes("derived") ? f.derivation ?? null : null,
-        })),
-      })),
-      null,
-      2,
-    ),
-  ]
-    .filter(Boolean)
-    .join("\n");
+    "## Extraction task (this document only)",
+    `sourceDocumentId: ${sourceDocumentId}`,
+    "Steps:",
+    "1. Classify: set documentTypeId to one pack catalog id, or UNKNOWN / AMBIGUOUS.",
+    "2. Extract: emit recordInstances only for checklist record types allowed for that documentTypeId.",
+    "3. Set sourceDocumentId in output to the value above.",
+    "4. For UNKNOWN or AMBIGUOUS: recordInstances must be [].",
+  ].join("\n");
 }
 
 function buildPagesBlock(document: CompilePackDrivenReaderPromptInput["document"]): string {
@@ -227,45 +227,18 @@ export function compilePackDrivenReaderPrompt(
     throw new Error(`Invalid proposal domain pack: ${validation.errors.join("; ")}`);
   }
 
-  const allowFallback = input.allowGenericUnclassifiedFallback ?? true;
-  const typeSpec = resolveDocumentTypeSpec({
-    pack: input.pack,
-    documentTypeId: input.documentTypeId,
-    allowGenericUnclassifiedFallback: allowFallback,
-  });
-
-  const selectedRecords = selectRecordDefinitions(input.pack, typeSpec.checklistRecordTypeIds);
   const packHash = computeProposalPackContentSha256(input.pack);
 
-  const stableOutputJsonSchema = buildStablePackDrivenReaderOutputJsonSchema({
-    packId: input.pack.manifest.id,
-    packVersion: input.pack.manifest.version,
-  });
-
+  const stableOutputJsonSchema = buildUniversalPackDrivenReaderOutputJsonSchema(input.pack);
   const outputJsonSchema = buildPackDrivenReaderOutputJsonSchema({
-    packId: input.pack.manifest.id,
-    packVersion: input.pack.manifest.version,
-    documentTypeId: typeSpec.documentTypeId,
+    pack: input.pack,
     sourceDocumentId: input.document.sourceDocumentId,
-    selectedRecords,
   });
 
   const blockA = UNIVERSAL_PACK_DRIVEN_READER_INSTRUCTIONS;
   const blockB = buildPackDefinitionBlock(input.pack, packHash, stableOutputJsonSchema);
   const blockC = buildManifestBlock(input.caseManifest);
-  const blockD = buildDocumentTypeBlock({
-    documentTypeId: typeSpec.documentTypeId,
-    resolution: typeSpec.resolution,
-    checklistPolicy: typeSpec.checklistPolicy,
-    selectedRecords,
-    sourceDocumentId: input.document.sourceDocumentId,
-    readingNotesGlobal: input.pack.readingNotes.global,
-    readingNotesForType:
-      typeSpec.documentType?.id != null
-        ? input.pack.readingNotes.byDocumentType[typeSpec.documentType.id] ?? null
-        : null,
-    unclassifiedPolicy: input.pack.unclassifiedPolicy,
-  });
+  const blockD = buildDocumentTaskBlock(input.document.sourceDocumentId);
   const blockE = buildPagesBlock(input.document);
 
   const stableSystemPrefix = `${blockA}\n\n${blockB}`;
@@ -274,17 +247,13 @@ export function compilePackDrivenReaderPrompt(
   assertNoExcludedKeysInPromptText(stableSystemPrefix);
   assertNoExcludedKeysInPromptText(caseUserContent);
 
-  const selectedFieldCount = selectedRecords.reduce((n, r) => n + r.fields.length, 0);
-
   const result: CompilePackDrivenReaderPromptResult = {
     promptVersion: PACK_DRIVEN_READER_PROMPT_VERSION,
     packId: input.pack.manifest.id,
     packVersion: input.pack.manifest.version,
     packContentSha256: packHash,
-    documentTypeId: typeSpec.documentTypeId,
-    documentTypeResolved: typeSpec.resolution,
-    selectedRecordTypeIds: typeSpec.checklistRecordTypeIds,
-    selectedFieldCount,
+    packDocumentTypeCount: input.pack.documentTypes.length,
+    packRecordTypeCount: input.pack.recordTypes.length,
     stableSystemPrefix,
     caseUserContent,
     outputJsonSchema,
@@ -292,7 +261,7 @@ export function compilePackDrivenReaderPrompt(
       A_universal: blockA,
       B_packDefinitionAndContract: blockB,
       C_caseManifest: blockC,
-      D_documentTypeChecklist: blockD,
+      D_documentTask: blockD,
       E_documentPages: blockE,
     },
   };

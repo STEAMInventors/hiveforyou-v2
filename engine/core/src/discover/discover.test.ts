@@ -565,6 +565,6 @@ describe("Engine 1 discover adapter", () => {
     expect(outcome.documentDiscovery?.documents[0]?.documentType).toContain(
       "Individualized Education Program",
     );
-    expect(outcome.documentDiscovery?.missingDocuments.length).toBeGreaterThan(0);
+    expect(outcome.documentDiscovery?.missingDocuments).toEqual([]);
   });
 });

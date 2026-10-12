@@ -19,6 +19,7 @@ export type IdempotencyInput = {
   answerFingerprint: string;
   intakeRunId?: string | null;
   intakeStudyMaterialFingerprint?: string | null;
+  processingMode?: "canonical_openai_v4" | "pack_driven_v1";
   engine: StudyEngineFingerprint;
 };
 

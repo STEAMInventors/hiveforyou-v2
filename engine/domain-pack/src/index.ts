@@ -93,16 +93,15 @@ export {
   type PacketSegmentationResolver,
   type ValidateLogicalPageBoundariesResult,
 } from "./logical-page-segmentation";
+export type { ProposalDomainPack } from "./pack-driven-reader/types.js";
 export {
+  PACK_DRIVEN_CLASSIFICATION_AMBIGUOUS,
+  PACK_DRIVEN_CLASSIFICATION_UNKNOWN,
   PACK_DRIVEN_READER_PROMPT_VERSION,
   UNCLASSIFIED_DOCUMENT_TYPE_SENTINEL,
-  compilePackDrivenReaderPrompt,
-  computeProposalPackContentSha256,
-  parseAndValidatePackDrivenExtraction,
-  renderPackDrivenReaderPreviewReport,
-  validateProposalDomainPack,
-  PackDrivenReaderDocumentTypeError,
-  type CompilePackDrivenReaderPromptInput,
-  type CompilePackDrivenReaderPromptResult,
-  type ProposalDomainPack,
-} from "./pack-driven-reader/index.js";
+} from "./pack-driven-reader/constants.js";
+export {
+  DiscoverDocumentTypeResolutionError,
+  resolveProposalDocumentTypeIdFromDiscoverLabel,
+} from "./pack-driven-reader/resolve-discover-document-type.js";
+export { PackDrivenReaderDocumentTypeError } from "./pack-driven-reader/select-checklist.js";

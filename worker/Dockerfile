@@ -53,9 +53,11 @@ COPY --from=build /repo/worker/dist/package.json ./package.json
 COPY engine/domain-packs/iep/study/agents.json ./pack/agents.json
 COPY engine/eval/reports/reader-experiment/prompt-hashes.json ./pack/reader-experiment-prompt-hashes.json
 COPY engine/intake/fixtures/l001/manifest.json ./pack/l001-qualification-manifest.json
+COPY brain/domain-packs/iep/iep-pack.v0.3.proposed.json ./pack/iep-pack.v0.3.proposed.json
 
 ENV HIVE_READER_EXPERIMENT_PROMPT_HASHES_JSON=/app/pack/reader-experiment-prompt-hashes.json
 ENV HIVE_L001_QUALIFICATION_MANIFEST_JSON=/app/pack/l001-qualification-manifest.json
+ENV HIVE_PACK_DRIVEN_READER_PROPOSAL_JSON=/app/pack/iep-pack.v0.3.proposed.json
 
 RUN node --input-type=module -e "\
 import { readFileSync } from 'node:fs';\
@@ -96,6 +98,32 @@ for (const entry of files) {\
 }\
 if (seen.size !== expected.size) throw new Error('L001_QUALIFICATION_MANIFEST_PIN_MISMATCH:' + path);\
 for (const hash of expected) { if (!seen.has(hash)) throw new Error('L001_QUALIFICATION_MANIFEST_PIN_MISMATCH:' + path); }\
+"
+
+RUN node --input-type=module -e "\
+import { readFileSync } from 'node:fs';\
+import { createHash } from 'node:crypto';\
+const path = process.env.HIVE_PACK_DRIVEN_READER_PROPOSAL_JSON;\
+const expectedSha = 'c2baa0439d32496a3110f5388f6048395a9f4c8fdce79b3d0cec36ae6b9a7775';\
+if (!path) throw new Error('HIVE_PACK_DRIVEN_READER_PROPOSAL_JSON missing');\
+let pack;\
+try { pack = JSON.parse(readFileSync(path, 'utf8')); } catch { throw new Error('PACK_DRIVEN_PROPOSAL_PACK_INVALID:' + path + ':json'); }\
+const payload = {\
+  schemaVersion: pack.schemaVersion,\
+  manifest: pack.manifest,\
+  documentTypes: pack.documentTypes,\
+  recordTypes: pack.recordTypes,\
+  constructs: pack.constructs ?? {},\
+  fieldSources: pack.fieldSources ?? {},\
+  modalities: pack.modalities ?? [],\
+  missingStates: pack.missingStates ?? [],\
+  evidencePolicy: pack.evidencePolicy ?? {},\
+  readingNotes: pack.readingNotes,\
+  vocabulary: pack.vocabulary ?? {},\
+  genericUnclassifiedChecklist: pack.genericUnclassifiedChecklist ?? null,\
+};\
+const sha = createHash('sha256').update(JSON.stringify(payload)).digest('hex');\
+if (sha !== expectedSha) throw new Error('PACK_DRIVEN_PROPOSAL_PACK_PIN_MISMATCH:' + path);\
 "
 
 RUN npm install --omit=dev \

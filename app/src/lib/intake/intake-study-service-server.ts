@@ -67,13 +67,14 @@ export class IntakeStudyNotReadyError extends Error {
 
 export async function startIntakeCanonicalStudyFromRun(
   intakeRunId: string,
+  options?: { processingMode?: import("@hiveforyou/shared/canonical-study").StudyProcessingMode },
 ): Promise<CanonicalStudyOutcome> {
   if (isInngestIntakePipeline()) {
-    return startIntakeCanonicalStudyFromRunInner(intakeRunId);
+    return startIntakeCanonicalStudyFromRunInner(intakeRunId, options);
   }
   let execution = inlineIntakeStudyInFlight.get(intakeRunId);
   if (!execution) {
-    execution = startIntakeCanonicalStudyFromRunInner(intakeRunId);
+    execution = startIntakeCanonicalStudyFromRunInner(intakeRunId, options);
     inlineIntakeStudyInFlight.set(intakeRunId, execution);
   }
   try {
@@ -87,6 +88,7 @@ export async function startIntakeCanonicalStudyFromRun(
 
 async function startIntakeCanonicalStudyFromRunInner(
   intakeRunId: string,
+  options?: { processingMode?: import("@hiveforyou/shared/canonical-study").StudyProcessingMode },
 ): Promise<CanonicalStudyOutcome> {
   const env = readServerEnv();
   const sessionUserId = requireSessionUserId(await getAuthenticatedUserId());
@@ -198,10 +200,13 @@ async function startIntakeCanonicalStudyFromRunInner(
     throw new Error("ANSWER_SNAPSHOT_PERSISTENCE_FAILED");
   }
 
+  const defaultProcessingMode =
+    run.studyPath === "DOMAIN_PACK" ? ("pack_driven_v1" as const) : ("canonical_openai_v4" as const);
   const assembledRequest = {
     ...studyRequest,
     answerSnapshot: loadedSnapshot.snapshot,
     answerSnapshotId: loadedSnapshot.id,
+    processingMode: options?.processingMode ?? defaultProcessingMode,
   };
 
   const presentSourceIds = new Set(
@@ -314,7 +319,9 @@ async function startIntakeCanonicalStudyFromRunInner(
     const studyRunId = randomUUID();
     const queued = await queueCanonicalStudyRun(assembledRequest, deps, { studyRunId });
     if (queued.run.status === "QUEUED") {
-      await emitStudyRequestedEvent(queued.run, sessionUserId);
+      await emitStudyRequestedEvent(queued.run, sessionUserId, {
+        processingMode: assembledRequest.processingMode,
+      });
     }
     if (queued.run.studyContextId !== "not-created") {
       await documents.attachStudyRun(sessionUserId, run.caseId, queued.run.studyRunId);

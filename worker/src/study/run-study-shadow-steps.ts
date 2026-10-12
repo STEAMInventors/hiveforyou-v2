@@ -91,7 +91,7 @@ async function loadRecoveredPages(
   ) {
     return [];
   }
-  return normalized.normalizedExtraction.pages;
+  return [...normalized.normalizedExtraction.pages];
 }
 
 export async function runStudyShadowPipeline(input: {
@@ -123,7 +123,9 @@ export async function runStudyShadowPipeline(input: {
     return { skipped: "shadow-no-validation" };
   }
 
-  const modelBundle = createWorkerCallModel(deps.env as Record<string, string | undefined>);
+  const modelBundle = createWorkerCallModel(
+    deps.env as unknown as Record<string, string | undefined>,
+  );
   if (!modelBundle) {
     await deps.artifacts.insertRunning({
       id: randomUUID(),
@@ -424,6 +426,6 @@ export async function runStudyShadowPipeline(input: {
 }
 
 export function isStudyShadowEnabled(env: WorkerEnv): boolean {
-  const raw = (env as Record<string, string | undefined>).HIVE_STUDY_SHADOW?.trim().toLowerCase();
+  const raw = (env as unknown as Record<string, string | undefined>).HIVE_STUDY_SHADOW?.trim().toLowerCase();
   return raw === "on" || raw === "1" || raw === "true";
 }

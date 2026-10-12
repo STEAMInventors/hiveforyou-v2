@@ -1,5 +1,6 @@
 import {
   verifyL001QualificationManifestPackaged,
+  verifyPackDrivenProposalPackPackaged,
   verifyReaderExperimentPromptHashesPackaged,
 } from "@hiveforyou/core/study";
 
@@ -10,6 +11,7 @@ export async function runBootCheck(): Promise<void> {
   await runSelfCheck();
   verifyReaderExperimentPromptHashesPackaged();
   verifyL001QualificationManifestPackaged();
+  verifyPackDrivenProposalPackPackaged();
   await import("inngest/connect");
   const { inngest } = await import("./inngest/client.js");
   const { workerFunctions } = await import("./inngest/functions/index.js");

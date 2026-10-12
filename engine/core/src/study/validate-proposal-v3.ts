@@ -177,7 +177,7 @@ export function validateCanonicalStudyProposalV3(
     });
   }
 
-  const proposal = contract.value;
+  const proposal = structuredClone(contract.value);
   if (
     proposal.schemaVersion !== CANONICAL_STUDY_PROPOSAL_SCHEMA_V3 &&
     proposal.schemaVersion !== CANONICAL_STUDY_PROPOSAL_SCHEMA_V5

@@ -37,6 +37,8 @@ from hive_agents.verifier_client import ReaderVerifierClient
 class PackDrivenDocumentResult:
     source_document_id: str
     document_type_id: str | None
+    engine1_document_type_id: str | None
+    classification_needs_review: bool
     parse_ok: bool
     parse_errors: list[str]
     candidate_facts: list[CandidateFact] = field(default_factory=list)
@@ -81,7 +83,7 @@ def _process_single_document(
     doc_pages: list[DocumentPage],
     proposal_pack: Any,
     case_manifest: Any,
-    document_type_id: str | None,
+    engine1_document_type_id: str | None,
     lm: dspy.LM,
     verifier_client: ReaderVerifierClient,
     verify_context: ReaderVerifyContext,
@@ -89,7 +91,9 @@ def _process_single_document(
     if not doc_pages:
         return PackDrivenDocumentResult(
             source_document_id=source_document_id,
-            document_type_id=document_type_id,
+            document_type_id=None,
+            engine1_document_type_id=engine1_document_type_id,
+            classification_needs_review=False,
             parse_ok=False,
             parse_errors=["missing_pages_for_logical_document"],
         )
@@ -97,7 +101,6 @@ def _process_single_document(
     try:
         compiled = compile_pack_driven_reader_prompt(
             pack=proposal_pack,
-            document_type_id=document_type_id,
             case_manifest=case_manifest,
             source_document_id=source_document_id,
             pages=pages_to_pack_driven_payload(doc_pages),
@@ -112,10 +115,9 @@ def _process_single_document(
             pack=proposal_pack,
             raw=raw,
             expected_source_document_id=source_document_id,
-            selected_record_type_ids=compiled.selected_record_type_ids,
         )
         candidates: list[CandidateFact] = []
-        if parsed.ok:
+        if parsed.ok and not parsed.needs_review:
             candidates = pack_extraction_to_candidate_facts(
                 source_document_id=source_document_id,
                 record_instances=parsed.record_instances,
@@ -143,7 +145,9 @@ def _process_single_document(
 
         return PackDrivenDocumentResult(
             source_document_id=source_document_id,
-            document_type_id=document_type_id,
+            document_type_id=parsed.document_type_id,
+            engine1_document_type_id=engine1_document_type_id,
+            classification_needs_review=parsed.needs_review,
             parse_ok=parsed.ok,
             parse_errors=list(parsed.errors),
             candidate_facts=candidates,
@@ -157,7 +161,9 @@ def _process_single_document(
     except Exception as exc:
         return PackDrivenDocumentResult(
             source_document_id=source_document_id,
-            document_type_id=document_type_id,
+            document_type_id=None,
+            engine1_document_type_id=engine1_document_type_id,
+            classification_needs_review=False,
             parse_ok=False,
             parse_errors=[f"document_extraction_failed:{exc.__class__.__name__}"],
             execution_error=exc.__class__.__name__,
@@ -178,6 +184,8 @@ def _fan_in_document_results(
             PackDrivenDocumentResult(
                 source_document_id=source_document_id,
                 document_type_id=None,
+                engine1_document_type_id=None,
+                classification_needs_review=False,
                 parse_ok=False,
                 parse_errors=["document_task_missing_from_fan_in"],
             )
@@ -204,7 +212,7 @@ def run_pack_driven_reader(
     proposal_pack = load_proposal_domain_pack(pack_path)
     logical_docs, document_order = parse_engine1_logical_documents(engine1_reader_context_json)
     case_manifest = build_case_manifest(logical_docs)
-    doc_type_by_id = {doc.source_document_id: doc.document_type_id for doc in logical_docs}
+    engine1_type_by_id = {doc.source_document_id: doc.document_type_id for doc in logical_docs}
 
     concurrency = max(1, int(getattr(settings, "reader_parallel_concurrency", 8) or 8))
     wall_started = time.perf_counter()
@@ -229,7 +237,7 @@ def run_pack_driven_reader(
                     doc_pages=doc_pages,
                     proposal_pack=proposal_pack,
                     case_manifest=case_manifest,
-                    document_type_id=doc_type_by_id.get(source_document_id),
+                    engine1_document_type_id=engine1_type_by_id.get(source_document_id),
                     lm=lm,
                     verifier_client=verifier_client,
                     verify_context=verify_context,
@@ -237,7 +245,9 @@ def run_pack_driven_reader(
             except Exception as exc:
                 result = PackDrivenDocumentResult(
                     source_document_id=source_document_id,
-                    document_type_id=doc_type_by_id.get(source_document_id),
+                    document_type_id=None,
+                    engine1_document_type_id=engine1_type_by_id.get(source_document_id),
+                    classification_needs_review=False,
                     parse_ok=False,
                     parse_errors=[f"document_task_failed:{exc.__class__.__name__}"],
                     execution_error=exc.__class__.__name__,
@@ -295,6 +305,8 @@ def run_pack_driven_reader(
             {
                 "sourceDocumentId": row.source_document_id,
                 "documentTypeId": row.document_type_id,
+                "engine1DocumentTypeId": row.engine1_document_type_id,
+                "classificationNeedsReview": row.classification_needs_review,
                 "parseOk": row.parse_ok,
                 "parseErrorCount": len(row.parse_errors),
                 "executionError": row.execution_error,
@@ -332,6 +344,8 @@ def per_document_results_to_wire(rows: list[PackDrivenDocumentResult]) -> list[d
             {
                 "sourceDocumentId": row.source_document_id,
                 "documentTypeId": row.document_type_id,
+                "engine1DocumentTypeId": row.engine1_document_type_id,
+                "classificationNeedsReview": row.classification_needs_review,
                 "parseOk": row.parse_ok,
                 "parseErrors": row.parse_errors,
                 "executionError": row.execution_error,

@@ -16,11 +16,9 @@ import type {
   Chip,
   DisplayValue,
 } from "@hiveforyou/shared/projections";
-import {
-  constructRoot,
-  IEP_MEASURE_LABELS,
-  iepSectionForMeasure,
-} from "@hiveforyou/shared/projections";
+import { constructRoot } from "@hiveforyou/shared/projections";
+
+import { humanizeConstruct } from "./format-v3-claim";
 
 export type RulebookSectionStatus = "found" | "partial" | "notcaptured" | "later" | "notfound";
 
@@ -132,7 +130,7 @@ export function resolveDomainPackId(input: {
     return "bankruptcy";
   }
   const label = input.domainLabel?.toLowerCase() ?? "";
-  if (label.includes("iep") || label.includes("special education")) {
+  if (label.includes("iep") || label.includes("special_education")) {
     return "iep";
   }
   if (label.includes("medicaid")) {
@@ -144,22 +142,26 @@ export function resolveDomainPackId(input: {
   return null;
 }
 
-function docTypeCandidates(doc: CaseDocument): string[] {
+function docTypeCandidates(
+  doc: CaseDocument,
+  pack: NonNullable<ReturnType<typeof getDomainPackByDomainId>>,
+): string[] {
   const out = new Set<string>();
   const t = doc.documentType?.trim();
   if (t) {
     out.add(t);
   }
   const hay = `${doc.documentType ?? ""} ${doc.fileName}`.toLowerCase();
-  if (hay.includes("iep") && !hay.includes("progress") && !hay.includes("report")) {
-    out.add("Individualized Education Program");
-    out.add("IEP");
-  }
-  if (hay.includes("progress") || (hay.includes("report") && !hay.includes("eval"))) {
-    out.add("Progress report");
-  }
-  if (hay.includes("notice of action") || hay.includes("noa")) {
-    out.add("Notice of Action");
+  for (const entry of pack.discover?.catalog ?? []) {
+    const typeLower = entry.documentType.toLowerCase();
+    if (t && typeLower.includes(t.toLowerCase())) {
+      out.add(entry.documentType);
+    }
+    for (const hint of entry.filenameHints) {
+      if (hay.includes(hint.toLowerCase())) {
+        out.add(entry.documentType);
+      }
+    }
   }
   return [...out];
 }
@@ -247,10 +249,9 @@ function factFromItem(item: CaseItemV2, documents: CaseDocument[]): RulebookExpl
     if (!value) {
       return null;
     }
-    const root = constructRoot(item.construct.measure);
     const chip = primaryChipForItem(item);
     return {
-      label: IEP_MEASURE_LABELS[root] ?? item.label,
+      label: humanizeConstruct(item.construct.measure) || item.label,
       value,
       claimId: item.claimId,
       sourceLabel: chip ? chipSourceLabel(chip, documents) : undefined,
@@ -265,10 +266,9 @@ function factFromItem(item: CaseItemV2, documents: CaseDocument[]): RulebookExpl
     if (!value) {
       return null;
     }
-    const root = constructRoot(item.construct.measure);
     const chip = latest.chips[0] ?? primaryChipForItem(item);
     return {
-      label: IEP_MEASURE_LABELS[root] ?? item.label,
+      label: humanizeConstruct(item.construct.measure) || item.label,
       value,
       claimId: latest.claimId,
       sourceLabel: chip ? chipSourceLabel(chip, documents) : undefined,
@@ -281,7 +281,20 @@ function measureSectionForItem(item: CaseItemV2): string | null {
   if (item.state !== "established" && item.state !== "changed") {
     return null;
   }
-  return iepSectionForMeasure(item.construct.measure);
+  const root = constructRoot(item.construct.measure);
+  if (root.includes("goal")) {
+    return "goals";
+  }
+  if (root.includes("service") || root.includes("minute") || root.includes("instruction")) {
+    return "services";
+  }
+  if (root.includes("accommod") || root.includes("support")) {
+    return "accommodations";
+  }
+  if (root.includes("eligib") || root.includes("disabilit")) {
+    return "eligibility";
+  }
+  return root || null;
 }
 
 function sortItemsForAnchor(items: CaseItemV2[], anchorDocId: string): CaseItemV2[] {
@@ -491,9 +504,7 @@ function buildMeta(input: {
       ? `${formatDisplayDate(period.start)} – ${formatDisplayDate(period.end)}`
       : null;
   const documentDate = input.doc.documentDate ? formatDisplayDate(input.doc.documentDate) : null;
-  const domainPill =
-    input.domainLabel?.trim() ||
-    (input.guide.docType.includes("Education") ? "Special education (IEP)" : input.guide.docType);
+  const domainPill = input.domainLabel?.trim() || input.guide.docType.trim() || "Records";
   return {
     domainPill,
     planPeriod,
@@ -609,7 +620,7 @@ export function buildRulebookDocumentExplainers(input: {
 
   for (const doc of sortedDocs) {
     let guide: DocumentGuide | null = null;
-    for (const candidate of docTypeCandidates(doc)) {
+    for (const candidate of docTypeCandidates(doc, pack)) {
       guide = getGuide(pack, candidate);
       if (guide) {
         break;

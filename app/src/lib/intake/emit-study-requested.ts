@@ -6,13 +6,17 @@ import {
   hiveStudyRequestedEventDataSchema,
 } from "@hiveforyou/shared/events";
 import { isTerminalStudyRunStatus } from "@hiveforyou/shared/canonical-study";
-import type { CanonicalStudyRun } from "@hiveforyou/shared/canonical-study";
+import type {
+  CanonicalStudyRun,
+  StudyProcessingMode,
+} from "@hiveforyou/shared/canonical-study";
 
 import { inngest } from "@/lib/inngest/client";
 
 export async function emitStudyRequestedEvent(
   run: CanonicalStudyRun,
   userId: string,
+  options?: { processingMode?: StudyProcessingMode },
 ): Promise<void> {
   if (isTerminalStudyRunStatus(run.status)) {
     return;
@@ -26,6 +30,7 @@ export async function emitStudyRequestedEvent(
     caseId: run.caseId,
     intakeRunId,
     studyRunId: run.studyRunId,
+    ...(options?.processingMode ? { processingMode: options.processingMode } : {}),
   });
   await inngest.send({
     id: buildStudyRequestedEventId(run.studyRunId),

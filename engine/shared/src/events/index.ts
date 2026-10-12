@@ -27,6 +27,7 @@ export const hiveStudyRequestedEventDataSchema = z.object({
   caseId: z.string().min(1),
   intakeRunId: z.string().min(1),
   studyRunId: z.string().min(1),
+  processingMode: z.enum(["canonical_openai_v4", "pack_driven_v1"]).optional(),
 });
 
 export type HiveStudyRequestedEventData = z.infer<typeof hiveStudyRequestedEventDataSchema>;

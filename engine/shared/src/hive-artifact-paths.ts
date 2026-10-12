@@ -12,3 +12,12 @@ export function shadowWorkStatePath(userId: string, studyRunId: string): string 
 export function readerAcceptedFactsStoragePath(userId: string, studyRunId: string): string {
   return `${userId}/reader-accepted-facts/${studyRunId}.json`;
 }
+
+/** Historical accepted-facts payload for one Reader attempt (retries retained). */
+export function readerAcceptedFactsAttemptStoragePath(
+  userId: string,
+  studyRunId: string,
+  attemptId: string,
+): string {
+  return `${userId}/reader-accepted-facts/${studyRunId}/${attemptId}.json`;
+}

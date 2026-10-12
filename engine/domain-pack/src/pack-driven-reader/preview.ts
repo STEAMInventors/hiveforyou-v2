@@ -6,7 +6,6 @@ import type {
 } from "./types.js";
 
 export type PackDrivenReaderPreviewDocumentSpec = {
-  documentTypeId: string;
   sourceDocumentId: string;
   samplePages: Array<{ pageNumber: number; text: string }>;
 };
@@ -27,7 +26,6 @@ export function renderPackDrivenReaderPreviewReport(input: {
   for (const doc of input.documents) {
     const compiled = compilePackDrivenReaderPrompt({
       pack: input.pack,
-      documentTypeId: doc.documentTypeId,
       caseManifest: input.caseManifest,
       document: {
         sourceDocumentId: doc.sourceDocumentId,
@@ -36,14 +34,15 @@ export function renderPackDrivenReaderPreviewReport(input: {
       emitCacheBoundaryHints: true,
     });
     const schemaSummary = summarizeOutputSchemaStructure(compiled.outputJsonSchema);
-    sections.push(`## ${doc.documentTypeId}`);
+    sections.push(`## ${doc.sourceDocumentId}`);
     sections.push("");
-    sections.push(`- selectedRecordTypes (${compiled.selectedRecordTypeIds.length}): ${compiled.selectedRecordTypeIds.join(", ")}`);
-    sections.push(`- selectedFieldCount: ${compiled.selectedFieldCount}`);
+    sections.push(`- packDocumentTypes: ${compiled.packDocumentTypeCount}`);
+    sections.push(`- packRecordTypes: ${compiled.packRecordTypeCount}`);
     sections.push(`- packContentSha256: ${compiled.packContentSha256}`);
     sections.push(`- promptVersion: ${compiled.promptVersion}`);
     sections.push(`- outputSchema.topLevelRequired: ${schemaSummary.topLevelRequired.join(", ")}`);
-    sections.push(`- outputSchema.recordTypeIds: ${schemaSummary.recordTypeIds.join(", ")}`);
+    sections.push(`- outputSchema.documentTypeIds: ${schemaSummary.documentTypeIds.join(", ")}`);
+    sections.push(`- outputSchema.recordTypeIds: ${schemaSummary.recordTypeIds.length} record types`);
     sections.push("");
     sections.push("### Block A (universal excerpt)");
     sections.push(compiled.blocks.A_universal.slice(0, 400) + "…");
@@ -51,8 +50,8 @@ export function renderPackDrivenReaderPreviewReport(input: {
     sections.push("### Block B (pack definition excerpt)");
     sections.push(compiled.blocks.B_packDefinitionAndContract.slice(0, 600) + "…");
     sections.push("");
-    sections.push("### Block D (checklist catalog excerpt)");
-    sections.push(compiled.blocks.D_documentTypeChecklist.slice(0, 800) + "…");
+    sections.push("### Block D (document task excerpt)");
+    sections.push(compiled.blocks.D_documentTask.slice(0, 400) + "…");
     sections.push("");
     sections.push("### Full stable system prefix length");
     sections.push(String(compiled.stableSystemPrefix.length));

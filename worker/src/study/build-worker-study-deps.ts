@@ -154,6 +154,14 @@ export function buildWorkerStudyDeps(
     projectionRepo: new SupabaseCaseProjectionRepository(gateway, userId),
     studyArtifactRepo: new SupabaseStudyArtifactRepository(gateway, userId),
     domainLearning: createSupabaseDomainLearningPort(gateway, gateway, userId),
+    loadStructureMapForDiscoverRun: async (discoverRunId, _caseId) => {
+      const { WorkerDiscoverArtifactRepository } = await import(
+        "../persistence/worker-discover-repositories.js"
+      );
+      const artifactRepo = new WorkerDiscoverArtifactRepository(gateway, userId);
+      const artifact = await artifactRepo.getByDiscoverRunId(discoverRunId);
+      return (artifact?.structureMapJson as import("@hiveforyou/shared/discover/structure-map").StructureMap | null) ?? null;
+    },
     loadStructureMapForIntakeRun: async (intakeRunId, caseId) => {
       const run = await intake.getById(userId, intakeRunId);
       if (!run?.packExecutionJson) {

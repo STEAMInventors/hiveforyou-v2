@@ -39,6 +39,8 @@ export type ProposalDomainPack = {
 export type ProposalDocumentType = {
   id: string;
   label?: string;
+  /** Engine 1 / Discover vocabulary strings that map to this stable document type id. */
+  discoverLabels?: string[];
   authorRole?: string;
   checklist: string[];
   checklistPolicy?: string;
@@ -103,11 +105,8 @@ export type PackDrivenSingleDocumentInput = {
 
 export type CompilePackDrivenReaderPromptInput = {
   pack: ProposalDomainPack;
-  documentTypeId: string | null;
   caseManifest: CaseDocumentManifestEntry[];
   document: PackDrivenSingleDocumentInput;
-  /** When true, unknown documentTypeId uses generic checklist; when false, fails closed. */
-  allowGenericUnclassifiedFallback?: boolean;
   /** Include optional provider cache hint metadata (does not affect prompt text). */
   emitCacheBoundaryHints?: boolean;
 };
@@ -126,10 +125,8 @@ export type CompilePackDrivenReaderPromptResult = {
   packId: string;
   packVersion: string;
   packContentSha256: string;
-  documentTypeId: string;
-  documentTypeResolved: "classified" | "generic_fallback" | "explicit_unclassified";
-  selectedRecordTypeIds: string[];
-  selectedFieldCount: number;
+  packDocumentTypeCount: number;
+  packRecordTypeCount: number;
   stableSystemPrefix: string;
   caseUserContent: string;
   outputJsonSchema: Record<string, unknown>;
@@ -141,7 +138,7 @@ export type CompilePackDrivenReaderPromptResult = {
     A_universal: string;
     B_packDefinitionAndContract: string;
     C_caseManifest: string;
-    D_documentTypeChecklist: string;
+    D_documentTask: string;
     E_documentPages: string;
   };
 };

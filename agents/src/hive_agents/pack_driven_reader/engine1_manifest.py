@@ -29,8 +29,17 @@ def parse_engine1_logical_documents(raw: str) -> tuple[list[LogicalDocumentMeta]
         if not isinstance(source_id, str) or not source_id.strip():
             raise ValueError(f"logicalDocuments[{index}].sourceDocumentId required.")
         normalized = source_id.strip()
-        document_type = item.get("documentType")
-        document_type_id = document_type.strip() if isinstance(document_type, str) and document_type.strip() else None
+        document_type_id_raw = item.get("documentTypeId")
+        document_type_id = (
+            document_type_id_raw.strip()
+            if isinstance(document_type_id_raw, str) and document_type_id_raw.strip()
+            else None
+        )
+        if document_type_id is None:
+            document_type = item.get("documentType")
+            document_type_id = (
+                document_type.strip() if isinstance(document_type, str) and document_type.strip() else None
+            )
         filename = item.get("filename")
         filename_value = filename.strip() if isinstance(filename, str) and filename.strip() else None
         page_count = item.get("pageCount")

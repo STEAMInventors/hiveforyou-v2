@@ -21,10 +21,8 @@ class PackDrivenReaderCompileResult:
     pack_id: str
     pack_version: str
     pack_content_sha256: str
-    document_type_id: str
-    document_type_resolved: str
-    selected_record_type_ids: list[str]
-    selected_field_count: int
+    pack_document_type_count: int
+    pack_record_type_count: int
     stable_system_prefix: str
     case_user_content: str
     output_json_schema: dict[str, Any]
@@ -34,6 +32,9 @@ class PackDrivenReaderCompileResult:
 @dataclass(frozen=True)
 class PackDrivenReaderParseResult:
     ok: bool
+    needs_review: bool
+    document_type_id: str | None
+    document_type_resolved: str | None
     errors: list[str]
     record_instances: list[dict[str, Any]]
 
@@ -104,10 +105,8 @@ def compile_pack_driven_reader_prompt_via_node(
         pack_id=str(raw["packId"]),
         pack_version=str(raw["packVersion"]),
         pack_content_sha256=str(raw["packContentSha256"]),
-        document_type_id=str(raw["documentTypeId"]),
-        document_type_resolved=str(raw["documentTypeResolved"]),
-        selected_record_type_ids=list(raw["selectedRecordTypeIds"]),
-        selected_field_count=int(raw["selectedFieldCount"]),
+        pack_document_type_count=int(raw["packDocumentTypeCount"]),
+        pack_record_type_count=int(raw["packRecordTypeCount"]),
         stable_system_prefix=str(raw["stableSystemPrefix"]),
         case_user_content=str(raw["caseUserContent"]),
         output_json_schema=dict(raw["outputJsonSchema"]),
@@ -120,7 +119,6 @@ def parse_pack_driven_extraction_via_node(
     pack: Mapping[str, Any],
     raw: Mapping[str, Any],
     expected_source_document_id: str,
-    selected_record_type_ids: list[str],
     repo_root: Path | None = None,
 ) -> PackDrivenReaderParseResult:
     payload = {
@@ -128,13 +126,20 @@ def parse_pack_driven_extraction_via_node(
         "pack": pack,
         "raw": raw,
         "expectedSourceDocumentId": expected_source_document_id,
-        "selectedRecordTypeIds": selected_record_type_ids,
     }
     parsed = _invoke_bridge(payload, repo_root=repo_root)
     errors = parsed.get("errors")
     record_instances = parsed.get("recordInstances")
+    document_type_id = parsed.get("documentTypeId")
     return PackDrivenReaderParseResult(
         ok=bool(parsed.get("ok")),
+        needs_review=bool(parsed.get("needsReview")),
+        document_type_id=document_type_id if isinstance(document_type_id, str) else None,
+        document_type_resolved=(
+            str(parsed["documentTypeResolved"])
+            if parsed.get("documentTypeResolved") is not None
+            else None
+        ),
         errors=list(errors) if isinstance(errors, list) else [],
         record_instances=list(record_instances) if isinstance(record_instances, list) else [],
     )

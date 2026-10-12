@@ -23,6 +23,33 @@ COPY engine/domain-packs/_shared engine/domain-packs/_shared
 
 RUN pnpm --filter @hiveforyou/domain-pack run build:pack-driven-bridge
 
+COPY brain/domain-packs/iep/iep-pack.v0.3.proposed.json ./pack/iep-pack.v0.3.proposed.json
+
+RUN node --input-type=module -e "\
+import { readFileSync } from 'node:fs';\
+import { createHash } from 'node:crypto';\
+const path = './pack/iep-pack.v0.3.proposed.json';\
+const expectedSha = 'c2baa0439d32496a3110f5388f6048395a9f4c8fdce79b3d0cec36ae6b9a7775';\
+let pack;\
+try { pack = JSON.parse(readFileSync(path, 'utf8')); } catch { throw new Error('PACK_DRIVEN_PROPOSAL_PACK_INVALID:' + path + ':json'); }\
+const payload = {\
+  schemaVersion: pack.schemaVersion,\
+  manifest: pack.manifest,\
+  documentTypes: pack.documentTypes,\
+  recordTypes: pack.recordTypes,\
+  constructs: pack.constructs ?? {},\
+  fieldSources: pack.fieldSources ?? {},\
+  modalities: pack.modalities ?? [],\
+  missingStates: pack.missingStates ?? [],\
+  evidencePolicy: pack.evidencePolicy ?? {},\
+  readingNotes: pack.readingNotes,\
+  vocabulary: pack.vocabulary ?? {},\
+  genericUnclassifiedChecklist: pack.genericUnclassifiedChecklist ?? null,\
+};\
+const sha = createHash('sha256').update(JSON.stringify(payload)).digest('hex');\
+if (sha !== expectedSha) throw new Error('PACK_DRIVEN_PROPOSAL_PACK_PIN_MISMATCH:' + path);\
+"
+
 FROM --platform=linux/arm64 python:3.12-slim-bookworm AS build
 
 COPY --from=ghcr.io/astral-sh/uv:0.12.24 /uv /usr/local/bin/uv
@@ -44,7 +71,7 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 
 COPY engine/domain-packs/iep/study/agents.json ./pack/agents.json
 COPY --from=pack-bridge-build /repo/engine/domain-pack/dist/pack-driven-reader-bridge.mjs ./pack/pack-driven-reader-bridge.mjs
-COPY brain/domain-packs/iep/iep-pack.v0.3.proposed.json ./pack/iep-pack.v0.3.proposed.json
+COPY --from=pack-bridge-build /repo/pack/iep-pack.v0.3.proposed.json ./pack/iep-pack.v0.3.proposed.json
 
 FROM --platform=linux/arm64 python:3.12-slim-bookworm AS runtime
 

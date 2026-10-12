@@ -160,6 +160,8 @@ def validate_engine1_reader_context_json(
                     f"pageCount mismatch for {normalized_id!r} in Engine 1 context.",
                 )
 
+        # documentTypeId / documentType from Engine 1 are optional diagnostic metadata only.
+
     if seen != request_ids:
         missing = sorted(request_ids - seen)
         extra = sorted(seen - request_ids)

@@ -110,6 +110,10 @@ export type StudyServiceDeps = {
     intakeRunId: string,
     caseId: string,
   ) => Promise<StructureMap | null>;
+  loadStructureMapForDiscoverRun?: (
+    discoverRunId: string,
+    caseId: string,
+  ) => Promise<StructureMap | null>;
   loadSourceDocumentBytes?: StudySourceBytesLoader;
   loadNormalizedExtractionsForStudy?: (
     context: import("@hiveforyou/shared/canonical-study").CanonicalStudyContext,

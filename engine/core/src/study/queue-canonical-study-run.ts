@@ -7,8 +7,10 @@ import { isTerminalStudyRunStatus } from "@hiveforyou/shared/canonical-study";
 
 import {
   buildIdempotencyKeyFromRequest,
+  resolveStudyProcessingMode,
   studyEngineFingerprintFromDeps,
 } from "./freeze-context";
+import { loadPackDrivenProposalPackContentSha256 } from "./agentic-reader-qualification.js";
 import { fingerprintAnswerSnapshot } from "./fingerprint";
 import { persistStudyRun } from "./persist-study-run";
 import { validateStudyReadiness } from "./readiness";
@@ -48,8 +50,10 @@ export async function queueCanonicalStudyRun(
     return { run: stubRun, stage: "preparing", reusedExistingRun: false };
   }
 
+  const processingMode = resolveStudyProcessingMode(request);
   const resolvedPack = resolveDomainPackFromDiscoveryLabel(request.engine1Result.domainLabel);
-  if (!resolvedPack || !deps.prompt) {
+  const requiresOpenAiPrompt = processingMode !== "pack_driven_v1";
+  if (!resolvedPack || (requiresOpenAiPrompt && !deps.prompt)) {
     const stubRun: CanonicalStudyRun = {
       studyRunId: randomUUID(),
       caseId: request.caseId,
@@ -73,13 +77,28 @@ export async function queueCanonicalStudyRun(
     return { run: stubRun, stage: "preparing", reusedExistingRun: false };
   }
 
-  if (deps.providerMode === "unconfigured") {
-    const engineFingerprint = studyEngineFingerprintFromDeps({
+  function engineFingerprintForRequest(): ReturnType<typeof studyEngineFingerprintFromDeps> {
+    if (processingMode === "pack_driven_v1") {
+      const proposalSha = loadPackDrivenProposalPackContentSha256(
+        typeof process !== "undefined" ? (process.env as Record<string, string | undefined>) : {},
+      );
+      return studyEngineFingerprintFromDeps({
+        providerMode: deps.providerMode,
+        providerId: deps.providerId,
+        modelId: deps.modelId,
+        prompt: { version: "pack_driven_v1", sha256: proposalSha },
+      });
+    }
+    return studyEngineFingerprintFromDeps({
       providerMode: deps.providerMode,
       providerId: deps.providerId,
       modelId: deps.modelId,
       prompt: deps.prompt,
     });
+  }
+
+  if (deps.providerMode === "unconfigured" && processingMode !== "pack_driven_v1") {
+    const engineFingerprint = engineFingerprintForRequest();
     const idempotencyKey = buildIdempotencyKeyFromRequest(request, resolvedPack, engineFingerprint);
     const stubRun: CanonicalStudyRun = {
       studyRunId: randomUUID(),
@@ -102,12 +121,7 @@ export async function queueCanonicalStudyRun(
     return { run: stubRun, stage: "preparing", reusedExistingRun: false };
   }
 
-  const engineFingerprint = studyEngineFingerprintFromDeps({
-    providerMode: deps.providerMode,
-    providerId: deps.providerId,
-    modelId: deps.modelId,
-    prompt: deps.prompt,
-  });
+  const engineFingerprint = engineFingerprintForRequest();
   const idempotencyKey = buildIdempotencyKeyFromRequest(request, resolvedPack, engineFingerprint);
 
   const existingRun = await deps.runRepo.getByIdempotencyKey(request.caseId, idempotencyKey);
@@ -145,9 +159,14 @@ export async function queueCanonicalStudyRun(
     answerSnapshotHash: fingerprintAnswerSnapshot(request),
     providerId: deps.providerId,
     providerMode: deps.providerMode,
-    promptId: deps.prompt.id,
-    promptVersion: deps.prompt.version,
-    promptSha256: deps.prompt.sha256,
+    promptId:
+      processingMode === "pack_driven_v1" ? "pack-driven-reader" : deps.prompt!.id,
+    promptVersion:
+      processingMode === "pack_driven_v1" ? "pack_driven_v1" : deps.prompt!.version,
+    promptSha256:
+      processingMode === "pack_driven_v1"
+        ? engineFingerprint.promptSha256!
+        : deps.prompt!.sha256,
     startedAt: resolveStudyRunStartedAt(existingRun, studyRunId),
     status: "QUEUED",
   };

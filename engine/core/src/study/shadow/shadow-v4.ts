@@ -10,7 +10,7 @@ export function v4ClaimsFromValidation(
     evidenceRefs: claim.evidenceRefs.map((ref) => ({
       id: ref.id,
       sourceDocumentId: ref.sourceDocumentId,
-      page: ref.page,
+      page: ref.page ?? 0,
       extractionId: ref.extractionId,
       snippet: ref.snippet,
     })),

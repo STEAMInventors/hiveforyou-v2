@@ -2,6 +2,9 @@ import type { DocumentDiscoveryResult } from "../discovery";
 import type { QuestionSetSnapshot, QuestionsAnswerSnapshot } from "../questions";
 
 import type { StudySourceDocumentRef } from "./source-document";
+import type { StudyProcessingMode } from "./context";
+
+export type { StudyProcessingMode };
 
 /**
  * Web and other clients submit partial, trusted inputs only.
@@ -24,6 +27,8 @@ export type StartCanonicalStudyRequest = {
   answerSnapshot: QuestionsAnswerSnapshot;
   /** Optional client correlation id — not used for idempotency. */
   clientRequestId?: string;
+  /** Request-scoped study pipeline. Default `canonical_openai_v4` when omitted. */
+  processingMode?: StudyProcessingMode;
   /** Set by the server after the answer snapshot row is persisted. */
   answerSnapshotId?: string;
 };

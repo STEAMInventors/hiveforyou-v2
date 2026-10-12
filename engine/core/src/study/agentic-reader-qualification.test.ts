@@ -30,7 +30,12 @@ import {
   verifyL001QualificationManifestPackaged,
   verifyReaderExperimentPromptHashesPackaged,
   resolveReaderMode,
+  packDrivenProposalPackPath,
 } from "./agentic-reader-qualification";
+import { loadProposalDomainPack, verifyPackDrivenProposalPackPackaged } from "./load-proposal-domain-pack";
+
+const COMMITTED_IEP_V03_PROPOSED_PACK_CONTENT_SHA256 =
+  "c2baa0439d32496a3110f5388f6048395a9f4c8fdce79b3d0cec36ae6b9a7775";
 
 describe("resolveReaderMode", () => {
   it("defaults off when env unset", () => {
@@ -299,6 +304,25 @@ describe("agentic reader qualification", () => {
 
   it("does not require packaged L001 manifest when the env override is unset", () => {
     expect(() => verifyL001QualificationManifestPackaged({})).not.toThrow();
+  });
+
+  it("loads committed IEP v0.3 proposed pack with stable content SHA", () => {
+    const loaded = loadProposalDomainPack({});
+    expect(loaded.contentSha256).toBe(COMMITTED_IEP_V03_PROPOSED_PACK_CONTENT_SHA256);
+  });
+
+  it("honors HIVE_PACK_DRIVEN_READER_PROPOSAL_JSON like the Oracle worker image", () => {
+    const repoPath = packDrivenProposalPackPath({});
+    const env = { HIVE_PACK_DRIVEN_READER_PROPOSAL_JSON: repoPath };
+    expect(packDrivenProposalPackPath(env)).toBe(repoPath);
+    expect(loadProposalDomainPack(env).contentSha256).toBe(
+      COMMITTED_IEP_V03_PROPOSED_PACK_CONTENT_SHA256,
+    );
+    expect(() => verifyPackDrivenProposalPackPackaged(env)).not.toThrow();
+  });
+
+  it("does not require packaged proposal pack when the env override is unset", () => {
+    expect(() => verifyPackDrivenProposalPackPackaged({})).not.toThrow();
   });
 
   it("fail-closes on missing packaged L001 manifest path", () => {
