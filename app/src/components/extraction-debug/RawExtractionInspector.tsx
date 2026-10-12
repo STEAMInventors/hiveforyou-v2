@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
 
 import type { RawExtractionInspectorBundle } from "@hiveforyou/core";
 
@@ -34,6 +34,46 @@ function StatusBadge({ status }: { status: string }) {
     >
       {status}
     </span>
+  );
+}
+
+function EnvelopeProvenance({
+  envelope,
+}: {
+  envelope: NonNullable<InspectorBundle["documents"][number]["envelope"]> | null;
+}) {
+  if (!envelope) {
+    return <p className="text-xs text-[var(--hfy-quiet)]">No persisted envelope for this document.</p>;
+  }
+
+  const rows: Array<{ label: string; value: string }> = [
+    { label: "Persistence status", value: envelope.status },
+    { label: "Model", value: `${envelope.modelProvider} / ${envelope.modelId}` },
+    {
+      label: "Domain pack",
+      value: `${envelope.packId} @ ${envelope.packVersion}`,
+    },
+    { label: "Prompt version", value: envelope.promptVersion ?? "—" },
+    { label: "Occurred at", value: envelope.occurredAt },
+    {
+      label: "Latency",
+      value: envelope.latencyMs != null ? `${envelope.latencyMs} ms` : "—",
+    },
+    {
+      label: "Pack content SHA-256",
+      value: envelope.packContentSha256 ?? "—",
+    },
+  ];
+
+  return (
+    <dl className="grid gap-2 text-sm sm:grid-cols-2">
+      {rows.map((row) => (
+        <Fragment key={row.label}>
+          <dt className="text-xs uppercase tracking-wide text-[var(--hfy-quiet)]">{row.label}</dt>
+          <dd className="font-mono text-xs break-all text-[var(--hfy-graphite)]">{row.value}</dd>
+        </Fragment>
+      ))}
+    </dl>
   );
 }
 
@@ -149,13 +189,23 @@ export function RawExtractionInspector({
       const nextRunId = payload.run?.studyRunId;
       if (nextRunId) {
         setStudyRunId(nextRunId);
+        const loadResponse = await fetch(
+          `/api/case/${encodeURIComponent(caseId)}/raw-extraction?studyRunId=${encodeURIComponent(nextRunId)}`,
+        );
+        const loaded = (await loadResponse.json()) as InspectorBundle & {
+          error?: string;
+          message?: string;
+        };
+        if (loadResponse.ok) {
+          setBundle(loaded);
+        }
       }
       setRunState("idle");
     } catch {
       setError("Network error while starting raw extraction.");
       setRunState("idle");
     }
-  }, [bundle?.intakeRunId]);
+  }, [bundle?.intakeRunId, caseId]);
 
   return (
     <div className="space-y-8">
@@ -321,8 +371,12 @@ export function RawExtractionInspector({
                     </ul>
                   </div>
                 ) : null}
-                <JsonBlock label="parsedModelJson" value={doc.envelope?.parsedModelJson} />
+                <div>
+                  <p className="mb-2 text-sm font-medium">Extraction provenance (persisted envelope)</p>
+                  <EnvelopeProvenance envelope={doc.envelope} />
+                </div>
                 <JsonBlock label="rawAssistantText (exact)" value={doc.envelope?.rawAssistantText} />
+                <JsonBlock label="parsedModelJson (formatted)" value={doc.envelope?.parsedModelJson} />
               </article>
             ))}
           </section>

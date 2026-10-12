@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
 
 import { rankViews, type ProViewId } from "@hiveforyou/core/pro-rank-views";
@@ -323,6 +324,15 @@ export function CaseSummaryProView({
                 ) : null}
               </section>
               <ShadowFindingsPanel caseId={caseId} studyRunId={studyRunId} />
+              <p className="pro-shadow-meta">
+                <Link
+                  href={`/hives/${encodeURIComponent(caseId)}/extraction-debug?studyRunId=${encodeURIComponent(studyRunId)}`}
+                  className="pro-shadow-id"
+                >
+                  Raw Extraction Inspector
+                </Link>
+                <span className="pro-shadow-muted"> · internal · unvalidated</span>
+              </p>
               <nav aria-label="Views">
                 <p className="railhead">Read this case as</p>
                 <div className="views">
