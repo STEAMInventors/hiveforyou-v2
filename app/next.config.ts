@@ -21,6 +21,25 @@ const packDrivenProposalPackTracePath = path.posix.join(
   "iep-pack.v0.3.proposed.json",
 );
 
+/** Reader envelope pin for persisted extractions (content-addressed snapshot). */
+const readerHistoricalPackSnapshotHash =
+  "c2baa0439d32496a3110f5388f6048395a9f4c8fdce79b3d0cec36ae6b9a7775";
+
+const readerHistoricalPackSnapshotTracePath = path.posix.join(
+  "..",
+  "brain",
+  "domain-packs",
+  "iep",
+  "snapshots",
+  `${readerHistoricalPackSnapshotHash}.json`,
+);
+
+/** Canonical Study Inspector resolves envelope pins from snapshots before the live proposed pack. */
+const canonicalStudyRunPackTracePaths = [
+  packDrivenProposalPackTracePath,
+  readerHistoricalPackSnapshotTracePath,
+] as const;
+
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   typescript: {
@@ -38,6 +57,7 @@ const nextConfig: NextConfig = {
   outputFileTracingRoot: path.join(__dirname, ".."),
   outputFileTracingIncludes: {
     "/api/intake/runs/[intakeRunId]/study": [packDrivenProposalPackTracePath],
+    "/api/case/[caseId]/canonical-study/run": [...canonicalStudyRunPackTracePaths],
   },
   transpilePackages: [
     "@hiveforyou/shared",
