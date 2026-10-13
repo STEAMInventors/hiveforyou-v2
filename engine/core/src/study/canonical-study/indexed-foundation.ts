@@ -173,6 +173,7 @@ export function resolveCompositionRules(pack: ProposalDomainPack) {
         baseDocumentTypeId: docType.amends,
         changeRecordTypeId: recordType.id,
         affectedRecordTypeFieldId: recordType.composition.affectedRecordTypeFieldId,
+        amendmentTargetDateFieldId: recordType.composition.amendmentTargetDateFieldId,
         overlayMode: recordType.composition.overlayMode,
       });
     }

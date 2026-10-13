@@ -13,6 +13,7 @@ export const SYNTHETIC_PACK: ProposalDomainPack = {
     temporalSuccessionFieldIds: ["effective_date", "observed_on"],
     conflictWhenDifferentParties: true,
   },
+  seriesObservationDateFieldIds: ["observed_on", "reporting_period", "effective_date"],
   compositionRules: [
     {
       id: "plan_amendment",
@@ -20,6 +21,7 @@ export const SYNTHETIC_PACK: ProposalDomainPack = {
       baseDocumentTypeId: "doc.plan",
       changeRecordTypeId: "amendment_change",
       affectedRecordTypeFieldId: "affected_record_type",
+      amendmentTargetDateFieldId: "target_plan_date",
       overlayMode: "replace_by_content_key",
     },
   ],
@@ -146,6 +148,7 @@ export const SYNTHETIC_PACK: ProposalDomainPack = {
         role: "amendment_change",
         overlayMode: "replace_by_content_key",
         affectedRecordTypeFieldId: "affected_record_type",
+        amendmentTargetDateFieldId: "target_plan_date",
       },
       identity: {
         scope: "case",

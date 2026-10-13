@@ -206,6 +206,28 @@ function validateRecordInstances(input: {
       });
     }
 
+    const recordDef = selectedRecords.find((record) => record.recordTypeId === recordTypeId);
+    const identityKeyFields = recordDef?.identity?.keyFields ?? [];
+    if (identityKeyFields.length > 0 && parsedFields.length > 0) {
+      for (const keyField of identityKeyFields) {
+        const fieldRow = parsedFields.find((field) => field.fieldId === keyField);
+        if (!fieldRow) {
+          errors.push(
+            `recordInstances[${ri}]: identity key field ${keyField} must be emitted with a value or missingState`,
+          );
+          continue;
+        }
+        if (
+          fieldRow.missingState === null &&
+          (fieldRow.value == null || fieldRow.value === "")
+        ) {
+          errors.push(
+            `recordInstances[${ri}].fields: identity key ${keyField} requires value or missingState`,
+          );
+        }
+      }
+    }
+
     recordInstances.push({
       recordTypeId,
       instanceIndex,

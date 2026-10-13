@@ -19,6 +19,8 @@ export type CanonicalStudySourceContext = {
   }>;
   jurisdiction?: string;
   referenceTables?: Record<string, { rows: unknown[] }>;
+  /** Study qualification or reporting anchor date supplied by the caller. */
+  asOfDate?: string;
 };
 
 export type CanonicalStudyProvenanceChip = {
@@ -164,10 +166,16 @@ export type CanonicalStudyOrphanRecord = {
 
 export type CanonicalStudyRequirementOutcome =
   | "PRESENT"
+  | "PRESENT_WITH_MISSING_FIELDS"
   | "FIELD_PRESENT_BUT_EMPTY"
   | "NOT_FOUND_IN_SUPPLIED_DOCUMENTS"
   | "UNRESOLVED"
   | "NOT_APPLICABLE";
+
+export type CanonicalStudyRequirementFieldResult = {
+  fieldId: string;
+  status: "verified" | "empty" | "rejected" | "missing";
+};
 
 export type CanonicalStudyRequirementResult = {
   id: string;
@@ -175,6 +183,7 @@ export type CanonicalStudyRequirementResult = {
   outcome: CanonicalStudyRequirementOutcome;
   scope: string;
   evidence: CanonicalStudyProvenanceChip[];
+  fieldResults?: CanonicalStudyRequirementFieldResult[];
   message: string;
 };
 
@@ -208,11 +217,16 @@ export type CanonicalStudyArtifactBody = {
   schemaVersion: typeof CANONICAL_STUDY_ARTIFACT_SCHEMA_VERSION;
   packId: string;
   packVersion: string;
+  /** Reader extraction Domain Pack content hash (envelope pins). */
   packContentSha256: string;
+  /** Canonical study interpretation overlay hash, when used. */
+  interpretationRulesetId?: string | null;
+  interpretationRulesetContentSha256?: string | null;
   foundationContentSha256: string;
   studyRunId: string;
   attemptId: string;
   caseId: string;
+  asOfDate: string | null;
   documents: Array<{
     sourceDocumentId: string;
     documentTypeId: string | null;

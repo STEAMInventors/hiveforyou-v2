@@ -138,7 +138,7 @@ describe("ARCH-05 canonical study qualification", () => {
     expect(birth?.status).toBe("conflicted");
   });
 
-  it("keeps uncertain empty-key identities unmerged", () => {
+  it("merges repeatability-false singletons when caseSingletonMerge is unset", () => {
     const pack = {
       ...SYNTHETIC_PACK,
       recordTypes: SYNTHETIC_PACK.recordTypes.map((record) =>
@@ -151,11 +151,11 @@ describe("ARCH-05 canonical study qualification", () => {
       documents: [docWithStudent("doc-1", "Alice", "2010-01-01"), docWithStudent("doc-2", "Alice", "2010-01-01")],
     });
     const study = buildCanonicalStudy({ pack, packContentSha256: PACK_SHA, foundation });
-    expect(study.entities.filter((entity) => entity.recordTypeId === "student")).toHaveLength(2);
+    expect(study.entities.filter((entity) => entity.recordTypeId === "student")).toHaveLength(1);
     expect(
       study.entities
         .filter((entity) => entity.recordTypeId === "student")
-        .every((entity) => entity.reasons.includes("empty_key_without_guaranteed_unique_merge")),
+        .every((entity) => entity.reasons.includes("case_singleton_repeatable_false")),
     ).toBe(true);
   });
 
@@ -417,8 +417,8 @@ describe("ARCH-05 canonical study qualification", () => {
     });
     const presentStudy = buildCanonicalStudy({ pack, packContentSha256: PACK_SHA, foundation: present });
     const serviceResult = presentStudy.requirements.find((result) => result.ruleId === "service_fields");
-    expect(serviceResult?.outcome).toBe("UNRESOLVED");
-    expect(serviceResult?.message).toContain("explicitly_missing:end_date,provider_role");
+    expect(serviceResult?.outcome).toBe("PRESENT_WITH_MISSING_FIELDS");
+    expect(serviceResult?.message).toContain("partially_verified:end_date,provider_role");
     expect(serviceResult?.message.startsWith("presence_check_only:")).toBe(true);
 
     const absent = buildSyntheticFoundation({
@@ -507,6 +507,57 @@ describe("ARCH-05 canonical study qualification", () => {
       },
     ]);
     expect(foundation.documents[0]?.verifiedOrderingDate).toBe("2023-06-01");
+    expect(foundation.documents[0]?.orderingDateFieldPath).toBe("referral.referral_date");
+  });
+
+  it("does not order a referral from student birth_date when referral_date is missing", () => {
+    const pack = {
+      ...SYNTHETIC_PACK,
+      documentTypes: SYNTHETIC_PACK.documentTypes.map((documentType) =>
+        documentType.id === "doc.plan"
+          ? {
+              ...documentType,
+              orderingDate: "referral.referral_date",
+              checklist: [...(documentType.checklist ?? []), "referral", "student"],
+            }
+          : documentType,
+      ),
+      recordTypes: [
+        ...SYNTHETIC_PACK.recordTypes,
+        {
+          id: "referral",
+          repeatable: true,
+          identity: { scope: "case" as const, keyFields: ["referral_date"], versionAxis: "document.orderingDate" },
+          fields: [
+            {
+              id: "referral_date",
+              valueKind: "date" as const,
+              source: ["quoted" as const],
+              modality: ["observed" as const],
+              comparison: "event" as const,
+            },
+          ],
+        },
+      ],
+    };
+    const foundation = foundationWith(pack, [
+      {
+        sourceDocumentId: "ref-dob",
+        pages: mockPages("ref-dob", 1, "2017-04-18 reading"),
+        parsedModelJson: {
+          sourceDocumentId: "ref-dob",
+          documentTypeId: "doc.plan",
+          recordInstances: [
+            {
+              recordTypeId: "student",
+              instanceIndex: 0,
+              fields: [fieldQuote("birth_date", "date", "2017-04-18", "ref-dob", 1, "2017-04-18")],
+            },
+          ],
+        },
+      },
+    ]);
+    expect(foundation.documents[0]?.verifiedOrderingDate).toBeNull();
     expect(foundation.documents[0]?.orderingDateFieldPath).toBe("referral.referral_date");
   });
 

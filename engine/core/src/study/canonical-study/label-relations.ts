@@ -113,14 +113,23 @@ export function labelRelations(input: {
             if (left.sourceDocumentId === right.sourceDocumentId) {
               continue;
             }
+            const earlierVersion =
+              (leftVersion.orderingDate ?? "") <= (rightVersion.orderingDate ?? "")
+                ? leftVersion
+                : rightVersion;
+            const laterVersion = earlierVersion === leftVersion ? rightVersion : leftVersion;
+            const earlierChip = earlierVersion === leftVersion ? left : right;
+            const laterChip = laterVersion === leftVersion ? right : left;
+            const succession = hasVerifiedTemporalSuccession(earlierVersion, laterVersion, indexed);
+            const label = succession.ok ? "UNCHANGED" : "MATCHES";
             relations.push({
-              id: stableId(`rel:unchanged:${left.fieldKey}:${right.fieldKey}`),
-              label: "UNCHANGED",
+              id: stableId(`rel:${label.toLowerCase()}:${left.fieldKey}:${right.fieldKey}`),
+              label,
               entityId: entity.id,
               fieldId,
-              left,
-              right,
-              temporalBasis: null,
+              left: label === "UNCHANGED" ? earlierChip : left,
+              right: label === "UNCHANGED" ? laterChip : right,
+              temporalBasis: succession.ok ? succession.basis : null,
               partyBasis: null,
             });
             continue;

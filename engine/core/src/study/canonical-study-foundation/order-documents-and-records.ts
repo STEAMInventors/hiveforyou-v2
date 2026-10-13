@@ -8,7 +8,39 @@ import type {
   CanonicalStudyFoundationVerifiedField,
 } from "@hiveforyou/shared/canonical-study-foundation";
 
+import type { ProposalCompositionRule } from "@hiveforyou/domain-pack/pack-driven-reader/types.js";
+
 import { parsePackFieldPath } from "./field-key.js";
+
+function resolveAmendmentCompositionRule(
+  pack: ProposalDomainPack,
+  amendmentDocumentTypeId: string,
+): Pick<ProposalCompositionRule, "changeRecordTypeId" | "amendmentTargetDateFieldId" | "baseDocumentTypeId"> | null {
+  for (const rule of pack.compositionRules ?? []) {
+    if (rule.amendmentDocumentTypeId === amendmentDocumentTypeId) {
+      return rule;
+    }
+  }
+  for (const recordType of pack.recordTypes) {
+    if (recordType.composition?.role !== "amendment_change") {
+      continue;
+    }
+    for (const docType of pack.documentTypes) {
+      if (
+        docType.id === amendmentDocumentTypeId &&
+        docType.amends &&
+        docType.checklist.includes(recordType.id)
+      ) {
+        return {
+          baseDocumentTypeId: docType.amends,
+          changeRecordTypeId: recordType.id,
+          amendmentTargetDateFieldId: recordType.composition.amendmentTargetDateFieldId,
+        };
+      }
+    }
+  }
+  return null;
+}
 
 export type OrderDocumentsInput = {
   pack: ProposalDomainPack;
@@ -63,6 +95,36 @@ function findVerifiedOrderingDate(
   return { iso, fieldPath: orderingDatePath };
 }
 
+function resolveVerifiedOrderingDate(input: {
+  pack: ProposalDomainPack;
+  verifiedFields: readonly CanonicalStudyFoundationVerifiedField[];
+  sourceDocumentId: string;
+  typeSpec: ProposalDomainPack["documentTypes"][number] | null | undefined;
+}): { iso: string | null; fieldPath: string | null; primaryPath: string | null } {
+  const paths = [
+    input.typeSpec?.orderingDate,
+    ...(input.typeSpec?.orderingDatePaths ?? []),
+  ].filter((path): path is string => typeof path === "string" && path.length > 0);
+
+  for (const path of paths) {
+    const ordering = findVerifiedOrderingDate(input.verifiedFields, input.sourceDocumentId, path);
+    if (ordering.iso) {
+      return { ...ordering, primaryPath: paths[0] ?? path };
+    }
+  }
+
+  const primaryPath = paths[0] ?? null;
+  if (primaryPath) {
+    const fallback = findVerifiedOrderingDate(
+      input.verifiedFields,
+      input.sourceDocumentId,
+      primaryPath,
+    );
+    return { ...fallback, primaryPath };
+  }
+  return { iso: null, fieldPath: null, primaryPath: null };
+}
+
 function resolveAmendmentLink(input: {
   pack: ProposalDomainPack;
   sourceDocumentId: string;
@@ -90,16 +152,22 @@ function resolveAmendmentLink(input: {
     };
   }
 
-  const targetPlanDateField = input.verifiedFields.find(
-    (field) =>
-      field.sourceDocumentId === input.sourceDocumentId &&
-      field.recordTypeId === "amendment_change" &&
-      field.fieldId === "target_plan_date" &&
-      typeof field.normalized.normalizedValue === "string",
-  );
-  const targetDate = targetPlanDateField?.normalized.normalizedValue as string | undefined;
+  const compositionRule = resolveAmendmentCompositionRule(input.pack, input.documentTypeId);
+  const targetDateFieldId = compositionRule?.amendmentTargetDateFieldId?.trim();
+  const changeRecordTypeId = compositionRule?.changeRecordTypeId;
+  const targetDateField =
+    targetDateFieldId && changeRecordTypeId
+      ? input.verifiedFields.find(
+          (field) =>
+            field.sourceDocumentId === input.sourceDocumentId &&
+            field.recordTypeId === changeRecordTypeId &&
+            field.fieldId === targetDateFieldId &&
+            typeof field.normalized.normalizedValue === "string",
+        )
+      : undefined;
+  const targetDate = targetDateField?.normalized.normalizedValue as string | undefined;
 
-  if (!targetDate) {
+  if (!targetDateFieldId || !changeRecordTypeId || !targetDate) {
     return {
       amendsDocumentTypeId: typeSpec.amends,
       amendmentLinkStatus: "unresolved",
@@ -155,17 +223,18 @@ export function orderDocumentsAndRecords(input: OrderDocumentsInput): OrderDocum
       const typeSpec = documentTypeId
         ? input.pack.documentTypes.find((d) => d.id === documentTypeId)
         : null;
-      const orderingPath = typeSpec?.orderingDate ?? null;
-      const ordering =
-        orderingPath != null
-          ? findVerifiedOrderingDate(input.verifiedFields, sourceDocumentId, orderingPath)
-          : { iso: null, fieldPath: null };
+      const ordering = resolveVerifiedOrderingDate({
+        pack: input.pack,
+        verifiedFields: input.verifiedFields,
+        sourceDocumentId,
+        typeSpec,
+      });
 
-      if (orderingPath && !ordering.iso) {
+      if (ordering.primaryPath && !ordering.iso) {
         unresolvedItems.push({
           id: `missing-ordering-date:${sourceDocumentId}`,
           kind: "missing_ordering_date",
-          message: `Verified ordering date missing for document ${sourceDocumentId} at ${orderingPath}.`,
+          message: `Verified ordering date missing for document ${sourceDocumentId} at ${ordering.primaryPath}.`,
           sourceDocumentId,
         });
       }

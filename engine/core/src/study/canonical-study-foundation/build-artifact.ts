@@ -172,6 +172,31 @@ function computeDerivedFields(input: {
       }
 
       if (!result?.ok) {
+        const usesFrequencyText =
+          fieldDef.derivation?.operands.includes("frequency_text") ||
+          fieldDef.derivation?.alternates?.some((alternate) =>
+            alternate.operands.includes("frequency_text"),
+          );
+        if (usesFrequencyText) {
+          const frequencyKey = buildFieldKey({
+            sourceDocumentId: group.sourceDocumentId,
+            recordTypeId: group.recordTypeId,
+            instanceIndex: group.instanceIndex,
+            fieldId: "frequency_text",
+          });
+          const frequencyOperand = input.verifiedByKey.get(frequencyKey);
+          if (frequencyOperand && typeof frequencyOperand.displayValue === "string") {
+            const fallback = tryDerivedPrimitive("explicitTotalPerWeek", {
+              frequency_text: frequencyOperand.displayValue,
+            });
+            if (fallback.ok) {
+              result = fallback;
+            }
+          }
+        }
+      }
+
+      if (!result?.ok) {
         const missingOperands = !attempted;
         derivedUnresolved.push({
           ...base,

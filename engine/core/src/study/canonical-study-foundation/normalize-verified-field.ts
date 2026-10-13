@@ -60,6 +60,22 @@ function applyVocabularySynonyms(pack: ProposalDomainPack, text: string): string
   return applyFieldSynonymNormalization(normalizeAttributeRaw(text), entries);
 }
 
+function applyLegacyCodeValue(input: {
+  pack: ProposalDomainPack;
+  recordTypeId: string;
+  fieldId: string;
+  code: string;
+}): string {
+  const legacyMap = input.pack.vocabulary?.readerLegacyContextMap;
+  if (!legacyMap) {
+    return input.code;
+  }
+  const fieldPath = `${input.recordTypeId}.${input.fieldId}`;
+  const scoped = legacyMap[fieldPath] as Record<string, string> | undefined;
+  const global = legacyMap[input.fieldId] as Record<string, string> | undefined;
+  return scoped?.[input.code] ?? global?.[input.code] ?? input.code;
+}
+
 function applyConstructNormalize(
   pack: ProposalDomainPack,
   recordTypeId: string,
@@ -121,8 +137,17 @@ export function normalizeVerifiedField(input: {
       };
     }
     case "code": {
-      const code =
+      const rawCode =
         typeof displayValue === "string" ? displayValue.trim().toLowerCase() : displayValue;
+      const code =
+        typeof rawCode === "string"
+          ? applyLegacyCodeValue({
+              pack: input.pack,
+              recordTypeId: input.field.recordTypeId,
+              fieldId: input.field.fieldId,
+              code: rawCode,
+            })
+          : rawCode;
       return {
         valueKind,
         displayValue,

@@ -30,6 +30,8 @@ export type ProposalDomainPack = {
       category?: string;
       value?: string;
     }>;
+    /** Maps legacy reader enum values to normalized pack codes by field path or bare field id. */
+    readerLegacyContextMap?: Record<string, Record<string, string>>;
     unitAliases?:
       | Record<string, string[]>
       | Array<{ canonical: string; aliases: string[] }>;
@@ -46,6 +48,11 @@ export type ProposalDomainPack = {
   relationshipRules?: ProposalRelationshipRules;
   /** Declarative amendment composition rules — document/record types from pack only. */
   compositionRules?: ProposalCompositionRule[];
+  /**
+   * Record-local field ids tried in order when inferring series observation dates.
+   * Falls back to document ordering date when none are verified.
+   */
+  seriesObservationDateFieldIds?: string[];
   referenceTables?: ProposalReferenceTables;
 };
 
@@ -65,6 +72,8 @@ export type ProposalCompositionRule = {
   changeRecordTypeId: string;
   /** Field on the change record holding the affected record type id (classified/quoted). */
   affectedRecordTypeFieldId: string;
+  /** Field on the change record whose verified date links the amendment to a base document ordering date. */
+  amendmentTargetDateFieldId?: string;
   overlayMode: "replace_by_content_key";
 };
 
@@ -155,6 +164,7 @@ export type ProposalDocumentType = {
   checklist: string[];
   checklistPolicy?: string;
   orderingDate?: string;
+  orderingDatePaths?: string[];
   classificationPolicy?: string;
   amends?: string;
   documentLinks?: string[];
@@ -188,6 +198,7 @@ export type ProposalRecordType = {
     role: "amendment_change";
     overlayMode: "replace_by_content_key";
     affectedRecordTypeFieldId: string;
+    amendmentTargetDateFieldId?: string;
   };
   fields: ProposalRecordField[];
   usesConstructs?: string[];

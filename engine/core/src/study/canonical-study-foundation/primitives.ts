@@ -59,11 +59,15 @@ export function ratePerWeek(input: {
   };
 }
 
-const EXPLICIT_WEEKLY_TOTAL = /^(\d+(?:\.\d+)?)\s+minutes?\s+(?:weekly|per\s+week)$/i;
+const EXPLICIT_WEEKLY_TOTAL =
+  /^(\d+(?:\.\d+)?)\s+minutes?\s+(?:weekly|per\s+week|\/\s*week)$/i;
+const EXPLICIT_WEEKLY_TOTAL_SHORT =
+  /^(\d+(?:\.\d+)?)\s+min(?:ute)?s?\s*(?:\/\s*)?week(?:ly)?$/i;
 
 /** Explicit total such as "150 minutes weekly" — not a session-times-frequency rate. */
 export function explicitTotalPerWeek(expression: string): DerivedPrimitiveResult {
-  const match = EXPLICIT_WEEKLY_TOTAL.exec(expression.trim());
+  const trimmed = expression.trim();
+  const match = EXPLICIT_WEEKLY_TOTAL.exec(trimmed) ?? EXPLICIT_WEEKLY_TOTAL_SHORT.exec(trimmed);
   if (!match) {
     return { ok: false, reason: "expression is not an explicit total duration per week" };
   }

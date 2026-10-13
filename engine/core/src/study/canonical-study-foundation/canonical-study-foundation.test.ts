@@ -66,9 +66,16 @@ const TEST_PACK: ProposalDomainPack = {
     {
       id: "amendment_change",
       repeatable: true,
+      composition: {
+        role: "amendment_change",
+        overlayMode: "replace_by_content_key",
+        affectedRecordTypeFieldId: "affected_record_type",
+        amendmentTargetDateFieldId: "target_plan_date",
+      },
       fields: [
         { id: "effective_date", valueKind: "date", source: ["quoted"], modality: ["observed"] },
         { id: "target_plan_date", valueKind: "date", source: ["quoted"], modality: ["observed"] },
+        { id: "affected_record_type", valueKind: "text", source: ["quoted"], modality: ["observed"] },
       ],
     },
     {

@@ -24,7 +24,7 @@ export const CANONICAL_STUDY_RULESET_ID = "hive.canonical-study.deterministic" a
 
 /** Pinned hash of canonical study builder modules (foundation + artifact builders). */
 export const CANONICAL_STUDY_RULESET_CONTENT_SHA256 =
-  "25b27843040f518554b73f5e3c295aa80b4632ad5c7e54f99a946d7d98262d73" as const;
+  "ef01462fc144a0b971d41a867905b698b35b1028dd0322c6341d05cfa2803140" as const;
 
 export type CanonicalStudyRulesetIdentity = {
   rulesetId: typeof CANONICAL_STUDY_RULESET_ID;
@@ -45,8 +45,12 @@ export function resolveCanonicalStudyRulesetIdentity(): CanonicalStudyRulesetIde
 }
 
 export type BuildCanonicalStudyInput = {
+  /** Merged or reader pack used for identity, insights, and requirements evaluation. */
   pack: ProposalDomainPack;
+  /** Reader extraction pack hash — must match foundation.packContentSha256. */
   packContentSha256: string;
+  interpretationRulesetId?: string | null;
+  interpretationRulesetContentSha256?: string | null;
   foundation: CanonicalStudyFoundationArtifact;
   sourceContext?: CanonicalStudySourceContext;
   createdAt?: string;
@@ -59,7 +63,8 @@ function validatePackFoundationConsistency(input: BuildCanonicalStudyInput): voi
   if (input.pack.manifest.version !== input.foundation.packVersion) {
     throw new Error("CANONICAL_STUDY_PACK_MISMATCH:packVersion");
   }
-  if (input.packContentSha256.toLowerCase() !== input.foundation.packContentSha256.toLowerCase()) {
+  const readerHash = input.packContentSha256.toLowerCase();
+  if (readerHash !== input.foundation.packContentSha256.toLowerCase()) {
     throw new Error("CANONICAL_STUDY_PACK_MISMATCH:packContentSha256");
   }
   const recomputed = hashCanonicalStudyFoundationBody({
@@ -100,15 +105,20 @@ export function buildCanonicalStudy(input: BuildCanonicalStudyInput): CanonicalS
   const requirements = evaluateRequirements({ indexed, operativeViews });
   const flags = evaluateInsightChecks({ indexed, operativeViews, series });
 
+  const asOfDate = sourceContext.asOfDate ?? null;
+
   const body = {
     schemaVersion: CANONICAL_STUDY_ARTIFACT_SCHEMA_VERSION,
     packId: input.foundation.packId,
     packVersion: input.foundation.packVersion,
     packContentSha256: input.foundation.packContentSha256,
+    interpretationRulesetId: input.interpretationRulesetId ?? null,
+    interpretationRulesetContentSha256: input.interpretationRulesetContentSha256 ?? null,
     foundationContentSha256: input.foundation.contentSha256,
     studyRunId: input.foundation.studyRunId,
     attemptId: input.foundation.attemptId,
     caseId: input.foundation.caseId,
+    asOfDate,
     documents: input.foundation.documents.map((doc) => ({
       sourceDocumentId: doc.sourceDocumentId,
       documentTypeId: doc.documentTypeId,

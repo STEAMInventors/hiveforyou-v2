@@ -48,6 +48,14 @@ export {
   type CanonicalStudyRulesetIdentity,
 } from "./canonical-study/index.js";
 export {
+  L001_READER_PACK_CONTENT_SHA256,
+  loadCanonicalStudyInterpretationOverlay,
+  resolveCanonicalStudyInterpretation,
+  applyCanonicalStudyInterpretationIfCompatible,
+  type ResolvedCanonicalStudyInterpretation,
+} from "./resolve-canonical-study-interpretation.js";
+export { resolveInterpretationOverlayPath } from "./interpretation-overlay-catalog.js";
+export {
   CANONICAL_STUDY_DEBUG_PACK_APPROVAL,
   PackNotAvailableError,
   PackNotReadyError,

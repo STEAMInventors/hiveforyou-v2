@@ -74,15 +74,20 @@ function parseUsage(raw: unknown): ReaderDocumentExtractionEnvelope["usage"] | u
     return undefined;
   }
   const record = raw as Record<string, unknown>;
-  const readToken = (key: string): number | null => {
-    const value = record[key];
-    return typeof value === "number" && Number.isFinite(value) ? value : null;
+  const readToken = (...keys: string[]): number | null => {
+    for (const key of keys) {
+      const value = record[key];
+      if (typeof value === "number" && Number.isFinite(value)) {
+        return value;
+      }
+    }
+    return null;
   };
   return {
-    inputTokens: readToken("inputTokens"),
-    outputTokens: readToken("outputTokens"),
-    cacheReadInputTokens: readToken("cacheReadInputTokens"),
-    cacheWriteInputTokens: readToken("cacheWriteInputTokens"),
+    inputTokens: readToken("inputTokens", "input_tokens"),
+    outputTokens: readToken("outputTokens", "output_tokens"),
+    cacheReadInputTokens: readToken("cacheReadInputTokens", "cache_read_input_tokens"),
+    cacheWriteInputTokens: readToken("cacheWriteInputTokens", "cache_write_input_tokens"),
   };
 }
 

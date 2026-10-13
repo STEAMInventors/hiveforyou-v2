@@ -109,6 +109,14 @@ function lacksRequiredIdentity(record: IndexedRecordVersion, indexed: IndexedFou
     return false;
   }
   if ((identity.keyFields ?? []).length === 0) {
+    const recordType = recordDef(indexed, record.recordTypeId);
+    if (
+      identity.scope === "case" &&
+      identity.caseSingletonMerge !== "never_auto_merge" &&
+      (identity.caseSingletonMerge === "guaranteed_unique" || recordType?.repeatable === false)
+    ) {
+      return false;
+    }
     return identity.caseSingletonMerge !== "guaranteed_unique";
   }
   return buildContentKey(record, indexed.pack).missingRequired.length > 0;
@@ -231,9 +239,24 @@ export function resolveIdentity(indexed: IndexedFoundation): ResolveIdentityResu
         for (const version of allVersions) {
           entities.push(buildEntity(recordTypeId, [version], null, "resolved", ["document_scoped"]));
         }
-      } else if (identity?.scope === "case" && identity.caseSingletonMerge === "guaranteed_unique") {
+      } else if (identity?.scope === "case" && identity.caseSingletonMerge === "never_auto_merge") {
+        for (const version of allVersions) {
+          entities.push(
+            buildEntity(recordTypeId, [version], null, "identity_unresolved", [
+              "case_singleton_never_auto_merge",
+            ]),
+          );
+        }
+      } else if (
+        identity?.scope === "case" &&
+        (identity.caseSingletonMerge === "guaranteed_unique" ||
+          recordDef(indexed, recordTypeId)?.repeatable === false)
+      ) {
         const conflicts = conflictingFieldIds(allVersions);
-        const reasons = ["case_singleton_guaranteed_unique"];
+        const reasons =
+          identity.caseSingletonMerge === "guaranteed_unique"
+            ? ["case_singleton_guaranteed_unique"]
+            : ["case_singleton_repeatable_false"];
         if (conflicts.length > 0) {
           reasons.push(`conflicting_fields:${conflicts.join(",")}`);
         }

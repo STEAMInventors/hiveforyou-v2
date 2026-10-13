@@ -1,5 +1,6 @@
 import type {
   CanonicalStudyOperativeView,
+  CanonicalStudyRequirementFieldResult,
   CanonicalStudyRequirementOutcome,
   CanonicalStudyRequirementResult,
 } from "@hiveforyou/shared/canonical-study-artifact";
@@ -61,6 +62,40 @@ function unresolvedForIncompleteCoverage(input: {
   };
 }
 
+function aggregateFieldResults(
+  indexed: IndexedFoundation,
+  matchingRecords: IndexedFoundation["records"],
+  fieldIds: string[],
+): CanonicalStudyRequirementFieldResult[] {
+  const results = new Map<string, CanonicalStudyRequirementFieldResult["status"]>();
+  for (const fieldId of fieldIds) {
+    results.set(fieldId, "missing");
+  }
+  for (const record of matchingRecords) {
+    for (const fieldId of fieldIds) {
+      const state = fieldState(indexed, record, fieldId);
+      const current = results.get(fieldId) ?? "missing";
+      if (state.kind === "verified") {
+        results.set(fieldId, "verified");
+        continue;
+      }
+      if (current === "verified") {
+        continue;
+      }
+      if (state.kind === "rejected") {
+        results.set(fieldId, "rejected");
+        continue;
+      }
+      if (state.kind === "empty" && current === "missing") {
+        results.set(fieldId, "empty");
+      }
+    }
+  }
+  return [...results.entries()]
+    .sort(([left], [right]) => left.localeCompare(right))
+    .map(([fieldId, status]) => ({ fieldId, status }));
+}
+
 function evaluateCheck(input: {
   indexed: IndexedFoundation;
   recordTypeId: string;
@@ -70,7 +105,12 @@ function evaluateCheck(input: {
   forEach?: boolean;
   pageTerms?: string[];
   appliesTo?: string;
-}): { outcome: CanonicalStudyRequirementOutcome; evidence: ReturnType<typeof evaluateExists>["chips"]; message: string } {
+}): {
+  outcome: CanonicalStudyRequirementOutcome;
+  evidence: ReturnType<typeof evaluateExists>["chips"];
+  fieldResults?: CanonicalStudyRequirementFieldResult[];
+  message: string;
+} {
   const coverageBlocked = unresolvedForIncompleteCoverage({
     indexed: input.indexed,
     scopeDocumentIds: input.scopeDocumentIds,
@@ -127,20 +167,35 @@ function evaluateCheck(input: {
 
   evidence.sort((a, b) => a.fieldKey.localeCompare(b.fieldKey));
   const requiredCount = input.forEach ? matchingRecords.length : (input.minCount ?? 1);
+  const fieldResults =
+    input.fieldIds.length > 0
+      ? aggregateFieldResults(input.indexed, matchingRecords, input.fieldIds)
+      : undefined;
   if (completeRecords >= requiredCount && completeRecords > 0) {
-    return { outcome: "PRESENT", evidence, message: "presence_check_only:verified" };
+    return { outcome: "PRESENT", evidence, fieldResults, message: "presence_check_only:verified" };
   }
   if (rejected.size > 0) {
     return {
       outcome: "UNRESOLVED",
       evidence,
+      fieldResults,
       message: `presence_check_only:verification_rejected:${[...rejected].sort().join(",")}`,
+    };
+  }
+  if (evidence.length > 0 && matchingRecords.length > 0 && (missing.size > 0 || empty.size > 0)) {
+    const partialFields = [...missing, ...empty].sort();
+    return {
+      outcome: "PRESENT_WITH_MISSING_FIELDS",
+      evidence,
+      fieldResults,
+      message: `presence_check_only:partially_verified:${partialFields.join(",")}`,
     };
   }
   if (missing.size > 0) {
     return {
       outcome: "UNRESOLVED",
       evidence,
+      fieldResults,
       message: `presence_check_only:explicitly_missing:${[...missing].sort().join(",")}`,
     };
   }
@@ -148,10 +203,11 @@ function evaluateCheck(input: {
     return {
       outcome: "FIELD_PRESENT_BUT_EMPTY",
       evidence,
+      fieldResults,
       message: `presence_check_only:explicitly_empty:${[...empty].sort().join(",")}`,
     };
   }
-  return absenceAfterPageReview({ ...input, evidence });
+  return absenceAfterPageReview({ ...input, evidence, fieldResults });
 }
 
 function fieldState(
@@ -186,7 +242,13 @@ function absenceAfterPageReview(input: {
   pageTerms?: string[];
   appliesTo?: string;
   evidence?: ReturnType<typeof evaluateExists>["chips"];
-}): { outcome: CanonicalStudyRequirementOutcome; evidence: ReturnType<typeof evaluateExists>["chips"]; message: string } {
+  fieldResults?: CanonicalStudyRequirementFieldResult[];
+}): {
+  outcome: CanonicalStudyRequirementOutcome;
+  evidence: ReturnType<typeof evaluateExists>["chips"];
+  fieldResults?: CanonicalStudyRequirementFieldResult[];
+  message: string;
+} {
   const coverageBlocked = unresolvedForIncompleteCoverage({
     indexed: input.indexed,
     scopeDocumentIds: input.scopeDocumentIds,
@@ -194,7 +256,7 @@ function absenceAfterPageReview(input: {
     mode: "absence",
   });
   if (coverageBlocked) {
-    return { ...coverageBlocked, evidence: input.evidence ?? [] };
+    return { ...coverageBlocked, evidence: input.evidence ?? [], fieldResults: input.fieldResults };
   }
 
   const documents = input.indexed.foundation.documents.filter((document) => {
@@ -296,6 +358,7 @@ export function evaluateRequirements(input: {
         outcome: evaluated.outcome,
         scope: rule.appliesTo ?? "",
         evidence: evaluated.evidence,
+        fieldResults: evaluated.fieldResults,
         message: evaluated.message,
       });
     }

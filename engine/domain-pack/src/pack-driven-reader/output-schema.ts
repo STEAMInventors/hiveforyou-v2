@@ -51,6 +51,7 @@ function buildFieldCatalog(selectedRecords: SelectedRecordDefinition[]): unknown
   return selectedRecords.map((record) => ({
     recordTypeId: record.recordTypeId,
     repeatable: record.repeatable,
+    identityKeyFields: record.identity?.keyFields ?? [],
     fields: record.fields.map((f) => ({
       fieldId: f.id,
       valueKind: f.valueKind,

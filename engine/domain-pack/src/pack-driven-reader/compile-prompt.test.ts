@@ -159,6 +159,15 @@ describe("parseAndValidatePackDrivenExtraction (model-selected type)", () => {
             instanceIndex: 0,
             fields: [
               {
+                fieldId: "category",
+                provenance: "classified",
+                valueKind: "code",
+                value: "related_service",
+                modality: "planned",
+                missingState: null,
+                evidence: { sourceDocumentId: "doc-a", page: 1, quote: "Speech therapy 2x week" },
+              },
+              {
                 fieldId: "service_type",
                 provenance: "quoted",
                 valueKind: "text",
@@ -173,6 +182,15 @@ describe("parseAndValidatePackDrivenExtraction (model-selected type)", () => {
             recordTypeId: "service",
             instanceIndex: 1,
             fields: [
+              {
+                fieldId: "category",
+                provenance: "classified",
+                valueKind: "code",
+                value: "related_service",
+                modality: "planned",
+                missingState: null,
+                evidence: { sourceDocumentId: "doc-a", page: 1, quote: "OT 1x week" },
+              },
               {
                 fieldId: "service_type",
                 provenance: "quoted",

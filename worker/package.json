@@ -25,6 +25,7 @@
     "@hiveforyou/core": "workspace:*",
     "@hiveforyou/model-providers": "workspace:*",
     "@hiveforyou/domain-packs": "workspace:*",
+    "@hiveforyou/domain-pack-iep": "workspace:*",
     "@hiveforyou/intake": "workspace:*",
     "@hiveforyou/intake-node": "workspace:*",
     "@hiveforyou/shared": "workspace:*",

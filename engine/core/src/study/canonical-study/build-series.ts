@@ -5,7 +5,9 @@ import type {
   CanonicalStudySeriesObservation,
 } from "@hiveforyou/shared/canonical-study-artifact";
 
-import { buildSeriesDimensionKey } from "./construct-keys.js";
+import type { ProposalDomainPack } from "@hiveforyou/domain-pack";
+
+import { buildSeriesDimensionKey, valuesEquivalent } from "./construct-keys.js";
 import type { IndexedFoundation, IndexedRecordVersion } from "./indexed-foundation.js";
 import { stableId } from "./stable-id.js";
 
@@ -40,7 +42,8 @@ export function buildSeries(input: {
     }
   }
 
-  const series = [...seriesByKey.values()];
+  let series = [...seriesByKey.values()];
+  series = consolidateEquivalentSeries(series, indexed.pack);
   for (const item of series) {
     item.sourceEntityIds = [...new Set(item.sourceEntityIds)].sort((a, b) => a.localeCompare(b));
     item.entityId = item.sourceEntityIds.length === 1 ? item.sourceEntityIds[0]! : stableId(item.sourceEntityIds.join(","));
@@ -63,8 +66,11 @@ export function buildSeries(input: {
   return series;
 }
 
-function observedDateForRecord(record: IndexedRecordVersion): string | null {
-  for (const fieldId of ["observed_on", "reporting_period", "effective_date"]) {
+function observedDateForRecord(
+  record: IndexedRecordVersion,
+  pack: ProposalDomainPack,
+): string | null {
+  for (const fieldId of pack.seriesObservationDateFieldIds ?? []) {
     const chip = record.provenanceByFieldKey[fieldId];
     const value = chip?.normalized.normalizedValue;
     if (typeof value === "string" && value.trim()) {
@@ -96,7 +102,7 @@ function appendObservation(input: {
       continue;
     }
 
-    const observedDate = observedDateForRecord(input.indexedVersion);
+    const observedDate = observedDateForRecord(input.indexedVersion, input.indexed.pack);
     const material = `${input.constructId}|${dimensionKey}`;
     const seriesId = stableId(material);
     let series = input.seriesByKey.get(seriesId);
@@ -145,4 +151,105 @@ function appendObservation(input: {
 
 function provenanceEquals(left: CanonicalStudyProvenanceChip, right: CanonicalStudyProvenanceChip): boolean {
   return left.fieldKey === right.fieldKey;
+}
+
+function dimensionPart(dimensionKey: string, fieldSuffix: string): string | null {
+  const prefix = `${fieldSuffix}=`;
+  const part = dimensionKey.split("|").find((item) => item.startsWith(prefix));
+  return part ? part.slice(prefix.length) : null;
+}
+
+function seriesMergeKey(series: CanonicalStudySeries): string {
+  const scoreType = dimensionPart(series.dimensionKey, "measure.score_type") ?? "";
+  return `${series.constructId}|${scoreType}`;
+}
+
+function mergeSeriesObservations(
+  target: CanonicalStudySeries,
+  source: CanonicalStudySeries,
+): void {
+  for (const observation of source.observations) {
+    const signature = observationSignature(observation);
+    const existing = target.observations.find((item) => observationSignature(item) === signature);
+    if (existing) {
+      if (
+        !provenanceEquals(existing.provenance, observation.provenance) &&
+        !existing.corroboratingProvenance.some((item) => provenanceEquals(item, observation.provenance))
+      ) {
+        existing.corroboratingProvenance.push(observation.provenance);
+      }
+      for (const chip of observation.corroboratingProvenance) {
+        if (
+          !provenanceEquals(existing.provenance, chip) &&
+          !existing.corroboratingProvenance.some((item) => provenanceEquals(item, chip))
+        ) {
+          existing.corroboratingProvenance.push(chip);
+        }
+      }
+      continue;
+    }
+    target.observations.push({
+      ...observation,
+      corroboratingProvenance: observation.corroboratingProvenance.slice(),
+    });
+  }
+  for (const reason of source.unresolvedReasons) {
+    if (!target.unresolvedReasons.includes(reason)) {
+      target.unresolvedReasons.push(reason);
+    }
+  }
+  for (const entityId of source.sourceEntityIds) {
+    if (!target.sourceEntityIds.includes(entityId)) {
+      target.sourceEntityIds.push(entityId);
+    }
+  }
+}
+
+function consolidateEquivalentSeries(
+  series: CanonicalStudySeries[],
+  pack: ProposalDomainPack,
+): CanonicalStudySeries[] {
+  const groups = new Map<string, CanonicalStudySeries[]>();
+  for (const item of series) {
+    const key = seriesMergeKey(item);
+    const list = groups.get(key) ?? [];
+    list.push(item);
+    groups.set(key, list);
+  }
+
+  const merged: CanonicalStudySeries[] = [];
+  for (const group of groups.values()) {
+    const sorted = group.slice().sort((a, b) => a.dimensionKey.localeCompare(b.dimensionKey));
+    const absorbed = new Set<string>();
+    for (let i = 0; i < sorted.length; i += 1) {
+      const left = sorted[i]!;
+      if (absorbed.has(left.id)) {
+        continue;
+      }
+      let canonical = left;
+      for (let j = i + 1; j < sorted.length; j += 1) {
+        const right = sorted[j]!;
+        if (absorbed.has(right.id)) {
+          continue;
+        }
+        const leftTask = dimensionPart(left.dimensionKey, "measure.task");
+        const rightTask = dimensionPart(right.dimensionKey, "measure.task");
+        const equivalent = valuesEquivalent(leftTask, rightTask, left.constructId, pack);
+        if (equivalent === "different") {
+          continue;
+        }
+        if (right.dimensionKey.localeCompare(canonical.dimensionKey) < 0) {
+          mergeSeriesObservations(right, canonical);
+          absorbed.add(canonical.id);
+          canonical = right;
+        } else {
+          mergeSeriesObservations(canonical, right);
+          absorbed.add(right.id);
+        }
+      }
+      merged.push(canonical);
+      absorbed.add(canonical.id);
+    }
+  }
+  return merged;
 }

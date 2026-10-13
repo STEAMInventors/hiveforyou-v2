@@ -1,0 +1,166 @@
+{
+  "schemaVersion": "hive.domain-pack.interpretation-overlay/0.1",
+  "manifest": {
+    "id": "iep-interp",
+    "version": "0.3.1",
+    "name": "IEP canonical study interpretation (L001 ARCH-05)"
+  },
+  "compatibleReaderPackContentSha256": [
+    "c2baa0439d32496a3110f5388f6048395a9f4c8fdce79b3d0cec36ae6b9a7775"
+  ],
+  "relationshipRules": {
+    "changeRequiresTemporalSuccession": true,
+    "temporalSuccessionFieldIds": [
+      "document_date",
+      "effective_date",
+      "effective_start",
+      "observed_on",
+      "determination_date",
+      "referral_date",
+      "meeting_date",
+      "start_date",
+      "action_date"
+    ],
+    "conflictWhenDifferentParties": true
+  },
+  "seriesObservationDateFieldIds": [
+    "observed_on",
+    "reporting_period",
+    "effective_date",
+    "document_date",
+    "determination_date",
+    "referral_date",
+    "meeting_date",
+    "start_date",
+    "action_date",
+    "effective_start"
+  ],
+  "documentTypePatches": [
+    {
+      "id": "iep.referral",
+      "orderingDate": "referral.referral_date"
+    }
+  ],
+  "recordTypePatches": [
+    {
+      "id": "service",
+      "fieldDerivationPatches": [
+        {
+          "fieldId": "minutes_per_week",
+          "derivation": {
+            "primitive": "ratePerWeek",
+            "operands": ["minutes_per_session", "sessions_per_period", "period"],
+            "alternates": [
+              {
+                "primitive": "explicitTotalPerWeek",
+                "operands": ["frequency_text"]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "student",
+      "identity": {
+        "caseSingletonMerge": "guaranteed_unique"
+      }
+    },
+    {
+      "id": "eligibility",
+      "identity": {
+        "caseSingletonMerge": "guaranteed_unique"
+      }
+    },
+    {
+      "id": "amendment_change",
+      "composition": {
+        "role": "amendment_change",
+        "overlayMode": "replace_by_content_key",
+        "affectedRecordTypeFieldId": "affected_record_type",
+        "amendmentTargetDateFieldId": "target_plan_date"
+      }
+    },
+    {
+      "id": "goal",
+      "identity": {
+        "keyFields": ["measure.task", "measure.score_type"],
+        "keyFieldsIfPresent": ["area", "designation"]
+      },
+      "fieldsAppend": [
+        {
+          "id": "designation",
+          "valueKind": "text",
+          "source": ["quoted"],
+          "modality": ["planned"],
+          "description": "Explicit printed goal label when stated (e.g. Goal 1). Never inferred."
+        }
+      ]
+    },
+    {
+      "id": "evaluation_plan_item",
+      "identity": {
+        "scope": "document",
+        "keyFields": ["list_section", "line_text"],
+        "keyFieldsIfPresent": [],
+        "disambiguators": [],
+        "versionAxis": "document.orderingDate"
+      },
+      "fieldsAppend": [
+        {
+          "id": "list_section",
+          "valueKind": "code",
+          "source": ["classified"],
+          "modality": ["observed"],
+          "enum": [
+            "existing_information_available",
+            "proposed_areas_for_evaluation",
+            "information_to_be_gathered"
+          ]
+        },
+        {
+          "id": "line_text",
+          "valueKind": "text",
+          "source": ["quoted"],
+          "modality": ["observed"]
+        },
+        {
+          "id": "selected",
+          "valueKind": "code",
+          "source": ["classified"],
+          "modality": ["observed"],
+          "enum": ["selected", "not_selected"]
+        }
+      ]
+    }
+  ],
+  "insightCheckReplacements": [
+    {
+      "id": "testing_accommodation_not_in_assessment",
+      "primitive": "absenceOf",
+      "present": {
+        "record": "accommodation",
+        "field": "description",
+        "where": {
+          "context": ["state_district_assessment"]
+        }
+      },
+      "absent": {
+        "record": "assessment_participation",
+        "field": "accommodations",
+        "scope": "same_document"
+      },
+      "joinOn": "text_normalized",
+      "question": "{accommodation} is listed for state or district assessment but not under assessment participation. Should it be?"
+    }
+  ],
+  "vocabulary": {
+    "fieldSynonyms": [
+      {
+        "field": "measure.task",
+        "terms": ["Oral Reading Fluency", "oral reading fluency", "reading fluency", "Reading fluency"],
+        "value": "reading fluency"
+      }
+    ]
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "schemaVersion": "hive.domain-pack.interpretation-compatibility/0.1",
+  "entries": [
+    {
+      "readerPackContentSha256": "c2baa0439d32496a3110f5388f6048395a9f4c8fdce79b3d0cec36ae6b9a7775",
+      "interpretationOverlayPath": "iep-interp-v0.3.1.overlay.json",
+      "interpretationManifestId": "iep-interp",
+      "interpretationManifestVersion": "0.3.1"
+    }
+  ]
+}
