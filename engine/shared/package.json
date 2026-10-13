@@ -23,6 +23,8 @@
     "./hive-artifact-paths": "./src/hive-artifact-paths.ts",
     "./reader-accepted-facts": "./src/reader-accepted-facts.ts",
     "./reader-document-extraction": "./src/reader-document-extraction.ts",
+    "./canonical-study-foundation": "./src/canonical-study-foundation.ts",
+    "./canonical-study-artifact": "./src/canonical-study-artifact.ts",
     "./model/call-model": "./src/model/call-model.ts"
   },
   "scripts": {

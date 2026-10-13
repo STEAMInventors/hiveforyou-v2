@@ -31,9 +31,109 @@ export type ProposalDomainPack = {
     easilyConfused?: Array<{ term: string; meaning: string }>;
     note?: string;
   };
-  requirements?: unknown;
-  insightChecks?: unknown;
+  requirements?: ProposalRequirements;
+  insightChecks?: ProposalInsightChecks;
   plainExplainers?: unknown;
+  authorRoles?: ProposalAuthorRole[];
+  /** Human-readable policy text (review). Prefer relationshipRules for engine behavior. */
+  authorPartyPolicy?: string;
+  /** Declarative relationship labeling rules — no domain-specific branches in Core. */
+  relationshipRules?: ProposalRelationshipRules;
+  /** Declarative amendment composition rules — document/record types from pack only. */
+  compositionRules?: ProposalCompositionRule[];
+  referenceTables?: ProposalReferenceTables;
+};
+
+export type ProposalRelationshipRules = {
+  /** CHANGE requires verified temporal succession, not document ordering date alone. */
+  changeRequiresTemporalSuccession?: boolean;
+  /** Field ids on records used to establish event/effective chronology (record-local ids). */
+  temporalSuccessionFieldIds?: string[];
+  /** Different parties on the same comparable slot without succession => CONFLICT. */
+  conflictWhenDifferentParties?: boolean;
+};
+
+export type ProposalCompositionRule = {
+  id: string;
+  amendmentDocumentTypeId: string;
+  baseDocumentTypeId: string;
+  changeRecordTypeId: string;
+  /** Field on the change record holding the affected record type id (classified/quoted). */
+  affectedRecordTypeFieldId: string;
+  overlayMode: "replace_by_content_key";
+};
+
+export type ProposalReferenceTables = {
+  entries?: Array<{
+    id: string;
+    rows?: unknown[];
+    status?: string;
+  }>;
+};
+
+export type ProposalRequirements = {
+  rules?: ProposalRequirementRule[];
+};
+
+export type ProposalRequirementRule = {
+  id: string;
+  appliesTo?: string;
+  checks?: ProposalRequirementCheck[];
+  when?: ProposalRequirementWhen;
+  description?: string;
+  status?: string;
+};
+
+export type ProposalRequirementCheck = {
+  record: string;
+  fields?: string[];
+  minCount?: number;
+  forEach?: boolean;
+};
+
+export type ProposalRequirementWhen = {
+  primitive: string;
+  record?: string;
+  field?: string;
+  equals?: unknown;
+  birthDate?: string;
+  onDate?: string;
+  atLeast?: number;
+  atLeastFromReference?: string;
+  offsetYears?: number;
+};
+
+export type ProposalInsightChecks = {
+  enginePrimitivesRequired?: string[];
+  checks?: ProposalInsightCheck[];
+};
+
+export type ProposalInsightCheck = {
+  id: string;
+  primitive: string;
+  question?: string;
+  fires?: string;
+  left?: ProposalInsightOperand;
+  right?: ProposalInsightOperand;
+  present?: ProposalInsightOperand;
+  absent?: ProposalInsightOperand;
+  joinOn?: string;
+  [key: string]: unknown;
+};
+
+export type ProposalInsightOperand = {
+  record?: string;
+  field?: string;
+  unitField?: string;
+  scope?: string;
+  where?: Record<string, unknown>;
+  pick?: string;
+  [key: string]: unknown;
+};
+
+export type ProposalAuthorRole = {
+  id: string;
+  party: string;
 };
 
 export type ProposalDocumentType = {
@@ -46,6 +146,8 @@ export type ProposalDocumentType = {
   checklistPolicy?: string;
   orderingDate?: string;
   classificationPolicy?: string;
+  amends?: string;
+  documentLinks?: string[];
 };
 
 export type ProposalRecordType = {
@@ -59,6 +161,17 @@ export type ProposalRecordType = {
     keyFieldsIfPresent?: string[];
     disambiguators?: string[];
     versionAxis?: string;
+    /**
+     * When keyFields is empty and scope is case-wide: merge singleton versions only when
+     * explicitly guaranteed_unique and no contradictory identity evidence exists.
+     */
+    caseSingletonMerge?: "guaranteed_unique" | "never_auto_merge";
+  };
+  /** Declarative composition role for amendment overlay (pack-defined record type). */
+  composition?: {
+    role: "amendment_change";
+    overlayMode: "replace_by_content_key";
+    affectedRecordTypeFieldId: string;
   };
   fields: ProposalRecordField[];
   usesConstructs?: string[];
@@ -83,6 +196,8 @@ export type ProposalConstruct = {
   description?: string;
   requiredFields?: string[];
   comparedIfBothPresent?: string[];
+  normalize?: string[];
+  onPartialMatch?: string;
 };
 
 export type CaseDocumentManifestEntry = {

@@ -1,33 +1,22 @@
 import "server-only";
 
 import {
-  assertReaderDocumentExtractionAttemptManifestObjectKey,
-  assertReaderDocumentExtractionEnvelopeObjectKey,
   buildRawExtractionInspectorBundle,
-  isStudyRawExtractionArtifact,
-  orderSourceDocumentIdsForEngine1,
   requireSessionUserId,
   type RawExtractionInspectorBundle,
-  type StudyRawExtractionArtifact,
 } from "@hiveforyou/core";
-import { readerDocumentExtractionStudyRunManifestPath } from "@hiveforyou/shared/hive-artifact-paths";
-import {
-  parseReaderDocumentExtractionEnvelope,
-  type ReaderDocumentExtractionAttemptManifest,
-  type ReaderDocumentExtractionEnvelope,
-  type ReaderDocumentExtractionStudyRunManifest,
-} from "@hiveforyou/shared/reader-document-extraction";
 
 import { CaseNotFoundError } from "@/lib/canonical-study/study-service-server";
 import { StudyRunNotFoundError } from "@/lib/case-map/case-map-bundle-service-server";
-import { createSupabaseHiveGateway, type HiveGateway } from "@/lib/persistence/hive-gateway";
+import { createSupabaseHiveGateway } from "@/lib/persistence/hive-gateway";
 import {
   SupabaseCaseRepository,
   SupabaseStudyContextRepository,
   SupabaseStudyRunRepository,
 } from "@/lib/persistence/supabase-repositories";
-import { SupabaseStudyArtifactRepository } from "@/lib/persistence/supabase-study-artifacts";
 import { createServerSupabaseClient, getAuthenticatedUserId } from "@/lib/supabase/server";
+
+import { loadReaderDocumentExtractionArtifacts } from "./load-reader-document-extraction-artifacts";
 
 export class RawExtractionNotFoundError extends Error {
   readonly code = "RAW_EXTRACTION_NOT_FOUND";
@@ -38,33 +27,11 @@ export class RawExtractionNotFoundError extends Error {
   }
 }
 
-const DOCUMENT_PAGES_BUCKET = "document-pages";
-
-async function downloadJson<T>(gateway: HiveGateway, objectKey: string): Promise<T | null> {
-  try {
-    const bytes = await gateway.downloadObject(DOCUMENT_PAGES_BUCKET, objectKey);
-    return JSON.parse(new TextDecoder().decode(bytes)) as T;
-  } catch {
-    return null;
-  }
-}
-
-function parseAttemptManifest(raw: unknown): ReaderDocumentExtractionAttemptManifest | null {
-  if (!raw || typeof raw !== "object" || Array.isArray(raw)) {
-    return null;
-  }
-  const record = raw as ReaderDocumentExtractionAttemptManifest;
-  if (record.schemaVersion !== "hive.reader-document-extraction-manifest/1") {
-    return null;
-  }
-  return record;
-}
-
 function hasRawExtractionArtifactEvidence(input: {
-  terminalArtifact: StudyRawExtractionArtifact | null;
-  studyRunManifest: ReaderDocumentExtractionStudyRunManifest | null;
-  attemptManifest: ReaderDocumentExtractionAttemptManifest | null;
-  envelopesBySourceDocumentId: Map<string, ReaderDocumentExtractionEnvelope>;
+  terminalArtifact: unknown | null;
+  studyRunManifest: unknown | null;
+  attemptManifest: unknown | null;
+  envelopesBySourceDocumentId: Map<string, unknown>;
 }): boolean {
   return (
     input.terminalArtifact !== null ||
@@ -72,17 +39,6 @@ function hasRawExtractionArtifactEvidence(input: {
     input.attemptManifest !== null ||
     input.envelopesBySourceDocumentId.size > 0
   );
-}
-
-function parseStudyRunManifest(raw: unknown): ReaderDocumentExtractionStudyRunManifest | null {
-  if (!raw || typeof raw !== "object" || Array.isArray(raw)) {
-    return null;
-  }
-  const record = raw as ReaderDocumentExtractionStudyRunManifest;
-  if (record.schemaVersion !== "hive.reader-document-extraction-manifest/1") {
-    return null;
-  }
-  return record;
 }
 
 export async function loadRawExtractionInspectorBundle(input: {
@@ -111,90 +67,58 @@ export async function loadRawExtractionInspectorBundle(input: {
     input.studyRunId,
   );
 
-  const artifactRecord = await new SupabaseStudyArtifactRepository(
-    gateway,
-    sessionUserId,
-  ).getByStudyRunId(input.studyRunId);
-  const terminalArtifact = isStudyRawExtractionArtifact(artifactRecord?.rawProposalJson)
-    ? artifactRecord.rawProposalJson
-    : null;
-
-  const studyRunManifestPath = readerDocumentExtractionStudyRunManifestPath(
-    sessionUserId,
-    input.studyRunId,
-  );
-  const studyRunManifestRaw = await downloadJson<unknown>(gateway, studyRunManifestPath);
-  const studyRunManifest = parseStudyRunManifest(studyRunManifestRaw);
-  if (studyRunManifest && studyRunManifest.caseId !== input.caseId) {
-    throw new RawExtractionNotFoundError();
-  }
-
-  const attemptId =
-    terminalArtifact?.attemptId ?? studyRunManifest?.latestAttemptId ?? null;
-
-  let attemptManifest: ReaderDocumentExtractionAttemptManifest | null = null;
-  if (attemptId && studyRunManifest?.latestAttemptManifestObjectKey) {
-    assertReaderDocumentExtractionAttemptManifestObjectKey({
-      userId: sessionUserId,
-      studyRunId: input.studyRunId,
-      attemptId,
-      objectKey: studyRunManifest.latestAttemptManifestObjectKey,
-    });
-    attemptManifest = parseAttemptManifest(
-      await downloadJson<unknown>(gateway, studyRunManifest.latestAttemptManifestObjectKey),
-    );
-    if (attemptManifest && attemptManifest.caseId !== input.caseId) {
-      throw new RawExtractionNotFoundError();
-    }
-  }
-
-  const envelopesBySourceDocumentId = new Map<string, ReaderDocumentExtractionEnvelope>();
-  if (attemptId && attemptManifest) {
-    for (const row of attemptManifest.documents) {
-      assertReaderDocumentExtractionEnvelopeObjectKey({
-        userId: sessionUserId,
-        studyRunId: input.studyRunId,
-        attemptId,
-        sourceDocumentId: row.sourceDocumentId,
-        objectKey: row.envelopeObjectKey,
-      });
-      const raw = await downloadJson<unknown>(gateway, row.envelopeObjectKey);
-      if (!raw) {
-        continue;
-      }
-      const envelope = parseReaderDocumentExtractionEnvelope(raw);
-      if (
-        envelope.userId !== sessionUserId ||
-        envelope.caseId !== input.caseId ||
-        envelope.studyRunId !== input.studyRunId ||
-        envelope.attemptId !== attemptId
-      ) {
-        throw new RawExtractionNotFoundError();
-      }
-      envelopesBySourceDocumentId.set(row.sourceDocumentId, envelope);
-    }
-  }
-
   const logicalDocuments =
     context?.structureMap?.logicalDocuments ?? context?.logicalDocuments ?? [];
   const fallbackSourceDocumentIds = [
     ...(context?.sourceDocuments.map((doc) => doc.sourceDocumentId) ?? []),
-    ...(attemptManifest?.documents.map((doc) => doc.sourceDocumentId) ?? []),
-    ...(terminalArtifact?.succeededDocumentIds ?? []),
-    ...(terminalArtifact?.failedDocumentIds ?? []),
   ].filter((id): id is string => typeof id === "string" && id.trim().length > 0);
 
-  const orderedSourceDocumentIds = orderSourceDocumentIdsForEngine1({
+  const preliminary = await loadReaderDocumentExtractionArtifacts({
+    gateway,
+    sessionUserId,
+    caseId: input.caseId,
+    studyRunId: input.studyRunId,
     logicalDocuments,
     fallbackSourceDocumentIds,
   });
 
+  const artifacts = await loadReaderDocumentExtractionArtifacts({
+    gateway,
+    sessionUserId,
+    caseId: input.caseId,
+    studyRunId: input.studyRunId,
+    logicalDocuments,
+    fallbackSourceDocumentIds: [
+      ...fallbackSourceDocumentIds,
+      ...(preliminary.attemptManifest?.documents.map((doc) => doc.sourceDocumentId) ?? []),
+      ...(preliminary.terminalArtifact?.succeededDocumentIds ?? []),
+      ...(preliminary.terminalArtifact?.failedDocumentIds ?? []),
+    ],
+  });
+
+  if (artifacts.studyRunManifest && artifacts.studyRunManifest.caseId !== input.caseId) {
+    throw new RawExtractionNotFoundError();
+  }
+  if (artifacts.attemptManifest && artifacts.attemptManifest.caseId !== input.caseId) {
+    throw new RawExtractionNotFoundError();
+  }
+
+  for (const envelope of artifacts.envelopesBySourceDocumentId.values()) {
+    if (
+      envelope.userId !== sessionUserId ||
+      envelope.caseId !== input.caseId ||
+      envelope.studyRunId !== input.studyRunId
+    ) {
+      throw new RawExtractionNotFoundError();
+    }
+  }
+
   if (
     !hasRawExtractionArtifactEvidence({
-      terminalArtifact,
-      studyRunManifest,
-      attemptManifest,
-      envelopesBySourceDocumentId,
+      terminalArtifact: artifacts.terminalArtifact,
+      studyRunManifest: artifacts.studyRunManifest,
+      attemptManifest: artifacts.attemptManifest,
+      envelopesBySourceDocumentId: artifacts.envelopesBySourceDocumentId,
     })
   ) {
     throw new RawExtractionNotFoundError();
@@ -204,12 +128,12 @@ export async function loadRawExtractionInspectorBundle(input: {
     caseId: input.caseId,
     studyRunId: input.studyRunId,
     studyRunStatus: run.status,
-    attemptId,
-    terminalArtifact,
-    studyRunManifest,
-    attemptManifest,
-    envelopesBySourceDocumentId,
-    orderedSourceDocumentIds,
+    attemptId: artifacts.attemptId,
+    terminalArtifact: artifacts.terminalArtifact,
+    studyRunManifest: artifacts.studyRunManifest,
+    attemptManifest: artifacts.attemptManifest,
+    envelopesBySourceDocumentId: artifacts.envelopesBySourceDocumentId,
+    orderedSourceDocumentIds: artifacts.orderedSourceDocumentIds,
     logicalDocuments,
   });
 

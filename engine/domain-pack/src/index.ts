@@ -93,7 +93,18 @@ export {
   type PacketSegmentationResolver,
   type ValidateLogicalPageBoundariesResult,
 } from "./logical-page-segmentation";
-export type { ProposalDomainPack } from "./pack-driven-reader/types.js";
+export type {
+  ProposalCompositionRule,
+  ProposalConstruct,
+  ProposalDomainPack,
+  ProposalInsightCheck,
+  ProposalInsightChecks,
+  ProposalRecordField,
+  ProposalRequirementRule,
+  ProposalRequirementWhen,
+  ProposalRequirements,
+  ProposalRelationshipRules,
+} from "./pack-driven-reader/types.js";
 export {
   PACK_DRIVEN_CLASSIFICATION_AMBIGUOUS,
   PACK_DRIVEN_CLASSIFICATION_UNKNOWN,

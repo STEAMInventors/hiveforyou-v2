@@ -35,6 +35,20 @@ export {
   type StudyRawExtractionOutcome,
 } from "./study-artifact-persistence";
 export {
+  buildCanonicalStudyFoundation,
+  type BuildCanonicalStudyFoundationInput,
+  type CanonicalStudyFoundationDocumentInput,
+} from "./canonical-study-foundation/index.js";
+export {
+  buildCanonicalStudy,
+  type BuildCanonicalStudyInput,
+} from "./canonical-study/index.js";
+export {
+  PackNotReadyError,
+  assertEnvelopePackMatchesApprovedPack,
+  resolveApprovedProposalDomainPack,
+} from "./resolve-approved-proposal-domain-pack.js";
+export {
   assertReaderDocumentExtractionAttemptManifestObjectKey,
   assertReaderDocumentExtractionEnvelopeObjectKey,
   buildRawExtractionInspectorBundle,

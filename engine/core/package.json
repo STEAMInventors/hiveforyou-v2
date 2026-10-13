@@ -19,6 +19,7 @@
     "./study/validate-document-evidence": "./src/study/validate-document-evidence.ts",
     "./story/prefer-pack-narrative": "./src/study/story/prefer-pack-narrative.ts",
     "./document/page-model": "./src/document/page-model.ts",
+    "./document/trusted-document-pages": "./src/document/trusted-document-pages.ts",
     "./document/assembly": "./src/document/assembly.ts",
     "./document/find-consecutive-word-quote": "./src/document/find-consecutive-word-quote.ts",
     "./atoms/run-atoms": "./src/atoms/run-atoms.ts",

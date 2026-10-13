@@ -1,6 +1,7 @@
 "use client";
 
 import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 
 import type { RawExtractionInspectorBundle } from "@hiveforyou/core";
 
@@ -113,6 +114,8 @@ export function RawExtractionInspector({
   const [loading, setLoading] = useState(false);
   const [copyState, setCopyState] = useState<"idle" | "copied" | "failed">("idle");
   const [runState, setRunState] = useState<"idle" | "confirming" | "running">("idle");
+  const [canonicalRunState, setCanonicalRunState] = useState<"idle" | "running">("idle");
+  const router = useRouter();
 
   const load = useCallback(async () => {
     const trimmed = studyRunId.trim();
@@ -206,6 +209,45 @@ export function RawExtractionInspector({
       setRunState("idle");
     }
   }, [bundle?.intakeRunId, caseId]);
+
+  const runCanonicalStudy = useCallback(async () => {
+    const trimmed = studyRunId.trim();
+    if (!trimmed) {
+      setError("Enter a study run ID.");
+      return;
+    }
+    setCanonicalRunState("running");
+    setError(null);
+    try {
+      const response = await fetch(`/api/case/${encodeURIComponent(caseId)}/canonical-study/run`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ studyRunId: trimmed }),
+      });
+      const payload = (await response.json()) as {
+        error?: string;
+        message?: string;
+        affectedDocumentIds?: string[];
+      };
+      if (!response.ok) {
+        setError(
+          payload.error === "PACK_NOT_READY"
+            ? "PACK_NOT_READY: configure HIVE_CANONICAL_STUDY_APPROVED_PACK_JSON with an approved, runtime-compatible Domain Pack."
+            : payload.error === "SOURCE_PAGES_UNAVAILABLE"
+              ? `SOURCE_PAGES_UNAVAILABLE: trusted document pages are missing for ${(payload.affectedDocumentIds ?? []).join(", ") || "one or more documents"}.`
+              : (payload.message ?? payload.error ?? "Could not run deterministic canonical study."),
+        );
+        setCanonicalRunState("idle");
+        return;
+      }
+      router.push(
+        `/hives/${encodeURIComponent(caseId)}/canonical-debug?studyRunId=${encodeURIComponent(trimmed)}`,
+      );
+    } catch {
+      setError("Network error while running deterministic canonical study.");
+      setCanonicalRunState("idle");
+    }
+  }, [caseId, router, studyRunId]);
 
   return (
     <div className="space-y-8">
@@ -305,6 +347,14 @@ export function RawExtractionInspector({
                 {runState === "running" ? "Starting…" : "Run Raw Extraction (internal)"}
               </button>
             )}
+            <button
+              type="button"
+              className="hfy-btn hfy-btn--primary"
+              disabled={canonicalRunState === "running" || !studyRunId.trim()}
+              onClick={() => void runCanonicalStudy()}
+            >
+              {canonicalRunState === "running" ? "Running…" : "Run Canonical Study (internal)"}
+            </button>
           </div>
 
           <section className="space-y-4">

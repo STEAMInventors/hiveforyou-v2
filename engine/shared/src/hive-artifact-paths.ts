@@ -48,3 +48,21 @@ export function readerDocumentExtractionStudyRunManifestPath(
 ): string {
   return `${userId}/reader-document-extractions/${studyRunId}/manifest.json`;
 }
+
+/** Deterministic canonical study foundation artifact (ARCH-05.1). */
+export function canonicalStudyFoundationArtifactPath(
+  userId: string,
+  studyRunId: string,
+  attemptId: string,
+): string {
+  return `${userId}/canonical-study-foundation/${studyRunId}/${attemptId}.json`;
+}
+
+/** Complete deterministic canonical study artifact (ARCH-05.2–05.4). */
+export function canonicalStudyArtifactPath(
+  userId: string,
+  studyRunId: string,
+  attemptId: string,
+): string {
+  return `${userId}/canonical-study/${studyRunId}/${attemptId}.json`;
+}
