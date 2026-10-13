@@ -210,6 +210,7 @@ export type ProposalRecordField = {
   source: string[];
   modality?: string[];
   enum?: string[];
+  /** When valueKind is classification, enum must be yes | no | unclear. */
   unit?: string;
   description?: string;
   /** none skips change/conflict comparison. value compares the normalized value. event uses verified event chronology. */

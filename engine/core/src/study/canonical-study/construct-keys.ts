@@ -1,5 +1,6 @@
 import {
-  applyFieldSynonymNormalization,
+  applyComparableNormalizeSteps,
+  DEFAULT_COMPARABLE_NORMALIZE_STEPS,
   parseFieldSynonyms,
   type ProposalConstruct,
   type ProposalDomainPack,
@@ -7,19 +8,25 @@ import {
 
 import type { IndexedRecordVersion } from "./indexed-foundation.js";
 
-function normalizeText(value: unknown, steps: string[] | undefined, pack: ProposalDomainPack): string {
-  let text = String(value ?? "").trim();
-  for (const step of steps ?? []) {
-    if (step === "lowercase") {
-      text = text.toLowerCase();
-    } else if (step === "trim_punctuation") {
-      text = text.replace(/^[^\w]+|[^\w]+$/g, "");
-    } else if (step === "vocabulary_synonyms") {
-      const entries = parseFieldSynonyms(pack.vocabulary?.fieldSynonyms);
-      text = applyFieldSynonymNormalization(text, entries);
+function normalizeStepsForField(
+  pack: ProposalDomainPack,
+  recordTypeId: string,
+  constructId?: string,
+): readonly ("lowercase" | "trim_punctuation" | "vocabulary_synonyms")[] {
+  if (constructId) {
+    return pack.constructs?.[constructId]?.normalize ?? DEFAULT_COMPARABLE_NORMALIZE_STEPS;
+  }
+  const record = pack.recordTypes.find((r) => r.id === recordTypeId);
+  const merged = new Set<string>();
+  for (const constructKey of record?.usesConstructs ?? []) {
+    for (const step of pack.constructs?.[constructKey]?.normalize ?? []) {
+      merged.add(step);
     }
   }
-  return text;
+  if (merged.size === 0) {
+    return DEFAULT_COMPARABLE_NORMALIZE_STEPS;
+  }
+  return [...merged] as ("lowercase" | "trim_punctuation" | "vocabulary_synonyms")[];
 }
 
 export function normalizedFieldValue(
@@ -36,8 +43,9 @@ export function normalizedFieldValue(
   if (raw == null || raw === "") {
     return null;
   }
-  const steps = constructId ? pack.constructs?.[constructId]?.normalize : undefined;
-  return normalizeText(raw, steps, pack);
+  const fieldPath = `${record.recordTypeId}.${fieldId}`;
+  const steps = normalizeStepsForField(pack, record.recordTypeId, constructId);
+  return applyComparableNormalizeSteps(String(raw), steps, pack, fieldPath);
 }
 
 export type ContentKeyResult = {

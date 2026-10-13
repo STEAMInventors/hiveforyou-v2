@@ -4,6 +4,7 @@ import type {
   CanonicalStudyOperativeView,
   CanonicalStudyProvenanceChip,
   CanonicalStudySeries,
+  CanonicalStudySourceContext,
 } from "@hiveforyou/shared/canonical-study-artifact";
 
 import { buildConstructJoinKey, normalizedFieldValue } from "./construct-keys.js";
@@ -29,6 +30,19 @@ const FULLY_SUPPORTED_PRIMITIVES = new Set([
 ]);
 
 const PARTIAL_PRIMITIVES = new Set(["coChange", "periodCoverage", "ageOnDate"]);
+
+function resolveSourceDocumentLabel(
+  sourceContext: CanonicalStudySourceContext,
+  sourceDocumentId: string,
+): string {
+  const match = sourceContext.logicalDocuments?.find(
+    (doc) => doc.sourceDocumentId === sourceDocumentId,
+  );
+  if (match?.filename?.trim()) {
+    return match.filename.replace(/\.[^.]+$/, "");
+  }
+  return sourceDocumentId;
+}
 
 function substituteQuestion(
   template: string,
@@ -395,13 +409,16 @@ function evaluateAbsenceOf(
   }
 
   const area = unmatched[0] ? String(unmatched[0].normalized.displayValue ?? "") : "";
+  const presentDocument = unmatched[0]
+    ? resolveSourceDocumentLabel(indexed.sourceContext, unmatched[0].sourceDocumentId)
+    : "";
   return {
     id: stableId(`flag:${check.id}:fired`),
     checkId: check.id,
     status: "fired",
     question: substituteQuestion(check.question ?? "", {
       area,
-      presentDocument: unmatched[0]?.sourceDocumentId ?? "",
+      presentDocument,
       accommodation: area,
     }),
     operands: unmatched.sort((a, b) => a.fieldKey.localeCompare(b.fieldKey)),

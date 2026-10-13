@@ -98,6 +98,19 @@
       ]
     },
     {
+      "id": "evaluation_finding",
+      "fieldsAppend": [
+        {
+          "id": "need_identified",
+          "valueKind": "classification",
+          "source": ["classified"],
+          "modality": ["observed"],
+          "enum": ["yes", "no", "unclear"],
+          "description": "Whether the evaluation documents a distinct educational need in this area (yes only when clearly supported)."
+        }
+      ]
+    },
+    {
       "id": "evaluation_plan_item",
       "identity": {
         "scope": "document",
@@ -136,6 +149,24 @@
   ],
   "insightCheckReplacements": [
     {
+      "id": "need_without_goal",
+      "primitive": "absenceOf",
+      "present": {
+        "record": "evaluation_finding",
+        "field": "area",
+        "where": {
+          "need_identified": ["yes"]
+        }
+      },
+      "absent": {
+        "record": "goal",
+        "field": "area",
+        "scope": "operative:iep.plan"
+      },
+      "joinOn": "area_normalized",
+      "question": "{presentDocument} describes a need in {area}. No goal in that area appears in the current plan. Was it discussed?"
+    },
+    {
       "id": "testing_accommodation_not_in_assessment",
       "primitive": "absenceOf",
       "present": {
@@ -159,6 +190,21 @@
       {
         "field": "measure.task",
         "terms": ["Oral Reading Fluency", "oral reading fluency", "reading fluency", "Reading fluency"],
+        "value": "reading fluency"
+      },
+      {
+        "field": "goal.area",
+        "terms": ["Reading Fluency", "reading fluency", "Reading fluency", "oral reading fluency"],
+        "value": "reading fluency"
+      },
+      {
+        "field": "present_level.area",
+        "terms": ["Reading Fluency", "reading fluency", "Reading fluency", "oral reading fluency"],
+        "value": "reading fluency"
+      },
+      {
+        "field": "evaluation_finding.area",
+        "terms": ["Reading Fluency", "reading fluency", "Reading fluency", "oral reading fluency"],
         "value": "reading fluency"
       }
     ]

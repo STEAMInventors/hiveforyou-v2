@@ -35,5 +35,8 @@ describe("field-synonyms", () => {
   it("maps measure score_type terms to declared canonical values", () => {
     const entries = parseFieldSynonyms(iepPack.vocabulary?.fieldSynonyms);
     expect(applyFieldSynonymNormalization("WCPM", entries)).toBe("words_correct_per_minute");
+    expect(applyFieldSynonymNormalization("WCPM", entries, "measure.score_type")).toBe(
+      "words_correct_per_minute",
+    );
   });
 });

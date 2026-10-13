@@ -165,6 +165,12 @@ function verifyEnum(
   if (field.provenance !== "classified" || !def?.enum?.length) {
     return null;
   }
+  if (def.valueKind === "classification") {
+    const lower = def.enum.map((v) => v.toLowerCase());
+    if (!["yes", "no", "unclear"].every((state) => lower.includes(state))) {
+      return "classification field enum invalid in pack";
+    }
+  }
   const code =
     typeof field.displayValue === "string"
       ? field.displayValue

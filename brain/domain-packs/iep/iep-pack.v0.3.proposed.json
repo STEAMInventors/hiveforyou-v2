@@ -1607,8 +1607,9 @@
           ],
           "enum": [
             "instruction",
-            "testing",
-            "both",
+            "classroom_testing",
+            "state_district_assessment",
+            "instruction_and_testing",
             "unspecified"
           ]
         },
@@ -2478,6 +2479,22 @@
           ]
         },
         {
+          "id": "need_identified",
+          "valueKind": "classification",
+          "source": [
+            "classified"
+          ],
+          "modality": [
+            "observed"
+          ],
+          "enum": [
+            "yes",
+            "no",
+            "unclear"
+          ],
+          "description": "Whether the evaluation documents a distinct educational need in this area (yes only when clearly supported)."
+        },
+        {
           "id": "recommendation",
           "valueKind": "text",
           "comparison": "none",
@@ -2894,7 +2911,12 @@
         "primitive": "absenceOf",
         "present": {
           "record": "evaluation_finding",
-          "field": "area"
+          "field": "area",
+          "where": {
+            "need_identified": [
+              "yes"
+            ]
+          }
         },
         "absent": {
           "record": "goal",
@@ -2961,8 +2983,8 @@
           "field": "description",
           "where": {
             "context": [
-              "testing",
-              "both"
+              "state_district_assessment",
+              "instruction_and_testing"
             ]
           }
         },
@@ -3092,6 +3114,13 @@
       "PR": "percentile rank",
       "GE": "grade equivalent",
       "CBM": "curriculum-based measurement"
+    },
+    "readerLegacyContextMap": {
+      "accommodation.context": {
+        "testing": "classroom_testing",
+        "both": "instruction_and_testing",
+        "instruction": "instruction"
+      }
     },
     "fieldSynonyms": [
       {

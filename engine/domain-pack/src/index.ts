@@ -115,6 +115,17 @@ export {
   parseFieldSynonyms,
 } from "./pack-driven-reader/field-synonyms.js";
 export {
+  applyComparableNormalizeSteps,
+  CLASSIFICATION_STATES,
+  DEFAULT_COMPARABLE_NORMALIZE_STEPS,
+  isClassificationEnum,
+  isClassificationValueKind,
+  isVerifiedPositiveClassification,
+  normalizeComparableFieldText,
+  type ClassificationState,
+  type ComparableNormalizeStep,
+} from "./comparable-normalization.js";
+export {
   PACK_DRIVEN_CLASSIFICATION_AMBIGUOUS,
   PACK_DRIVEN_CLASSIFICATION_UNKNOWN,
   PACK_DRIVEN_READER_PROMPT_VERSION,

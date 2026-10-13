@@ -95,12 +95,30 @@ export function parseFieldSynonyms(raw: unknown): ProposalFieldSynonymEntry[] {
  * When `value` is declared, it is the canonical form (e.g. classified enum codes).
  * Otherwise the last segment of `field` is used (e.g. measure.score_type -> score_type).
  */
+function entryMatchesFieldPath(entryField: string, fieldPath: string | undefined): boolean {
+  if (!fieldPath) {
+    return true;
+  }
+  if (entryField === fieldPath) {
+    return true;
+  }
+  if (fieldPath.endsWith(`.${entryField}`) || fieldPath.endsWith(entryField)) {
+    return true;
+  }
+  const pathFieldId = fieldPath.includes(".") ? fieldPath.slice(fieldPath.lastIndexOf(".") + 1) : fieldPath;
+  return entryField === pathFieldId || entryField.endsWith(`.${pathFieldId}`);
+}
+
 export function applyFieldSynonymNormalization(
   text: string,
   entries: readonly ProposalFieldSynonymEntry[],
+  fieldPath?: string,
 ): string {
   const normalized = normalizeSynonymToken(text);
   for (const entry of entries) {
+    if (!entryMatchesFieldPath(entry.field, fieldPath)) {
+      continue;
+    }
     for (const term of entry.terms) {
       if (normalized === normalizeSynonymToken(term)) {
         if (entry.value) {

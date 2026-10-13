@@ -86,6 +86,21 @@ export function validateProposalDomainPack(pack: ProposalDomainPack): ValidatePr
       err(`${r.id}: crossDocumentMerge must be version or independent_assertions`);
     }
     for (const f of r.fields) {
+      if (f.valueKind === "classification") {
+        if (!f.enum?.length) {
+          err(`${r.id}.${f.id}: classification without enum`);
+        } else {
+          const states = new Set(f.enum.map((v) => v.toLowerCase()));
+          for (const required of ["yes", "no", "unclear"]) {
+            if (!states.has(required)) {
+              err(`${r.id}.${f.id}: classification enum must include yes, no, unclear`);
+            }
+          }
+        }
+        if (!f.source.includes("classified")) {
+          err(`${r.id}.${f.id}: classification fields must use classified source`);
+        }
+      }
       if (f.source.includes("classified") && !f.enum?.length) {
         err(`${r.id}.${f.id}: classified without enum`);
       }
