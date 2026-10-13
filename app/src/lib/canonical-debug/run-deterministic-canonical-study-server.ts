@@ -3,12 +3,12 @@ import "server-only";
 import { createHash } from "node:crypto";
 
 import {
-  PackNotReadyError,
-  assertEnvelopePackMatchesApprovedPack,
+  CANONICAL_STUDY_DEBUG_PACK_APPROVAL,
+  PackNotAvailableError,
   buildCanonicalStudy,
   buildCanonicalStudyFoundation,
   requireSessionUserId,
-  resolveApprovedProposalDomainPack,
+  resolveDebugCanonicalStudyDomainPack,
 } from "@hiveforyou/core";
 import {
   assertTrustedDocumentPagesPayload,
@@ -59,6 +59,11 @@ export class SourcePagesUnavailableError extends Error {
     this.name = "SourcePagesUnavailableError";
   }
 }
+
+export type CanonicalStudyDebugArtifactMetadata = {
+  packApprovalLabel: typeof CANONICAL_STUDY_DEBUG_PACK_APPROVAL;
+  customerProReportsPermitted: false;
+};
 
 function sha256Json(value: unknown): string {
   return createHash("sha256").update(JSON.stringify(value)).digest("hex");
@@ -120,6 +125,52 @@ function firstEnvelope(
   return null;
 }
 
+function assertReaderEnvelopesSharePackMetadata(
+  envelopes: Iterable<ReaderDocumentExtractionEnvelope>,
+): { packId: string; packVersion: string; packContentSha256: string } {
+  let packId: string | null = null;
+  let packVersion: string | null = null;
+  let packContentSha256: string | null = null;
+
+  for (const envelope of envelopes) {
+    const nextPackId = envelope.packId?.trim();
+    const nextPackVersion = envelope.packVersion?.trim();
+    const nextHash = envelope.packContentSha256?.trim().toLowerCase() ?? null;
+    if (!nextPackId || !nextPackVersion || !nextHash) {
+      throw new PackNotAvailableError(
+        "Reader extraction envelopes are missing Domain Pack id, version, or content hash.",
+      );
+    }
+    if (packId === null) {
+      packId = nextPackId;
+      packVersion = nextPackVersion;
+      packContentSha256 = nextHash;
+      continue;
+    }
+    if (packId !== nextPackId || packVersion !== nextPackVersion || packContentSha256 !== nextHash) {
+      throw new PackNotAvailableError(
+        "Reader extraction envelopes reference inconsistent Domain Pack metadata.",
+      );
+    }
+  }
+
+  if (!packId || !packVersion || !packContentSha256) {
+    throw new PackNotAvailableError("Reader extraction envelopes did not include Domain Pack metadata.");
+  }
+
+  return { packId, packVersion, packContentSha256 };
+}
+
+function stampDebugCanonicalStudyMetadata<T extends object>(
+  artifact: T,
+): T & CanonicalStudyDebugArtifactMetadata {
+  return {
+    ...artifact,
+    packApprovalLabel: CANONICAL_STUDY_DEBUG_PACK_APPROVAL,
+    customerProReportsPermitted: false,
+  };
+}
+
 function envelopeContainsExtractedFacts(envelope: ReaderDocumentExtractionEnvelope): boolean {
   if (envelope.status !== "SUCCEEDED" || !envelope.parsedModelJson) {
     return false;
@@ -136,8 +187,8 @@ function envelopeContainsExtractedFacts(envelope: ReaderDocumentExtractionEnvelo
 export type RunDeterministicCanonicalStudyResult = {
   studyRunId: string;
   attemptId: string;
-  foundation: CanonicalStudyFoundationArtifact;
-  artifact: CanonicalStudyArtifact;
+  foundation: CanonicalStudyFoundationArtifact & CanonicalStudyDebugArtifactMetadata;
+  artifact: CanonicalStudyArtifact & CanonicalStudyDebugArtifactMetadata;
   foundationObjectKey: string;
   artifactObjectKey: string;
 };
@@ -208,16 +259,17 @@ export async function runDeterministicCanonicalStudy(input: {
     throw new RawExtractionNotFoundError();
   }
 
-  const approvedPack = resolveApprovedProposalDomainPack();
   const sampleEnvelope = firstEnvelope(loaded.envelopesBySourceDocumentId);
   if (!sampleEnvelope) {
     throw new RawExtractionNotFoundError();
   }
-  assertEnvelopePackMatchesApprovedPack({
-    envelopePackId: sampleEnvelope.packId,
-    envelopePackVersion: sampleEnvelope.packVersion,
-    envelopePackContentSha256: sampleEnvelope.packContentSha256,
-    approved: approvedPack,
+  const envelopePackMetadata = assertReaderEnvelopesSharePackMetadata(
+    loaded.envelopesBySourceDocumentId.values(),
+  );
+  const structuralPack = resolveDebugCanonicalStudyDomainPack({
+    envelopePackId: envelopePackMetadata.packId,
+    envelopePackVersion: envelopePackMetadata.packVersion,
+    envelopePackContentSha256: envelopePackMetadata.packContentSha256,
   });
 
   const sourceDocuments = await new SupabaseSourceDocumentRepository(
@@ -285,13 +337,15 @@ export async function runDeterministicCanonicalStudy(input: {
   }
 
   const createdAt = new Date().toISOString();
-  const foundation = buildCanonicalStudyFoundation({
-    pack: approvedPack.pack,
-    packContentSha256: approvedPack.contentSha256,
-    caseId: input.caseId,
-    createdAt,
-    documents: foundationDocuments,
-  });
+  const foundation = stampDebugCanonicalStudyMetadata(
+    buildCanonicalStudyFoundation({
+      pack: structuralPack.pack,
+      packContentSha256: structuralPack.contentSha256,
+      caseId: input.caseId,
+      createdAt,
+      documents: foundationDocuments,
+    }),
+  );
 
   const sourceContext = buildSourceContext({
     logicalDocuments: logicalDocuments.map((doc) => ({
@@ -301,13 +355,15 @@ export async function runDeterministicCanonicalStudy(input: {
     })),
   });
 
-  const artifact = buildCanonicalStudy({
-    pack: approvedPack.pack,
-    packContentSha256: approvedPack.contentSha256,
-    foundation,
-    sourceContext,
-    createdAt,
-  });
+  const artifact = stampDebugCanonicalStudyMetadata(
+    buildCanonicalStudy({
+      pack: structuralPack.pack,
+      packContentSha256: structuralPack.contentSha256,
+      foundation,
+      sourceContext,
+      createdAt,
+    }),
+  );
 
   const attemptId = loaded.attemptId;
   const foundationObjectKey = canonicalStudyFoundationArtifactPath(
@@ -333,7 +389,7 @@ export async function runDeterministicCanonicalStudy(input: {
 export async function loadDeterministicCanonicalStudyArtifact(input: {
   caseId: string;
   studyRunId: string;
-}): Promise<CanonicalStudyArtifact> {
+}): Promise<CanonicalStudyArtifact & CanonicalStudyDebugArtifactMetadata> {
   const sessionUserId = requireSessionUserId(await getAuthenticatedUserId());
   const gateway = createSupabaseHiveGateway(await createServerSupabaseClient());
 
@@ -383,10 +439,11 @@ export async function loadDeterministicCanonicalStudyArtifact(input: {
   );
   try {
     const bytes = await gateway.downloadObject(DOCUMENT_PAGES_BUCKET, artifactObjectKey);
-    return JSON.parse(new TextDecoder().decode(bytes)) as CanonicalStudyArtifact;
+    return JSON.parse(new TextDecoder().decode(bytes)) as CanonicalStudyArtifact &
+      CanonicalStudyDebugArtifactMetadata;
   } catch {
     throw new CanonicalStudyArtifactsNotFoundError();
   }
 }
 
-export { PackNotReadyError };
+export { PackNotAvailableError };

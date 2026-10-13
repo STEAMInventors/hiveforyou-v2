@@ -67,7 +67,7 @@ vi.mock("@/lib/persistence/hive-gateway", () => ({
 import { getAuthenticatedUserId } from "@/lib/supabase/server";
 import { createSupabaseHiveGateway } from "@/lib/persistence/hive-gateway";
 import {
-  PackNotReadyError,
+  PackNotAvailableError,
   SourcePagesUnavailableError,
   runDeterministicCanonicalStudy,
 } from "./run-deterministic-canonical-study-server";
@@ -321,30 +321,25 @@ describe("runDeterministicCanonicalStudy", () => {
   beforeEach(() => {
     vi.mocked(getAuthenticatedUserId).mockResolvedValue(USER_ID);
     vi.mocked(createSupabaseHiveGateway).mockReturnValue(buildGateway());
-    delete process.env.HIVE_CANONICAL_STUDY_APPROVED_PACK_JSON;
+    delete process.env.HIVE_PACK_DRIVEN_READER_PROPOSAL_JSON;
   });
 
-  it("returns PACK_NOT_READY when no approved Domain Pack is configured", async () => {
+  it("returns PACK_NOT_AVAILABLE when Reader envelope pack is unavailable", async () => {
     await expect(
       runDeterministicCanonicalStudy({ caseId: CASE_ID, studyRunId: STUDY_RUN_ID }),
-    ).rejects.toBeInstanceOf(PackNotReadyError);
+    ).rejects.toBeInstanceOf(PackNotAvailableError);
   });
 
   it("returns SOURCE_PAGES_UNAVAILABLE when trusted pages are missing for documents with extracted facts", async () => {
-    const dir = mkdtempSync(join(tmpdir(), "hive-approved-pack-"));
+    const dir = mkdtempSync(join(tmpdir(), "hive-debug-pack-"));
     try {
-      const packPath = join(dir, "approved-pack.json");
+      const packPath = join(dir, "debug-pack.json");
       writeFileSync(
         packPath,
-        JSON.stringify({ ...SYNTHETIC_PACK, status: "APPROVED_RUNTIME_COMPATIBLE" }),
+        JSON.stringify(SYNTHETIC_PACK),
         "utf8",
       );
-      writeFileSync(
-        join(dir, "review-check.json"),
-        JSON.stringify({ runtimeCompatible: true, packStatus: "APPROVED_RUNTIME_COMPATIBLE" }),
-        "utf8",
-      );
-      process.env.HIVE_CANONICAL_STUDY_APPROVED_PACK_JSON = packPath;
+      process.env.HIVE_PACK_DRIVEN_READER_PROPOSAL_JSON = packPath;
 
       const gatewayWithoutPages = buildGateway();
       vi.mocked(createSupabaseHiveGateway).mockReturnValue({
@@ -368,21 +363,16 @@ describe("runDeterministicCanonicalStudy", () => {
     }
   });
 
-  it("builds and persists canonical study artifacts when an approved pack is configured", async () => {
-    const dir = mkdtempSync(join(tmpdir(), "hive-approved-pack-"));
+  it("builds and persists debug-labeled canonical study artifacts from Reader envelope pack metadata", async () => {
+    const dir = mkdtempSync(join(tmpdir(), "hive-debug-pack-"));
     try {
-      const packPath = join(dir, "approved-pack.json");
+      const packPath = join(dir, "debug-pack.json");
       writeFileSync(
         packPath,
-        JSON.stringify({ ...SYNTHETIC_PACK, status: "APPROVED_RUNTIME_COMPATIBLE" }),
+        JSON.stringify(SYNTHETIC_PACK),
         "utf8",
       );
-      writeFileSync(
-        join(dir, "review-check.json"),
-        JSON.stringify({ runtimeCompatible: true, packStatus: "APPROVED_RUNTIME_COMPATIBLE" }),
-        "utf8",
-      );
-      process.env.HIVE_CANONICAL_STUDY_APPROVED_PACK_JSON = packPath;
+      process.env.HIVE_PACK_DRIVEN_READER_PROPOSAL_JSON = packPath;
 
       const result = await runDeterministicCanonicalStudy({
         caseId: CASE_ID,
@@ -394,6 +384,10 @@ describe("runDeterministicCanonicalStudy", () => {
       expect(result.artifact.schemaVersion).toBe("hive.canonical-study/1");
       expect(result.foundation.schemaVersion).toBe("hive.canonical-study-foundation/1");
       expect(result.artifactObjectKey).toContain("/canonical-study/");
+      expect(result.foundation.packApprovalLabel).toBe("DEBUG_UNAPPROVED_PACK");
+      expect(result.foundation.customerProReportsPermitted).toBe(false);
+      expect(result.artifact.packApprovalLabel).toBe("DEBUG_UNAPPROVED_PACK");
+      expect(result.artifact.customerProReportsPermitted).toBe(false);
     } finally {
       rmSync(dir, { recursive: true, force: true });
     }

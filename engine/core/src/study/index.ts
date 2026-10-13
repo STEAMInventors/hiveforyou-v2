@@ -44,9 +44,13 @@ export {
   type BuildCanonicalStudyInput,
 } from "./canonical-study/index.js";
 export {
+  CANONICAL_STUDY_DEBUG_PACK_APPROVAL,
+  PackNotAvailableError,
   PackNotReadyError,
   assertEnvelopePackMatchesApprovedPack,
   resolveApprovedProposalDomainPack,
+  resolveDebugCanonicalStudyDomainPack,
+  type ResolvedDebugCanonicalStudyDomainPack,
 } from "./resolve-approved-proposal-domain-pack.js";
 export {
   assertReaderDocumentExtractionAttemptManifestObjectKey,

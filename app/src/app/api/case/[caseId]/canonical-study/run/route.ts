@@ -5,7 +5,7 @@ import { UnauthenticatedError } from "@hiveforyou/core";
 import { CaseNotFoundError } from "@/lib/canonical-study/study-service-server";
 import { StudyRunNotFoundError } from "@/lib/case-map/case-map-bundle-service-server";
 import {
-  PackNotReadyError,
+  PackNotAvailableError,
   SourcePagesUnavailableError,
   runDeterministicCanonicalStudy,
 } from "@/lib/canonical-debug/run-deterministic-canonical-study-server";
@@ -39,6 +39,8 @@ export async function POST(request: Request, context: RouteContext) {
       artifactObjectKey: result.artifactObjectKey,
       counts: result.artifact.counts,
       contentSha256: result.artifact.contentSha256,
+      packApprovalLabel: result.artifact.packApprovalLabel,
+      customerProReportsPermitted: result.artifact.customerProReportsPermitted,
     });
   } catch (error) {
     if (error instanceof UnauthenticatedError) {
@@ -65,7 +67,7 @@ export async function POST(request: Request, context: RouteContext) {
         { status: 404 },
       );
     }
-    if (error instanceof PackNotReadyError) {
+    if (error instanceof PackNotAvailableError) {
       return NextResponse.json(
         { error: error.code, message: error.message },
         { status: 409 },

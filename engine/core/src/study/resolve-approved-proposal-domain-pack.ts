@@ -7,7 +7,12 @@ import {
   validateProposalDomainPack,
 } from "@hiveforyou/domain-pack/pack-driven-reader";
 
+import { packDrivenProposalPackPath } from "./agentic-reader-qualification.js";
+
 const PROPOSED_V03_MARKERS = ["iep-pack.v0.3.proposed", "v0.3.proposed.json"] as const;
+
+/** Inspector-only label: structural pack input, not production approval. */
+export const CANONICAL_STUDY_DEBUG_PACK_APPROVAL = "DEBUG_UNAPPROVED_PACK" as const;
 
 export class PackNotReadyError extends Error {
   readonly code = "PACK_NOT_READY";
@@ -18,9 +23,25 @@ export class PackNotReadyError extends Error {
   }
 }
 
+export class PackNotAvailableError extends Error {
+  readonly code = "PACK_NOT_AVAILABLE";
+
+  constructor(message = "Matching Domain Pack is not available for canonical study debug.") {
+    super(message);
+    this.name = "PackNotAvailableError";
+  }
+}
+
 type ReviewCheckSidecar = {
   runtimeCompatible?: boolean;
   packStatus?: string;
+};
+
+export type ResolvedDebugCanonicalStudyDomainPack = {
+  pack: ProposalDomainPack;
+  path: string;
+  contentSha256: string;
+  packApprovalLabel: typeof CANONICAL_STUDY_DEBUG_PACK_APPROVAL;
 };
 
 function isProposedV03Path(path: string): boolean {
@@ -50,6 +71,106 @@ function assertPackRuntimeApproved(pack: ProposalDomainPack, packPath: string): 
   if (sidecar?.packStatus === "REVIEW_DRAFT_NOT_RUNTIME_COMPATIBLE") {
     throw new PackNotReadyError("Configured Domain Pack review check is not runtime compatible.");
   }
+}
+
+function collectDebugPackCandidatePaths(input: {
+  packId: string;
+  packVersion: string;
+  env: Record<string, string | undefined>;
+}): string[] {
+  const paths = new Set<string>();
+  const override = input.env.HIVE_PACK_DRIVEN_READER_PROPOSAL_JSON?.trim();
+  if (override) {
+    paths.add(override);
+  }
+  if (input.packId === "iep" && input.packVersion === "0.3.0-proposed") {
+    paths.add(packDrivenProposalPackPath(input.env));
+  }
+  return [...paths];
+}
+
+function tryLoadStrictEnvelopeMatchedPack(input: {
+  path: string;
+  envelopePackId: string;
+  envelopePackVersion: string;
+  envelopeHash: string;
+}):
+  | { pack: ProposalDomainPack; path: string; contentSha256: string }
+  | null {
+  let raw: string;
+  try {
+    raw = readFileSync(input.path, "utf8");
+  } catch (error) {
+    const errno = error as NodeJS.ErrnoException;
+    if (errno?.code === "ENOENT") {
+      return null;
+    }
+    throw error;
+  }
+
+  const pack = JSON.parse(raw) as ProposalDomainPack;
+  const validation = validateProposalDomainPack(pack);
+  if (!validation.valid) {
+    return null;
+  }
+  if (pack.manifest.id !== input.envelopePackId) {
+    return null;
+  }
+  if (pack.manifest.version !== input.envelopePackVersion) {
+    return null;
+  }
+  const contentSha256 = computeProposalPackContentSha256(pack).toLowerCase();
+  if (contentSha256 !== input.envelopeHash) {
+    return null;
+  }
+  return { pack, path: input.path, contentSha256 };
+}
+
+/**
+ * Loads the Domain Pack referenced by persisted Reader envelopes for the temporary
+ * Canonical Study Inspector. Structural input only — not production approval.
+ */
+export function resolveDebugCanonicalStudyDomainPack(input: {
+  envelopePackId: string;
+  envelopePackVersion: string;
+  envelopePackContentSha256: string | null;
+  env?: Record<string, string | undefined>;
+}): ResolvedDebugCanonicalStudyDomainPack {
+  const env = input.env ?? process.env;
+  const envelopeHash = input.envelopePackContentSha256?.trim().toLowerCase();
+  if (!envelopeHash) {
+    throw new PackNotAvailableError("Reader extraction Domain Pack content hash is missing.");
+  }
+
+  const candidatePaths = collectDebugPackCandidatePaths({
+    packId: input.envelopePackId,
+    packVersion: input.envelopePackVersion,
+    env,
+  });
+  if (candidatePaths.length === 0) {
+    throw new PackNotAvailableError(
+      `No Domain Pack is available for ${input.envelopePackId}@${input.envelopePackVersion}.`,
+    );
+  }
+
+  for (const path of candidatePaths) {
+    const loaded = tryLoadStrictEnvelopeMatchedPack({
+      path,
+      envelopePackId: input.envelopePackId,
+      envelopePackVersion: input.envelopePackVersion,
+      envelopeHash,
+    });
+    if (loaded) {
+      return {
+        ...loaded,
+        packApprovalLabel: CANONICAL_STUDY_DEBUG_PACK_APPROVAL,
+      };
+    }
+  }
+
+  throw new PackNotAvailableError(
+    `Matching Domain Pack is unavailable for ${input.envelopePackId}@${input.envelopePackVersion} (hash ${envelopeHash}).`,
+  );
 }
 
 /**

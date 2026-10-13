@@ -231,8 +231,8 @@ export function RawExtractionInspector({
       };
       if (!response.ok) {
         setError(
-          payload.error === "PACK_NOT_READY"
-            ? "PACK_NOT_READY: configure HIVE_CANONICAL_STUDY_APPROVED_PACK_JSON with an approved, runtime-compatible Domain Pack."
+          payload.error === "PACK_NOT_AVAILABLE"
+            ? "PACK_NOT_AVAILABLE: no on-disk Domain Pack matches the Reader envelope id, version, and SHA-256."
             : payload.error === "SOURCE_PAGES_UNAVAILABLE"
               ? `SOURCE_PAGES_UNAVAILABLE: trusted document pages are missing for ${(payload.affectedDocumentIds ?? []).join(", ") || "one or more documents"}.`
               : (payload.message ?? payload.error ?? "Could not run deterministic canonical study."),
