@@ -483,6 +483,9 @@ importers:
       '@hiveforyou/core':
         specifier: workspace:*
         version: link:../engine/core
+      '@hiveforyou/domain-pack-iep':
+        specifier: workspace:*
+        version: link:../engine/domain-packs/iep
       '@hiveforyou/domain-packs':
         specifier: workspace:*
         version: link:../engine/domain-packs/registry
