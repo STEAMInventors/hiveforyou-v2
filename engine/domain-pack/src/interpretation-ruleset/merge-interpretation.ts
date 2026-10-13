@@ -105,7 +105,8 @@ export function mergeInterpretationOntoReaderPack(
   let insightChecks = readerPack.insightChecks;
   if (overlay.insightCheckReplacements?.length && insightChecks) {
     const replacements = new Map(overlay.insightCheckReplacements.map((c) => [c.id, c] as const));
-    const checks: ProposalInsightCheck[] = insightChecks.checks.map(
+    const baseChecks = insightChecks.checks ?? [];
+    const checks: ProposalInsightCheck[] = baseChecks.map(
       (check) => replacements.get(check.id) ?? check,
     );
     for (const replacement of overlay.insightCheckReplacements) {

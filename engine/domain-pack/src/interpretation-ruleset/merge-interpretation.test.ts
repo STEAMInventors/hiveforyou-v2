@@ -123,6 +123,75 @@ describe("interpretation overlay merge", () => {
     expect(totalField?.derivation?.alternates?.[0]?.primitive).toBe("explicitTotalPerWeek");
   });
 
+  it("leaves insightChecks undefined when reader pack has none", () => {
+    const overlay = parseInterpretationOverlay({
+      schemaVersion: "hive.domain-pack.interpretation-overlay/0.1",
+      manifest: { id: "x", version: "0.0.1" },
+      compatibleReaderPackContentSha256: ["a".repeat(64)],
+      insightCheckReplacements: [
+        { id: "check.new", primitive: "present", question: "New?" },
+      ],
+    });
+    const readerPack = {
+      manifest: { id: "synthetic", version: "0.0.1" },
+      recordTypes: [],
+    } as Parameters<typeof mergeInterpretationOntoReaderPack>[0];
+
+    const merged = mergeInterpretationOntoReaderPack(readerPack, overlay);
+    expect(merged.insightChecks).toBeUndefined();
+  });
+
+  it("merges insightCheckReplacements when reader checks array is absent", () => {
+    const overlay = parseInterpretationOverlay({
+      schemaVersion: "hive.domain-pack.interpretation-overlay/0.1",
+      manifest: { id: "x", version: "0.0.1" },
+      compatibleReaderPackContentSha256: ["a".repeat(64)],
+      insightCheckReplacements: [
+        { id: "check.overlay", primitive: "present", question: "Overlay only?" },
+      ],
+    });
+    const readerPack = {
+      manifest: { id: "synthetic", version: "0.0.1" },
+      recordTypes: [],
+      insightChecks: { enginePrimitivesRequired: ["compare"] },
+    } as Parameters<typeof mergeInterpretationOntoReaderPack>[0];
+
+    const merged = mergeInterpretationOntoReaderPack(readerPack, overlay);
+    expect(merged.insightChecks?.enginePrimitivesRequired).toEqual(["compare"]);
+    expect(merged.insightChecks?.checks).toEqual([
+      { id: "check.overlay", primitive: "present", question: "Overlay only?" },
+    ]);
+  });
+
+  it("replaces and appends insightCheckReplacements onto existing checks", () => {
+    const overlay = parseInterpretationOverlay({
+      schemaVersion: "hive.domain-pack.interpretation-overlay/0.1",
+      manifest: { id: "x", version: "0.0.1" },
+      compatibleReaderPackContentSha256: ["a".repeat(64)],
+      insightCheckReplacements: [
+        { id: "check.a", primitive: "updated", question: "Updated A?" },
+        { id: "check.c", primitive: "present", question: "New C?" },
+      ],
+    });
+    const readerPack = {
+      manifest: { id: "synthetic", version: "0.0.1" },
+      recordTypes: [],
+      insightChecks: {
+        checks: [
+          { id: "check.a", primitive: "original", question: "Original A?" },
+          { id: "check.b", primitive: "keep", question: "Keep B?" },
+        ],
+      },
+    } as Parameters<typeof mergeInterpretationOntoReaderPack>[0];
+
+    const merged = mergeInterpretationOntoReaderPack(readerPack, overlay);
+    expect(merged.insightChecks?.checks).toEqual([
+      { id: "check.a", primitive: "updated", question: "Updated A?" },
+      { id: "check.b", primitive: "keep", question: "Keep B?" },
+      { id: "check.c", primitive: "present", question: "New C?" },
+    ]);
+  });
+
   it("rejects incompatible reader pack hash (negative)", () => {
     const overlay = parseInterpretationOverlay({
       schemaVersion: "hive.domain-pack.interpretation-overlay/0.1",
