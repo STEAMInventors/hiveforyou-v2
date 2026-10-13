@@ -1,4 +1,4 @@
-import type { ProposalDomainPack } from "@hiveforyou/domain-pack";
+import type { ProposalCompositionRule, ProposalDomainPack } from "@hiveforyou/domain-pack";
 import type {
   CanonicalStudyDocumentClassificationStatus,
   CanonicalStudyDocumentExtractionStatus,
@@ -7,8 +7,6 @@ import type {
   CanonicalStudyFoundationUnresolvedItem,
   CanonicalStudyFoundationVerifiedField,
 } from "@hiveforyou/shared/canonical-study-foundation";
-
-import type { ProposalCompositionRule } from "@hiveforyou/domain-pack/pack-driven-reader/types.js";
 
 import { parsePackFieldPath } from "./field-key.js";
 
