@@ -1,5 +1,7 @@
 import type { ProposalDomainPack } from "@hiveforyou/domain-pack";
 import type {
+  CanonicalStudyDocumentClassificationStatus,
+  CanonicalStudyDocumentExtractionStatus,
   CanonicalStudyFoundationDocumentOrder,
   CanonicalStudyFoundationGroupedRecord,
   CanonicalStudyFoundationUnresolvedItem,
@@ -16,6 +18,8 @@ export type OrderDocumentsInput = {
   allSourceDocumentIds: string[];
   trustedPagesSuppliedBySource?: ReadonlyMap<string, boolean>;
   matchedPageTermsBySource?: ReadonlyMap<string, readonly string[]>;
+  extractionStatusBySource?: ReadonlyMap<string, CanonicalStudyDocumentExtractionStatus>;
+  classificationStatusBySource?: ReadonlyMap<string, CanonicalStudyDocumentClassificationStatus>;
 };
 
 export type OrderDocumentsResult = {
@@ -192,6 +196,9 @@ export function orderDocumentsAndRecords(input: OrderDocumentsInput): OrderDocum
         verifiedOrderingDate: ordering.iso,
         orderingDateFieldPath: ordering.fieldPath,
         sortRank: 0,
+        extractionStatus: input.extractionStatusBySource?.get(sourceDocumentId) ?? "MISSING_ENVELOPE",
+        classificationStatus:
+          input.classificationStatusBySource?.get(sourceDocumentId) ?? "unclassified",
         trustedPagesSupplied: input.trustedPagesSuppliedBySource?.get(sourceDocumentId) ?? false,
         matchedPageTerms: [...(input.matchedPageTermsBySource?.get(sourceDocumentId) ?? [])].sort((a, b) =>
           a.localeCompare(b),

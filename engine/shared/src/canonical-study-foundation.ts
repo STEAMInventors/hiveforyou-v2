@@ -1,5 +1,19 @@
+import type { ReaderDocumentExtractionStatus } from "./reader-document-extraction.js";
+
 export const CANONICAL_STUDY_FOUNDATION_SCHEMA_VERSION =
   "hive.canonical-study-foundation/1" as const;
+
+/** Extraction outcome carried into canonical study (includes missing envelope). */
+export type CanonicalStudyDocumentExtractionStatus =
+  | ReaderDocumentExtractionStatus
+  | "MISSING_ENVELOPE";
+
+/** Model or trusted classification for a source document. */
+export type CanonicalStudyDocumentClassificationStatus =
+  | "classified"
+  | "unknown"
+  | "ambiguous"
+  | "unclassified";
 
 export type CanonicalStudyFoundationEvidence = {
   sourceDocumentId: string;
@@ -82,6 +96,8 @@ export type CanonicalStudyFoundationDocumentOrder = {
   verifiedOrderingDate: string | null;
   orderingDateFieldPath: string | null;
   sortRank: number;
+  extractionStatus: CanonicalStudyDocumentExtractionStatus;
+  classificationStatus: CanonicalStudyDocumentClassificationStatus;
   trustedPagesSupplied: boolean;
   matchedPageTerms: string[];
   amendsDocumentTypeId: string | null;

@@ -12,6 +12,11 @@ import {
   elapsedSincePrimitive,
   evaluateExists,
 } from "./evaluate-primitives.js";
+import {
+  evaluateInsightOperandSourceCoverage,
+  evaluateScopeSourceCoverage,
+  mergeSourceCoverageEvaluations,
+} from "./evaluate-source-coverage.js";
 import type { IndexedFoundation, IndexedRecordVersion } from "./indexed-foundation.js";
 import { stableId } from "./stable-id.js";
 
@@ -288,6 +293,23 @@ function evaluateAbsenceOf(
       return value != null && value !== "";
     });
   if (presentChips.length === 0) {
+    const operandCoverage = mergeSourceCoverageEvaluations([
+      evaluateInsightOperandSourceCoverage({
+        indexed,
+        operand: present,
+        anchorSourceDocumentId: null,
+        mode: "absence",
+      }),
+      evaluateInsightOperandSourceCoverage({
+        indexed,
+        operand: absent,
+        anchorSourceDocumentId: null,
+        mode: "absence",
+      }),
+    ]);
+    if (!operandCoverage.complete) {
+      return unresolved(operandCoverage.message);
+    }
     return unresolved("missing_present_operand");
   }
 
@@ -335,6 +357,41 @@ function evaluateAbsenceOf(
 
   if (unmatched.length === 0) {
     return null;
+  }
+
+  const coverage = mergeSourceCoverageEvaluations([
+    evaluateScopeSourceCoverage({
+      indexed,
+      scopeDocumentIds: new Set(
+        presentRecords.map((record) => record.sourceDocumentId).concat(
+          absent?.scope === "same_document"
+            ? presentRecords.map((record) => record.sourceDocumentId)
+            : [],
+        ),
+      ),
+      appliesTo:
+        present?.scope?.startsWith("operative:") || present?.scope?.startsWith("each:")
+          ? present.scope
+          : absent?.scope?.startsWith("operative:") || absent?.scope?.startsWith("each:")
+            ? absent.scope
+            : undefined,
+      mode: "absence",
+    }),
+    evaluateInsightOperandSourceCoverage({
+      indexed,
+      operand: present,
+      anchorSourceDocumentId: unmatched[0]?.sourceDocumentId ?? null,
+      mode: "absence",
+    }),
+    evaluateInsightOperandSourceCoverage({
+      indexed,
+      operand: absent,
+      anchorSourceDocumentId: unmatched[0]?.sourceDocumentId ?? null,
+      mode: "absence",
+    }),
+  ]);
+  if (!coverage.complete) {
+    return unresolved(coverage.message, unmatched);
   }
 
   const area = unmatched[0] ? String(unmatched[0].normalized.displayValue ?? "") : "";

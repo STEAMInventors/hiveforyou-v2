@@ -114,6 +114,9 @@ export function buildCanonicalStudy(input: BuildCanonicalStudyInput): CanonicalS
       documentTypeId: doc.documentTypeId,
       sortRank: doc.sortRank,
       verifiedOrderingDate: doc.verifiedOrderingDate,
+      extractionStatus: doc.extractionStatus,
+      classificationStatus: doc.classificationStatus,
+      trustedPagesSupplied: doc.trustedPagesSupplied,
     })),
     documentLineage,
     entities,
@@ -160,3 +163,9 @@ export { labelRelations } from "./label-relations.js";
 export { buildSeries } from "./build-series.js";
 export { evaluateRequirements } from "./evaluate-requirements.js";
 export { evaluateInsightChecks } from "./evaluate-insight-checks.js";
+export {
+  evaluateScopeSourceCoverage,
+  isDocumentPotentiallyInScope,
+  isExtractionReadable,
+  resolveClassificationStatus,
+} from "./evaluate-source-coverage.js";

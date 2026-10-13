@@ -163,7 +163,9 @@ export const SYNTHETIC_PACK: ProposalDomainPack = {
 
 export function envelope(input: {
   sourceDocumentId: string;
-  parsedModelJson: Record<string, unknown>;
+  parsedModelJson?: Record<string, unknown>;
+  status?: ReaderDocumentExtractionEnvelope["status"];
+  sanitizedError?: ReaderDocumentExtractionEnvelope["sanitizedError"];
 }): ReaderDocumentExtractionEnvelope {
   return {
     schemaVersion: READER_DOCUMENT_EXTRACTION_SCHEMA_VERSION,
@@ -179,9 +181,10 @@ export function envelope(input: {
     promptVersion: "hive-pack-driven-reader/0.2.0",
     modelProvider: "fixture",
     modelId: "fixture",
-    status: "SUCCEEDED",
+    status: input.status ?? "SUCCEEDED",
     occurredAt: "2026-10-12T12:00:00Z",
     parsedModelJson: input.parsedModelJson,
+    sanitizedError: input.sanitizedError,
   };
 }
 
@@ -308,8 +311,11 @@ export function docWithStudent(sourceDocumentId: string, name: string, birthDate
 export function buildSyntheticFoundation(input: {
   documents: Array<{
     sourceDocumentId: string;
-    parsedModelJson: Record<string, unknown>;
+    parsedModelJson?: Record<string, unknown>;
     pages?: DocumentPages | null;
+    status?: ReaderDocumentExtractionEnvelope["status"];
+    sanitizedError?: ReaderDocumentExtractionEnvelope["sanitizedError"];
+    extractionStatusOverride?: "MISSING_ENVELOPE";
   }>;
   packContentSha256?: string;
 }) {
@@ -323,8 +329,11 @@ export function buildSyntheticFoundation(input: {
       envelope: envelope({
         sourceDocumentId: doc.sourceDocumentId,
         parsedModelJson: doc.parsedModelJson,
+        status: doc.status,
+        sanitizedError: doc.sanitizedError,
       }),
       documentPages: doc.pages ?? null,
+      extractionStatusOverride: doc.extractionStatusOverride,
     })),
   });
 }

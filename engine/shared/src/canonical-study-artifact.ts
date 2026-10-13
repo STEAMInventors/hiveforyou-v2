@@ -1,6 +1,8 @@
 export const CANONICAL_STUDY_ARTIFACT_SCHEMA_VERSION = "hive.canonical-study/1" as const;
 
 import type {
+  CanonicalStudyDocumentClassificationStatus,
+  CanonicalStudyDocumentExtractionStatus,
   CanonicalStudyFoundationEvidence,
   CanonicalStudyFoundationEnvelopeRef,
   CanonicalStudyFoundationNormalizedValue,
@@ -216,6 +218,9 @@ export type CanonicalStudyArtifactBody = {
     documentTypeId: string | null;
     sortRank: number;
     verifiedOrderingDate: string | null;
+    extractionStatus: CanonicalStudyDocumentExtractionStatus;
+    classificationStatus: CanonicalStudyDocumentClassificationStatus;
+    trustedPagesSupplied: boolean;
   }>;
   documentLineage: CanonicalStudyDocumentLineageEdge[];
   entities: CanonicalStudyEntity[];

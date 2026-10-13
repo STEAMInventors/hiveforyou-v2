@@ -1,6 +1,7 @@
 import type { ProposalDomainPack } from "@hiveforyou/domain-pack";
 import type { DocumentPages } from "../../document/page-model.js";
 import type { ReaderDocumentExtractionEnvelope } from "@hiveforyou/shared/reader-document-extraction";
+import type { CanonicalStudyDocumentExtractionStatus } from "@hiveforyou/shared/canonical-study-foundation";
 import {
   CANONICAL_STUDY_FOUNDATION_SCHEMA_VERSION,
   type CanonicalStudyFoundationArtifact,
@@ -13,6 +14,9 @@ import {
 } from "@hiveforyou/shared/canonical-study-foundation";
 
 import { findConsecutiveWordQuote } from "../../document/find-consecutive-word-quote.js";
+import {
+  resolveClassificationStatus,
+} from "../canonical-study/evaluate-source-coverage.js";
 import { flattenProposedFields } from "./flatten-proposed-fields.js";
 import { groupRecordsWithinDocuments } from "./group-records.js";
 import { hashCanonicalStudyFoundationBody } from "./hash-body.js";
@@ -26,6 +30,7 @@ export type CanonicalStudyFoundationDocumentInput = {
   sourceDocumentId: string;
   envelope: ReaderDocumentExtractionEnvelope;
   documentPages: DocumentPages | null;
+  extractionStatusOverride?: CanonicalStudyDocumentExtractionStatus;
 };
 
 export type BuildCanonicalStudyFoundationInput = {
@@ -285,6 +290,26 @@ export function buildCanonicalStudyFoundation(
     proposedFields: flattened.proposedFields,
     envelopes,
   });
+  const extractionStatusBySource = new Map(
+    input.documents.map(
+      (doc) =>
+        [
+          doc.sourceDocumentId,
+          doc.extractionStatusOverride ?? doc.envelope.status,
+        ] as const,
+    ),
+  );
+  const classificationStatusBySource = new Map(
+    input.documents.map((doc) => {
+      const rawType = doc.envelope.parsedModelJson?.documentTypeId;
+      const classificationInput =
+        typeof rawType === "string"
+          ? rawType
+          : docTypeMap.get(doc.sourceDocumentId) ?? null;
+      return [doc.sourceDocumentId, resolveClassificationStatus(classificationInput)] as const;
+    }),
+  );
+
   const ordered = orderDocumentsAndRecords({
     pack: input.pack,
     verifiedFields,
@@ -295,6 +320,8 @@ export function buildCanonicalStudyFoundation(
       input.documents.map((doc) => [doc.sourceDocumentId, doc.documentPages != null] as const),
     ),
     matchedPageTermsBySource: matchedPageTermsBySource(input.pack, input.documents),
+    extractionStatusBySource,
+    classificationStatusBySource,
   });
   unresolvedItems.push(...ordered.unresolvedItems);
   unresolvedItems.sort((a, b) => a.id.localeCompare(b.id));

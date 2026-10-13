@@ -5,6 +5,10 @@ import type {
 } from "@hiveforyou/shared/canonical-study-artifact";
 
 import { evaluateWhenClause, evaluateExists } from "./evaluate-primitives.js";
+import {
+  evaluateScopeSourceCoverage,
+  type SourceCoverageGateMode,
+} from "./evaluate-source-coverage.js";
 import type { IndexedFoundation } from "./indexed-foundation.js";
 import { stableId } from "./stable-id.js";
 
@@ -40,6 +44,23 @@ function recordsInScope(
   return { sourceDocumentIds: new Set(), operativeView: null };
 }
 
+function unresolvedForIncompleteCoverage(input: {
+  indexed: IndexedFoundation;
+  scopeDocumentIds: Set<string>;
+  appliesTo?: string;
+  mode?: SourceCoverageGateMode;
+}): { outcome: CanonicalStudyRequirementOutcome; evidence: []; message: string } | null {
+  const coverage = evaluateScopeSourceCoverage(input);
+  if (coverage.complete) {
+    return null;
+  }
+  return {
+    outcome: "UNRESOLVED",
+    evidence: [],
+    message: coverage.message,
+  };
+}
+
 function evaluateCheck(input: {
   indexed: IndexedFoundation;
   recordTypeId: string;
@@ -50,6 +71,15 @@ function evaluateCheck(input: {
   pageTerms?: string[];
   appliesTo?: string;
 }): { outcome: CanonicalStudyRequirementOutcome; evidence: ReturnType<typeof evaluateExists>["chips"]; message: string } {
+  const coverageBlocked = unresolvedForIncompleteCoverage({
+    indexed: input.indexed,
+    scopeDocumentIds: input.scopeDocumentIds,
+    appliesTo: input.appliesTo,
+  });
+  if (coverageBlocked) {
+    return coverageBlocked;
+  }
+
   const matchingRecords = input.indexed.records.filter(
     (record) =>
       record.recordTypeId === input.recordTypeId && input.scopeDocumentIds.has(record.sourceDocumentId),
@@ -64,11 +94,7 @@ function evaluateCheck(input: {
     if (matchingRecords.length >= requiredCount) {
       return { outcome: "PRESENT", evidence: [], message: "presence_check_only:verified" };
     }
-    return {
-      outcome: "NOT_FOUND_IN_SUPPLIED_DOCUMENTS",
-      evidence: [],
-      message: "presence_check_only:not_found_after_page_review",
-    };
+    return absenceAfterPageReview(input);
   }
 
   const evidence = [];
@@ -125,11 +151,7 @@ function evaluateCheck(input: {
       message: `presence_check_only:explicitly_empty:${[...empty].sort().join(",")}`,
     };
   }
-  return {
-    outcome: "NOT_FOUND_IN_SUPPLIED_DOCUMENTS",
-    evidence,
-    message: "presence_check_only:not_found_after_page_review",
-  };
+  return absenceAfterPageReview({ ...input, evidence });
 }
 
 function fieldState(
@@ -163,7 +185,18 @@ function absenceAfterPageReview(input: {
   scopeDocumentIds: Set<string>;
   pageTerms?: string[];
   appliesTo?: string;
-}): { outcome: CanonicalStudyRequirementOutcome; evidence: []; message: string } {
+  evidence?: ReturnType<typeof evaluateExists>["chips"];
+}): { outcome: CanonicalStudyRequirementOutcome; evidence: ReturnType<typeof evaluateExists>["chips"]; message: string } {
+  const coverageBlocked = unresolvedForIncompleteCoverage({
+    indexed: input.indexed,
+    scopeDocumentIds: input.scopeDocumentIds,
+    appliesTo: input.appliesTo,
+    mode: "absence",
+  });
+  if (coverageBlocked) {
+    return { ...coverageBlocked, evidence: input.evidence ?? [] };
+  }
+
   const documents = input.indexed.foundation.documents.filter((document) => {
     if (input.scopeDocumentIds.size > 0) {
       return input.scopeDocumentIds.has(document.sourceDocumentId);
@@ -178,7 +211,7 @@ function absenceAfterPageReview(input: {
   if (documents.length === 0 || documents.some((document) => !document.trustedPagesSupplied)) {
     return {
       outcome: "UNRESOLVED",
-      evidence: [],
+      evidence: input.evidence ?? [],
       message: "presence_check_only:source_pages_unavailable",
     };
   }
@@ -189,14 +222,14 @@ function absenceAfterPageReview(input: {
   if (hits.length > 0) {
     return {
       outcome: "UNRESOLVED",
-      evidence: [],
+      evidence: input.evidence ?? [],
       message: `presence_check_only:source_page_mentions_unverified:${hits.sort().join(",")}`,
     };
   }
 
   return {
     outcome: "NOT_FOUND_IN_SUPPLIED_DOCUMENTS",
-    evidence: [],
+    evidence: input.evidence ?? [],
     message: "presence_check_only:not_found_after_page_review",
   };
 }
