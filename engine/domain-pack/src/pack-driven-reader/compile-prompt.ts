@@ -54,12 +54,7 @@ function buildVocabularySection(pack: ProposalDomainPack): string {
     parts.push(
       "### Field synonyms\n" +
         vocab.fieldSynonyms
-          .map((s) => {
-            const terms = (s as { synonyms?: string[]; terms?: string[] }).synonyms ??
-              (s as { terms?: string[] }).terms ??
-              [];
-            return `- ${s.field}: ${terms.join(", ")}`;
-          })
+          .map((s) => `- ${s.field}: ${s.terms.join(", ")}`)
           .join("\n"),
     );
   }

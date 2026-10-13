@@ -24,7 +24,12 @@ export type ProposalDomainPack = {
   };
   vocabulary?: {
     abbreviations?: Record<string, string>;
-    fieldSynonyms?: Array<{ field: string; synonyms: string[] }>;
+    fieldSynonyms?: Array<{
+      field: string;
+      terms: string[];
+      category?: string;
+      value?: string;
+    }>;
     unitAliases?:
       | Record<string, string[]>
       | Array<{ canonical: string; aliases: string[] }>;

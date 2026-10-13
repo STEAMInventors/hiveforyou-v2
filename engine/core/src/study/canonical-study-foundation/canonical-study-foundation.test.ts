@@ -5,8 +5,11 @@ import { fileURLToPath } from "node:url";
 import type { ProposalDomainPack } from "@hiveforyou/domain-pack";
 import { READER_DOCUMENT_EXTRACTION_SCHEMA_VERSION } from "@hiveforyou/shared/reader-document-extraction";
 import type { ReaderDocumentExtractionEnvelope } from "@hiveforyou/shared/reader-document-extraction";
+import type { CanonicalStudyProvenanceChip } from "@hiveforyou/shared/canonical-study-artifact";
 import { describe, expect, it } from "vitest";
 
+import { normalizedFieldValue } from "../canonical-study/construct-keys.js";
+import type { IndexedRecordVersion } from "../canonical-study/indexed-foundation.js";
 import type { DocumentPages } from "../../document/page-model.js";
 import {
   buildCanonicalStudyFoundation,
@@ -509,5 +512,50 @@ describe("canonical-study-foundation", () => {
         documents: [{ sourceDocumentId: "doc-a", documentPages: null, envelope: env }],
       }),
     ).not.toThrow();
+  });
+
+  it("applies IEP pack fieldSynonyms terms during construct normalization", () => {
+    const iepPack = JSON.parse(
+      readFileSync(join(repoRoot, "brain/domain-packs/iep/iep-pack.v0.3.proposed.json"), "utf8"),
+    ) as ProposalDomainPack;
+    const chip: CanonicalStudyProvenanceChip = {
+      fieldKey: "doc-a|measurement|0|measure.score_type",
+      recordGroupId: "group-a",
+      sourceDocumentId: "doc-a",
+      recordTypeId: "measurement",
+      instanceIndex: 0,
+      fieldId: "measure.score_type",
+      evidence: [],
+      normalized: {
+        valueKind: "code",
+        displayValue: "WCPM",
+        normalizedValue: "WCPM",
+      },
+      envelopeRef: {
+        studyRunId: "study-test",
+        attemptId: "attempt-test",
+        sourceDocumentId: "doc-a",
+        envelopeStatus: "SUCCEEDED",
+      },
+    };
+    const record: IndexedRecordVersion = {
+      recordGroupId: "group-a",
+      sourceDocumentId: "doc-a",
+      recordTypeId: "measurement",
+      instanceIndex: 0,
+      documentTypeId: "iep.evaluation.academic",
+      orderingDate: "2024-01-01",
+      sortRank: 0,
+      party: "school",
+      fieldKeys: ["measure.score_type"],
+      provenanceByFieldKey: { "measure.score_type": chip },
+    };
+
+    expect(() =>
+      normalizedFieldValue(record, "measure.score_type", iepPack, "measure"),
+    ).not.toThrow();
+    expect(normalizedFieldValue(record, "measure.score_type", iepPack, "measure")).toBe(
+      "words_correct_per_minute",
+    );
   });
 });

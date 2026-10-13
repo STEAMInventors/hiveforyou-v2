@@ -1,4 +1,9 @@
-import type { ProposalConstruct, ProposalDomainPack } from "@hiveforyou/domain-pack";
+import {
+  applyFieldSynonymNormalization,
+  parseFieldSynonyms,
+  type ProposalConstruct,
+  type ProposalDomainPack,
+} from "@hiveforyou/domain-pack";
 
 import type { IndexedRecordVersion } from "./indexed-foundation.js";
 
@@ -10,13 +15,8 @@ function normalizeText(value: unknown, steps: string[] | undefined, pack: Propos
     } else if (step === "trim_punctuation") {
       text = text.replace(/^[^\w]+|[^\w]+$/g, "");
     } else if (step === "vocabulary_synonyms") {
-      for (const entry of pack.vocabulary?.fieldSynonyms ?? []) {
-        for (const synonym of entry.synonyms) {
-          if (text === synonym.toLowerCase()) {
-            text = entry.field.split(".").pop()?.toLowerCase() ?? text;
-          }
-        }
-      }
+      const entries = parseFieldSynonyms(pack.vocabulary?.fieldSynonyms);
+      text = applyFieldSynonymNormalization(text, entries);
     }
   }
   return text;

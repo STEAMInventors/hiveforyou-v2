@@ -1,4 +1,9 @@
-import type { ProposalDomainPack, ProposalRecordField } from "@hiveforyou/domain-pack";
+import {
+  applyFieldSynonymNormalization,
+  parseFieldSynonyms,
+  type ProposalDomainPack,
+  type ProposalRecordField,
+} from "@hiveforyou/domain-pack";
 import type {
   CanonicalStudyFoundationNormalizedValue,
   CanonicalStudyFoundationProposedField,
@@ -51,17 +56,8 @@ function resolveUnitAlias(pack: ProposalDomainPack, unit: string | null | undefi
 }
 
 function applyVocabularySynonyms(pack: ProposalDomainPack, text: string): string {
-  let normalized = normalizeAttributeRaw(text);
-  const synonyms = pack.vocabulary?.fieldSynonyms ?? [];
-  for (const entry of synonyms) {
-    for (const synonym of entry.synonyms) {
-      const synNorm = normalizeAttributeRaw(synonym);
-      if (normalized === synNorm) {
-        normalized = normalizeAttributeRaw(entry.field);
-      }
-    }
-  }
-  return normalized;
+  const entries = parseFieldSynonyms(pack.vocabulary?.fieldSynonyms);
+  return applyFieldSynonymNormalization(normalizeAttributeRaw(text), entries);
 }
 
 function applyConstructNormalize(

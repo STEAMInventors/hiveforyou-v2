@@ -2,6 +2,7 @@
  * Runtime structural validation aligned with brain/domain-packs/iep/validate-pack.ts
  * (generic — no domain-specific golden concept maps).
  */
+import { collectFieldSynonymValidationErrors } from "./field-synonyms.js";
 import type { ProposalDomainPack, ProposalRecordType } from "./types.js";
 
 export type ValidateProposalPackResult = {
@@ -123,6 +124,22 @@ export function validateProposalDomainPack(pack: ProposalDomainPack): ValidatePr
     JSON.stringify(pack.readingNotes.byDocumentType ?? {}).length;
   if (pack.readingNotes.sizeLimitChars && noteChars > pack.readingNotes.sizeLimitChars) {
     err(`reading notes ${noteChars} chars exceed ${pack.readingNotes.sizeLimitChars}`);
+  }
+
+  for (const message of collectFieldSynonymValidationErrors(pack.vocabulary?.fieldSynonyms)) {
+    err(message);
+  }
+  for (const entry of pack.vocabulary?.fieldSynonyms ?? []) {
+    const [rec, ...rest] = entry.field.split(".");
+    if (!rec) {
+      err(`vocabulary.fieldSynonyms: field ${entry.field} is invalid`);
+      continue;
+    }
+    const fieldPath = rest.join(".");
+    const constructIds = new Set(Object.keys(pack.constructs ?? {}));
+    if (!hasField(rec, fieldPath) && !constructIds.has(rec)) {
+      err(`vocabulary.fieldSynonyms: field ${entry.field} not found`);
+    }
   }
 
   return {

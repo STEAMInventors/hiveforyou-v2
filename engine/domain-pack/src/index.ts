@@ -93,6 +93,7 @@ export {
   type PacketSegmentationResolver,
   type ValidateLogicalPageBoundariesResult,
 } from "./logical-page-segmentation";
+export type { ProposalFieldSynonymEntry } from "./pack-driven-reader/field-synonyms.js";
 export type {
   ProposalCompositionRule,
   ProposalConstruct,
@@ -105,6 +106,13 @@ export type {
   ProposalRequirements,
   ProposalRelationshipRules,
 } from "./pack-driven-reader/types.js";
+export {
+  applyFieldSynonymNormalization,
+  collectFieldSynonymValidationErrors,
+  normalizeSynonymToken,
+  PackVocabularySchemaError,
+  parseFieldSynonyms,
+} from "./pack-driven-reader/field-synonyms.js";
 export {
   PACK_DRIVEN_CLASSIFICATION_AMBIGUOUS,
   PACK_DRIVEN_CLASSIFICATION_UNKNOWN,
