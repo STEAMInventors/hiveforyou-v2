@@ -100,6 +100,7 @@ export type {
   ProposalDomainPack,
   ProposalInsightCheck,
   ProposalInsightChecks,
+  ProposalInsightOperand,
   ProposalRecordField,
   ProposalRequirementRule,
   ProposalRequirementWhen,

@@ -82,6 +82,8 @@ export type CanonicalStudyFoundationDocumentOrder = {
   verifiedOrderingDate: string | null;
   orderingDateFieldPath: string | null;
   sortRank: number;
+  trustedPagesSupplied: boolean;
+  matchedPageTerms: string[];
   amendsDocumentTypeId: string | null;
   amendmentLinkStatus: "linked" | "unresolved" | "not_applicable";
   amendmentTargetSourceDocumentId: string | null;
@@ -95,7 +97,8 @@ export type CanonicalStudyFoundationUnresolvedItem = {
     | "missing_ordering_date"
     | "amendment_link_unresolved"
     | "unsupported_derivation"
-    | "derived_operand_unverified";
+    | "derived_operand_unverified"
+    | "orphan_record";
   message: string;
   sourceDocumentId?: string;
   fieldKey?: string;

@@ -78,6 +78,13 @@ export function validateProposalDomainPack(pack: ProposalDomainPack): ValidatePr
     if ((id.keyFields ?? []).length === 0 && r.repeatable && id.scope !== "document") {
       warnings.push(`${r.id}: repeatable with empty key`);
     }
+    if (
+      id.crossDocumentMerge &&
+      id.crossDocumentMerge !== "version" &&
+      id.crossDocumentMerge !== "independent_assertions"
+    ) {
+      err(`${r.id}: crossDocumentMerge must be version or independent_assertions`);
+    }
     for (const f of r.fields) {
       if (f.source.includes("classified") && !f.enum?.length) {
         err(`${r.id}.${f.id}: classified without enum`);
@@ -88,7 +95,21 @@ export function validateProposalDomainPack(pack: ProposalDomainPack): ValidatePr
           for (const o of f.derivation.operands) {
             if (!ids.has(o) && !hasPath(o)) err(`${r.id}.${f.id}: derivation operand '${o}' not found`);
           }
+          for (const alternate of f.derivation.alternates ?? []) {
+            if (!alternate.primitive || !Array.isArray(alternate.operands)) {
+              err(`${r.id}.${f.id}: derivation alternate is incomplete`);
+              continue;
+            }
+            for (const o of alternate.operands) {
+              if (!ids.has(o) && !hasPath(o)) {
+                err(`${r.id}.${f.id}: derivation alternate operand '${o}' not found`);
+              }
+            }
+          }
         }
+      }
+      if (f.comparison && !["none", "value", "event"].includes(f.comparison)) {
+        err(`${r.id}.${f.id}: comparison must be none, value, or event`);
       }
     }
     for (const c of r.usesConstructs ?? []) {

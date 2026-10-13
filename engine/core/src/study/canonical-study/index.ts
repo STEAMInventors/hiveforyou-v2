@@ -65,7 +65,7 @@ export function buildCanonicalStudy(input: BuildCanonicalStudyInput): CanonicalS
     sourceContext,
   });
 
-  const { entities, possiblySameLinks } = resolveIdentity(indexed);
+  const { entities, possiblySameLinks, orphans, orphanItems } = resolveIdentity(indexed);
   const { operativeViews, documentLineage } = composeOperativeViews({ indexed, entities });
   const { relations, unresolvedComparisons } = labelRelations({ indexed, entities });
   const series = buildSeries({ indexed, entities });
@@ -96,8 +96,11 @@ export function buildCanonicalStudy(input: BuildCanonicalStudyInput): CanonicalS
     requirements,
     flags,
     possiblySameLinks,
-    unresolvedItems: input.foundation.unresolvedItems,
+    unresolvedItems: [...input.foundation.unresolvedItems, ...orphanItems].sort((a, b) =>
+      a.id.localeCompare(b.id),
+    ),
     rejectedFields: input.foundation.rejectedFields,
+    orphans,
     counts: {
       entities: entities.length,
       entityIdentityUnresolved: entities.filter((entity) => entity.status === "identity_unresolved").length,
@@ -108,8 +111,9 @@ export function buildCanonicalStudy(input: BuildCanonicalStudyInput): CanonicalS
       requirements: requirements.length,
       flags: flags.length,
       possiblySameLinks: possiblySameLinks.length,
-      unresolvedItems: input.foundation.unresolvedItems.length,
+      unresolvedItems: input.foundation.unresolvedItems.length + orphanItems.length,
       rejectedFields: input.foundation.rejectedFields.length,
+      orphans: orphans.length,
     },
   };
 

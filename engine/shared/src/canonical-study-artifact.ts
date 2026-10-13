@@ -131,18 +131,33 @@ export type CanonicalStudyUnresolvedComparison = {
 
 export type CanonicalStudySeriesObservation = {
   orderingRank: number;
+  role: string;
   observedDate: string | null;
   value: CanonicalStudyFoundationNormalizedValue;
   provenance: CanonicalStudyProvenanceChip;
+  corroboratingProvenance: CanonicalStudyProvenanceChip[];
 };
 
 export type CanonicalStudySeries = {
   id: string;
   entityId: string;
+  sourceEntityIds: string[];
   constructId: string;
   dimensionKey: string;
   observations: CanonicalStudySeriesObservation[];
   unresolvedReasons: string[];
+};
+
+export type CanonicalStudyOrphanRecord = {
+  id: string;
+  recordGroupId: string;
+  sourceDocumentId: string;
+  recordTypeId: string;
+  instanceIndex: number;
+  status: "rejected" | "unresolved";
+  reason: string;
+  fieldKeys: string[];
+  provenance: CanonicalStudyProvenanceChip[];
 };
 
 export type CanonicalStudyRequirementOutcome =
@@ -184,6 +199,7 @@ export type CanonicalStudyCounts = {
   possiblySameLinks: number;
   unresolvedItems: number;
   rejectedFields: number;
+  orphans: number;
 };
 
 export type CanonicalStudyArtifactBody = {
@@ -212,6 +228,7 @@ export type CanonicalStudyArtifactBody = {
   possiblySameLinks: CanonicalStudyPossiblySameLink[];
   unresolvedItems: CanonicalStudyFoundationUnresolvedItem[];
   rejectedFields: CanonicalStudyFoundationRejectedField[];
+  orphans: CanonicalStudyOrphanRecord[];
   counts: CanonicalStudyCounts;
 };
 

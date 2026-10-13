@@ -65,22 +65,24 @@ function buildOperativeRecord(
           competingProvenance: [],
         };
       }
-      if (versionsWithField.length === 1) {
+      const distinctValues = new Set(
+        versionsWithField.map((entry) => JSON.stringify(entry.chip!.normalized.normalizedValue)),
+      );
+      if (versionsWithField.length === 1 || distinctValues.size === 1) {
         return {
           fieldId,
           status: "operative" as const,
-          provenance: versionsWithField[0]!.chip,
+          provenance: versionsWithField[versionsWithField.length - 1]!.chip,
           competingProvenance: [],
         };
       }
 
       const latest = versionsWithField[versionsWithField.length - 1]!;
-      const historical = versionsWithField.slice(0, -1).map((entry) => entry.chip!);
       return {
         fieldId,
-        status: "historical" as const,
+        status: "conflicted" as const,
         provenance: latest.chip,
-        competingProvenance: historical,
+        competingProvenance: versionsWithField.map((entry) => entry.chip!),
       };
     });
 

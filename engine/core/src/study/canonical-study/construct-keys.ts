@@ -121,3 +121,25 @@ export function valuesEquivalent(
   }
   return "different";
 }
+
+/** Required construct key plus contextual dimensions that are actually verified. */
+export function buildSeriesDimensionKey(
+  record: IndexedRecordVersion,
+  constructId: string,
+  pack: ProposalDomainPack,
+): string | null {
+  const base = buildConstructJoinKey(record, constructId, pack);
+  if (!base) {
+    return null;
+  }
+  const construct = pack.constructs?.[constructId] as ProposalConstruct | undefined;
+  const context: string[] = [];
+  for (const fieldSuffix of construct?.comparedIfBothPresent ?? []) {
+    const fieldId = `${constructId}.${fieldSuffix}`;
+    const value = normalizedFieldValue(record, fieldId, pack, constructId);
+    if (value != null) {
+      context.push(`${fieldId}=${value}`);
+    }
+  }
+  return [base, ...context].join("|");
+}

@@ -364,7 +364,7 @@
         "request for evaluation",
         "reason for referral"
       ],
-      "orderingDate": "document_header.document_date",
+      "orderingDate": "referral.referral_date",
       "subtypes": [],
       "documentLinks": [
         "initiates_evaluation"
@@ -472,6 +472,21 @@
       "checklistPolicy": "look_for_all_listed; never_invent_if_absent; extract_other_pack_records_if_found"
     }
   ],
+  "relationshipRules": {
+    "changeRequiresTemporalSuccession": true,
+    "temporalSuccessionFieldIds": [
+      "effective_date",
+      "observed_on",
+      "determination_date",
+      "referral_date",
+      "meeting_date",
+      "document_date",
+      "start_date",
+      "effective_start",
+      "action_date"
+    ],
+    "conflictWhenDifferentParties": true
+  },
   "constructs": {
     "measure": {
       "description": "One construct key across present levels, evaluations, goals and progress, so a series never mixes measures.",
@@ -518,6 +533,7 @@
         {
           "id": "document_date",
           "valueKind": "date",
+          "comparison": "event",
           "source": [
             "quoted"
           ],
@@ -609,6 +625,7 @@
         "keyFields": [],
         "keyFieldsIfPresent": [],
         "disambiguators": [],
+        "caseSingletonMerge": "guaranteed_unique",
         "versionAxis": "document.orderingDate"
       },
       "fields": [
@@ -685,6 +702,7 @@
         {
           "id": "meeting_date",
           "valueKind": "date",
+          "comparison": "event",
           "source": [
             "quoted"
           ],
@@ -782,6 +800,7 @@
         "keyFields": [],
         "keyFieldsIfPresent": [],
         "disambiguators": [],
+        "caseSingletonMerge": "guaranteed_unique",
         "versionAxis": "document.orderingDate"
       },
       "fields": [
@@ -823,6 +842,7 @@
         {
           "id": "basis",
           "valueKind": "text",
+          "comparison": "none",
           "source": [
             "quoted"
           ],
@@ -833,6 +853,7 @@
         {
           "id": "determination_date",
           "valueKind": "date",
+          "comparison": "event",
           "source": [
             "quoted"
           ],
@@ -874,6 +895,7 @@
         {
           "id": "statement",
           "valueKind": "text",
+          "comparison": "none",
           "source": [
             "quoted"
           ],
@@ -884,6 +906,7 @@
         {
           "id": "impact_on_general_curriculum",
           "valueKind": "text",
+          "comparison": "none",
           "source": [
             "quoted"
           ],
@@ -998,6 +1021,7 @@
         {
           "id": "observed_on",
           "valueKind": "date",
+          "comparison": "event",
           "source": [
             "quoted"
           ],
@@ -1071,6 +1095,7 @@
         {
           "id": "statement",
           "valueKind": "text",
+          "comparison": "none",
           "source": [
             "quoted"
           ],
@@ -1081,6 +1106,7 @@
         {
           "id": "condition",
           "valueKind": "text",
+          "comparison": "none",
           "source": [
             "quoted"
           ],
@@ -1248,6 +1274,7 @@
         {
           "id": "reporting_method",
           "valueKind": "text",
+          "comparison": "none",
           "source": [
             "quoted"
           ],
@@ -1258,6 +1285,7 @@
         {
           "id": "start_date",
           "valueKind": "date",
+          "comparison": "event",
           "source": [
             "quoted"
           ],
@@ -1310,6 +1338,7 @@
         {
           "id": "statement",
           "valueKind": "text",
+          "comparison": "none",
           "source": [
             "quoted"
           ],
@@ -1493,6 +1522,14 @@
               "same_record",
               "all_operands_verified",
               "period_convertible_to_week"
+            ],
+            "alternates": [
+              {
+                "primitive": "explicitTotalPerWeek",
+                "operands": [
+                  "frequency_text"
+                ]
+              }
             ]
           }
         },
@@ -1510,6 +1547,7 @@
         {
           "id": "start_date",
           "valueKind": "date",
+          "comparison": "event",
           "source": [
             "quoted"
           ],
@@ -1520,6 +1558,7 @@
         {
           "id": "end_date",
           "valueKind": "date",
+          "comparison": "event",
           "source": [
             "quoted"
           ],
@@ -1640,6 +1679,7 @@
         {
           "id": "nonparticipation_explanation",
           "valueKind": "text",
+          "comparison": "none",
           "source": [
             "quoted"
           ],
@@ -1800,6 +1840,7 @@
         {
           "id": "statement",
           "valueKind": "text",
+          "comparison": "none",
           "source": [
             "quoted"
           ],
@@ -1845,6 +1886,7 @@
         {
           "id": "basis",
           "valueKind": "text",
+          "comparison": "none",
           "source": [
             "quoted"
           ],
@@ -2059,6 +2101,7 @@
         {
           "id": "change_description",
           "valueKind": "text",
+          "comparison": "none",
           "source": [
             "quoted"
           ],
@@ -2069,6 +2112,7 @@
         {
           "id": "effective_date",
           "valueKind": "date",
+          "comparison": "event",
           "source": [
             "quoted"
           ],
@@ -2304,6 +2348,7 @@
         {
           "id": "concern",
           "valueKind": "text",
+          "comparison": "none",
           "source": [
             "quoted"
           ],
@@ -2324,6 +2369,7 @@
         {
           "id": "requested_action",
           "valueKind": "text",
+          "comparison": "none",
           "source": [
             "quoted"
           ],
@@ -2334,6 +2380,7 @@
         {
           "id": "referral_date",
           "valueKind": "date",
+          "comparison": "event",
           "source": [
             "quoted"
           ],
@@ -2405,6 +2452,7 @@
         "disambiguators": [
           "finding"
         ],
+        "crossDocumentMerge": "independent_assertions",
         "versionAxis": "document.orderingDate"
       },
       "fields": [
@@ -2421,6 +2469,7 @@
         {
           "id": "finding",
           "valueKind": "text",
+          "comparison": "none",
           "source": [
             "quoted"
           ],
@@ -2431,6 +2480,7 @@
         {
           "id": "recommendation",
           "valueKind": "text",
+          "comparison": "none",
           "source": [
             "quoted"
           ],
@@ -2642,7 +2692,8 @@
               "frequency_text",
               "location",
               "start_date",
-              "end_date"
+              "end_date",
+              "provider_role"
             ]
           }
         ],
@@ -2663,6 +2714,10 @@
             "record": "placement",
             "fields": [
               "nonparticipation_explanation"
+            ],
+            "pageTerms": [
+              "educational placement",
+              "least restrictive environment"
             ]
           }
         ],
@@ -2684,6 +2739,10 @@
             "minCount": 1,
             "fields": [
               "participation"
+            ],
+            "pageTerms": [
+              "assessment participation",
+              "statewide assessment"
             ]
           }
         ],
@@ -2989,7 +3048,7 @@
   "readingNotes": {
     "global": "Extract every record in this document type's checklist, including repeats. One table row or one goal is one record. Quote the source text that holds the record; every quoted field value must appear in that quote. Do not infer absent numbers, identities, relationships or legal conclusions. Report a labelled but empty field as field_present_but_empty, citing the label. Distinguish what is observed, planned and decided.",
     "byDocumentType": {
-      "iep.plan": "Session length is not duration: '30 minutes, 2 times a week' is minutes per session and sessions per period; duration is start and end dates. Quote each service row whole. Keep the meeting date and the IEP start date apart. In present levels, one measurement per score with its measure fields; never merge accuracy percentages with words correct per minute. Split a goal's target value and accuracy criterion into separate fields.",
+      "iep.plan": "Session length is not duration: '30 minutes, 2 times a week' is minutes per session and sessions per period; duration is start and end dates. When a service states an explicit total such as '150 minutes weekly', put that phrase in frequency_text; do not split it into minutes per session. Quote each service row whole. Keep the meeting date and the IEP start date apart. In present levels, one measurement per score with its measure fields; never merge accuracy percentages with words correct per minute. Split a goal's target value and accuracy criterion into separate fields. Record Oral Reading Fluency and reading fluency as the task reading fluency.",
       "iep.amendment": "Record the date of the IEP being amended. Extract only the records the amendment changes or adds, plus one amendment_change per affected section.",
       "iep.progress": "One progress_entry per goal per reporting period. Quote progress codes as written and choose the status code from the list. Emit each reported score as a measurement with context progress_report.",
       "iep.evaluation.academic": "One measurement per reported score, with instrument, subtest as task, and score type. Record the administration date.",
@@ -3088,6 +3147,16 @@
           "accuracy"
         ],
         "value": "percent_accuracy"
+      },
+      {
+        "field": "measure.task",
+        "terms": [
+          "Oral Reading Fluency",
+          "oral reading fluency",
+          "reading fluency",
+          "ORF"
+        ],
+        "value": "reading fluency"
       }
     ],
     "unitAliases": [

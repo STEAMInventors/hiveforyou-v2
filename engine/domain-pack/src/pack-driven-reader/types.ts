@@ -94,6 +94,11 @@ export type ProposalRequirementCheck = {
   fields?: string[];
   minCount?: number;
   forEach?: boolean;
+  /**
+   * Optional page phrases. Absence is declared only after these phrases are
+   * checked against trusted pages. A page hit without a verified field stays unresolved.
+   */
+  pageTerms?: string[];
 };
 
 export type ProposalRequirementWhen = {
@@ -168,9 +173,15 @@ export type ProposalRecordType = {
     versionAxis?: string;
     /**
      * When keyFields is empty and scope is case-wide: merge singleton versions only when
-     * explicitly guaranteed_unique and no contradictory identity evidence exists.
+     * explicitly guaranteed_unique. Conflicting non-key fields stay visible on that entity.
+     * Uncertain identities stay unmerged.
      */
     caseSingletonMerge?: "guaranteed_unique" | "never_auto_merge";
+    /**
+     * version: same content key across documents is one versioned entity.
+     * independent_assertions: same-period records stay separate corroborating assertions.
+     */
+    crossDocumentMerge?: "version" | "independent_assertions";
   };
   /** Declarative composition role for amendment overlay (pack-defined record type). */
   composition?: {
@@ -190,10 +201,16 @@ export type ProposalRecordField = {
   enum?: string[];
   unit?: string;
   description?: string;
+  /** none skips change/conflict comparison. value compares the normalized value. event uses verified event chronology. */
+  comparison?: "none" | "value" | "event";
   derivation?: {
     primitive: string;
     operands: string[];
     condition?: string;
+    alternates?: Array<{
+      primitive: string;
+      operands: string[];
+    }>;
   };
 };
 

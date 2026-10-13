@@ -12,6 +12,7 @@ import {
   type CanonicalStudyFoundationVerifiedField,
 } from "@hiveforyou/shared/canonical-study-foundation";
 
+import { findConsecutiveWordQuote } from "../../document/find-consecutive-word-quote.js";
 import { flattenProposedFields } from "./flatten-proposed-fields.js";
 import { groupRecordsWithinDocuments } from "./group-records.js";
 import { hashCanonicalStudyFoundationBody } from "./hash-body.js";
@@ -103,26 +104,10 @@ function computeDerivedFields(input: {
         continue;
       }
 
-      const operandValues: Record<string, unknown> = {};
-      let operandsReady = true;
-      for (const operandId of fieldDef.derivation.operands) {
-        const operandKey = buildFieldKey({
-          sourceDocumentId: group.sourceDocumentId,
-          recordTypeId: group.recordTypeId,
-          instanceIndex: group.instanceIndex,
-          fieldId: operandId,
-        });
-        const verifiedOperand = input.verifiedByKey.get(operandKey);
-        if (!verifiedOperand) {
-          operandsReady = false;
-          break;
-        }
-        operandValues[operandId] = verifiedOperand.normalized.normalizedValue;
-        if (operandId === "frequency_text" && typeof verifiedOperand.displayValue === "string") {
-          operandValues.frequency_text = verifiedOperand.displayValue;
-        }
-      }
-
+      const attempts = [
+        { primitive: fieldDef.derivation.primitive, operands: fieldDef.derivation.operands },
+        ...(fieldDef.derivation.alternates ?? []),
+      ];
       const envelope = input.envelopeBySource.get(group.sourceDocumentId);
       const base = {
         fieldKey,
@@ -146,34 +131,52 @@ function computeDerivedFields(input: {
         parseErrors: [],
       };
 
-      if (!operandsReady) {
-        derivedUnresolved.push({
-          ...base,
-          disposition: "unresolved",
-          reasons: ["Derived field operands are not all verified."],
-        });
-        unresolvedItems.push({
-          id: `derived-operand:${fieldKey}`,
-          kind: "derived_operand_unverified",
-          message: `Derived field ${fieldKey} missing verified operands.`,
-          sourceDocumentId: group.sourceDocumentId,
-          fieldKey,
-          recordGroupId: group.recordGroupId,
-        });
-        continue;
+      let result: ReturnType<typeof tryDerivedPrimitive> | null = null;
+      let lastReason = "Derived field operands are not all verified.";
+      let attempted = false;
+      for (const attempt of attempts) {
+        const operandValues: Record<string, unknown> = {};
+        let operandsReady = true;
+        for (const operandId of attempt.operands) {
+          const operandKey = buildFieldKey({
+            sourceDocumentId: group.sourceDocumentId,
+            recordTypeId: group.recordTypeId,
+            instanceIndex: group.instanceIndex,
+            fieldId: operandId,
+          });
+          const verifiedOperand = input.verifiedByKey.get(operandKey);
+          if (!verifiedOperand) {
+            operandsReady = false;
+            break;
+          }
+          operandValues[operandId] = verifiedOperand.normalized.normalizedValue;
+          if (operandId === "frequency_text" && typeof verifiedOperand.displayValue === "string") {
+            operandValues.frequency_text = verifiedOperand.displayValue;
+          }
+        }
+        if (!operandsReady) {
+          continue;
+        }
+        attempted = true;
+        const attemptResult = tryDerivedPrimitive(attempt.primitive, operandValues);
+        if (attemptResult.ok) {
+          result = attemptResult;
+          break;
+        }
+        lastReason = attemptResult.reason;
       }
 
-      const result = tryDerivedPrimitive(fieldDef.derivation.primitive, operandValues);
-      if (!result.ok) {
+      if (!result?.ok) {
+        const missingOperands = !attempted;
         derivedUnresolved.push({
           ...base,
           disposition: "unresolved",
-          reasons: [result.reason],
+          reasons: [missingOperands ? "Derived field operands are not all verified." : lastReason],
         });
         unresolvedItems.push({
-          id: `derived-unsupported:${fieldKey}`,
-          kind: "unsupported_derivation",
-          message: result.reason,
+          id: missingOperands ? `derived-operand:${fieldKey}` : `derived-unsupported:${fieldKey}`,
+          kind: missingOperands ? "derived_operand_unverified" : "unsupported_derivation",
+          message: missingOperands ? `Derived field ${fieldKey} missing verified operands.` : lastReason,
           sourceDocumentId: group.sourceDocumentId,
           fieldKey,
           recordGroupId: group.recordGroupId,
@@ -288,6 +291,10 @@ export function buildCanonicalStudyFoundation(
     groupedRecords,
     documentTypeBySourceId: docTypeMap,
     allSourceDocumentIds: input.documents.map((doc) => doc.sourceDocumentId),
+    trustedPagesSuppliedBySource: new Map(
+      input.documents.map((doc) => [doc.sourceDocumentId, doc.documentPages != null] as const),
+    ),
+    matchedPageTermsBySource: matchedPageTermsBySource(input.pack, input.documents),
   });
   unresolvedItems.push(...ordered.unresolvedItems);
   unresolvedItems.sort((a, b) => a.id.localeCompare(b.id));
@@ -328,4 +335,42 @@ export function buildCanonicalStudyFoundation(
     createdAt: input.createdAt ?? new Date(0).toISOString(),
     contentSha256,
   };
+}
+
+function packPageTerms(pack: ProposalDomainPack): string[] {
+  const terms = new Set<string>();
+  for (const rule of pack.requirements?.rules ?? []) {
+    for (const check of rule.checks ?? []) {
+      for (const term of check.pageTerms ?? []) {
+        const trimmed = term.trim();
+        if (trimmed) {
+          terms.add(trimmed);
+        }
+      }
+    }
+  }
+  return [...terms].sort((a, b) => a.localeCompare(b));
+}
+
+function matchedPageTermsBySource(
+  pack: ProposalDomainPack,
+  documents: readonly CanonicalStudyFoundationDocumentInput[],
+): Map<string, string[]> {
+  const terms = packPageTerms(pack);
+  const matches = new Map<string, string[]>();
+  for (const document of documents) {
+    if (!document.documentPages || terms.length === 0) {
+      matches.set(document.sourceDocumentId, []);
+      continue;
+    }
+    const hits: string[] = [];
+    for (const term of terms) {
+      const found = document.documentPages.pages.some((page) => findConsecutiveWordQuote(page.words, term) != null);
+      if (found) {
+        hits.push(term);
+      }
+    }
+    matches.set(document.sourceDocumentId, hits);
+  }
+  return matches;
 }

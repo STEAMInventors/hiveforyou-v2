@@ -59,6 +59,21 @@ export function ratePerWeek(input: {
   };
 }
 
+const EXPLICIT_WEEKLY_TOTAL = /^(\d+(?:\.\d+)?)\s+minutes?\s+(?:weekly|per\s+week)$/i;
+
+/** Explicit total such as "150 minutes weekly" — not a session-times-frequency rate. */
+export function explicitTotalPerWeek(expression: string): DerivedPrimitiveResult {
+  const match = EXPLICIT_WEEKLY_TOTAL.exec(expression.trim());
+  if (!match) {
+    return { ok: false, reason: "expression is not an explicit total duration per week" };
+  }
+  const value = Number.parseFloat(match[1]!);
+  if (!Number.isFinite(value) || value <= 0) {
+    return { ok: false, reason: "explicit total duration is not a positive number" };
+  }
+  return { ok: true, value, unit: "minutes_per_week" };
+}
+
 export function tryDerivedPrimitive(
   primitive: string,
   operands: Record<string, unknown>,
@@ -83,6 +98,13 @@ export function tryDerivedPrimitive(
         sessionsPerPeriod: sessions,
         period,
       });
+    }
+    case "explicitTotalPerWeek": {
+      const text = operands.frequency_text ?? operands.expression;
+      if (typeof text !== "string") {
+        return { ok: false, reason: "explicitTotalPerWeek operand frequency_text missing" };
+      }
+      return explicitTotalPerWeek(text);
     }
     default:
       return { ok: false, reason: `unsupported derivation primitive: ${primitive}` };

@@ -1,4 +1,4 @@
-import { normalizeQuoteForMatch, quoteTokensForMatch } from "./normalize-quote-text";
+import { normalizeQuoteForMatch, quoteAtomsForMatch, splitQuoteTokenAtoms } from "./normalize-quote-text";
 import type { BBox, PageWord } from "./page-model";
 
 export type ConsecutiveWordQuoteMatch = {
@@ -16,32 +16,105 @@ function unionWordBboxes(words: readonly PageWord[]): BBox {
   return [x0, y0, x1, y1];
 }
 
-/** Find quote as consecutive words (whitespace-normalized) with a union bbox. */
+type PageWordUnit = {
+  wordStartIndex: number;
+  wordEndIndex: number;
+  atoms: string[];
+};
+
+function isTrailingLineBreakHyphen(text: string): boolean {
+  return /[A-Za-z][-\u2010\u2011\u2012\u2013\u2014]$/.test(text.trim());
+}
+
+function atomsForPageText(text: string): string[] {
+  const split = splitQuoteTokenAtoms(text);
+  if (split.length > 0) {
+    return split;
+  }
+  const normalized = normalizeQuoteForMatch(text).toLowerCase();
+  return normalized ? [`\u0000${normalized}`] : [];
+}
+
+/** Group page words so a line-break hyphen joins the next alphabetic word. */
+function pageWordUnits(words: readonly PageWord[]): PageWordUnit[] {
+  const units: PageWordUnit[] = [];
+  let index = 0;
+  while (index < words.length) {
+    const wordStartIndex = index;
+    let text = words[index]!.text;
+    let wordEndIndex = index;
+    const next = words[index + 1];
+    if (next && isTrailingLineBreakHyphen(text) && /^[A-Za-z]/.test(next.text.trim())) {
+      text = `${text.trim().replace(/[-\u2010\u2011\u2012\u2013\u2014]$/, "")}${next.text}`;
+      wordEndIndex = index + 1;
+      index += 2;
+    } else {
+      index += 1;
+    }
+    units.push({
+      wordStartIndex,
+      wordEndIndex,
+      atoms: atomsForPageText(text),
+    });
+  }
+  return units;
+}
+
+type AtomRef = {
+  atom: string;
+  unitIndex: number;
+  atomIndexInUnit: number;
+};
+
+/**
+ * Find a quote as consecutive page words.
+ * %, commas, hyphens, and line-break hyphens are token-equivalent.
+ * A match must consume each page word it touches — not a substring of that word.
+ */
 export function findConsecutiveWordQuote(
   words: readonly PageWord[],
   quote: string,
 ): ConsecutiveWordQuoteMatch | null {
-  const quoteTokens = quoteTokensForMatch(quote);
-  if (quoteTokens.length === 0) {
+  const quoteAtoms = quoteAtomsForMatch(quote);
+  if (quoteAtoms.length === 0) {
     return null;
   }
 
-  for (let start = 0; start <= words.length - quoteTokens.length; start += 1) {
+  const units = pageWordUnits(words);
+  const refs: AtomRef[] = [];
+  units.forEach((unit, unitIndex) => {
+    unit.atoms.forEach((atom, atomIndexInUnit) => {
+      refs.push({ atom, unitIndex, atomIndexInUnit });
+    });
+  });
+
+  for (let start = 0; start <= refs.length - quoteAtoms.length; start += 1) {
     let ok = true;
-    for (let t = 0; t < quoteTokens.length; t += 1) {
-      if (normalizeQuoteForMatch(words[start + t]!.text) !== quoteTokens[t]) {
+    for (let offset = 0; offset < quoteAtoms.length; offset += 1) {
+      if (refs[start + offset]!.atom !== quoteAtoms[offset]) {
         ok = false;
         break;
       }
     }
-    if (ok) {
-      const slice = words.slice(start, start + quoteTokens.length);
-      return {
-        wordStartIndex: start,
-        wordEndIndex: start + quoteTokens.length - 1,
-        bbox: unionWordBboxes(slice),
-      };
+    if (!ok) {
+      continue;
     }
+    const first = refs[start]!;
+    const last = refs[start + quoteAtoms.length - 1]!;
+    if (first.atomIndexInUnit !== 0) {
+      continue;
+    }
+    const lastUnit = units[last.unitIndex]!;
+    if (last.atomIndexInUnit !== lastUnit.atoms.length - 1) {
+      continue;
+    }
+    const wordStartIndex = units[first.unitIndex]!.wordStartIndex;
+    const wordEndIndex = lastUnit.wordEndIndex;
+    return {
+      wordStartIndex,
+      wordEndIndex,
+      bbox: unionWordBboxes(words.slice(wordStartIndex, wordEndIndex + 1)),
+    };
   }
 
   return null;

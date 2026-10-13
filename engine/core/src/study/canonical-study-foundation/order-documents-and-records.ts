@@ -14,6 +14,8 @@ export type OrderDocumentsInput = {
   groupedRecords: CanonicalStudyFoundationGroupedRecord[];
   documentTypeBySourceId: Map<string, string | null>;
   allSourceDocumentIds: string[];
+  trustedPagesSuppliedBySource?: ReadonlyMap<string, boolean>;
+  matchedPageTermsBySource?: ReadonlyMap<string, readonly string[]>;
 };
 
 export type OrderDocumentsResult = {
@@ -190,6 +192,10 @@ export function orderDocumentsAndRecords(input: OrderDocumentsInput): OrderDocum
         verifiedOrderingDate: ordering.iso,
         orderingDateFieldPath: ordering.fieldPath,
         sortRank: 0,
+        trustedPagesSupplied: input.trustedPagesSuppliedBySource?.get(sourceDocumentId) ?? false,
+        matchedPageTerms: [...(input.matchedPageTermsBySource?.get(sourceDocumentId) ?? [])].sort((a, b) =>
+          a.localeCompare(b),
+        ),
         ...amendment,
       };
     },

@@ -46,6 +46,9 @@ function evaluateCheck(input: {
   fieldIds: string[];
   scopeDocumentIds: Set<string>;
   minCount?: number;
+  forEach?: boolean;
+  pageTerms?: string[];
+  appliesTo?: string;
 }): { outcome: CanonicalStudyRequirementOutcome; evidence: ReturnType<typeof evaluateExists>["chips"]; message: string } {
   const matchingRecords = input.indexed.records.filter(
     (record) =>
@@ -53,43 +56,148 @@ function evaluateCheck(input: {
   );
 
   if (matchingRecords.length === 0) {
+    return absenceAfterPageReview(input);
+  }
+
+  if (input.fieldIds.length === 0) {
+    const requiredCount = input.minCount ?? 1;
+    if (matchingRecords.length >= requiredCount) {
+      return { outcome: "PRESENT", evidence: [], message: "presence_check_only:verified" };
+    }
     return {
       outcome: "NOT_FOUND_IN_SUPPLIED_DOCUMENTS",
       evidence: [],
-      message: `No ${input.recordTypeId} records in scope.`,
+      message: "presence_check_only:not_found_after_page_review",
     };
   }
 
   const evidence = [];
-  let emptyPresent = false;
+  const missing = new Set<string>();
+  const rejected = new Set<string>();
+  const empty = new Set<string>();
+  let completeRecords = 0;
+
   for (const record of matchingRecords) {
+    let complete = true;
     for (const fieldId of input.fieldIds) {
-      const chip = record.provenanceByFieldKey[fieldId];
-      if (!chip) {
+      const state = fieldState(input.indexed, record, fieldId);
+      if (state.kind === "verified") {
+        evidence.push(state.chip);
         continue;
       }
-      const value = chip.normalized.normalizedValue;
-      if (value == null || value === "") {
-        emptyPresent = true;
+      complete = false;
+      if (state.kind === "empty") {
+        empty.add(fieldId);
+      } else if (state.kind === "rejected") {
+        rejected.add(fieldId);
       } else {
-        evidence.push(chip);
+        missing.add(fieldId);
       }
+    }
+    if (complete) {
+      completeRecords += 1;
     }
   }
 
   evidence.sort((a, b) => a.fieldKey.localeCompare(b.fieldKey));
-
-  const requiredCount = input.minCount ?? 1;
-  if (evidence.length >= requiredCount) {
-    return { outcome: "PRESENT", evidence, message: "Verified evidence found." };
+  const requiredCount = input.forEach ? matchingRecords.length : (input.minCount ?? 1);
+  if (completeRecords >= requiredCount && completeRecords > 0) {
+    return { outcome: "PRESENT", evidence, message: "presence_check_only:verified" };
   }
-  if (emptyPresent) {
-    return { outcome: "FIELD_PRESENT_BUT_EMPTY", evidence, message: "Field present but explicitly empty." };
+  if (rejected.size > 0) {
+    return {
+      outcome: "UNRESOLVED",
+      evidence,
+      message: `presence_check_only:verification_rejected:${[...rejected].sort().join(",")}`,
+    };
+  }
+  if (missing.size > 0) {
+    return {
+      outcome: "UNRESOLVED",
+      evidence,
+      message: `presence_check_only:explicitly_missing:${[...missing].sort().join(",")}`,
+    };
+  }
+  if (empty.size > 0) {
+    return {
+      outcome: "FIELD_PRESENT_BUT_EMPTY",
+      evidence,
+      message: `presence_check_only:explicitly_empty:${[...empty].sort().join(",")}`,
+    };
   }
   return {
     outcome: "NOT_FOUND_IN_SUPPLIED_DOCUMENTS",
     evidence,
-    message: "Required verified evidence not found in supplied documents.",
+    message: "presence_check_only:not_found_after_page_review",
+  };
+}
+
+function fieldState(
+  indexed: IndexedFoundation,
+  record: IndexedFoundation["records"][number],
+  fieldId: string,
+):
+  | { kind: "verified"; chip: ReturnType<typeof evaluateExists>["chips"][number] }
+  | { kind: "empty" | "rejected" | "missing" } {
+  const chip = record.provenanceByFieldKey[fieldId];
+  if (chip) {
+    const value = chip.normalized.normalizedValue;
+    if (value == null || value === "") {
+      return { kind: "empty" };
+    }
+    return { kind: "verified", chip };
+  }
+  const rejected = indexed.foundation.rejectedFields.some(
+    (field) =>
+      field.sourceDocumentId === record.sourceDocumentId &&
+      field.recordTypeId === record.recordTypeId &&
+      field.instanceIndex === record.instanceIndex &&
+      field.fieldId === fieldId,
+  );
+  return { kind: rejected ? "rejected" : "missing" };
+}
+
+function absenceAfterPageReview(input: {
+  indexed: IndexedFoundation;
+  recordTypeId: string;
+  scopeDocumentIds: Set<string>;
+  pageTerms?: string[];
+  appliesTo?: string;
+}): { outcome: CanonicalStudyRequirementOutcome; evidence: []; message: string } {
+  const documents = input.indexed.foundation.documents.filter((document) => {
+    if (input.scopeDocumentIds.size > 0) {
+      return input.scopeDocumentIds.has(document.sourceDocumentId);
+    }
+    if (input.appliesTo?.startsWith("operative:") || input.appliesTo?.startsWith("each:")) {
+      const typeId = input.appliesTo.slice(input.appliesTo.indexOf(":") + 1);
+      return document.documentTypeId === typeId;
+    }
+    return true;
+  });
+
+  if (documents.length === 0 || documents.some((document) => !document.trustedPagesSupplied)) {
+    return {
+      outcome: "UNRESOLVED",
+      evidence: [],
+      message: "presence_check_only:source_pages_unavailable",
+    };
+  }
+
+  const hits = (input.pageTerms ?? []).filter((term) =>
+    documents.some((document) => document.matchedPageTerms.includes(term)),
+  );
+  if (hits.length > 0) {
+    return {
+      outcome: "UNRESOLVED",
+      evidence: [],
+      message: `presence_check_only:source_page_mentions_unverified:${hits.sort().join(",")}`,
+    };
+  }
+
+  return {
+    outcome: "NOT_FOUND_IN_SUPPLIED_DOCUMENTS",
+    evidence: [],
+    message: "presence_check_only:not_found_after_page_review",
   };
 }
 
@@ -145,6 +253,9 @@ export function evaluateRequirements(input: {
         fieldIds: check.fields ?? [],
         scopeDocumentIds: scope.sourceDocumentIds,
         minCount: check.minCount,
+        forEach: check.forEach,
+        pageTerms: check.pageTerms,
+        appliesTo: rule.appliesTo,
       });
       results.push({
         id: stableId(`requirement:${rule.id}:${check.record}:${(check.fields ?? []).join(",")}`),

@@ -18,3 +18,47 @@ export function quoteTokensForMatch(quote: string): string[] {
   }
   return normalized.split(" ");
 }
+
+/**
+ * Split one whitespace token into match atoms.
+ * Percent signs, thousands separators, trailing sentence punctuation, and
+ * hyphenated compounds become their own atoms. The caller must consume a
+ * whole page word — internal atoms are not a substring match.
+ */
+export function splitQuoteTokenAtoms(token: string): string[] {
+  let text = normalizeQuoteForMatch(token).toLowerCase();
+  if (!text) {
+    return [];
+  }
+  text = text.replace(/^[("'`[\]]+|[)"'`[\]]+$/g, "");
+  text = text.replace(/^[.,;:!?]+|[.,;:!?]+$/g, "");
+  if (!text) {
+    return [];
+  }
+  text = text.replace(/(\d),(?=\d{3}(?:\D|$))/g, "$1");
+  const parts = text.split("-").map((part) => part.trim()).filter(Boolean);
+  const atoms: string[] = [];
+  for (const part of parts) {
+    const percent = /^(\d+(?:\.\d+)?)%$/.exec(part);
+    if (percent) {
+      atoms.push(percent[1]!, "%");
+      continue;
+    }
+    atoms.push(part);
+  }
+  return atoms;
+}
+
+export function quoteAtomsForMatch(quote: string): string[] {
+  const tokens = quoteTokensForMatch(quote);
+  const atoms: string[] = [];
+  for (const token of tokens) {
+    const split = splitQuoteTokenAtoms(token);
+    if (split.length === 0 && normalizeQuoteForMatch(token)) {
+      atoms.push(`\u0000${normalizeQuoteForMatch(token).toLowerCase()}`);
+      continue;
+    }
+    atoms.push(...split);
+  }
+  return atoms;
+}

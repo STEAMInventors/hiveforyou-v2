@@ -5,6 +5,7 @@ import { join } from "node:path";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { DOCUMENT_PAGES_PAYLOAD_SCHEMA_VERSION } from "@hiveforyou/core/document/trusted-document-pages";
+import type { ProposalDomainPack } from "@hiveforyou/domain-pack";
 import { computeProposalPackContentSha256 } from "@hiveforyou/domain-pack/pack-driven-reader";
 import {
   documentPagesStoragePath,
@@ -13,7 +14,7 @@ import {
 import { NESTIEP_EXTRACTOR_VERSION } from "@hiveforyou/shared/intake";
 import { READER_DOCUMENT_EXTRACTION_SCHEMA_VERSION } from "@hiveforyou/shared/reader-document-extraction";
 
-const SYNTHETIC_PACK = {
+const SYNTHETIC_PACK: ProposalDomainPack = {
   schemaVersion: "hive.domain-pack.proposal/0.3.0",
   manifest: { id: "synthetic-test", version: "0.0.1" },
   relationshipRules: {
@@ -49,7 +50,7 @@ const SYNTHETIC_PACK = {
     },
   ],
   readingNotes: { global: "test", byDocumentType: {} },
-} as const;
+};
 
 const PACK_SHA = computeProposalPackContentSha256(SYNTHETIC_PACK).toLowerCase();
 

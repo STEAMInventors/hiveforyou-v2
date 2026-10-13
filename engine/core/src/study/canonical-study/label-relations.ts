@@ -19,6 +19,17 @@ function valuesEqual(left: CanonicalStudyProvenanceChip, right: CanonicalStudyPr
   return JSON.stringify(left.normalized.normalizedValue) === JSON.stringify(right.normalized.normalizedValue);
 }
 
+function fieldComparison(
+  indexed: IndexedFoundation,
+  recordTypeId: string,
+  fieldId: string,
+): "none" | "value" | "event" {
+  const field = indexed.pack.recordTypes
+    .find((record) => record.id === recordTypeId)
+    ?.fields.find((item) => item.id === fieldId);
+  return field?.comparison ?? "value";
+}
+
 function findIndexedVersion(
   indexed: IndexedFoundation,
   chip: CanonicalStudyProvenanceChip,
@@ -55,6 +66,10 @@ export function labelRelations(input: {
     }
 
     for (const fieldId of [...fieldIds].sort()) {
+      const comparison = fieldComparison(indexed, entity.recordTypeId, fieldId);
+      if (comparison === "none") {
+        continue;
+      }
       const chips = entity.recordVersions
         .map((version) => version.provenanceByFieldKey[fieldId])
         .filter((chip): chip is CanonicalStudyProvenanceChip => chip != null)
@@ -74,6 +89,22 @@ export function labelRelations(input: {
               left,
               right,
               reason: "record_version_not_indexed",
+            });
+            continue;
+          }
+
+          const samePeriod =
+            comparison === "event" &&
+            leftVersion.orderingDate != null &&
+            leftVersion.orderingDate === rightVersion.orderingDate;
+          if (samePeriod && !valuesEqual(left, right)) {
+            unresolvedComparisons.push({
+              id: stableId(`unresolved:${entity.id}:${fieldId}:${left.fieldKey}:${right.fieldKey}`),
+              entityId: entity.id,
+              fieldId,
+              left,
+              right,
+              reason: "same_period_independent_event",
             });
             continue;
           }
@@ -153,7 +184,62 @@ export function labelRelations(input: {
     }
   }
 
+  labelIndependentAssertions({ indexed, entities, relations });
+
   relations.sort((a, b) => a.id.localeCompare(b.id));
   unresolvedComparisons.sort((a, b) => a.id.localeCompare(b.id));
   return { relations, unresolvedComparisons };
+}
+
+function labelIndependentAssertions(input: {
+  indexed: IndexedFoundation;
+  entities: CanonicalStudyEntity[];
+  relations: CanonicalStudyRelation[];
+}): void {
+  const groups = new Map<string, CanonicalStudyEntity[]>();
+  for (const entity of input.entities) {
+    if (!entity.reasons.includes("independent_assertion") || !entity.contentKey) {
+      continue;
+    }
+    const key = `${entity.recordTypeId}|${entity.contentKey}`;
+    const list = groups.get(key) ?? [];
+    list.push(entity);
+    groups.set(key, list);
+  }
+
+  for (const group of groups.values()) {
+    const sorted = group.slice().sort((a, b) => a.id.localeCompare(b.id));
+    for (let i = 0; i < sorted.length; i += 1) {
+      for (let j = i + 1; j < sorted.length; j += 1) {
+        const leftEntity = sorted[i]!;
+        const rightEntity = sorted[j]!;
+        const leftVersion = leftEntity.recordVersions[0];
+        const rightVersion = rightEntity.recordVersions[0];
+        if (!leftVersion || !rightVersion) {
+          continue;
+        }
+        const fieldIds = Object.keys(leftVersion.provenanceByFieldKey)
+          .filter((fieldId) => fieldComparison(input.indexed, leftEntity.recordTypeId, fieldId) === "value")
+          .filter((fieldId) => rightVersion.provenanceByFieldKey[fieldId] != null)
+          .sort((a, b) => a.localeCompare(b));
+        for (const fieldId of fieldIds) {
+          const left = leftVersion.provenanceByFieldKey[fieldId]!;
+          const right = rightVersion.provenanceByFieldKey[fieldId]!;
+          if (!valuesEqual(left, right)) {
+            continue;
+          }
+          input.relations.push({
+            id: stableId(`rel:matches:${left.fieldKey}:${right.fieldKey}`),
+            label: "MATCHES",
+            entityId: leftEntity.id,
+            fieldId,
+            left,
+            right,
+            temporalBasis: null,
+            partyBasis: null,
+          });
+        }
+      }
+    }
+  }
 }
