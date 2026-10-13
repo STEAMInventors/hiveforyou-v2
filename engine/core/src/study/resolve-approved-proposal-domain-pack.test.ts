@@ -14,9 +14,14 @@ import {
   CANONICAL_STUDY_DEBUG_PACK_APPROVAL,
   PackNotAvailableError,
   PackNotReadyError,
+  collectProposalPackSnapshotCandidatePaths,
+  proposalPackSnapshotPathForHash,
   resolveApprovedProposalDomainPack,
   resolveDebugCanonicalStudyDomainPack,
 } from "./resolve-approved-proposal-domain-pack.js";
+
+const READER_EXTRACTION_PACK_SHA256 =
+  "c2baa0439d32496a3110f5388f6048395a9f4c8fdce79b3d0cec36ae6b9a7775";
 
 describe("resolveApprovedProposalDomainPack", () => {
   it("returns PACK_NOT_READY when no approved pack path is configured", () => {
@@ -68,35 +73,64 @@ describe("resolveApprovedProposalDomainPack", () => {
   });
 });
 
+describe("proposal pack snapshots", () => {
+  it("resolves the committed Reader extraction snapshot path by hash", () => {
+    const path = proposalPackSnapshotPathForHash(READER_EXTRACTION_PACK_SHA256);
+    expect(path).toBe(
+      join(
+        hiveMonorepoRoot(),
+        "brain",
+        "domain-packs",
+        "iep",
+        "snapshots",
+        `${READER_EXTRACTION_PACK_SHA256}.json`,
+      ),
+    );
+  });
+
+  it("includes the hash-keyed snapshot in candidate paths for iep@0.3.0-proposed", () => {
+    const paths = collectProposalPackSnapshotCandidatePaths({
+      envelopePackId: "iep",
+      envelopePackVersion: "0.3.0-proposed",
+      envelopeHash: READER_EXTRACTION_PACK_SHA256,
+    });
+    expect(paths.some((path) => path.endsWith(`${READER_EXTRACTION_PACK_SHA256}.json`))).toBe(
+      true,
+    );
+  });
+});
+
 describe("resolveDebugCanonicalStudyDomainPack", () => {
   it("returns PACK_NOT_AVAILABLE for unknown pack coordinates", () => {
-    expect(() =>
+    try {
       resolveDebugCanonicalStudyDomainPack({
         envelopePackId: "unknown",
         envelopePackVersion: "0.0.0",
         envelopePackContentSha256: "a".repeat(64),
-      }),
-    ).toThrow(PackNotAvailableError);
+      });
+      expect.unreachable("expected PackNotAvailableError");
+    } catch (error) {
+      expect(error).toBeInstanceOf(PackNotAvailableError);
+      const packError = error as PackNotAvailableError;
+      expect(packError.diagnostics.envelopePackId).toBe("unknown");
+      expect(packError.diagnostics.compatibilityErrors.length).toBeGreaterThan(0);
+    }
   });
 
-  it("loads iep@0.3.0-proposed when envelope hash matches the Reader pack", () => {
-    const proposedPath = join(
-      hiveMonorepoRoot(),
-      "brain",
-      "domain-packs",
-      "iep",
-      "iep-pack.v0.3.proposed.json",
-    );
-    const pack = JSON.parse(readFileSync(proposedPath, "utf8")) as typeof SYNTHETIC_PACK;
-
+  it("loads iep@0.3.0-proposed from historical snapshot when envelope hash matches Reader extraction", () => {
+    const envelopeHash =
+      "c2baa0439d32496a3110f5388f6048395a9f4c8fdce79b3d0cec36ae6b9a7775";
     const loaded = resolveDebugCanonicalStudyDomainPack({
-      envelopePackId: pack.manifest.id,
-      envelopePackVersion: pack.manifest.version,
-      envelopePackContentSha256: computeProposalPackContentSha256(pack).toLowerCase(),
+      envelopePackId: "iep",
+      envelopePackVersion: "0.3.0-proposed",
+      envelopePackContentSha256: envelopeHash,
     });
 
     expect(loaded.pack.manifest.id).toBe("iep");
     expect(loaded.pack.manifest.version).toBe("0.3.0-proposed");
+    expect(loaded.contentSha256).toBe(envelopeHash);
+    expect(loaded.source).toBe("snapshot");
+    expect(loaded.path).toContain(envelopeHash);
     expect(loaded.packApprovalLabel).toBe(CANONICAL_STUDY_DEBUG_PACK_APPROVAL);
   });
 
@@ -134,14 +168,19 @@ describe("resolveDebugCanonicalStudyDomainPack", () => {
       const packPath = join(dir, "debug-pack.json");
       writeFileSync(packPath, JSON.stringify(SYNTHETIC_PACK), "utf8");
 
-      expect(() =>
+      try {
         resolveDebugCanonicalStudyDomainPack({
           envelopePackId: SYNTHETIC_PACK.manifest.id,
           envelopePackVersion: SYNTHETIC_PACK.manifest.version,
           envelopePackContentSha256: "b".repeat(64),
           env: { HIVE_PACK_DRIVEN_READER_PROPOSAL_JSON: packPath },
-        }),
-      ).toThrow(PackNotAvailableError);
+        });
+        expect.unreachable("expected PackNotAvailableError");
+      } catch (error) {
+        expect(error).toBeInstanceOf(PackNotAvailableError);
+        const packError = error as PackNotAvailableError;
+        expect(packError.diagnostics.expectedSnapshotPath).toContain("b".repeat(64));
+      }
     } finally {
       rmSync(dir, { recursive: true, force: true });
     }

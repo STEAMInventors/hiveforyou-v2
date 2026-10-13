@@ -5,6 +5,21 @@ import Link from "next/link";
 
 import type { CanonicalStudyArtifact } from "@hiveforyou/shared/canonical-study-artifact";
 
+type CanonicalStudyDebugArtifact = CanonicalStudyArtifact & {
+  readerPack?: {
+    packId: string;
+    packVersion: string;
+    packContentSha256: string;
+    packPath: string;
+    packSource: "snapshot" | "override" | "current";
+  };
+  canonicalRuleset?: {
+    rulesetId: string;
+    rulesetVersion: string;
+    rulesetContentSha256: string;
+  };
+};
+
 export function CanonicalStudyDebugView({
   caseId,
   initialStudyRunId,
@@ -13,7 +28,7 @@ export function CanonicalStudyDebugView({
   initialStudyRunId?: string;
 }) {
   const [studyRunId, setStudyRunId] = useState(initialStudyRunId ?? "");
-  const [artifact, setArtifact] = useState<CanonicalStudyArtifact | null>(null);
+  const [artifact, setArtifact] = useState<CanonicalStudyDebugArtifact | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [copyState, setCopyState] = useState<"idle" | "copied" | "failed">("idle");
@@ -30,7 +45,7 @@ export function CanonicalStudyDebugView({
       const response = await fetch(
         `/api/case/${encodeURIComponent(caseId)}/canonical-debug?studyRunId=${encodeURIComponent(trimmed)}`,
       );
-      const payload = (await response.json()) as CanonicalStudyArtifact & {
+      const payload = (await response.json()) as CanonicalStudyDebugArtifact & {
         error?: string;
         message?: string;
       };
@@ -122,13 +137,35 @@ export function CanonicalStudyDebugView({
               <p className="font-mono text-sm break-all">{artifact.attemptId}</p>
             </div>
             <div>
-              <p className="text-xs uppercase tracking-wide text-[var(--hfy-quiet)]">Domain pack</p>
+              <p className="text-xs uppercase tracking-wide text-[var(--hfy-quiet)]">Reader pack</p>
               <p className="text-sm">
-                {artifact.packId} @ {artifact.packVersion}
+                {artifact.readerPack
+                  ? `${artifact.readerPack.packId} @ ${artifact.readerPack.packVersion} (${artifact.readerPack.packSource})`
+                  : `${artifact.packId} @ ${artifact.packVersion}`}
               </p>
+              {artifact.readerPack ? (
+                <p className="font-mono text-xs break-all text-[var(--hfy-quiet)]">
+                  {artifact.readerPack.packContentSha256}
+                </p>
+              ) : null}
             </div>
             <div>
-              <p className="text-xs uppercase tracking-wide text-[var(--hfy-quiet)]">Content SHA-256</p>
+              <p className="text-xs uppercase tracking-wide text-[var(--hfy-quiet)]">Canonical ruleset</p>
+              {artifact.canonicalRuleset ? (
+                <>
+                  <p className="text-sm">
+                    {artifact.canonicalRuleset.rulesetId} @ {artifact.canonicalRuleset.rulesetVersion}
+                  </p>
+                  <p className="font-mono text-xs break-all text-[var(--hfy-quiet)]">
+                    {artifact.canonicalRuleset.rulesetContentSha256}
+                  </p>
+                </>
+              ) : (
+                <p className="text-sm text-[var(--hfy-quiet)]">Not recorded on this artifact.</p>
+              )}
+            </div>
+            <div>
+              <p className="text-xs uppercase tracking-wide text-[var(--hfy-quiet)]">Artifact SHA-256</p>
               <p className="font-mono text-xs break-all">{artifact.contentSha256}</p>
             </div>
           </section>

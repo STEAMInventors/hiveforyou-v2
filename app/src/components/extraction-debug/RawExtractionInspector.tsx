@@ -228,11 +228,33 @@ export function RawExtractionInspector({
         error?: string;
         message?: string;
         affectedDocumentIds?: string[];
+        readerPack?: {
+          packId?: string;
+          packVersion?: string;
+          packContentSha256?: string;
+        };
+        compatibilityErrors?: string[];
+        expectedSnapshotPath?: string;
+        onDiskCurrentPackContentSha256?: string | null;
       };
       if (!response.ok) {
         setError(
           payload.error === "PACK_NOT_AVAILABLE"
-            ? "PACK_NOT_AVAILABLE: no on-disk Domain Pack matches the Reader envelope id, version, and SHA-256."
+            ? [
+                "PACK_NOT_AVAILABLE: no Reader Domain Pack snapshot matches the persisted envelope.",
+                payload.readerPack
+                  ? `Reader pack: ${payload.readerPack.packId}@${payload.readerPack.packVersion} hash ${payload.readerPack.packContentSha256}`
+                  : null,
+                payload.onDiskCurrentPackContentSha256
+                  ? `Current on-disk pack hash: ${payload.onDiskCurrentPackContentSha256}`
+                  : null,
+                payload.expectedSnapshotPath
+                  ? `Missing snapshot: ${payload.expectedSnapshotPath}`
+                  : null,
+                ...(payload.compatibilityErrors ?? []),
+              ]
+                .filter((line): line is string => Boolean(line))
+                .join(" ")
             : payload.error === "SOURCE_PAGES_UNAVAILABLE"
               ? `SOURCE_PAGES_UNAVAILABLE: trusted document pages are missing for ${(payload.affectedDocumentIds ?? []).join(", ") || "one or more documents"}.`
               : (payload.message ?? payload.error ?? "Could not run deterministic canonical study."),

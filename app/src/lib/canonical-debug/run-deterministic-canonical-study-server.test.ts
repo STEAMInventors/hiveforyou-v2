@@ -389,6 +389,12 @@ describe("runDeterministicCanonicalStudy", () => {
       expect(result.foundation.customerProReportsPermitted).toBe(false);
       expect(result.artifact.packApprovalLabel).toBe("DEBUG_UNAPPROVED_PACK");
       expect(result.artifact.customerProReportsPermitted).toBe(false);
+      expect(result.readerPack.packId).toBe(SYNTHETIC_PACK.manifest.id);
+      expect(result.readerPack.packContentSha256).toBe(PACK_SHA);
+      expect(result.readerPack.packSource).toBe("override");
+      expect(result.canonicalRuleset.rulesetId).toBe("hive.canonical-study.deterministic");
+      expect(result.artifact.readerPack.packContentSha256).toBe(PACK_SHA);
+      expect(result.artifact.canonicalRuleset.rulesetContentSha256).toMatch(/^[a-f0-9]{64}$/);
     } finally {
       rmSync(dir, { recursive: true, force: true });
     }

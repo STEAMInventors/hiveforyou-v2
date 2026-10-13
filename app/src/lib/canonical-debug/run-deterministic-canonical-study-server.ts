@@ -7,8 +7,13 @@ import {
   PackNotAvailableError,
   buildCanonicalStudy,
   buildCanonicalStudyFoundation,
+  proposalPackSnapshotPathForHash,
   requireSessionUserId,
+  resolveCanonicalStudyRulesetIdentity,
   resolveDebugCanonicalStudyDomainPack,
+  type CanonicalStudyRulesetIdentity,
+  type PackResolutionDiagnostics,
+  type ResolvedDebugCanonicalStudyDomainPack,
 } from "@hiveforyou/core";
 import {
   assertTrustedDocumentPagesPayload,
@@ -60,9 +65,19 @@ export class SourcePagesUnavailableError extends Error {
   }
 }
 
+export type CanonicalStudyDebugReaderPackMetadata = {
+  packId: string;
+  packVersion: string;
+  packContentSha256: string;
+  packPath: string;
+  packSource: ResolvedDebugCanonicalStudyDomainPack["source"];
+};
+
 export type CanonicalStudyDebugArtifactMetadata = {
   packApprovalLabel: typeof CANONICAL_STUDY_DEBUG_PACK_APPROVAL;
   customerProReportsPermitted: false;
+  readerPack: CanonicalStudyDebugReaderPackMetadata;
+  canonicalRuleset: CanonicalStudyRulesetIdentity;
 };
 
 function sha256Json(value: unknown): string {
@@ -125,6 +140,24 @@ function firstEnvelope(
   return null;
 }
 
+function emptyPackDiagnostics(
+  partial: Pick<PackResolutionDiagnostics, "envelopePackId" | "envelopePackVersion" | "envelopePackContentSha256"> &
+    Partial<PackResolutionDiagnostics>,
+): PackResolutionDiagnostics {
+  return {
+    envelopePackId: partial.envelopePackId,
+    envelopePackVersion: partial.envelopePackVersion,
+    envelopePackContentSha256: partial.envelopePackContentSha256,
+    candidatePaths: partial.candidatePaths ?? [],
+    onDiskCurrentPackPath: partial.onDiskCurrentPackPath ?? null,
+    onDiskCurrentPackContentSha256: partial.onDiskCurrentPackContentSha256 ?? null,
+    expectedSnapshotPath:
+      partial.expectedSnapshotPath ??
+      proposalPackSnapshotPathForHash(partial.envelopePackContentSha256 || "0".repeat(64)),
+    compatibilityErrors: partial.compatibilityErrors ?? [],
+  };
+}
+
 function assertReaderEnvelopesSharePackMetadata(
   envelopes: Iterable<ReaderDocumentExtractionEnvelope>,
 ): { packId: string; packVersion: string; packContentSha256: string } {
@@ -139,6 +172,14 @@ function assertReaderEnvelopesSharePackMetadata(
     if (!nextPackId || !nextPackVersion || !nextHash) {
       throw new PackNotAvailableError(
         "Reader extraction envelopes are missing Domain Pack id, version, or content hash.",
+        emptyPackDiagnostics({
+          envelopePackId: nextPackId ?? "",
+          envelopePackVersion: nextPackVersion ?? "",
+          envelopePackContentSha256: nextHash ?? "",
+          compatibilityErrors: [
+            "Reader extraction envelopes are missing Domain Pack id, version, or content hash.",
+          ],
+        }),
       );
     }
     if (packId === null) {
@@ -150,12 +191,30 @@ function assertReaderEnvelopesSharePackMetadata(
     if (packId !== nextPackId || packVersion !== nextPackVersion || packContentSha256 !== nextHash) {
       throw new PackNotAvailableError(
         "Reader extraction envelopes reference inconsistent Domain Pack metadata.",
+        emptyPackDiagnostics({
+          envelopePackId: packId ?? nextPackId,
+          envelopePackVersion: packVersion ?? nextPackVersion,
+          envelopePackContentSha256: packContentSha256 ?? nextHash,
+          compatibilityErrors: [
+            "Reader extraction envelopes reference inconsistent Domain Pack metadata.",
+          ],
+        }),
       );
     }
   }
 
   if (!packId || !packVersion || !packContentSha256) {
-    throw new PackNotAvailableError("Reader extraction envelopes did not include Domain Pack metadata.");
+    throw new PackNotAvailableError(
+      "Reader extraction envelopes did not include Domain Pack metadata.",
+      emptyPackDiagnostics({
+        envelopePackId: "",
+        envelopePackVersion: "",
+        envelopePackContentSha256: "",
+        compatibilityErrors: [
+          "Reader extraction envelopes did not include Domain Pack metadata.",
+        ],
+      }),
+    );
   }
 
   return { packId, packVersion, packContentSha256 };
@@ -163,11 +222,23 @@ function assertReaderEnvelopesSharePackMetadata(
 
 function stampDebugCanonicalStudyMetadata<T extends object>(
   artifact: T,
+  debugContext: {
+    structuralPack: ResolvedDebugCanonicalStudyDomainPack;
+    canonicalRuleset: CanonicalStudyRulesetIdentity;
+  },
 ): T & CanonicalStudyDebugArtifactMetadata {
   return {
     ...artifact,
     packApprovalLabel: CANONICAL_STUDY_DEBUG_PACK_APPROVAL,
     customerProReportsPermitted: false,
+    readerPack: {
+      packId: debugContext.structuralPack.pack.manifest.id,
+      packVersion: debugContext.structuralPack.pack.manifest.version,
+      packContentSha256: debugContext.structuralPack.contentSha256,
+      packPath: debugContext.structuralPack.path,
+      packSource: debugContext.structuralPack.source,
+    },
+    canonicalRuleset: debugContext.canonicalRuleset,
   };
 }
 
@@ -191,6 +262,8 @@ export type RunDeterministicCanonicalStudyResult = {
   artifact: CanonicalStudyArtifact & CanonicalStudyDebugArtifactMetadata;
   foundationObjectKey: string;
   artifactObjectKey: string;
+  readerPack: CanonicalStudyDebugReaderPackMetadata;
+  canonicalRuleset: CanonicalStudyRulesetIdentity;
 };
 
 export async function runDeterministicCanonicalStudy(input: {
@@ -271,6 +344,8 @@ export async function runDeterministicCanonicalStudy(input: {
     envelopePackVersion: envelopePackMetadata.packVersion,
     envelopePackContentSha256: envelopePackMetadata.packContentSha256,
   });
+  const canonicalRuleset = resolveCanonicalStudyRulesetIdentity();
+  const debugContext = { structuralPack, canonicalRuleset };
 
   const sourceDocuments = await new SupabaseSourceDocumentRepository(
     gateway,
@@ -345,6 +420,7 @@ export async function runDeterministicCanonicalStudy(input: {
       createdAt,
       documents: foundationDocuments,
     }),
+    debugContext,
   );
 
   const sourceContext = buildSourceContext({
@@ -363,6 +439,7 @@ export async function runDeterministicCanonicalStudy(input: {
       sourceContext,
       createdAt,
     }),
+    debugContext,
   );
 
   const attemptId = loaded.attemptId;
@@ -383,6 +460,14 @@ export async function runDeterministicCanonicalStudy(input: {
     artifact,
     foundationObjectKey,
     artifactObjectKey,
+    readerPack: {
+      packId: structuralPack.pack.manifest.id,
+      packVersion: structuralPack.pack.manifest.version,
+      packContentSha256: structuralPack.contentSha256,
+      packPath: structuralPack.path,
+      packSource: structuralPack.source,
+    },
+    canonicalRuleset,
   };
 }
 

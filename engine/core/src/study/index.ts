@@ -41,15 +41,22 @@ export {
 } from "./canonical-study-foundation/index.js";
 export {
   buildCanonicalStudy,
+  CANONICAL_STUDY_RULESET_CONTENT_SHA256,
+  CANONICAL_STUDY_RULESET_ID,
+  resolveCanonicalStudyRulesetIdentity,
   type BuildCanonicalStudyInput,
+  type CanonicalStudyRulesetIdentity,
 } from "./canonical-study/index.js";
 export {
   CANONICAL_STUDY_DEBUG_PACK_APPROVAL,
   PackNotAvailableError,
   PackNotReadyError,
   assertEnvelopePackMatchesApprovedPack,
+  proposalPackSnapshotPathForHash,
+  proposalPackSnapshotsDir,
   resolveApprovedProposalDomainPack,
   resolveDebugCanonicalStudyDomainPack,
+  type PackResolutionDiagnostics,
   type ResolvedDebugCanonicalStudyDomainPack,
 } from "./resolve-approved-proposal-domain-pack.js";
 export {

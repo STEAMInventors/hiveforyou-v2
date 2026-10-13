@@ -5,6 +5,9 @@ import {
   type CanonicalStudySourceContext,
 } from "@hiveforyou/shared/canonical-study-artifact";
 import type { CanonicalStudyFoundationArtifact } from "@hiveforyou/shared/canonical-study-foundation";
+import {
+  CANONICAL_STUDY_FOUNDATION_SCHEMA_VERSION,
+} from "@hiveforyou/shared/canonical-study-foundation";
 import { hashCanonicalStudyFoundationBody } from "../canonical-study-foundation/hash-body.js";
 
 import { buildSeries } from "./build-series.js";
@@ -15,6 +18,31 @@ import { hashCanonicalStudyBody } from "./hash-body.js";
 import { buildIndexedFoundation } from "./indexed-foundation.js";
 import { labelRelations } from "./label-relations.js";
 import { resolveIdentity } from "./resolve-identity.js";
+
+/** Deterministic canonical study builder identity (separate from Reader Domain Pack snapshots). */
+export const CANONICAL_STUDY_RULESET_ID = "hive.canonical-study.deterministic" as const;
+
+/** Pinned hash of canonical study builder modules (foundation + artifact builders). */
+export const CANONICAL_STUDY_RULESET_CONTENT_SHA256 =
+  "25b27843040f518554b73f5e3c295aa80b4632ad5c7e54f99a946d7d98262d73" as const;
+
+export type CanonicalStudyRulesetIdentity = {
+  rulesetId: typeof CANONICAL_STUDY_RULESET_ID;
+  rulesetVersion: string;
+  rulesetContentSha256: typeof CANONICAL_STUDY_RULESET_CONTENT_SHA256;
+  foundationSchemaVersion: typeof CANONICAL_STUDY_FOUNDATION_SCHEMA_VERSION;
+  artifactSchemaVersion: typeof CANONICAL_STUDY_ARTIFACT_SCHEMA_VERSION;
+};
+
+export function resolveCanonicalStudyRulesetIdentity(): CanonicalStudyRulesetIdentity {
+  return {
+    rulesetId: CANONICAL_STUDY_RULESET_ID,
+    rulesetVersion: CANONICAL_STUDY_ARTIFACT_SCHEMA_VERSION,
+    rulesetContentSha256: CANONICAL_STUDY_RULESET_CONTENT_SHA256,
+    foundationSchemaVersion: CANONICAL_STUDY_FOUNDATION_SCHEMA_VERSION,
+    artifactSchemaVersion: CANONICAL_STUDY_ARTIFACT_SCHEMA_VERSION,
+  };
+}
 
 export type BuildCanonicalStudyInput = {
   pack: ProposalDomainPack;

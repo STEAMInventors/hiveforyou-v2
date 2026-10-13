@@ -41,6 +41,8 @@ export async function POST(request: Request, context: RouteContext) {
       contentSha256: result.artifact.contentSha256,
       packApprovalLabel: result.artifact.packApprovalLabel,
       customerProReportsPermitted: result.artifact.customerProReportsPermitted,
+      readerPack: result.readerPack,
+      canonicalRuleset: result.canonicalRuleset,
     });
   } catch (error) {
     if (error instanceof UnauthenticatedError) {
@@ -69,7 +71,19 @@ export async function POST(request: Request, context: RouteContext) {
     }
     if (error instanceof PackNotAvailableError) {
       return NextResponse.json(
-        { error: error.code, message: error.message },
+        {
+          error: error.code,
+          message: error.message,
+          readerPack: {
+            packId: error.diagnostics.envelopePackId,
+            packVersion: error.diagnostics.envelopePackVersion,
+            packContentSha256: error.diagnostics.envelopePackContentSha256,
+          },
+          canonicalRuleset: null,
+          compatibilityErrors: error.diagnostics.compatibilityErrors,
+          expectedSnapshotPath: error.diagnostics.expectedSnapshotPath,
+          onDiskCurrentPackContentSha256: error.diagnostics.onDiskCurrentPackContentSha256,
+        },
         { status: 409 },
       );
     }
