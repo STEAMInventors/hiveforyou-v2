@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import { UnauthenticatedError } from "@hiveforyou/core";
 
+import { denyUnlessHiveDebugRoutesEnabled } from "@/lib/preview/hive-debug-server";
 import { CaseNotFoundError } from "@/lib/canonical-study/study-service-server";
 import { StudyRunNotFoundError } from "@/lib/case-map/case-map-bundle-service-server";
 import {
@@ -14,6 +15,11 @@ import { RawExtractionNotFoundError } from "@/lib/extraction-debug/raw-extractio
 type RouteContext = { params: Promise<{ caseId: string }> };
 
 export async function POST(request: Request, context: RouteContext) {
+  const disabled = denyUnlessHiveDebugRoutesEnabled();
+  if (disabled) {
+    return disabled;
+  }
+
   const { caseId } = await context.params;
   let studyRunId: string | undefined;
   let asOfDate: string | undefined;

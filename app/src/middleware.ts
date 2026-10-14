@@ -1,6 +1,8 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
+import { isHiveDebugApiPath, isHiveDebugPagePath, isHiveDebugRoutesEnabled } from "@/lib/preview/preview-gate";
+import { debugRoutesDisabledResponse } from "@/lib/preview/hive-debug-server";
 import {
   authorizationMatchesPreviewPassword,
   isPreviewPasswordGateEnabled,
@@ -10,6 +12,14 @@ import { ensureDevSupabaseSession } from "@/lib/supabase/dev-auto-auth";
 const PREVIEW_AUTHENTICATE = 'Basic realm="Hive preview", charset="UTF-8"';
 
 export async function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+  if (
+    !isHiveDebugRoutesEnabled() &&
+    (isHiveDebugApiPath(pathname) || isHiveDebugPagePath(pathname))
+  ) {
+    return debugRoutesDisabledResponse();
+  }
+
   if (
     isPreviewPasswordGateEnabled() &&
     !authorizationMatchesPreviewPassword(request.headers.get("authorization"))

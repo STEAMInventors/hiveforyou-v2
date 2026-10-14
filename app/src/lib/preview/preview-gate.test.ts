@@ -3,6 +3,9 @@ import { describe, expect, it } from "vitest";
 import {
   authorizationMatchesPreviewPassword,
   constantTimeEqual,
+  isHiveDebugApiPath,
+  isHiveDebugPagePath,
+  isHiveDebugRoutesEnabled,
   isPreviewPasswordGateEnabled,
   readBasicAuthPassword,
 } from "./preview-gate";
@@ -41,5 +44,16 @@ describe("preview password gate", () => {
     expect(authorizationMatchesPreviewPassword(basic("other", "wrong"), source)).toBe(false);
     expect(authorizationMatchesPreviewPassword(null, source)).toBe(false);
     expect(authorizationMatchesPreviewPassword(basic("ignored", "gate-secret"), {})).toBe(false);
+  });
+
+  it("enables debug routes only when HIVE_ENABLE_DEBUG_ROUTES is true", () => {
+    expect(isHiveDebugRoutesEnabled({})).toBe(false);
+    expect(isHiveDebugRoutesEnabled({ HIVE_ENABLE_DEBUG_ROUTES: "true" })).toBe(true);
+  });
+
+  it("recognizes debug API and page paths", () => {
+    expect(isHiveDebugApiPath("/api/case/abc/canonical-debug")).toBe(true);
+    expect(isHiveDebugApiPath("/api/case/abc/bundle")).toBe(false);
+    expect(isHiveDebugPagePath("/hives/abc/extraction-debug")).toBe(true);
   });
 });

@@ -1,3 +1,6 @@
+import { notFound } from "next/navigation";
+
+import { isHiveDebugRoutesEnabled } from "@/lib/preview/preview-gate";
 import { HiveFooter } from "@/components/HiveFooter";
 import { HiveHeader } from "@/components/HiveHeader";
 import { RawExtractionInspector } from "@/components/extraction-debug/RawExtractionInspector";
@@ -8,6 +11,10 @@ type PageProps = {
 };
 
 export default async function ExtractionDebugPage({ params, searchParams }: PageProps) {
+  if (!isHiveDebugRoutesEnabled()) {
+    notFound();
+  }
+
   const { caseId } = await params;
   const query = await searchParams;
   const initialStudyRunId = query.studyRunId?.trim();

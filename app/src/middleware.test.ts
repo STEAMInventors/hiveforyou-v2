@@ -7,6 +7,7 @@ import { middleware } from "./middleware";
 
 const ENV_KEYS = [
   "HIVE_PREVIEW_PASSWORD",
+  "HIVE_ENABLE_DEBUG_ROUTES",
   "NEXT_PUBLIC_SUPABASE_URL",
   "NEXT_PUBLIC_SUPABASE_ANON_KEY",
 ] as const;
@@ -73,5 +74,15 @@ describe("preview password middleware", () => {
     const response = await middleware(request("/", basic("ignored", "gate-secret")));
     expect(response.status).toBe(200);
     expect(response.headers.get("www-authenticate")).toBeNull();
+  });
+
+  it("returns 404 for debug API and pages when debug routes are disabled", async () => {
+    for (const path of [
+      "/api/case/abc/canonical-debug",
+      "/hives/abc/extraction-debug",
+    ]) {
+      const response = await middleware(request(path));
+      expect(response.status, path).toBe(404);
+    }
   });
 });

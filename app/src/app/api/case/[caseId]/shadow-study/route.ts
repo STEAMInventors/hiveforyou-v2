@@ -1,11 +1,17 @@
 import { NextResponse } from "next/server";
 
+import { denyUnlessHiveDebugRoutesEnabled } from "@/lib/preview/hive-debug-server";
 import { createServerSupabaseClient, getAuthenticatedUserId } from "@/lib/supabase/server";
 
 export async function GET(
   request: Request,
   context: { params: Promise<{ caseId: string }> },
 ): Promise<Response> {
+  const disabled = denyUnlessHiveDebugRoutesEnabled();
+  if (disabled) {
+    return disabled;
+  }
+
   const userId = await getAuthenticatedUserId();
   if (!userId) {
     return NextResponse.json({ error: "UNAUTHORIZED" }, { status: 401 });
