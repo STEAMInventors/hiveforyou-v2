@@ -35,6 +35,12 @@ export async function createServerSupabaseClient() {
 
 export async function getAuthenticatedUserId(): Promise<string | null> {
   assertAuthBypassDisabledInProduction();
+  const supabase = await createServerSupabaseClient();
+  const { data: existingSession } = await supabase.auth.getUser();
+  if (existingSession.user) {
+    return existingSession.user.id;
+  }
+
   const previewGateEnabled = isPreviewPasswordGateEnabled();
   let allowPreviewImplicitAuth = false;
   if (previewGateEnabled) {
@@ -44,7 +50,7 @@ export async function getAuthenticatedUserId(): Promise<string | null> {
     }
     allowPreviewImplicitAuth = true;
   }
-  const supabase = await createServerSupabaseClient();
+
   await ensureDevSupabaseSession(supabase, { allowPreviewImplicitAuth });
   const { data, error } = await supabase.auth.getUser();
   if (error || !data.user) {

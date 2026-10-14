@@ -119,9 +119,24 @@ describe("require-case-access", () => {
     );
   });
 
-  it("refuses auth bypass configuration on production", async () => {
+  it("refuses HIVE_DEV_AUTO_AUTH on production", async () => {
+    process.env.VERCEL_ENV = "production";
+    process.env.HIVE_DEV_AUTO_AUTH = "true";
+    await expect(requireUser(new Request("http://localhost"))).rejects.toBeInstanceOf(
+      AuthBypassRefusedInProductionError,
+    );
+  });
+
+  it("allows the preview password gate on production", async () => {
     process.env.VERCEL_ENV = "production";
     process.env.HIVE_PREVIEW_PASSWORD = "gate";
+    vi.mocked(getAuthenticatedUserId).mockResolvedValue(USER_A);
+    await expect(requireUser(new Request("http://localhost"))).resolves.toEqual({
+      user: { id: USER_A },
+    });
+  });
+
+  it("maps auth bypass refusal to 503 JSON", () => {
     const response = jsonFromAccessError(new AuthBypassRefusedInProductionError());
     expect(response?.status).toBe(503);
   });

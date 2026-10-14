@@ -60,7 +60,7 @@ describe("preview password gate", () => {
     expect(isHiveDebugPagePath("/hives/abc/extraction-debug")).toBe(true);
   });
 
-  it("refuses auth bypass env configuration on Vercel production", () => {
+  it("refuses HIVE_DEV_AUTO_AUTH on Vercel production", () => {
     expect(() =>
       assertAuthBypassDisabledInProduction({
         VERCEL_ENV: "production",
@@ -69,10 +69,35 @@ describe("preview password gate", () => {
     ).toThrow(AuthBypassRefusedInProductionError);
     expect(() =>
       assertAuthBypassDisabledInProduction({
+        VERCEL_ENV: "production",
+        HIVE_DEV_AUTO_AUTH: "1",
+      }),
+    ).toThrow(AuthBypassRefusedInProductionError);
+  });
+
+  it("allows the HTTP Basic preview gate on Vercel production", () => {
+    expect(() =>
+      assertAuthBypassDisabledInProduction({
+        VERCEL_ENV: "production",
+        HIVE_PREVIEW_PASSWORD: "gate",
+      }),
+    ).not.toThrow();
+    expect(() =>
+      assertAuthBypassDisabledInProduction({
         VERCEL_ENV: "preview",
         HIVE_PREVIEW_PASSWORD: "gate",
       }),
     ).not.toThrow();
+  });
+
+  it("still refuses HIVE_DEV_AUTO_AUTH when the preview gate is also configured", () => {
+    expect(() =>
+      assertAuthBypassDisabledInProduction({
+        VERCEL_ENV: "production",
+        HIVE_PREVIEW_PASSWORD: "gate",
+        HIVE_DEV_AUTO_AUTH: "yes",
+      }),
+    ).toThrow(AuthBypassRefusedInProductionError);
   });
 
   it("resolves admin user ids from HIVE_ADMIN_USER_IDS", () => {

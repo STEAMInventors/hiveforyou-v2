@@ -103,23 +103,22 @@ export class AuthBypassRefusedInProductionError extends Error {
 
 let authBypassProductionRefusalLogged = false;
 
-/** Fail closed when preview/dev implicit auth flags are set on Vercel production. */
+/**
+ * Fail closed when implicit dev auth is set on Vercel production.
+ * The HTTP Basic preview gate (HIVE_PREVIEW_PASSWORD) is an explicit, controlled challenge and is allowed.
+ */
 export function assertAuthBypassDisabledInProduction(
   source: Record<string, string | undefined> = process.env,
 ): void {
   if (source.VERCEL_ENV !== "production") {
     return;
   }
-  const bypassConfigured =
-    isTruthyEnvFlag(source.HIVE_DEV_AUTO_AUTH) || Boolean(source.HIVE_PREVIEW_PASSWORD?.trim());
-  if (!bypassConfigured) {
+  if (!isTruthyEnvFlag(source.HIVE_DEV_AUTO_AUTH)) {
     return;
   }
   if (!authBypassProductionRefusalLogged) {
     authBypassProductionRefusalLogged = true;
-    console.error(
-      "[auth] HIVE_DEV_AUTO_AUTH and HIVE_PREVIEW_PASSWORD must not be set when VERCEL_ENV=production",
-    );
+    console.error("[auth] HIVE_DEV_AUTO_AUTH must not be set when VERCEL_ENV=production");
   }
   throw new AuthBypassRefusedInProductionError();
 }
