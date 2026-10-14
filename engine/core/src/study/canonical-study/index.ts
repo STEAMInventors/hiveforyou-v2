@@ -24,7 +24,7 @@ export const CANONICAL_STUDY_RULESET_ID = "hive.canonical-study.deterministic" a
 
 /** Pinned hash of canonical study builder modules (foundation + artifact builders). */
 export const CANONICAL_STUDY_RULESET_CONTENT_SHA256 =
-  "ef01462fc144a0b971d41a867905b698b35b1028dd0322c6341d05cfa2803140" as const;
+  "ebb5e6c92b01b541fa8aec191d7147f8f862e1536a78bbb01b7cd9236d981a41" as const;
 
 export type CanonicalStudyRulesetIdentity = {
   rulesetId: typeof CANONICAL_STUDY_RULESET_ID;

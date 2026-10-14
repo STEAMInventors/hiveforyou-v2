@@ -4,7 +4,6 @@ import type {
   CanonicalStudyOperativeView,
   CanonicalStudyProvenanceChip,
   CanonicalStudySeries,
-  CanonicalStudySourceContext,
 } from "@hiveforyou/shared/canonical-study-artifact";
 
 import { buildConstructJoinKey, normalizedFieldValue } from "./construct-keys.js";
@@ -31,31 +30,86 @@ const FULLY_SUPPORTED_PRIMITIVES = new Set([
 
 const PARTIAL_PRIMITIVES = new Set(["coChange", "periodCoverage", "ageOnDate"]);
 
-function resolveSourceDocumentLabel(
-  sourceContext: CanonicalStudySourceContext,
-  sourceDocumentId: string,
-): string {
-  const match = sourceContext.logicalDocuments?.find(
+function resolveSourceDocumentLabel(indexed: IndexedFoundation, sourceDocumentId: string): string {
+  const match = indexed.sourceContext.logicalDocuments?.find(
     (doc) => doc.sourceDocumentId === sourceDocumentId,
   );
   if (match?.filename?.trim()) {
     return match.filename.replace(/\.[^.]+$/, "");
   }
-  return sourceDocumentId;
+  const docTypeId = indexed.records.find((r) => r.sourceDocumentId === sourceDocumentId)?.documentTypeId;
+  const label = indexed.pack.documentTypes?.find((d) => d.id === docTypeId)?.label;
+  return label ?? "A supplied document";
 }
 
-function substituteQuestion(
-  template: string,
-  placeholders: Record<string, string>,
-): string {
+/** Returns null if any {placeholder} remains. */
+function substituteQuestion(template: string, placeholders: Record<string, string>): string | null {
   let result = template;
   for (const [key, value] of Object.entries(placeholders)) {
+    if (value === "") {
+      continue;
+    }
     result = result.replaceAll(`{${key}}`, value);
   }
-  if (/\{[a-zA-Z0-9_]+\}/.test(result)) {
-    return result;
+  return /\{[a-zA-Z0-9_]+\}/.test(result) ? null : result;
+}
+
+function firedOrUnfilled(base: {
+  check: { id: string; question?: string };
+  operands: CanonicalStudyProvenanceChip[];
+  message: string;
+  placeholders: Record<string, string>;
+  idSuffix?: string;
+}): CanonicalStudyFlag {
+  const question = substituteQuestion(base.check.question ?? "", base.placeholders);
+  if (question == null) {
+    return {
+      id: stableId(`flag:${base.check.id}:unresolved${base.idSuffix ?? ""}`),
+      checkId: base.check.id,
+      status: "unresolved",
+      question: base.check.question ?? "",
+      operands: base.operands,
+      message: "template_unfilled",
+    };
   }
-  return result;
+  return {
+    id: stableId(`flag:${base.check.id}:fired${base.idSuffix ?? ""}`),
+    checkId: base.check.id,
+    status: "fired",
+    question,
+    operands: base.operands,
+    message: base.message,
+  };
+}
+
+function wholeYearsBetween(startIso: string, endIso: string): number {
+  const [sy, sm, sd] = startIso.split("-").map(Number) as [number, number, number];
+  const [ey, em, ed] = endIso.split("-").map(Number) as [number, number, number];
+  return ey - sy - (em < sm || (em === sm && ed < sd) ? 1 : 0);
+}
+
+function asOfDateOperandChip(asOfDate: string): CanonicalStudyProvenanceChip {
+  return {
+    fieldKey: "as_of_date",
+    recordGroupId: "as_of_date",
+    sourceDocumentId: "",
+    recordTypeId: "as_of_date",
+    instanceIndex: 0,
+    fieldId: "as_of_date",
+    evidence: [],
+    normalized: {
+      valueKind: "date",
+      displayValue: asOfDate,
+      normalizedValue: asOfDate,
+      unit: null,
+    },
+    envelopeRef: {
+      studyRunId: "",
+      attemptId: "",
+      sourceDocumentId: "",
+      envelopeStatus: "SUCCEEDED",
+    },
+  };
 }
 
 function resolveOperand(
@@ -129,14 +183,14 @@ export function evaluateInsightChecks(input: {
         });
         continue;
       }
-      flags.push({
-        id: stableId(`flag:${check.id}:fired`),
-        checkId: check.id,
-        status: "fired",
-        question: substituteQuestion(check.question ?? "", { value: String(operand.normalized.displayValue ?? "") }),
-        operands: [operand],
-        message: "exists_verified",
-      });
+      flags.push(
+        firedOrUnfilled({
+          check,
+          operands: [operand],
+          message: "exists_verified",
+          placeholders: { value: String(operand.normalized.displayValue ?? "") },
+        }),
+      );
       continue;
     }
 
@@ -162,45 +216,48 @@ export function evaluateInsightChecks(input: {
       if (!left || !right) {
         continue;
       }
-      flags.push({
-        id: stableId(`flag:${check.id}:fired`),
-        checkId: check.id,
-        status: "fired",
-        question: substituteQuestion(check.question ?? "", {
-          left: String(left.normalized.displayValue ?? ""),
-          right: String(right.normalized.displayValue ?? ""),
+      flags.push(
+        firedOrUnfilled({
+          check,
+          operands: [left, right],
+          message: "compareValues_verified",
+          placeholders: {
+            left: String(left.normalized.displayValue ?? ""),
+            right: String(right.normalized.displayValue ?? ""),
+          },
         }),
-        operands: [left, right],
-        message: "compareValues_verified",
-      });
+      );
       continue;
     }
 
     if (primitive === "absenceOf") {
-      const flag = evaluateAbsenceOf(input.indexed, input.operativeViews, check);
-      if (flag) {
-        flags.push(flag);
-      }
+      flags.push(...evaluateAbsenceOf(input.indexed, input.operativeViews, check));
       continue;
     }
 
     if (primitive === "elapsedSince") {
       const fromOperand = operandField(check, "from");
       const toOperand = check.right ?? operandField(check, "to");
-      if (fromOperand && !check.left && !toOperand) {
-        const fromChip = resolveFilteredOperand(input.indexed, input.operativeViews, fromOperand, null);
-        flags.push({
-          id: stableId(`flag:${check.id}:unresolved`),
-          checkId: check.id,
-          status: "unresolved",
-          question: check.question ?? "",
-          operands: fromChip ? [fromChip] : [],
-          message: "missing_operand:comparison_end",
-        });
-        continue;
+      let left = resolveOperand(input.indexed, check.left);
+      let right = resolveOperand(input.indexed, toOperand);
+      if (!left && fromOperand) {
+        left = resolveFilteredOperand(input.indexed, input.operativeViews, fromOperand, null);
       }
-      const left = resolveOperand(input.indexed, check.left);
-      const right = resolveOperand(input.indexed, toOperand);
+      if (!right) {
+        const asOfDate = input.indexed.sourceContext.asOfDate;
+        if (typeof asOfDate !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(asOfDate)) {
+          flags.push({
+            id: stableId(`flag:${check.id}:unresolved`),
+            checkId: check.id,
+            status: "unresolved",
+            question: check.question ?? "",
+            operands: left ? [left] : [],
+            message: "missing_as_of_date",
+          });
+          continue;
+        }
+        right = asOfDateOperandChip(asOfDate);
+      }
       const elapsed = elapsedSincePrimitive(left, right);
       if (!elapsed.ok || !left || !right) {
         flags.push({
@@ -213,14 +270,21 @@ export function evaluateInsightChecks(input: {
         });
         continue;
       }
-      flags.push({
-        id: stableId(`flag:${check.id}:fired`),
-        checkId: check.id,
-        status: "fired",
-        question: check.question ?? "",
-        operands: [left, right],
-        message: "elapsedSince_verified",
-      });
+      const startIso = String(left.normalized.normalizedValue ?? "");
+      const endIso = String(right.normalized.normalizedValue ?? "");
+      if (typeof check.atLeastYears === "number") {
+        if (wholeYearsBetween(startIso, endIso) < check.atLeastYears) {
+          continue;
+        }
+      }
+      flags.push(
+        firedOrUnfilled({
+          check,
+          operands: [left, right],
+          message: "elapsedSince_verified",
+          placeholders: { date: startIso },
+        }),
+      );
       continue;
     }
 
@@ -237,15 +301,18 @@ export function evaluateInsightChecks(input: {
         });
         continue;
       }
-      const operands = matching[0]!.observations.map((observation) => observation.provenance);
-      flags.push({
-        id: stableId(`flag:${check.id}:fired`),
-        checkId: check.id,
-        status: "fired",
-        question: check.question ?? "",
-        operands,
-        message: "series_verified",
-      });
+      const series = matching[0]!;
+      const target = series.observations.find((o) => o.role === "target_value");
+      flags.push(
+        firedOrUnfilled({
+          check,
+          operands: series.observations.map((o) => o.provenance),
+          message: "series_verified",
+          placeholders: {
+            target: target ? String(target.provenance.normalized.displayValue ?? "") : "",
+          },
+        }),
+      );
     }
   }
 
@@ -275,7 +342,7 @@ function evaluateAbsenceOf(
   indexed: IndexedFoundation,
   operativeViews: CanonicalStudyOperativeView[],
   check: ProposalInsightCheck,
-): CanonicalStudyFlag | null {
+): CanonicalStudyFlag[] {
   const present = check.present;
   const absent = check.absent;
   const unresolved = (message: string, operands: CanonicalStudyProvenanceChip[] = []): CanonicalStudyFlag => ({
@@ -291,7 +358,7 @@ function evaluateAbsenceOf(
   const absentField = absent?.field;
   const joinOn = check.joinOn;
   if (!present?.record || !presentField || !absent?.record || !absentField || !joinOn) {
-    return unresolved("absenceOf_operands_incomplete");
+    return [unresolved("absenceOf_operands_incomplete")];
   }
 
   const presentRecords = recordsInInsightScope(indexed, operativeViews, present, null).filter((record) =>
@@ -322,9 +389,9 @@ function evaluateAbsenceOf(
       }),
     ]);
     if (!operandCoverage.complete) {
-      return unresolved(operandCoverage.message);
+      return [unresolved(operandCoverage.message)];
     }
-    return unresolved("missing_present_operand");
+    return [unresolved("missing_present_operand")];
   }
 
   const unmatched: CanonicalStudyProvenanceChip[] = [];
@@ -336,7 +403,7 @@ function evaluateAbsenceOf(
     }
     const presentKey = insightJoinKey(indexed, record, presentField, joinOn);
     if (!presentKey) {
-      return unresolved("join_key_unavailable", [chip]);
+      return [unresolved("join_key_unavailable", [chip])];
     }
     const absentRecords = recordsInInsightScope(indexed, operativeViews, absent, record.sourceDocumentId).filter(
       (candidate) => recordMatchesWhere(candidate, absent.where),
@@ -349,7 +416,7 @@ function evaluateAbsenceOf(
         const absentChip = candidate.provenanceByFieldKey[absentField]!;
         const absentKey = insightJoinKey(indexed, candidate, absentField, joinOn);
         if (!absentKey) {
-          return unresolved("join_key_unavailable", [chip, absentChip]);
+          return [unresolved("join_key_unavailable", [chip, absentChip])];
         }
         if (absentKey === presentKey) {
           matched = true;
@@ -362,7 +429,7 @@ function evaluateAbsenceOf(
       }
     }
     if (blockingUnresolved && !matched) {
-      return unresolved("absence_match_unresolved", [chip]);
+      return [unresolved("absence_match_unresolved", [chip])];
     }
     if (!matched) {
       unmatched.push(chip);
@@ -370,7 +437,7 @@ function evaluateAbsenceOf(
   }
 
   if (unmatched.length === 0) {
-    return null;
+    return [];
   }
 
   const coverage = mergeSourceCoverageEvaluations([
@@ -405,25 +472,25 @@ function evaluateAbsenceOf(
     }),
   ]);
   if (!coverage.complete) {
-    return unresolved(coverage.message, unmatched);
+    return [unresolved(coverage.message, unmatched)];
   }
 
-  const area = unmatched[0] ? String(unmatched[0].normalized.displayValue ?? "") : "";
-  const presentDocument = unmatched[0]
-    ? resolveSourceDocumentLabel(indexed.sourceContext, unmatched[0].sourceDocumentId)
-    : "";
-  return {
-    id: stableId(`flag:${check.id}:fired`),
-    checkId: check.id,
-    status: "fired",
-    question: substituteQuestion(check.question ?? "", {
-      area,
-      presentDocument,
-      accommodation: area,
-    }),
-    operands: unmatched.sort((a, b) => a.fieldKey.localeCompare(b.fieldKey)),
-    message: "absenceOf_verified",
-  };
+  return unmatched
+    .sort((a, b) => a.fieldKey.localeCompare(b.fieldKey))
+    .map((chip) => {
+      const value = String(chip.normalized.displayValue ?? "");
+      return firedOrUnfilled({
+        check,
+        operands: [chip],
+        message: "absenceOf_verified",
+        idSuffix: `:${chip.fieldKey}`,
+        placeholders: {
+          area: value,
+          accommodation: value,
+          presentDocument: resolveSourceDocumentLabel(indexed, chip.sourceDocumentId),
+        },
+      });
+    });
 }
 
 function recordsInInsightScope(

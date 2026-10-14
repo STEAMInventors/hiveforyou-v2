@@ -120,6 +120,7 @@ function buildSourceContext(input: {
     filename?: string;
     customerLabel?: string;
   }>;
+  asOfDate?: string;
 }): CanonicalStudySourceContext {
   const logicalDocuments = input.logicalDocuments
     .map((doc) => {
@@ -135,7 +136,25 @@ function buildSourceContext(input: {
     })
     .filter((doc): doc is NonNullable<typeof doc> => doc !== null);
 
-  return logicalDocuments.length > 0 ? { logicalDocuments } : {};
+  const context: CanonicalStudySourceContext = {};
+  if (logicalDocuments.length > 0) {
+    context.logicalDocuments = logicalDocuments;
+  }
+  if (input.asOfDate) {
+    context.asOfDate = input.asOfDate;
+  }
+  return context;
+}
+
+function isoDateFromStudyRunCreatedAt(createdAt: string | null | undefined): string | undefined {
+  if (!createdAt?.trim()) {
+    return undefined;
+  }
+  const parsed = new Date(createdAt);
+  if (Number.isNaN(parsed.getTime())) {
+    return undefined;
+  }
+  return parsed.toISOString().slice(0, 10);
 }
 
 function firstEnvelope(
@@ -303,6 +322,7 @@ export type RunDeterministicCanonicalStudyResult = {
 export async function runDeterministicCanonicalStudy(input: {
   caseId: string;
   studyRunId: string;
+  asOfDate?: string;
 }): Promise<RunDeterministicCanonicalStudyResult> {
   const sessionUserId = requireSessionUserId(await getAuthenticatedUserId());
   const gateway = createSupabaseHiveGateway(await createServerSupabaseClient());
@@ -480,12 +500,24 @@ export async function runDeterministicCanonicalStudy(input: {
     debugContext,
   );
 
+  const asOfDate =
+    input.asOfDate?.trim() ||
+    isoDateFromStudyRunCreatedAt(run.createdAt) ||
+    undefined;
+
   const sourceContext = buildSourceContext({
-    logicalDocuments: logicalDocuments.map((doc) => ({
-      sourceDocumentId: doc.sourceDocumentId,
-      logicalDocumentId: doc.id,
-      filename: doc.title,
-    })),
+    asOfDate,
+    logicalDocuments: [
+      ...sourceDocuments.map((doc) => ({
+        sourceDocumentId: doc.id,
+        filename: doc.originalFilename,
+      })),
+      ...logicalDocuments.map((doc) => ({
+        sourceDocumentId: doc.sourceDocumentId,
+        logicalDocumentId: doc.id,
+        filename: doc.title,
+      })),
+    ],
   });
 
   const artifact = stampDebugCanonicalStudyMetadata(

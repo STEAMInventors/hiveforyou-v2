@@ -1,0 +1,297 @@
+{
+  "attemptId": "adb37691-b473-4938-b63c-d4ea43188d3a",
+  "caseId": "14baf227-7067-4a84-a316-f6cb72a5ecfe",
+  "domainId": "iep",
+  "latencyMs": 35758,
+  "modelId": "claude-opus-5-5",
+  "modelProvider": "anthropic",
+  "occurredAt": "2026-10-13T22:06:50Z",
+  "packContentSha256": "c2baa0439d32496a3110f5388f6048395a9f4c8fdce79b3d0cec36ae6b9a7775",
+  "packId": "iep",
+  "packVersion": "0.3.0-proposed",
+  "parsedModelJson": {
+    "documentTypeId": "iep.evaluation.speech_language",
+    "packId": "iep",
+    "packVersion": "0.3.0-proposed",
+    "recordInstances": [
+      {
+        "fields": [
+          {
+            "evidence": {
+              "page": 1,
+              "quote": "Speech-Language Evaluation Report",
+              "sourceDocumentId": "3f4fe9af-54d3-4b92-a633-cc754a9b2533"
+            },
+            "fieldId": "title",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "quoted",
+            "value": "Speech-Language Evaluation Report",
+            "valueKind": "text"
+          },
+          {
+            "evidence": {
+              "page": 1,
+              "quote": "Evaluation Date: 2024-10-22",
+              "sourceDocumentId": "3f4fe9af-54d3-4b92-a633-cc754a9b2533"
+            },
+            "fieldId": "document_date",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "quoted",
+            "value": "2024-10-22",
+            "valueKind": "date"
+          },
+          {
+            "evidence": {
+              "page": 1,
+              "quote": "Evaluator: Speech-language pathologist",
+              "sourceDocumentId": "3f4fe9af-54d3-4b92-a633-cc754a9b2533"
+            },
+            "fieldId": "author_role",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "classified",
+            "value": "school_evaluator",
+            "valueKind": "code"
+          },
+          {
+            "evidence": {
+              "page": 1,
+              "quote": "as part of the initial evaluation related to a reading fluency concern",
+              "sourceDocumentId": "3f4fe9af-54d3-4b92-a633-cc754a9b2533"
+            },
+            "fieldId": "subtype",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "classified",
+            "value": "initial",
+            "valueKind": "code"
+          }
+        ],
+        "instanceIndex": 0,
+        "recordEvidence": {
+          "page": 1,
+          "quote": "Speech-Language Evaluation Report SYNTHETIC DEVELOPMENT RECORD — NOT A REAL STUDENT Student Information Student: Maya Carter Date of Birth: 2017-04-18 Grade: 2 School: Synthetic Elementary School District: Synthetic District Evaluation Date: 2024-10-22 Evaluator: Speech-language pathologist",
+          "sourceDocumentId": "3f4fe9af-54d3-4b92-a633-cc754a9b2533"
+        },
+        "recordTypeId": "document_header"
+      },
+      {
+        "fields": [
+          {
+            "evidence": {
+              "page": 1,
+              "quote": "Student: Maya Carter",
+              "sourceDocumentId": "3f4fe9af-54d3-4b92-a633-cc754a9b2533"
+            },
+            "fieldId": "name",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "quoted",
+            "value": "Maya Carter",
+            "valueKind": "text"
+          },
+          {
+            "evidence": {
+              "page": 1,
+              "quote": "Date of Birth: 2017-04-18",
+              "sourceDocumentId": "3f4fe9af-54d3-4b92-a633-cc754a9b2533"
+            },
+            "fieldId": "birth_date",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "quoted",
+            "value": "2017-04-18",
+            "valueKind": "date"
+          },
+          {
+            "evidence": {
+              "page": 1,
+              "quote": "Grade: 2",
+              "sourceDocumentId": "3f4fe9af-54d3-4b92-a633-cc754a9b2533"
+            },
+            "fieldId": "grade",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "quoted",
+            "value": "2",
+            "valueKind": "text"
+          },
+          {
+            "evidence": {
+              "page": 1,
+              "quote": "School: Synthetic Elementary School",
+              "sourceDocumentId": "3f4fe9af-54d3-4b92-a633-cc754a9b2533"
+            },
+            "fieldId": "school",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "quoted",
+            "value": "Synthetic Elementary School",
+            "valueKind": "text"
+          },
+          {
+            "evidence": {
+              "page": 1,
+              "quote": "District: Synthetic District",
+              "sourceDocumentId": "3f4fe9af-54d3-4b92-a633-cc754a9b2533"
+            },
+            "fieldId": "district",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "quoted",
+            "value": "Synthetic District",
+            "valueKind": "text"
+          }
+        ],
+        "instanceIndex": 0,
+        "recordEvidence": {
+          "page": 1,
+          "quote": "Student: Maya Carter Date of Birth: 2017-04-18 Grade: 2 School: Synthetic Elementary School District: Synthetic District",
+          "sourceDocumentId": "3f4fe9af-54d3-4b92-a633-cc754a9b2533"
+        },
+        "recordTypeId": "student"
+      },
+      {
+        "fields": [
+          {
+            "evidence": {
+              "page": 1,
+              "quote": "Speech intelligibility is adequate for classroom participation.",
+              "sourceDocumentId": "3f4fe9af-54d3-4b92-a633-cc754a9b2533"
+            },
+            "fieldId": "area",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "quoted",
+            "value": "Speech intelligibility",
+            "valueKind": "text"
+          },
+          {
+            "evidence": {
+              "page": 1,
+              "quote": "Speech intelligibility is adequate for classroom participation.",
+              "sourceDocumentId": "3f4fe9af-54d3-4b92-a633-cc754a9b2533"
+            },
+            "fieldId": "finding",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "quoted",
+            "value": "Speech intelligibility is adequate for classroom participation.",
+            "valueKind": "text"
+          }
+        ],
+        "instanceIndex": 0,
+        "recordEvidence": {
+          "page": 1,
+          "quote": "Speech intelligibility is adequate for classroom participation.",
+          "sourceDocumentId": "3f4fe9af-54d3-4b92-a633-cc754a9b2533"
+        },
+        "recordTypeId": "evaluation_finding"
+      },
+      {
+        "fields": [
+          {
+            "evidence": {
+              "page": 1,
+              "quote": "Receptive and expressive language observed during the evaluation are broadly functional for classroom communication.",
+              "sourceDocumentId": "3f4fe9af-54d3-4b92-a633-cc754a9b2533"
+            },
+            "fieldId": "area",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "quoted",
+            "value": "Receptive and expressive language",
+            "valueKind": "text"
+          },
+          {
+            "evidence": {
+              "page": 1,
+              "quote": "Receptive and expressive language observed during the evaluation are broadly functional for classroom communication.",
+              "sourceDocumentId": "3f4fe9af-54d3-4b92-a633-cc754a9b2533"
+            },
+            "fieldId": "finding",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "quoted",
+            "value": "Receptive and expressive language observed during the evaluation are broadly functional for classroom communication.",
+            "valueKind": "text"
+          }
+        ],
+        "instanceIndex": 1,
+        "recordEvidence": {
+          "page": 1,
+          "quote": "Receptive and expressive language observed during the evaluation are broadly functional for classroom communication.",
+          "sourceDocumentId": "3f4fe9af-54d3-4b92-a633-cc754a9b2533"
+        },
+        "recordTypeId": "evaluation_finding"
+      },
+      {
+        "fields": [
+          {
+            "evidence": {
+              "page": 1,
+              "quote": "No separate speech-language educational need is identified from this evaluation.",
+              "sourceDocumentId": "3f4fe9af-54d3-4b92-a633-cc754a9b2533"
+            },
+            "fieldId": "area",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "quoted",
+            "value": "speech-language educational need",
+            "valueKind": "text"
+          },
+          {
+            "evidence": {
+              "page": 1,
+              "quote": "No separate speech-language educational need is identified from this evaluation.",
+              "sourceDocumentId": "3f4fe9af-54d3-4b92-a633-cc754a9b2533"
+            },
+            "fieldId": "finding",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "quoted",
+            "value": "No separate speech-language educational need is identified from this evaluation.",
+            "valueKind": "text"
+          },
+          {
+            "evidence": {
+              "page": 1,
+              "quote": "Recommendation Continue to address the documented reading concern through the educational evaluation process. No speech-language service is recommended.",
+              "sourceDocumentId": "3f4fe9af-54d3-4b92-a633-cc754a9b2533"
+            },
+            "fieldId": "recommendation",
+            "missingState": null,
+            "modality": "planned",
+            "provenance": "quoted",
+            "value": "Continue to address the documented reading concern through the educational evaluation process. No speech-language service is recommended.",
+            "valueKind": "text"
+          }
+        ],
+        "instanceIndex": 2,
+        "recordEvidence": {
+          "page": 1,
+          "quote": "No separate speech-language educational need is identified from this evaluation. The documented reading-fluency concern remains; this evaluation does not identify a separate speech-language need. Recommendation Continue to address the documented reading concern through the educational evaluation process. No speech-language service is recommended.",
+          "sourceDocumentId": "3f4fe9af-54d3-4b92-a633-cc754a9b2533"
+        },
+        "recordTypeId": "evaluation_finding"
+      }
+    ],
+    "schemaVersion": "hive.pack-driven-reader-extraction/0.2.0",
+    "sourceDocumentId": "3f4fe9af-54d3-4b92-a633-cc754a9b2533"
+  },
+  "promptVersion": "hive-pack-driven-reader/0.2.0",
+  "rawAssistantText": "```json\n{\n  \"schemaVersion\": \"hive.pack-driven-reader-extraction/0.2.0\",\n  \"packId\": \"iep\",\n  \"packVersion\": \"0.3.0-proposed\",\n  \"documentTypeId\": \"iep.evaluation.speech_language\",\n  \"sourceDocumentId\": \"3f4fe9af-54d3-4b92-a633-cc754a9b2533\",\n  \"recordInstances\": [\n    {\n      \"recordTypeId\": \"document_header\",\n      \"instanceIndex\": 0,\n      \"recordEvidence\": {\n        \"sourceDocumentId\": \"3f4fe9af-54d3-4b92-a633-cc754a9b2533\",\n        \"page\": 1,\n        \"quote\": \"Speech-Language Evaluation Report SYNTHETIC DEVELOPMENT RECORD — NOT A REAL STUDENT Student Information Student: Maya Carter Date of Birth: 2017-04-18 Grade: 2 School: Synthetic Elementary School District: Synthetic District Evaluation Date: 2024-10-22 Evaluator: Speech-language pathologist\"\n      },\n      \"fields\": [\n        {\n          \"fieldId\": \"title\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"text\",\n          \"value\": \"Speech-Language Evaluation Report\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"3f4fe9af-54d3-4b92-a633-cc754a9b2533\",\n            \"page\": 1,\n            \"quote\": \"Speech-Language Evaluation Report\"\n          }\n        },\n        {\n          \"fieldId\": \"document_date\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"date\",\n          \"value\": \"2024-10-22\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"3f4fe9af-54d3-4b92-a633-cc754a9b2533\",\n            \"page\": 1,\n            \"quote\": \"Evaluation Date: 2024-10-22\"\n          }\n        },\n        {\n          \"fieldId\": \"author_role\",\n          \"provenance\": \"classified\",\n          \"valueKind\": \"code\",\n          \"value\": \"school_evaluator\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"3f4fe9af-54d3-4b92-a633-cc754a9b2533\",\n            \"page\": 1,\n            \"quote\": \"Evaluator: Speech-language pathologist\"\n          }\n        },\n        {\n          \"fieldId\": \"subtype\",\n          \"provenance\": \"classified\",\n          \"valueKind\": \"code\",\n          \"value\": \"initial\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"3f4fe9af-54d3-4b92-a633-cc754a9b2533\",\n            \"page\": 1,\n            \"quote\": \"as part of the initial evaluation related to a reading fluency concern\"\n          }\n        }\n      ]\n    },\n    {\n      \"recordTypeId\": \"student\",\n      \"instanceIndex\": 0,\n      \"recordEvidence\": {\n        \"sourceDocumentId\": \"3f4fe9af-54d3-4b92-a633-cc754a9b2533\",\n        \"page\": 1,\n        \"quote\": \"Student: Maya Carter Date of Birth: 2017-04-18 Grade: 2 School: Synthetic Elementary School District: Synthetic District\"\n      },\n      \"fields\": [\n        {\n          \"fieldId\": \"name\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"text\",\n          \"value\": \"Maya Carter\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"3f4fe9af-54d3-4b92-a633-cc754a9b2533\",\n            \"page\": 1,\n            \"quote\": \"Student: Maya Carter\"\n          }\n        },\n        {\n          \"fieldId\": \"birth_date\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"date\",\n          \"value\": \"2017-04-18\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"3f4fe9af-54d3-4b92-a633-cc754a9b2533\",\n            \"page\": 1,\n            \"quote\": \"Date of Birth: 2017-04-18\"\n          }\n        },\n        {\n          \"fieldId\": \"grade\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"text\",\n          \"value\": \"2\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"3f4fe9af-54d3-4b92-a633-cc754a9b2533\",\n            \"page\": 1,\n            \"quote\": \"Grade: 2\"\n          }\n        },\n        {\n          \"fieldId\": \"school\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"text\",\n          \"value\": \"Synthetic Elementary School\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"3f4fe9af-54d3-4b92-a633-cc754a9b2533\",\n            \"page\": 1,\n            \"quote\": \"School: Synthetic Elementary School\"\n          }\n        },\n        {\n          \"fieldId\": \"district\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"text\",\n          \"value\": \"Synthetic District\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"3f4fe9af-54d3-4b92-a633-cc754a9b2533\",\n            \"page\": 1,\n            \"quote\": \"District: Synthetic District\"\n          }\n        }\n      ]\n    },\n    {\n      \"recordTypeId\": \"evaluation_finding\",\n      \"instanceIndex\": 0,\n      \"recordEvidence\": {\n        \"sourceDocumentId\": \"3f4fe9af-54d3-4b92-a633-cc754a9b2533\",\n        \"page\": 1,\n        \"quote\": \"Speech intelligibility is adequate for classroom participation.\"\n      },\n      \"fields\": [\n        {\n          \"fieldId\": \"area\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"text\",\n          \"value\": \"Speech intelligibility\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"3f4fe9af-54d3-4b92-a633-cc754a9b2533\",\n            \"page\": 1,\n            \"quote\": \"Speech intelligibility is adequate for classroom participation.\"\n          }\n        },\n        {\n          \"fieldId\": \"finding\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"text\",\n          \"value\": \"Speech intelligibility is adequate for classroom participation.\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"3f4fe9af-54d3-4b92-a633-cc754a9b2533\",\n            \"page\": 1,\n            \"quote\": \"Speech intelligibility is adequate for classroom participation.\"\n          }\n        }\n      ]\n    },\n    {\n      \"recordTypeId\": \"evaluation_finding\",\n      \"instanceIndex\": 1,\n      \"recordEvidence\": {\n        \"sourceDocumentId\": \"3f4fe9af-54d3-4b92-a633-cc754a9b2533\",\n        \"page\": 1,\n        \"quote\": \"Receptive and expressive language observed during the evaluation are broadly functional for classroom communication.\"\n      },\n      \"fields\": [\n        {\n          \"fieldId\": \"area\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"text\",\n          \"value\": \"Receptive and expressive language\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"3f4fe9af-54d3-4b92-a633-cc754a9b2533\",\n            \"page\": 1,\n            \"quote\": \"Receptive and expressive language observed during the evaluation are broadly functional for classroom communication.\"\n          }\n        },\n        {\n          \"fieldId\": \"finding\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"text\",\n          \"value\": \"Receptive and expressive language observed during the evaluation are broadly functional for classroom communication.\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"3f4fe9af-54d3-4b92-a633-cc754a9b2533\",\n            \"page\": 1,\n            \"quote\": \"Receptive and expressive language observed during the evaluation are broadly functional for classroom communication.\"\n          }\n        }\n      ]\n    },\n    {\n      \"recordTypeId\": \"evaluation_finding\",\n      \"instanceIndex\": 2,\n      \"recordEvidence\": {\n        \"sourceDocumentId\": \"3f4fe9af-54d3-4b92-a633-cc754a9b2533\",\n        \"page\": 1,\n        \"quote\": \"No separate speech-language educational need is identified from this evaluation. The documented reading-fluency concern remains; this evaluation does not identify a separate speech-language need. Recommendation Continue to address the documented reading concern through the educational evaluation process. No speech-language service is recommended.\"\n      },\n      \"fields\": [\n        {\n          \"fieldId\": \"area\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"text\",\n          \"value\": \"speech-language educational need\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"3f4fe9af-54d3-4b92-a633-cc754a9b2533\",\n            \"page\": 1,\n            \"quote\": \"No separate speech-language educational need is identified from this evaluation.\"\n          }\n        },\n        {\n          \"fieldId\": \"finding\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"text\",\n          \"value\": \"No separate speech-language educational need is identified from this evaluation.\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"3f4fe9af-54d3-4b92-a633-cc754a9b2533\",\n            \"page\": 1,\n            \"quote\": \"No separate speech-language educational need is identified from this evaluation.\"\n          }\n        },\n        {\n          \"fieldId\": \"recommendation\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"text\",\n          \"value\": \"Continue to address the documented reading concern through the educational evaluation process. No speech-language service is recommended.\",\n          \"modality\": \"planned\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"3f4fe9af-54d3-4b92-a633-cc754a9b2533\",\n            \"page\": 1,\n            \"quote\": \"Recommendation Continue to address the documented reading concern through the educational evaluation process. No speech-language service is recommended.\"\n          }\n        }\n      ]\n    }\n  ]\n}\n```",
+  "schemaVersion": "hive.reader-document-extraction/1",
+  "sourceDocumentId": "3f4fe9af-54d3-4b92-a633-cc754a9b2533",
+  "status": "SUCCEEDED",
+  "studyRunId": "86dfa706-f7fc-4fe7-a49d-14e154825ec4",
+  "usage": {
+    "cacheReadInputTokens": null,
+    "cacheWriteInputTokens": null,
+    "inputTokens": null,
+    "outputTokens": null
+  },
+  "userId": "40bd9c51-15c6-42fc-a902-3c186e750e53"
+}

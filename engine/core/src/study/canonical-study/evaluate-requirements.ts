@@ -304,7 +304,13 @@ export function evaluateRequirements(input: {
   const results: CanonicalStudyRequirementResult[] = [];
 
   for (const rule of rules) {
-    const whenResult = evaluateWhenClause(rule.when, input.indexed, input.indexed.sourceContext);
+    const scope = recordsInScope(input.indexed, input.operativeViews, rule.appliesTo);
+    const whenResult = evaluateWhenClause(
+      rule.when,
+      input.indexed,
+      input.indexed.sourceContext,
+      scope.sourceDocumentIds,
+    );
     if (!whenResult.ok && whenResult.reason === "applicability_false") {
       results.push({
         id: stableId(`requirement:${rule.id}:na`),
@@ -328,7 +334,6 @@ export function evaluateRequirements(input: {
       continue;
     }
 
-    const scope = recordsInScope(input.indexed, input.operativeViews, rule.appliesTo);
     if (scope.sourceDocumentIds.size === 0 && rule.appliesTo?.startsWith("operative:")) {
       results.push({
         id: stableId(`requirement:${rule.id}:na`),

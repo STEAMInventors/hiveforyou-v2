@@ -1,0 +1,1072 @@
+{
+  "attemptId": "adb37691-b473-4938-b63c-d4ea43188d3a",
+  "caseId": "14baf227-7067-4a84-a316-f6cb72a5ecfe",
+  "domainId": "iep",
+  "latencyMs": 122146,
+  "modelId": "claude-opus-5-5",
+  "modelProvider": "anthropic",
+  "occurredAt": "2026-10-13T22:08:44Z",
+  "packContentSha256": "c2baa0439d32496a3110f5388f6048395a9f4c8fdce79b3d0cec36ae6b9a7775",
+  "packId": "iep",
+  "packVersion": "0.3.0-proposed",
+  "parsedModelJson": {
+    "documentTypeId": "iep.plan",
+    "packId": "iep",
+    "packVersion": "0.3.0-proposed",
+    "recordInstances": [
+      {
+        "fields": [
+          {
+            "evidence": {
+              "page": 1,
+              "quote": "Initial Individualized Education Program (IEP)",
+              "sourceDocumentId": "9a10b7f6-8f65-41e7-802c-944d795d06c7"
+            },
+            "fieldId": "title",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "quoted",
+            "value": "Initial Individualized Education Program (IEP)",
+            "valueKind": "text"
+          },
+          {
+            "evidence": {
+              "page": 1,
+              "quote": "IEP Date: 2024-11-12",
+              "sourceDocumentId": "9a10b7f6-8f65-41e7-802c-944d795d06c7"
+            },
+            "fieldId": "document_date",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "quoted",
+            "value": "2024-11-12",
+            "valueKind": "date"
+          },
+          {
+            "evidence": {
+              "page": 1,
+              "quote": "IEP Period: 2024-11-12 through 2025-11-11",
+              "sourceDocumentId": "9a10b7f6-8f65-41e7-802c-944d795d06c7"
+            },
+            "fieldId": "effective_start",
+            "missingState": null,
+            "modality": "planned",
+            "provenance": "quoted",
+            "value": "2024-11-12",
+            "valueKind": "date"
+          },
+          {
+            "evidence": {
+              "page": 1,
+              "quote": "IEP Period: 2024-11-12 through 2025-11-11",
+              "sourceDocumentId": "9a10b7f6-8f65-41e7-802c-944d795d06c7"
+            },
+            "fieldId": "effective_end",
+            "missingState": null,
+            "modality": "planned",
+            "provenance": "quoted",
+            "value": "2025-11-11",
+            "valueKind": "date"
+          },
+          {
+            "evidence": {
+              "page": 1,
+              "quote": "Initial Individualized Education Program (IEP)",
+              "sourceDocumentId": "9a10b7f6-8f65-41e7-802c-944d795d06c7"
+            },
+            "fieldId": "author_role",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "classified",
+            "value": "education_agency",
+            "valueKind": "code"
+          },
+          {
+            "evidence": {
+              "page": 1,
+              "quote": "Initial Individualized Education Program (IEP)",
+              "sourceDocumentId": "9a10b7f6-8f65-41e7-802c-944d795d06c7"
+            },
+            "fieldId": "subtype",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "classified",
+            "value": "initial",
+            "valueKind": "code"
+          }
+        ],
+        "instanceIndex": 0,
+        "recordEvidence": {
+          "page": 1,
+          "quote": "Initial Individualized Education Program (IEP) SYNTHETIC DEVELOPMENT RECORD — NOT A REAL STUDENT 1. Student / IEP Information Student: Maya Carter Date of Birth: 2017-04-18 Grade: 2 School: Synthetic Elementary School District: Synthetic District IEP Date: 2024-11-12 IEP Period: 2024-11-12 through 2025-11-11",
+          "sourceDocumentId": "9a10b7f6-8f65-41e7-802c-944d795d06c7"
+        },
+        "recordTypeId": "document_header"
+      },
+      {
+        "fields": [
+          {
+            "evidence": {
+              "page": 1,
+              "quote": "Student: Maya Carter",
+              "sourceDocumentId": "9a10b7f6-8f65-41e7-802c-944d795d06c7"
+            },
+            "fieldId": "name",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "quoted",
+            "value": "Maya Carter",
+            "valueKind": "text"
+          },
+          {
+            "evidence": {
+              "page": 1,
+              "quote": "Date of Birth: 2017-04-18",
+              "sourceDocumentId": "9a10b7f6-8f65-41e7-802c-944d795d06c7"
+            },
+            "fieldId": "birth_date",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "quoted",
+            "value": "2017-04-18",
+            "valueKind": "date"
+          },
+          {
+            "evidence": {
+              "page": 1,
+              "quote": "Grade: 2",
+              "sourceDocumentId": "9a10b7f6-8f65-41e7-802c-944d795d06c7"
+            },
+            "fieldId": "grade",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "quoted",
+            "value": "2",
+            "valueKind": "text"
+          },
+          {
+            "evidence": {
+              "page": 1,
+              "quote": "School: Synthetic Elementary School",
+              "sourceDocumentId": "9a10b7f6-8f65-41e7-802c-944d795d06c7"
+            },
+            "fieldId": "school",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "quoted",
+            "value": "Synthetic Elementary School",
+            "valueKind": "text"
+          },
+          {
+            "evidence": {
+              "page": 1,
+              "quote": "District: Synthetic District",
+              "sourceDocumentId": "9a10b7f6-8f65-41e7-802c-944d795d06c7"
+            },
+            "fieldId": "district",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "quoted",
+            "value": "Synthetic District",
+            "valueKind": "text"
+          }
+        ],
+        "instanceIndex": 0,
+        "recordEvidence": {
+          "page": 1,
+          "quote": "Student: Maya Carter Date of Birth: 2017-04-18 Grade: 2 School: Synthetic Elementary School District: Synthetic District",
+          "sourceDocumentId": "9a10b7f6-8f65-41e7-802c-944d795d06c7"
+        },
+        "recordTypeId": "student"
+      },
+      {
+        "fields": [
+          {
+            "evidence": {
+              "page": 2,
+              "quote": "Parent/Guardian: [Synthetic signature omitted]",
+              "sourceDocumentId": "9a10b7f6-8f65-41e7-802c-944d795d06c7"
+            },
+            "fieldId": "role",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "quoted",
+            "value": "Parent/Guardian",
+            "valueKind": "text"
+          },
+          {
+            "evidence": {
+              "page": 2,
+              "quote": "Parent/Guardian: [Synthetic signature omitted]",
+              "sourceDocumentId": "9a10b7f6-8f65-41e7-802c-944d795d06c7"
+            },
+            "fieldId": "role_code",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "classified",
+            "value": "parent_guardian",
+            "valueKind": "code"
+          },
+          {
+            "evidence": {
+              "page": 2,
+              "quote": "Parent/Guardian: [Synthetic signature omitted]",
+              "sourceDocumentId": "9a10b7f6-8f65-41e7-802c-944d795d06c7"
+            },
+            "fieldId": "name",
+            "missingState": "field_present_but_empty",
+            "modality": "observed",
+            "provenance": "quoted",
+            "value": null,
+            "valueKind": "text"
+          }
+        ],
+        "instanceIndex": 0,
+        "recordEvidence": {
+          "page": 2,
+          "quote": "Parent/Guardian: [Synthetic signature omitted]",
+          "sourceDocumentId": "9a10b7f6-8f65-41e7-802c-944d795d06c7"
+        },
+        "recordTypeId": "meeting_participant"
+      },
+      {
+        "fields": [
+          {
+            "evidence": {
+              "page": 2,
+              "quote": "General Education Teacher: [Synthetic signature omitted]",
+              "sourceDocumentId": "9a10b7f6-8f65-41e7-802c-944d795d06c7"
+            },
+            "fieldId": "role",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "quoted",
+            "value": "General Education Teacher",
+            "valueKind": "text"
+          },
+          {
+            "evidence": {
+              "page": 2,
+              "quote": "General Education Teacher: [Synthetic signature omitted]",
+              "sourceDocumentId": "9a10b7f6-8f65-41e7-802c-944d795d06c7"
+            },
+            "fieldId": "role_code",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "classified",
+            "value": "general_education_teacher",
+            "valueKind": "code"
+          },
+          {
+            "evidence": {
+              "page": 2,
+              "quote": "General Education Teacher: [Synthetic signature omitted]",
+              "sourceDocumentId": "9a10b7f6-8f65-41e7-802c-944d795d06c7"
+            },
+            "fieldId": "name",
+            "missingState": "field_present_but_empty",
+            "modality": "observed",
+            "provenance": "quoted",
+            "value": null,
+            "valueKind": "text"
+          }
+        ],
+        "instanceIndex": 1,
+        "recordEvidence": {
+          "page": 2,
+          "quote": "General Education Teacher: [Synthetic signature omitted]",
+          "sourceDocumentId": "9a10b7f6-8f65-41e7-802c-944d795d06c7"
+        },
+        "recordTypeId": "meeting_participant"
+      },
+      {
+        "fields": [
+          {
+            "evidence": {
+              "page": 2,
+              "quote": "Special Education Teacher: [Synthetic signature omitted]",
+              "sourceDocumentId": "9a10b7f6-8f65-41e7-802c-944d795d06c7"
+            },
+            "fieldId": "role",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "quoted",
+            "value": "Special Education Teacher",
+            "valueKind": "text"
+          },
+          {
+            "evidence": {
+              "page": 2,
+              "quote": "Special Education Teacher: [Synthetic signature omitted]",
+              "sourceDocumentId": "9a10b7f6-8f65-41e7-802c-944d795d06c7"
+            },
+            "fieldId": "role_code",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "classified",
+            "value": "special_education_teacher",
+            "valueKind": "code"
+          },
+          {
+            "evidence": {
+              "page": 2,
+              "quote": "Special Education Teacher: [Synthetic signature omitted]",
+              "sourceDocumentId": "9a10b7f6-8f65-41e7-802c-944d795d06c7"
+            },
+            "fieldId": "name",
+            "missingState": "field_present_but_empty",
+            "modality": "observed",
+            "provenance": "quoted",
+            "value": null,
+            "valueKind": "text"
+          }
+        ],
+        "instanceIndex": 2,
+        "recordEvidence": {
+          "page": 2,
+          "quote": "Special Education Teacher: [Synthetic signature omitted]",
+          "sourceDocumentId": "9a10b7f6-8f65-41e7-802c-944d795d06c7"
+        },
+        "recordTypeId": "meeting_participant"
+      },
+      {
+        "fields": [
+          {
+            "evidence": {
+              "page": 2,
+              "quote": "District Representative: [Synthetic signature omitted]",
+              "sourceDocumentId": "9a10b7f6-8f65-41e7-802c-944d795d06c7"
+            },
+            "fieldId": "role",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "quoted",
+            "value": "District Representative",
+            "valueKind": "text"
+          },
+          {
+            "evidence": {
+              "page": 2,
+              "quote": "District Representative: [Synthetic signature omitted]",
+              "sourceDocumentId": "9a10b7f6-8f65-41e7-802c-944d795d06c7"
+            },
+            "fieldId": "role_code",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "classified",
+            "value": "district_representative",
+            "valueKind": "code"
+          },
+          {
+            "evidence": {
+              "page": 2,
+              "quote": "District Representative: [Synthetic signature omitted]",
+              "sourceDocumentId": "9a10b7f6-8f65-41e7-802c-944d795d06c7"
+            },
+            "fieldId": "name",
+            "missingState": "field_present_but_empty",
+            "modality": "observed",
+            "provenance": "quoted",
+            "value": null,
+            "valueKind": "text"
+          }
+        ],
+        "instanceIndex": 3,
+        "recordEvidence": {
+          "page": 2,
+          "quote": "District Representative: [Synthetic signature omitted]",
+          "sourceDocumentId": "9a10b7f6-8f65-41e7-802c-944d795d06c7"
+        },
+        "recordTypeId": "meeting_participant"
+      },
+      {
+        "fields": [
+          {
+            "evidence": {
+              "page": 1,
+              "quote": "Eligibility Category: Specific Learning Disability (SLD) - Reading",
+              "sourceDocumentId": "9a10b7f6-8f65-41e7-802c-944d795d06c7"
+            },
+            "fieldId": "category",
+            "missingState": null,
+            "modality": "decided",
+            "provenance": "quoted",
+            "value": "Specific Learning Disability (SLD) - Reading",
+            "valueKind": "text"
+          },
+          {
+            "evidence": {
+              "page": 1,
+              "quote": "Determination Date: 2024-11-01",
+              "sourceDocumentId": "9a10b7f6-8f65-41e7-802c-944d795d06c7"
+            },
+            "fieldId": "determination_date",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "quoted",
+            "value": "2024-11-01",
+            "valueKind": "date"
+          }
+        ],
+        "instanceIndex": 0,
+        "recordEvidence": {
+          "page": 1,
+          "quote": "Eligibility Category: Specific Learning Disability (SLD) - Reading Primary Educational Need: Reading Fluency Determination Date: 2024-11-01",
+          "sourceDocumentId": "9a10b7f6-8f65-41e7-802c-944d795d06c7"
+        },
+        "recordTypeId": "eligibility"
+      },
+      {
+        "fields": [
+          {
+            "evidence": {
+              "page": 1,
+              "quote": "The primary educational need is Reading Fluency.",
+              "sourceDocumentId": "9a10b7f6-8f65-41e7-802c-944d795d06c7"
+            },
+            "fieldId": "area",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "quoted",
+            "value": "Reading Fluency",
+            "valueKind": "text"
+          },
+          {
+            "evidence": {
+              "page": 1,
+              "quote": "Maya has a persistent reading fluency concern. Classroom performance and teacher information indicate difficulty reading connected grade-level text accurately and fluently. The academic evaluation dated 2024-10-18 documents a reading fluency baseline of 42 WCPM and oral reading accuracy of 86%. Reading comprehension during grade-level text tasks is below expected classroom level. Connected-text reading is slow and effortful, with frequent pauses. Isolated word reading is stronger than connected-text reading.",
+              "sourceDocumentId": "9a10b7f6-8f65-41e7-802c-944d795d06c7"
+            },
+            "fieldId": "statement",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "quoted",
+            "value": "Maya has a persistent reading fluency concern. Classroom performance and teacher information indicate difficulty reading connected grade-level text accurately and fluently. The academic evaluation dated 2024-10-18 documents a reading fluency baseline of 42 WCPM and oral reading accuracy of 86%. Reading comprehension during grade-level text tasks is below expected classroom level. Connected-text reading is slow and effortful, with frequent pauses. Isolated word reading is stronger than connected-text reading.",
+            "valueKind": "text"
+          },
+          {
+            "evidence": {
+              "page": 1,
+              "quote": "This difficulty affects Maya's ability to access grade-level reading activities independently.",
+              "sourceDocumentId": "9a10b7f6-8f65-41e7-802c-944d795d06c7"
+            },
+            "fieldId": "impact_on_general_curriculum",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "quoted",
+            "value": "This difficulty affects Maya's ability to access grade-level reading activities independently.",
+            "valueKind": "text"
+          }
+        ],
+        "instanceIndex": 0,
+        "recordEvidence": {
+          "page": 1,
+          "quote": "Maya has a persistent reading fluency concern. Classroom performance and teacher information indicate difficulty reading connected grade-level text accurately and fluently. The academic evaluation dated 2024-10-18 documents a reading fluency baseline of 42 WCPM and oral reading accuracy of 86%. Reading comprehension during grade-level text tasks is below expected classroom level. Connected-text reading is slow and effortful, with frequent pauses. Isolated word reading is stronger than connected-text reading. 4. Educational Need The primary educational need is Reading Fluency. Maya has difficulty reading connected grade-level text accurately and fluently. This difficulty affects Maya's ability to access grade-level reading activities independently.",
+          "sourceDocumentId": "9a10b7f6-8f65-41e7-802c-944d795d06c7"
+        },
+        "recordTypeId": "present_level"
+      },
+      {
+        "fields": [
+          {
+            "evidence": {
+              "page": 1,
+              "quote": "a reading fluency baseline of 42 WCPM",
+              "sourceDocumentId": "9a10b7f6-8f65-41e7-802c-944d795d06c7"
+            },
+            "fieldId": "measure.task",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "quoted",
+            "value": "reading fluency",
+            "valueKind": "text"
+          },
+          {
+            "evidence": {
+              "page": 1,
+              "quote": "a reading fluency baseline of 42 WCPM",
+              "sourceDocumentId": "9a10b7f6-8f65-41e7-802c-944d795d06c7"
+            },
+            "fieldId": "measure.score_type",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "classified",
+            "value": "words_correct_per_minute",
+            "valueKind": "code"
+          },
+          {
+            "evidence": {
+              "page": 1,
+              "quote": "a reading fluency baseline of 42 WCPM",
+              "sourceDocumentId": "9a10b7f6-8f65-41e7-802c-944d795d06c7"
+            },
+            "fieldId": "value",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "quoted",
+            "value": 42,
+            "valueKind": "quantity"
+          },
+          {
+            "evidence": {
+              "page": 1,
+              "quote": "a reading fluency baseline of 42 WCPM",
+              "sourceDocumentId": "9a10b7f6-8f65-41e7-802c-944d795d06c7"
+            },
+            "fieldId": "unit",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "quoted",
+            "value": "WCPM",
+            "valueKind": "text"
+          },
+          {
+            "evidence": {
+              "page": 1,
+              "quote": "The academic evaluation dated 2024-10-18",
+              "sourceDocumentId": "9a10b7f6-8f65-41e7-802c-944d795d06c7"
+            },
+            "fieldId": "observed_on",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "quoted",
+            "value": "2024-10-18",
+            "valueKind": "date"
+          },
+          {
+            "evidence": {
+              "page": 1,
+              "quote": "3. Present Levels of Academic Achievement and Functional Performance",
+              "sourceDocumentId": "9a10b7f6-8f65-41e7-802c-944d795d06c7"
+            },
+            "fieldId": "context",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "classified",
+            "value": "present_levels",
+            "valueKind": "code"
+          }
+        ],
+        "instanceIndex": 0,
+        "recordEvidence": {
+          "page": 1,
+          "quote": "The academic evaluation dated 2024-10-18 documents a reading fluency baseline of 42 WCPM",
+          "sourceDocumentId": "9a10b7f6-8f65-41e7-802c-944d795d06c7"
+        },
+        "recordTypeId": "measurement"
+      },
+      {
+        "fields": [
+          {
+            "evidence": {
+              "page": 1,
+              "quote": "oral reading accuracy of 86%",
+              "sourceDocumentId": "9a10b7f6-8f65-41e7-802c-944d795d06c7"
+            },
+            "fieldId": "measure.task",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "quoted",
+            "value": "oral reading accuracy",
+            "valueKind": "text"
+          },
+          {
+            "evidence": {
+              "page": 1,
+              "quote": "oral reading accuracy of 86%",
+              "sourceDocumentId": "9a10b7f6-8f65-41e7-802c-944d795d06c7"
+            },
+            "fieldId": "measure.score_type",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "classified",
+            "value": "percent_accuracy",
+            "valueKind": "code"
+          },
+          {
+            "evidence": {
+              "page": 1,
+              "quote": "oral reading accuracy of 86%",
+              "sourceDocumentId": "9a10b7f6-8f65-41e7-802c-944d795d06c7"
+            },
+            "fieldId": "value",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "quoted",
+            "value": 86,
+            "valueKind": "quantity"
+          },
+          {
+            "evidence": {
+              "page": 1,
+              "quote": "oral reading accuracy of 86%",
+              "sourceDocumentId": "9a10b7f6-8f65-41e7-802c-944d795d06c7"
+            },
+            "fieldId": "unit",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "quoted",
+            "value": "%",
+            "valueKind": "text"
+          },
+          {
+            "evidence": {
+              "page": 1,
+              "quote": "The academic evaluation dated 2024-10-18",
+              "sourceDocumentId": "9a10b7f6-8f65-41e7-802c-944d795d06c7"
+            },
+            "fieldId": "observed_on",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "quoted",
+            "value": "2024-10-18",
+            "valueKind": "date"
+          },
+          {
+            "evidence": {
+              "page": 1,
+              "quote": "3. Present Levels of Academic Achievement and Functional Performance",
+              "sourceDocumentId": "9a10b7f6-8f65-41e7-802c-944d795d06c7"
+            },
+            "fieldId": "context",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "classified",
+            "value": "present_levels",
+            "valueKind": "code"
+          }
+        ],
+        "instanceIndex": 1,
+        "recordEvidence": {
+          "page": 1,
+          "quote": "The academic evaluation dated 2024-10-18 documents a reading fluency baseline of 42 WCPM and oral reading accuracy of 86%.",
+          "sourceDocumentId": "9a10b7f6-8f65-41e7-802c-944d795d06c7"
+        },
+        "recordTypeId": "measurement"
+      },
+      {
+        "fields": [
+          {
+            "evidence": {
+              "page": 3,
+              "quote": "This initial IEP addresses Reading Fluency for Maya Carter.",
+              "sourceDocumentId": "9a10b7f6-8f65-41e7-802c-944d795d06c7"
+            },
+            "fieldId": "area",
+            "missingState": null,
+            "modality": "planned",
+            "provenance": "quoted",
+            "value": "Reading Fluency",
+            "valueKind": "text"
+          },
+          {
+            "evidence": {
+              "page": 1,
+              "quote": "Given a grade-level connected text passage, Maya will read at least 75 words correct per minute (WCPM) with at least 95% accuracy across three consecutive probes.",
+              "sourceDocumentId": "9a10b7f6-8f65-41e7-802c-944d795d06c7"
+            },
+            "fieldId": "statement",
+            "missingState": null,
+            "modality": "planned",
+            "provenance": "quoted",
+            "value": "Given a grade-level connected text passage, Maya will read at least 75 words correct per minute (WCPM) with at least 95% accuracy across three consecutive probes.",
+            "valueKind": "text"
+          },
+          {
+            "evidence": {
+              "page": 1,
+              "quote": "Given a grade-level connected text passage, Maya will read",
+              "sourceDocumentId": "9a10b7f6-8f65-41e7-802c-944d795d06c7"
+            },
+            "fieldId": "condition",
+            "missingState": null,
+            "modality": "planned",
+            "provenance": "quoted",
+            "value": "Given a grade-level connected text passage",
+            "valueKind": "text"
+          },
+          {
+            "evidence": {
+              "page": 2,
+              "quote": "Progress will be measured using curriculum-based oral reading fluency probes.",
+              "sourceDocumentId": "9a10b7f6-8f65-41e7-802c-944d795d06c7"
+            },
+            "fieldId": "measure.task",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "quoted",
+            "value": "oral reading fluency",
+            "valueKind": "text"
+          },
+          {
+            "evidence": {
+              "page": 1,
+              "quote": "at least 75 words correct per minute (WCPM)",
+              "sourceDocumentId": "9a10b7f6-8f65-41e7-802c-944d795d06c7"
+            },
+            "fieldId": "measure.score_type",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "classified",
+            "value": "words_correct_per_minute",
+            "valueKind": "code"
+          },
+          {
+            "evidence": {
+              "page": 2,
+              "quote": "Baseline: 42 WCPM",
+              "sourceDocumentId": "9a10b7f6-8f65-41e7-802c-944d795d06c7"
+            },
+            "fieldId": "baseline_value",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "quoted",
+            "value": 42,
+            "valueKind": "quantity"
+          },
+          {
+            "evidence": {
+              "page": 2,
+              "quote": "Baseline: 42 WCPM",
+              "sourceDocumentId": "9a10b7f6-8f65-41e7-802c-944d795d06c7"
+            },
+            "fieldId": "baseline_unit",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "quoted",
+            "value": "WCPM",
+            "valueKind": "text"
+          },
+          {
+            "evidence": {
+              "page": 1,
+              "quote": "The academic evaluation dated 2024-10-18 documents a reading fluency baseline of 42 WCPM",
+              "sourceDocumentId": "9a10b7f6-8f65-41e7-802c-944d795d06c7"
+            },
+            "fieldId": "baseline_source",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "quoted",
+            "value": "academic evaluation dated 2024-10-18",
+            "valueKind": "text"
+          },
+          {
+            "evidence": {
+              "page": 2,
+              "quote": "Target: 75 WCPM",
+              "sourceDocumentId": "9a10b7f6-8f65-41e7-802c-944d795d06c7"
+            },
+            "fieldId": "target_value",
+            "missingState": null,
+            "modality": "planned",
+            "provenance": "quoted",
+            "value": 75,
+            "valueKind": "quantity"
+          },
+          {
+            "evidence": {
+              "page": 2,
+              "quote": "Target: 75 WCPM",
+              "sourceDocumentId": "9a10b7f6-8f65-41e7-802c-944d795d06c7"
+            },
+            "fieldId": "target_unit",
+            "missingState": null,
+            "modality": "planned",
+            "provenance": "quoted",
+            "value": "WCPM",
+            "valueKind": "text"
+          },
+          {
+            "evidence": {
+              "page": 2,
+              "quote": "Accuracy Criterion: at least 95% accuracy",
+              "sourceDocumentId": "9a10b7f6-8f65-41e7-802c-944d795d06c7"
+            },
+            "fieldId": "accuracy_criterion",
+            "missingState": null,
+            "modality": "planned",
+            "provenance": "quoted",
+            "value": 95,
+            "valueKind": "quantity"
+          },
+          {
+            "evidence": {
+              "page": 2,
+              "quote": "Mastery Criterion: across three consecutive probes",
+              "sourceDocumentId": "9a10b7f6-8f65-41e7-802c-944d795d06c7"
+            },
+            "fieldId": "mastery_criterion",
+            "missingState": null,
+            "modality": "planned",
+            "provenance": "quoted",
+            "value": "across three consecutive probes",
+            "valueKind": "text"
+          },
+          {
+            "evidence": {
+              "page": 2,
+              "quote": "Progress will be measured using curriculum-based oral reading fluency probes.",
+              "sourceDocumentId": "9a10b7f6-8f65-41e7-802c-944d795d06c7"
+            },
+            "fieldId": "measurement_method",
+            "missingState": null,
+            "modality": "planned",
+            "provenance": "quoted",
+            "value": "curriculum-based oral reading fluency probes",
+            "valueKind": "text"
+          },
+          {
+            "evidence": {
+              "page": 2,
+              "quote": "Progress toward the annual goal will be measured using oral-reading-fluency probes and reported quarterly, concurrent with report periods.",
+              "sourceDocumentId": "9a10b7f6-8f65-41e7-802c-944d795d06c7"
+            },
+            "fieldId": "reporting_frequency",
+            "missingState": null,
+            "modality": "planned",
+            "provenance": "quoted",
+            "value": "quarterly",
+            "valueKind": "text"
+          },
+          {
+            "evidence": {
+              "page": 2,
+              "quote": "Start Date: 2024-11-12",
+              "sourceDocumentId": "9a10b7f6-8f65-41e7-802c-944d795d06c7"
+            },
+            "fieldId": "start_date",
+            "missingState": null,
+            "modality": "planned",
+            "provenance": "quoted",
+            "value": "2024-11-12",
+            "valueKind": "date"
+          },
+          {
+            "evidence": {
+              "page": 2,
+              "quote": "Target Date: 2025-11-11",
+              "sourceDocumentId": "9a10b7f6-8f65-41e7-802c-944d795d06c7"
+            },
+            "fieldId": "target_date",
+            "missingState": null,
+            "modality": "planned",
+            "provenance": "quoted",
+            "value": "2025-11-11",
+            "valueKind": "date"
+          }
+        ],
+        "instanceIndex": 0,
+        "recordEvidence": {
+          "page": 1,
+          "quote": "5. Annual Goal Given a grade-level connected text passage, Maya will read at least 75 words correct per minute (WCPM) with at least 95% accuracy across three consecutive probes. Goal ID: GOAL_READING_FLUENCY",
+          "sourceDocumentId": "9a10b7f6-8f65-41e7-802c-944d795d06c7"
+        },
+        "recordTypeId": "goal"
+      },
+      {
+        "fields": [
+          {
+            "evidence": {
+              "page": 2,
+              "quote": "6. Special Education Services",
+              "sourceDocumentId": "9a10b7f6-8f65-41e7-802c-944d795d06c7"
+            },
+            "fieldId": "category",
+            "missingState": null,
+            "modality": "planned",
+            "provenance": "classified",
+            "value": "special_education",
+            "valueKind": "code"
+          },
+          {
+            "evidence": {
+              "page": 2,
+              "quote": "Specialized reading instruction Weekly 150 minutes special education setting 2024-11-12",
+              "sourceDocumentId": "9a10b7f6-8f65-41e7-802c-944d795d06c7"
+            },
+            "fieldId": "service_type",
+            "missingState": null,
+            "modality": "planned",
+            "provenance": "quoted",
+            "value": "Specialized reading instruction",
+            "valueKind": "text"
+          },
+          {
+            "evidence": {
+              "page": 2,
+              "quote": "Specialized reading instruction Weekly 150 minutes special education setting 2024-11-12",
+              "sourceDocumentId": "9a10b7f6-8f65-41e7-802c-944d795d06c7"
+            },
+            "fieldId": "delivery",
+            "missingState": null,
+            "modality": "planned",
+            "provenance": "classified",
+            "value": "unspecified",
+            "valueKind": "code"
+          },
+          {
+            "evidence": {
+              "page": 2,
+              "quote": "Specialized reading instruction is provided 150 minutes weekly in the special education setting.",
+              "sourceDocumentId": "9a10b7f6-8f65-41e7-802c-944d795d06c7"
+            },
+            "fieldId": "frequency_text",
+            "missingState": null,
+            "modality": "planned",
+            "provenance": "quoted",
+            "value": "150 minutes weekly",
+            "valueKind": "text"
+          },
+          {
+            "evidence": {
+              "page": 2,
+              "quote": "Specialized reading instruction Weekly 150 minutes special education setting 2024-11-12",
+              "sourceDocumentId": "9a10b7f6-8f65-41e7-802c-944d795d06c7"
+            },
+            "fieldId": "period",
+            "missingState": null,
+            "modality": "planned",
+            "provenance": "classified",
+            "value": "week",
+            "valueKind": "code"
+          },
+          {
+            "evidence": {
+              "page": 2,
+              "quote": "Specialized reading instruction Weekly 150 minutes special education setting 2024-11-12",
+              "sourceDocumentId": "9a10b7f6-8f65-41e7-802c-944d795d06c7"
+            },
+            "fieldId": "location",
+            "missingState": null,
+            "modality": "planned",
+            "provenance": "quoted",
+            "value": "special education setting",
+            "valueKind": "text"
+          },
+          {
+            "evidence": {
+              "page": 2,
+              "quote": "Specialized reading instruction Weekly 150 minutes special education setting 2024-11-12",
+              "sourceDocumentId": "9a10b7f6-8f65-41e7-802c-944d795d06c7"
+            },
+            "fieldId": "start_date",
+            "missingState": null,
+            "modality": "planned",
+            "provenance": "quoted",
+            "value": "2024-11-12",
+            "valueKind": "date"
+          }
+        ],
+        "instanceIndex": 0,
+        "recordEvidence": {
+          "page": 2,
+          "quote": "Specialized reading instruction Weekly 150 minutes special education setting 2024-11-12 Specialized reading instruction is provided 150 minutes weekly in the special education setting.",
+          "sourceDocumentId": "9a10b7f6-8f65-41e7-802c-944d795d06c7"
+        },
+        "recordTypeId": "service"
+      },
+      {
+        "fields": [
+          {
+            "evidence": {
+              "page": 2,
+              "quote": "Extended time for classroom reading assessments.",
+              "sourceDocumentId": "9a10b7f6-8f65-41e7-802c-944d795d06c7"
+            },
+            "fieldId": "description",
+            "missingState": null,
+            "modality": "planned",
+            "provenance": "quoted",
+            "value": "Extended time for classroom reading assessments",
+            "valueKind": "text"
+          },
+          {
+            "evidence": {
+              "page": 2,
+              "quote": "Extended time for classroom reading assessments.",
+              "sourceDocumentId": "9a10b7f6-8f65-41e7-802c-944d795d06c7"
+            },
+            "fieldId": "context",
+            "missingState": null,
+            "modality": "planned",
+            "provenance": "classified",
+            "value": "testing",
+            "valueKind": "code"
+          }
+        ],
+        "instanceIndex": 0,
+        "recordEvidence": {
+          "page": 2,
+          "quote": "Extended time for classroom reading assessments.",
+          "sourceDocumentId": "9a10b7f6-8f65-41e7-802c-944d795d06c7"
+        },
+        "recordTypeId": "accommodation"
+      },
+      {
+        "fields": [
+          {
+            "evidence": {
+              "page": 2,
+              "quote": "Directions read aloud when reading ability is not being assessed.",
+              "sourceDocumentId": "9a10b7f6-8f65-41e7-802c-944d795d06c7"
+            },
+            "fieldId": "description",
+            "missingState": null,
+            "modality": "planned",
+            "provenance": "quoted",
+            "value": "Directions read aloud",
+            "valueKind": "text"
+          },
+          {
+            "evidence": {
+              "page": 2,
+              "quote": "Directions read aloud when reading ability is not being assessed.",
+              "sourceDocumentId": "9a10b7f6-8f65-41e7-802c-944d795d06c7"
+            },
+            "fieldId": "context",
+            "missingState": null,
+            "modality": "planned",
+            "provenance": "classified",
+            "value": "unspecified",
+            "valueKind": "code"
+          },
+          {
+            "evidence": {
+              "page": 2,
+              "quote": "Directions read aloud when reading ability is not being assessed.",
+              "sourceDocumentId": "9a10b7f6-8f65-41e7-802c-944d795d06c7"
+            },
+            "fieldId": "conditions",
+            "missingState": null,
+            "modality": "planned",
+            "provenance": "quoted",
+            "value": "when reading ability is not being assessed",
+            "valueKind": "text"
+          }
+        ],
+        "instanceIndex": 1,
+        "recordEvidence": {
+          "page": 2,
+          "quote": "Directions read aloud when reading ability is not being assessed.",
+          "sourceDocumentId": "9a10b7f6-8f65-41e7-802c-944d795d06c7"
+        },
+        "recordTypeId": "accommodation"
+      }
+    ],
+    "schemaVersion": "hive.pack-driven-reader-extraction/0.2.0",
+    "sourceDocumentId": "9a10b7f6-8f65-41e7-802c-944d795d06c7"
+  },
+  "promptVersion": "hive-pack-driven-reader/0.2.0",
+  "rawAssistantText": "```json\n{\n  \"schemaVersion\": \"hive.pack-driven-reader-extraction/0.2.0\",\n  \"packId\": \"iep\",\n  \"packVersion\": \"0.3.0-proposed\",\n  \"documentTypeId\": \"iep.plan\",\n  \"sourceDocumentId\": \"9a10b7f6-8f65-41e7-802c-944d795d06c7\",\n  \"recordInstances\": [\n    {\n      \"recordTypeId\": \"document_header\",\n      \"instanceIndex\": 0,\n      \"recordEvidence\": {\n        \"sourceDocumentId\": \"9a10b7f6-8f65-41e7-802c-944d795d06c7\",\n        \"page\": 1,\n        \"quote\": \"Initial Individualized Education Program (IEP) SYNTHETIC DEVELOPMENT RECORD — NOT A REAL STUDENT 1. Student / IEP Information Student: Maya Carter Date of Birth: 2017-04-18 Grade: 2 School: Synthetic Elementary School District: Synthetic District IEP Date: 2024-11-12 IEP Period: 2024-11-12 through 2025-11-11\"\n      },\n      \"fields\": [\n        {\n          \"fieldId\": \"title\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"text\",\n          \"value\": \"Initial Individualized Education Program (IEP)\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"9a10b7f6-8f65-41e7-802c-944d795d06c7\",\n            \"page\": 1,\n            \"quote\": \"Initial Individualized Education Program (IEP)\"\n          }\n        },\n        {\n          \"fieldId\": \"document_date\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"date\",\n          \"value\": \"2024-11-12\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"9a10b7f6-8f65-41e7-802c-944d795d06c7\",\n            \"page\": 1,\n            \"quote\": \"IEP Date: 2024-11-12\"\n          }\n        },\n        {\n          \"fieldId\": \"effective_start\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"date\",\n          \"value\": \"2024-11-12\",\n          \"modality\": \"planned\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"9a10b7f6-8f65-41e7-802c-944d795d06c7\",\n            \"page\": 1,\n            \"quote\": \"IEP Period: 2024-11-12 through 2025-11-11\"\n          }\n        },\n        {\n          \"fieldId\": \"effective_end\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"date\",\n          \"value\": \"2025-11-11\",\n          \"modality\": \"planned\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"9a10b7f6-8f65-41e7-802c-944d795d06c7\",\n            \"page\": 1,\n            \"quote\": \"IEP Period: 2024-11-12 through 2025-11-11\"\n          }\n        },\n        {\n          \"fieldId\": \"author_role\",\n          \"provenance\": \"classified\",\n          \"valueKind\": \"code\",\n          \"value\": \"education_agency\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"9a10b7f6-8f65-41e7-802c-944d795d06c7\",\n            \"page\": 1,\n            \"quote\": \"Initial Individualized Education Program (IEP)\"\n          }\n        },\n        {\n          \"fieldId\": \"subtype\",\n          \"provenance\": \"classified\",\n          \"valueKind\": \"code\",\n          \"value\": \"initial\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"9a10b7f6-8f65-41e7-802c-944d795d06c7\",\n            \"page\": 1,\n            \"quote\": \"Initial Individualized Education Program (IEP)\"\n          }\n        }\n      ]\n    },\n    {\n      \"recordTypeId\": \"student\",\n      \"instanceIndex\": 0,\n      \"recordEvidence\": {\n        \"sourceDocumentId\": \"9a10b7f6-8f65-41e7-802c-944d795d06c7\",\n        \"page\": 1,\n        \"quote\": \"Student: Maya Carter Date of Birth: 2017-04-18 Grade: 2 School: Synthetic Elementary School District: Synthetic District\"\n      },\n      \"fields\": [\n        {\n          \"fieldId\": \"name\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"text\",\n          \"value\": \"Maya Carter\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"9a10b7f6-8f65-41e7-802c-944d795d06c7\",\n            \"page\": 1,\n            \"quote\": \"Student: Maya Carter\"\n          }\n        },\n        {\n          \"fieldId\": \"birth_date\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"date\",\n          \"value\": \"2017-04-18\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"9a10b7f6-8f65-41e7-802c-944d795d06c7\",\n            \"page\": 1,\n            \"quote\": \"Date of Birth: 2017-04-18\"\n          }\n        },\n        {\n          \"fieldId\": \"grade\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"text\",\n          \"value\": \"2\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"9a10b7f6-8f65-41e7-802c-944d795d06c7\",\n            \"page\": 1,\n            \"quote\": \"Grade: 2\"\n          }\n        },\n        {\n          \"fieldId\": \"school\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"text\",\n          \"value\": \"Synthetic Elementary School\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"9a10b7f6-8f65-41e7-802c-944d795d06c7\",\n            \"page\": 1,\n            \"quote\": \"School: Synthetic Elementary School\"\n          }\n        },\n        {\n          \"fieldId\": \"district\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"text\",\n          \"value\": \"Synthetic District\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"9a10b7f6-8f65-41e7-802c-944d795d06c7\",\n            \"page\": 1,\n            \"quote\": \"District: Synthetic District\"\n          }\n        }\n      ]\n    },\n    {\n      \"recordTypeId\": \"meeting_participant\",\n      \"instanceIndex\": 0,\n      \"recordEvidence\": {\n        \"sourceDocumentId\": \"9a10b7f6-8f65-41e7-802c-944d795d06c7\",\n        \"page\": 2,\n        \"quote\": \"Parent/Guardian: [Synthetic signature omitted]\"\n      },\n      \"fields\": [\n        {\n          \"fieldId\": \"role\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"text\",\n          \"value\": \"Parent/Guardian\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"9a10b7f6-8f65-41e7-802c-944d795d06c7\",\n            \"page\": 2,\n            \"quote\": \"Parent/Guardian: [Synthetic signature omitted]\"\n          }\n        },\n        {\n          \"fieldId\": \"role_code\",\n          \"provenance\": \"classified\",\n          \"valueKind\": \"code\",\n          \"value\": \"parent_guardian\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"9a10b7f6-8f65-41e7-802c-944d795d06c7\",\n            \"page\": 2,\n            \"quote\": \"Parent/Guardian: [Synthetic signature omitted]\"\n          }\n        },\n        {\n          \"fieldId\": \"name\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"text\",\n          \"value\": null,\n          \"modality\": \"observed\",\n          \"missingState\": \"field_present_but_empty\",\n          \"evidence\": {\n            \"sourceDocumentId\": \"9a10b7f6-8f65-41e7-802c-944d795d06c7\",\n            \"page\": 2,\n            \"quote\": \"Parent/Guardian: [Synthetic signature omitted]\"\n          }\n        }\n      ]\n    },\n    {\n      \"recordTypeId\": \"meeting_participant\",\n      \"instanceIndex\": 1,\n      \"recordEvidence\": {\n        \"sourceDocumentId\": \"9a10b7f6-8f65-41e7-802c-944d795d06c7\",\n        \"page\": 2,\n        \"quote\": \"General Education Teacher: [Synthetic signature omitted]\"\n      },\n      \"fields\": [\n        {\n          \"fieldId\": \"role\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"text\",\n          \"value\": \"General Education Teacher\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"9a10b7f6-8f65-41e7-802c-944d795d06c7\",\n            \"page\": 2,\n            \"quote\": \"General Education Teacher: [Synthetic signature omitted]\"\n          }\n        },\n        {\n          \"fieldId\": \"role_code\",\n          \"provenance\": \"classified\",\n          \"valueKind\": \"code\",\n          \"value\": \"general_education_teacher\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"9a10b7f6-8f65-41e7-802c-944d795d06c7\",\n            \"page\": 2,\n            \"quote\": \"General Education Teacher: [Synthetic signature omitted]\"\n          }\n        },\n        {\n          \"fieldId\": \"name\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"text\",\n          \"value\": null,\n          \"modality\": \"observed\",\n          \"missingState\": \"field_present_but_empty\",\n          \"evidence\": {\n            \"sourceDocumentId\": \"9a10b7f6-8f65-41e7-802c-944d795d06c7\",\n            \"page\": 2,\n            \"quote\": \"General Education Teacher: [Synthetic signature omitted]\"\n          }\n        }\n      ]\n    },\n    {\n      \"recordTypeId\": \"meeting_participant\",\n      \"instanceIndex\": 2,\n      \"recordEvidence\": {\n        \"sourceDocumentId\": \"9a10b7f6-8f65-41e7-802c-944d795d06c7\",\n        \"page\": 2,\n        \"quote\": \"Special Education Teacher: [Synthetic signature omitted]\"\n      },\n      \"fields\": [\n        {\n          \"fieldId\": \"role\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"text\",\n          \"value\": \"Special Education Teacher\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"9a10b7f6-8f65-41e7-802c-944d795d06c7\",\n            \"page\": 2,\n            \"quote\": \"Special Education Teacher: [Synthetic signature omitted]\"\n          }\n        },\n        {\n          \"fieldId\": \"role_code\",\n          \"provenance\": \"classified\",\n          \"valueKind\": \"code\",\n          \"value\": \"special_education_teacher\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"9a10b7f6-8f65-41e7-802c-944d795d06c7\",\n            \"page\": 2,\n            \"quote\": \"Special Education Teacher: [Synthetic signature omitted]\"\n          }\n        },\n        {\n          \"fieldId\": \"name\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"text\",\n          \"value\": null,\n          \"modality\": \"observed\",\n          \"missingState\": \"field_present_but_empty\",\n          \"evidence\": {\n            \"sourceDocumentId\": \"9a10b7f6-8f65-41e7-802c-944d795d06c7\",\n            \"page\": 2,\n            \"quote\": \"Special Education Teacher: [Synthetic signature omitted]\"\n          }\n        }\n      ]\n    },\n    {\n      \"recordTypeId\": \"meeting_participant\",\n      \"instanceIndex\": 3,\n      \"recordEvidence\": {\n        \"sourceDocumentId\": \"9a10b7f6-8f65-41e7-802c-944d795d06c7\",\n        \"page\": 2,\n        \"quote\": \"District Representative: [Synthetic signature omitted]\"\n      },\n      \"fields\": [\n        {\n          \"fieldId\": \"role\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"text\",\n          \"value\": \"District Representative\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"9a10b7f6-8f65-41e7-802c-944d795d06c7\",\n            \"page\": 2,\n            \"quote\": \"District Representative: [Synthetic signature omitted]\"\n          }\n        },\n        {\n          \"fieldId\": \"role_code\",\n          \"provenance\": \"classified\",\n          \"valueKind\": \"code\",\n          \"value\": \"district_representative\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"9a10b7f6-8f65-41e7-802c-944d795d06c7\",\n            \"page\": 2,\n            \"quote\": \"District Representative: [Synthetic signature omitted]\"\n          }\n        },\n        {\n          \"fieldId\": \"name\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"text\",\n          \"value\": null,\n          \"modality\": \"observed\",\n          \"missingState\": \"field_present_but_empty\",\n          \"evidence\": {\n            \"sourceDocumentId\": \"9a10b7f6-8f65-41e7-802c-944d795d06c7\",\n            \"page\": 2,\n            \"quote\": \"District Representative: [Synthetic signature omitted]\"\n          }\n        }\n      ]\n    },\n    {\n      \"recordTypeId\": \"eligibility\",\n      \"instanceIndex\": 0,\n      \"recordEvidence\": {\n        \"sourceDocumentId\": \"9a10b7f6-8f65-41e7-802c-944d795d06c7\",\n        \"page\": 1,\n        \"quote\": \"Eligibility Category: Specific Learning Disability (SLD) - Reading Primary Educational Need: Reading Fluency Determination Date: 2024-11-01\"\n      },\n      \"fields\": [\n        {\n          \"fieldId\": \"category\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"text\",\n          \"value\": \"Specific Learning Disability (SLD) - Reading\",\n          \"modality\": \"decided\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"9a10b7f6-8f65-41e7-802c-944d795d06c7\",\n            \"page\": 1,\n            \"quote\": \"Eligibility Category: Specific Learning Disability (SLD) - Reading\"\n          }\n        },\n        {\n          \"fieldId\": \"determination_date\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"date\",\n          \"value\": \"2024-11-01\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"9a10b7f6-8f65-41e7-802c-944d795d06c7\",\n            \"page\": 1,\n            \"quote\": \"Determination Date: 2024-11-01\"\n          }\n        }\n      ]\n    },\n    {\n      \"recordTypeId\": \"present_level\",\n      \"instanceIndex\": 0,\n      \"recordEvidence\": {\n        \"sourceDocumentId\": \"9a10b7f6-8f65-41e7-802c-944d795d06c7\",\n        \"page\": 1,\n        \"quote\": \"Maya has a persistent reading fluency concern. Classroom performance and teacher information indicate difficulty reading connected grade-level text accurately and fluently. The academic evaluation dated 2024-10-18 documents a reading fluency baseline of 42 WCPM and oral reading accuracy of 86%. Reading comprehension during grade-level text tasks is below expected classroom level. Connected-text reading is slow and effortful, with frequent pauses. Isolated word reading is stronger than connected-text reading. 4. Educational Need The primary educational need is Reading Fluency. Maya has difficulty reading connected grade-level text accurately and fluently. This difficulty affects Maya's ability to access grade-level reading activities independently.\"\n      },\n      \"fields\": [\n        {\n          \"fieldId\": \"area\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"text\",\n          \"value\": \"Reading Fluency\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"9a10b7f6-8f65-41e7-802c-944d795d06c7\",\n            \"page\": 1,\n            \"quote\": \"The primary educational need is Reading Fluency.\"\n          }\n        },\n        {\n          \"fieldId\": \"statement\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"text\",\n          \"value\": \"Maya has a persistent reading fluency concern. Classroom performance and teacher information indicate difficulty reading connected grade-level text accurately and fluently. The academic evaluation dated 2024-10-18 documents a reading fluency baseline of 42 WCPM and oral reading accuracy of 86%. Reading comprehension during grade-level text tasks is below expected classroom level. Connected-text reading is slow and effortful, with frequent pauses. Isolated word reading is stronger than connected-text reading.\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"9a10b7f6-8f65-41e7-802c-944d795d06c7\",\n            \"page\": 1,\n            \"quote\": \"Maya has a persistent reading fluency concern. Classroom performance and teacher information indicate difficulty reading connected grade-level text accurately and fluently. The academic evaluation dated 2024-10-18 documents a reading fluency baseline of 42 WCPM and oral reading accuracy of 86%. Reading comprehension during grade-level text tasks is below expected classroom level. Connected-text reading is slow and effortful, with frequent pauses. Isolated word reading is stronger than connected-text reading.\"\n          }\n        },\n        {\n          \"fieldId\": \"impact_on_general_curriculum\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"text\",\n          \"value\": \"This difficulty affects Maya's ability to access grade-level reading activities independently.\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"9a10b7f6-8f65-41e7-802c-944d795d06c7\",\n            \"page\": 1,\n            \"quote\": \"This difficulty affects Maya's ability to access grade-level reading activities independently.\"\n          }\n        }\n      ]\n    },\n    {\n      \"recordTypeId\": \"measurement\",\n      \"instanceIndex\": 0,\n      \"recordEvidence\": {\n        \"sourceDocumentId\": \"9a10b7f6-8f65-41e7-802c-944d795d06c7\",\n        \"page\": 1,\n        \"quote\": \"The academic evaluation dated 2024-10-18 documents a reading fluency baseline of 42 WCPM\"\n      },\n      \"fields\": [\n        {\n          \"fieldId\": \"measure.task\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"text\",\n          \"value\": \"reading fluency\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"9a10b7f6-8f65-41e7-802c-944d795d06c7\",\n            \"page\": 1,\n            \"quote\": \"a reading fluency baseline of 42 WCPM\"\n          }\n        },\n        {\n          \"fieldId\": \"measure.score_type\",\n          \"provenance\": \"classified\",\n          \"valueKind\": \"code\",\n          \"value\": \"words_correct_per_minute\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"9a10b7f6-8f65-41e7-802c-944d795d06c7\",\n            \"page\": 1,\n            \"quote\": \"a reading fluency baseline of 42 WCPM\"\n          }\n        },\n        {\n          \"fieldId\": \"value\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"quantity\",\n          \"value\": 42,\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"9a10b7f6-8f65-41e7-802c-944d795d06c7\",\n            \"page\": 1,\n            \"quote\": \"a reading fluency baseline of 42 WCPM\"\n          }\n        },\n        {\n          \"fieldId\": \"unit\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"text\",\n          \"value\": \"WCPM\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"9a10b7f6-8f65-41e7-802c-944d795d06c7\",\n            \"page\": 1,\n            \"quote\": \"a reading fluency baseline of 42 WCPM\"\n          }\n        },\n        {\n          \"fieldId\": \"observed_on\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"date\",\n          \"value\": \"2024-10-18\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"9a10b7f6-8f65-41e7-802c-944d795d06c7\",\n            \"page\": 1,\n            \"quote\": \"The academic evaluation dated 2024-10-18\"\n          }\n        },\n        {\n          \"fieldId\": \"context\",\n          \"provenance\": \"classified\",\n          \"valueKind\": \"code\",\n          \"value\": \"present_levels\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"9a10b7f6-8f65-41e7-802c-944d795d06c7\",\n            \"page\": 1,\n            \"quote\": \"3. Present Levels of Academic Achievement and Functional Performance\"\n          }\n        }\n      ]\n    },\n    {\n      \"recordTypeId\": \"measurement\",\n      \"instanceIndex\": 1,\n      \"recordEvidence\": {\n        \"sourceDocumentId\": \"9a10b7f6-8f65-41e7-802c-944d795d06c7\",\n        \"page\": 1,\n        \"quote\": \"The academic evaluation dated 2024-10-18 documents a reading fluency baseline of 42 WCPM and oral reading accuracy of 86%.\"\n      },\n      \"fields\": [\n        {\n          \"fieldId\": \"measure.task\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"text\",\n          \"value\": \"oral reading accuracy\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"9a10b7f6-8f65-41e7-802c-944d795d06c7\",\n            \"page\": 1,\n            \"quote\": \"oral reading accuracy of 86%\"\n          }\n        },\n        {\n          \"fieldId\": \"measure.score_type\",\n          \"provenance\": \"classified\",\n          \"valueKind\": \"code\",\n          \"value\": \"percent_accuracy\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"9a10b7f6-8f65-41e7-802c-944d795d06c7\",\n            \"page\": 1,\n            \"quote\": \"oral reading accuracy of 86%\"\n          }\n        },\n        {\n          \"fieldId\": \"value\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"quantity\",\n          \"value\": 86,\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"9a10b7f6-8f65-41e7-802c-944d795d06c7\",\n            \"page\": 1,\n            \"quote\": \"oral reading accuracy of 86%\"\n          }\n        },\n        {\n          \"fieldId\": \"unit\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"text\",\n          \"value\": \"%\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"9a10b7f6-8f65-41e7-802c-944d795d06c7\",\n            \"page\": 1,\n            \"quote\": \"oral reading accuracy of 86%\"\n          }\n        },\n        {\n          \"fieldId\": \"observed_on\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"date\",\n          \"value\": \"2024-10-18\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"9a10b7f6-8f65-41e7-802c-944d795d06c7\",\n            \"page\": 1,\n            \"quote\": \"The academic evaluation dated 2024-10-18\"\n          }\n        },\n        {\n          \"fieldId\": \"context\",\n          \"provenance\": \"classified\",\n          \"valueKind\": \"code\",\n          \"value\": \"present_levels\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"9a10b7f6-8f65-41e7-802c-944d795d06c7\",\n            \"page\": 1,\n            \"quote\": \"3. Present Levels of Academic Achievement and Functional Performance\"\n          }\n        }\n      ]\n    },\n    {\n      \"recordTypeId\": \"goal\",\n      \"instanceIndex\": 0,\n      \"recordEvidence\": {\n        \"sourceDocumentId\": \"9a10b7f6-8f65-41e7-802c-944d795d06c7\",\n        \"page\": 1,\n        \"quote\": \"5. Annual Goal Given a grade-level connected text passage, Maya will read at least 75 words correct per minute (WCPM) with at least 95% accuracy across three consecutive probes. Goal ID: GOAL_READING_FLUENCY\"\n      },\n      \"fields\": [\n        {\n          \"fieldId\": \"area\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"text\",\n          \"value\": \"Reading Fluency\",\n          \"modality\": \"planned\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"9a10b7f6-8f65-41e7-802c-944d795d06c7\",\n            \"page\": 3,\n            \"quote\": \"This initial IEP addresses Reading Fluency for Maya Carter.\"\n          }\n        },\n        {\n          \"fieldId\": \"statement\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"text\",\n          \"value\": \"Given a grade-level connected text passage, Maya will read at least 75 words correct per minute (WCPM) with at least 95% accuracy across three consecutive probes.\",\n          \"modality\": \"planned\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"9a10b7f6-8f65-41e7-802c-944d795d06c7\",\n            \"page\": 1,\n            \"quote\": \"Given a grade-level connected text passage, Maya will read at least 75 words correct per minute (WCPM) with at least 95% accuracy across three consecutive probes.\"\n          }\n        },\n        {\n          \"fieldId\": \"condition\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"text\",\n          \"value\": \"Given a grade-level connected text passage\",\n          \"modality\": \"planned\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"9a10b7f6-8f65-41e7-802c-944d795d06c7\",\n            \"page\": 1,\n            \"quote\": \"Given a grade-level connected text passage, Maya will read\"\n          }\n        },\n        {\n          \"fieldId\": \"measure.task\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"text\",\n          \"value\": \"oral reading fluency\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"9a10b7f6-8f65-41e7-802c-944d795d06c7\",\n            \"page\": 2,\n            \"quote\": \"Progress will be measured using curriculum-based oral reading fluency probes.\"\n          }\n        },\n        {\n          \"fieldId\": \"measure.score_type\",\n          \"provenance\": \"classified\",\n          \"valueKind\": \"code\",\n          \"value\": \"words_correct_per_minute\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"9a10b7f6-8f65-41e7-802c-944d795d06c7\",\n            \"page\": 1,\n            \"quote\": \"at least 75 words correct per minute (WCPM)\"\n          }\n        },\n        {\n          \"fieldId\": \"baseline_value\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"quantity\",\n          \"value\": 42,\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"9a10b7f6-8f65-41e7-802c-944d795d06c7\",\n            \"page\": 2,\n            \"quote\": \"Baseline: 42 WCPM\"\n          }\n        },\n        {\n          \"fieldId\": \"baseline_unit\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"text\",\n          \"value\": \"WCPM\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"9a10b7f6-8f65-41e7-802c-944d795d06c7\",\n            \"page\": 2,\n            \"quote\": \"Baseline: 42 WCPM\"\n          }\n        },\n        {\n          \"fieldId\": \"baseline_source\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"text\",\n          \"value\": \"academic evaluation dated 2024-10-18\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"9a10b7f6-8f65-41e7-802c-944d795d06c7\",\n            \"page\": 1,\n            \"quote\": \"The academic evaluation dated 2024-10-18 documents a reading fluency baseline of 42 WCPM\"\n          }\n        },\n        {\n          \"fieldId\": \"target_value\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"quantity\",\n          \"value\": 75,\n          \"modality\": \"planned\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"9a10b7f6-8f65-41e7-802c-944d795d06c7\",\n            \"page\": 2,\n            \"quote\": \"Target: 75 WCPM\"\n          }\n        },\n        {\n          \"fieldId\": \"target_unit\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"text\",\n          \"value\": \"WCPM\",\n          \"modality\": \"planned\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"9a10b7f6-8f65-41e7-802c-944d795d06c7\",\n            \"page\": 2,\n            \"quote\": \"Target: 75 WCPM\"\n          }\n        },\n        {\n          \"fieldId\": \"accuracy_criterion\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"quantity\",\n          \"value\": 95,\n          \"modality\": \"planned\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"9a10b7f6-8f65-41e7-802c-944d795d06c7\",\n            \"page\": 2,\n            \"quote\": \"Accuracy Criterion: at least 95% accuracy\"\n          }\n        },\n        {\n          \"fieldId\": \"mastery_criterion\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"text\",\n          \"value\": \"across three consecutive probes\",\n          \"modality\": \"planned\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"9a10b7f6-8f65-41e7-802c-944d795d06c7\",\n            \"page\": 2,\n            \"quote\": \"Mastery Criterion: across three consecutive probes\"\n          }\n        },\n        {\n          \"fieldId\": \"measurement_method\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"text\",\n          \"value\": \"curriculum-based oral reading fluency probes\",\n          \"modality\": \"planned\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"9a10b7f6-8f65-41e7-802c-944d795d06c7\",\n            \"page\": 2,\n            \"quote\": \"Progress will be measured using curriculum-based oral reading fluency probes.\"\n          }\n        },\n        {\n          \"fieldId\": \"reporting_frequency\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"text\",\n          \"value\": \"quarterly\",\n          \"modality\": \"planned\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"9a10b7f6-8f65-41e7-802c-944d795d06c7\",\n            \"page\": 2,\n            \"quote\": \"Progress toward the annual goal will be measured using oral-reading-fluency probes and reported quarterly, concurrent with report periods.\"\n          }\n        },\n        {\n          \"fieldId\": \"start_date\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"date\",\n          \"value\": \"2024-11-12\",\n          \"modality\": \"planned\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"9a10b7f6-8f65-41e7-802c-944d795d06c7\",\n            \"page\": 2,\n            \"quote\": \"Start Date: 2024-11-12\"\n          }\n        },\n        {\n          \"fieldId\": \"target_date\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"date\",\n          \"value\": \"2025-11-11\",\n          \"modality\": \"planned\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"9a10b7f6-8f65-41e7-802c-944d795d06c7\",\n            \"page\": 2,\n            \"quote\": \"Target Date: 2025-11-11\"\n          }\n        }\n      ]\n    },\n    {\n      \"recordTypeId\": \"service\",\n      \"instanceIndex\": 0,\n      \"recordEvidence\": {\n        \"sourceDocumentId\": \"9a10b7f6-8f65-41e7-802c-944d795d06c7\",\n        \"page\": 2,\n        \"quote\": \"Specialized reading instruction Weekly 150 minutes special education setting 2024-11-12 Specialized reading instruction is provided 150 minutes weekly in the special education setting.\"\n      },\n      \"fields\": [\n        {\n          \"fieldId\": \"category\",\n          \"provenance\": \"classified\",\n          \"valueKind\": \"code\",\n          \"value\": \"special_education\",\n          \"modality\": \"planned\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"9a10b7f6-8f65-41e7-802c-944d795d06c7\",\n            \"page\": 2,\n            \"quote\": \"6. Special Education Services\"\n          }\n        },\n        {\n          \"fieldId\": \"service_type\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"text\",\n          \"value\": \"Specialized reading instruction\",\n          \"modality\": \"planned\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"9a10b7f6-8f65-41e7-802c-944d795d06c7\",\n            \"page\": 2,\n            \"quote\": \"Specialized reading instruction Weekly 150 minutes special education setting 2024-11-12\"\n          }\n        },\n        {\n          \"fieldId\": \"delivery\",\n          \"provenance\": \"classified\",\n          \"valueKind\": \"code\",\n          \"value\": \"unspecified\",\n          \"modality\": \"planned\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"9a10b7f6-8f65-41e7-802c-944d795d06c7\",\n            \"page\": 2,\n            \"quote\": \"Specialized reading instruction Weekly 150 minutes special education setting 2024-11-12\"\n          }\n        },\n        {\n          \"fieldId\": \"frequency_text\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"text\",\n          \"value\": \"150 minutes weekly\",\n          \"modality\": \"planned\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"9a10b7f6-8f65-41e7-802c-944d795d06c7\",\n            \"page\": 2,\n            \"quote\": \"Specialized reading instruction is provided 150 minutes weekly in the special education setting.\"\n          }\n        },\n        {\n          \"fieldId\": \"period\",\n          \"provenance\": \"classified\",\n          \"valueKind\": \"code\",\n          \"value\": \"week\",\n          \"modality\": \"planned\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"9a10b7f6-8f65-41e7-802c-944d795d06c7\",\n            \"page\": 2,\n            \"quote\": \"Specialized reading instruction Weekly 150 minutes special education setting 2024-11-12\"\n          }\n        },\n        {\n          \"fieldId\": \"location\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"text\",\n          \"value\": \"special education setting\",\n          \"modality\": \"planned\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"9a10b7f6-8f65-41e7-802c-944d795d06c7\",\n            \"page\": 2,\n            \"quote\": \"Specialized reading instruction Weekly 150 minutes special education setting 2024-11-12\"\n          }\n        },\n        {\n          \"fieldId\": \"start_date\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"date\",\n          \"value\": \"2024-11-12\",\n          \"modality\": \"planned\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"9a10b7f6-8f65-41e7-802c-944d795d06c7\",\n            \"page\": 2,\n            \"quote\": \"Specialized reading instruction Weekly 150 minutes special education setting 2024-11-12\"\n          }\n        }\n      ]\n    },\n    {\n      \"recordTypeId\": \"accommodation\",\n      \"instanceIndex\": 0,\n      \"recordEvidence\": {\n        \"sourceDocumentId\": \"9a10b7f6-8f65-41e7-802c-944d795d06c7\",\n        \"page\": 2,\n        \"quote\": \"Extended time for classroom reading assessments.\"\n      },\n      \"fields\": [\n        {\n          \"fieldId\": \"description\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"text\",\n          \"value\": \"Extended time for classroom reading assessments\",\n          \"modality\": \"planned\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"9a10b7f6-8f65-41e7-802c-944d795d06c7\",\n            \"page\": 2,\n            \"quote\": \"Extended time for classroom reading assessments.\"\n          }\n        },\n        {\n          \"fieldId\": \"context\",\n          \"provenance\": \"classified\",\n          \"valueKind\": \"code\",\n          \"value\": \"testing\",\n          \"modality\": \"planned\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"9a10b7f6-8f65-41e7-802c-944d795d06c7\",\n            \"page\": 2,\n            \"quote\": \"Extended time for classroom reading assessments.\"\n          }\n        }\n      ]\n    },\n    {\n      \"recordTypeId\": \"accommodation\",\n      \"instanceIndex\": 1,\n      \"recordEvidence\": {\n        \"sourceDocumentId\": \"9a10b7f6-8f65-41e7-802c-944d795d06c7\",\n        \"page\": 2,\n        \"quote\": \"Directions read aloud when reading ability is not being assessed.\"\n      },\n      \"fields\": [\n        {\n          \"fieldId\": \"description\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"text\",\n          \"value\": \"Directions read aloud\",\n          \"modality\": \"planned\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"9a10b7f6-8f65-41e7-802c-944d795d06c7\",\n            \"page\": 2,\n            \"quote\": \"Directions read aloud when reading ability is not being assessed.\"\n          }\n        },\n        {\n          \"fieldId\": \"context\",\n          \"provenance\": \"classified\",\n          \"valueKind\": \"code\",\n          \"value\": \"unspecified\",\n          \"modality\": \"planned\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"9a10b7f6-8f65-41e7-802c-944d795d06c7\",\n            \"page\": 2,\n            \"quote\": \"Directions read aloud when reading ability is not being assessed.\"\n          }\n        },\n        {\n          \"fieldId\": \"conditions\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"text\",\n          \"value\": \"when reading ability is not being assessed\",\n          \"modality\": \"planned\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"9a10b7f6-8f65-41e7-802c-944d795d06c7\",\n            \"page\": 2,\n            \"quote\": \"Directions read aloud when reading ability is not being assessed.\"\n          }\n        }\n      ]\n    }\n  ]\n}\n```",
+  "schemaVersion": "hive.reader-document-extraction/1",
+  "sourceDocumentId": "9a10b7f6-8f65-41e7-802c-944d795d06c7",
+  "status": "SUCCEEDED",
+  "studyRunId": "86dfa706-f7fc-4fe7-a49d-14e154825ec4",
+  "usage": {
+    "cacheReadInputTokens": null,
+    "cacheWriteInputTokens": null,
+    "inputTokens": null,
+    "outputTokens": null
+  },
+  "userId": "40bd9c51-15c6-42fc-a902-3c186e750e53"
+}

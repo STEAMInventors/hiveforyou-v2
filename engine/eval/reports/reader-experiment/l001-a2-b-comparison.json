@@ -1,0 +1,2382 @@
+{
+  "schemaVersion": "reader-golden-comparison/1",
+  "generatedAt": "2026-10-10T17:37:16.091Z",
+  "golden": {
+    "caseId": "l001",
+    "path": "engine/eval/golden/tune/l001.json",
+    "factCount": 117
+  },
+  "runs": {
+    "A2": {
+      "label": "A2",
+      "studyRunId": "621870eb-10e6-4b6d-af6a-3e2447e3d357",
+      "gradeability": {
+        "studyRunId": "621870eb-10e6-4b6d-af6a-3e2447e3d357",
+        "gradeable": true,
+        "blockers": [],
+        "traceAudit": {
+          "studyRunId": "621870eb-10e6-4b6d-af6a-3e2447e3d357",
+          "attemptId": "5d2b89a6-2d32-4442-b712-85d54530e7e7",
+          "traceEventCount": 213,
+          "acceptedEvidenceEventCount": 100,
+          "factProposedEventCount": 101,
+          "completedPayload": {
+            "toolCalls": 110,
+            "durationMs": 214207,
+            "inputTokens": 7378,
+            "outputTokens": 26950,
+            "modelCallCount": 1,
+            "reasoningSteps": 1,
+            "acceptedFactCount": 100,
+            "rejectedFactCount": 1,
+            "candidateFactCount": 101,
+            "rawParsedFactCount": 101,
+            "verifierErrorCount": 0,
+            "cacheReadInputTokens": 0,
+            "extractionJsonLength": 56253,
+            "cacheWriteInputTokens": 6585,
+            "verifierSubmissionCount": 101,
+            "readerArchitectureVariant": "case_wide",
+            "candidatesWithEvidenceCount": 101,
+            "normalizationDroppedFactCount": 0
+          },
+          "architectureVariant": "case_wide"
+        },
+        "persistedFactFields": [
+          "candidateFactId",
+          "sourceDocumentId",
+          "page",
+          "reasonCodes",
+          "decisionAuthority",
+          "authoritative"
+        ],
+        "recoverySources": [
+          "reader-accepted-facts/1 in private storage or export for studyRunId 621870eb-10e6-4b6d-af6a-3e2447e3d357"
+        ]
+      },
+      "factsPath": "supabase://document-pages/40bd9c51-15c6-42fc-a902-3c186e750e53/reader-accepted-facts/621870eb-10e6-4b6d-af6a-3e2447e3d357.json",
+      "acceptedFactsSource": "storage",
+      "attemptId": "5d2b89a6-2d32-4442-b712-85d54530e7e7",
+      "comparison": {
+        "summary": {
+          "goldenFactCount": 117,
+          "candidateCount": 100,
+          "matchedGoldenCount": 0,
+          "recall": 0,
+          "precision": 0,
+          "duplicateCandidateCount": 0,
+          "unmatchedCandidateCount": 100,
+          "verificationIncomplete": false
+        },
+        "perGoldenFact": [
+          {
+            "goldenFactId": "clm_academic_date",
+            "documentId": "05_academic_evaluation.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_academic_evaluator",
+            "documentId": "05_academic_evaluation.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_academic_focus",
+            "documentId": "05_academic_evaluation.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_academic_need",
+            "documentId": "05_academic_evaluation.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_academic_recommendation_1",
+            "documentId": "05_academic_evaluation.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_academic_recommendation_2",
+            "documentId": "05_academic_evaluation.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_academic_recommendation_3",
+            "documentId": "05_academic_evaluation.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_connected_text_slow",
+            "documentId": "05_academic_evaluation.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_consent_area_1",
+            "documentId": "03_parent_evaluation_consent.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_consent_area_2",
+            "documentId": "03_parent_evaluation_consent.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_consent_area_3",
+            "documentId": "03_parent_evaluation_consent.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_consent_follows_plan",
+            "documentId": "03_parent_evaluation_consent.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_consent_given",
+            "documentId": "03_parent_evaluation_consent.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_consent_given_by",
+            "documentId": "03_parent_evaluation_consent.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_elig_by",
+            "documentId": "07_eligibility_determination.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_elig_category",
+            "documentId": "07_eligibility_determination.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_elig_date",
+            "documentId": "07_eligibility_determination.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_elig_eligible",
+            "documentId": "07_eligibility_determination.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_elig_not_medical",
+            "documentId": "07_eligibility_determination.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_elig_primary_need",
+            "documentId": "07_eligibility_determination.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_elig_requires_sdi",
+            "documentId": "07_eligibility_determination.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_elig_reviewed_1",
+            "documentId": "07_eligibility_determination.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_elig_reviewed_2",
+            "documentId": "07_eligibility_determination.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_elig_reviewed_3",
+            "documentId": "07_eligibility_determination.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_elig_type",
+            "documentId": "07_eligibility_determination.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_frequent_pauses",
+            "documentId": "05_academic_evaluation.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_goal_accuracy",
+            "documentId": "08_initial_iep.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_goal_area",
+            "documentId": "08_initial_iep.pdf",
+            "pageNumber": 3,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_goal_baseline",
+            "documentId": "08_initial_iep.pdf",
+            "pageNumber": 2,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_goal_baseline_source",
+            "documentId": "08_initial_iep.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_goal_condition",
+            "documentId": "08_initial_iep.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_goal_mastery",
+            "documentId": "08_initial_iep.pdf",
+            "pageNumber": 2,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_goal_measurement",
+            "documentId": "08_initial_iep.pdf",
+            "pageNumber": 2,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_goal_start",
+            "documentId": "08_initial_iep.pdf",
+            "pageNumber": 2,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_goal_target_date",
+            "documentId": "08_initial_iep.pdf",
+            "pageNumber": 2,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_goal_target_wcpm",
+            "documentId": "08_initial_iep.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_iep_accommodation_1",
+            "documentId": "08_initial_iep.pdf",
+            "pageNumber": 2,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_iep_accommodation_2",
+            "documentId": "08_initial_iep.pdf",
+            "pageNumber": 2,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_iep_addresses",
+            "documentId": "08_initial_iep.pdf",
+            "pageNumber": 3,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_iep_date",
+            "documentId": "08_initial_iep.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_iep_has_goal",
+            "documentId": "08_initial_iep.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_iep_has_service",
+            "documentId": "08_initial_iep.pdf",
+            "pageNumber": 2,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_iep_implements_eligibility",
+            "documentId": "08_initial_iep.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_iep_period",
+            "documentId": "08_initial_iep.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_iep_progress_reporting_frequency",
+            "documentId": "08_initial_iep.pdf",
+            "pageNumber": 2,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_iep_progress_reporting_method",
+            "documentId": "08_initial_iep.pdf",
+            "pageNumber": 2,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_iep_student",
+            "documentId": "08_initial_iep.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_iep_team_role_1",
+            "documentId": "08_initial_iep.pdf",
+            "pageNumber": 2,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_iep_team_role_2",
+            "documentId": "08_initial_iep.pdf",
+            "pageNumber": 2,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_iep_team_role_3",
+            "documentId": "08_initial_iep.pdf",
+            "pageNumber": 2,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_iep_team_role_4",
+            "documentId": "08_initial_iep.pdf",
+            "pageNumber": 2,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_isolated_word_stronger",
+            "documentId": "05_academic_evaluation.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_orf_accuracy",
+            "documentId": "05_academic_evaluation.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_orf_wcpm",
+            "documentId": "05_academic_evaluation.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_plan_area_proposed_1",
+            "documentId": "02_evaluation_plan.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_plan_area_proposed_2",
+            "documentId": "02_evaluation_plan.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_plan_area_proposed_3",
+            "documentId": "02_evaluation_plan.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_plan_consent_required",
+            "documentId": "02_evaluation_plan.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_plan_date",
+            "documentId": "02_evaluation_plan.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_plan_existing_info_1",
+            "documentId": "02_evaluation_plan.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_plan_existing_info_2",
+            "documentId": "02_evaluation_plan.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_plan_existing_info_3",
+            "documentId": "02_evaluation_plan.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_plan_existing_info_4",
+            "documentId": "02_evaluation_plan.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_plan_info_to_gather_1",
+            "documentId": "02_evaluation_plan.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_plan_info_to_gather_2",
+            "documentId": "02_evaluation_plan.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_plan_info_to_gather_3",
+            "documentId": "02_evaluation_plan.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_plan_info_to_gather_4",
+            "documentId": "02_evaluation_plan.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_plan_prepared_by",
+            "documentId": "02_evaluation_plan.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_plan_responds_to_referral",
+            "documentId": "02_evaluation_plan.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_plan_type",
+            "documentId": "02_evaluation_plan.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_psych_cognitive_range",
+            "documentId": "04_psychoeducational_evaluation.pdf",
+            "pageNumber": 2,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_psych_consistent_concern",
+            "documentId": "04_psychoeducational_evaluation.pdf",
+            "pageNumber": 2,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_psych_cooperation",
+            "documentId": "04_psychoeducational_evaluation.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_psych_date",
+            "documentId": "04_psychoeducational_evaluation.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_psych_evaluator",
+            "documentId": "04_psychoeducational_evaluation.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_psych_no_category",
+            "documentId": "04_psychoeducational_evaluation.pdf",
+            "pageNumber": 2,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_psych_no_global_cognitive",
+            "documentId": "04_psychoeducational_evaluation.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_psych_no_minutes",
+            "documentId": "04_psychoeducational_evaluation.pdf",
+            "pageNumber": 2,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_psych_no_sped_conclusion",
+            "documentId": "04_psychoeducational_evaluation.pdf",
+            "pageNumber": 2,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_psych_recommend_academic",
+            "documentId": "04_psychoeducational_evaluation.pdf",
+            "pageNumber": 2,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_psych_source_1",
+            "documentId": "04_psychoeducational_evaluation.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_psych_source_2",
+            "documentId": "04_psychoeducational_evaluation.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_psych_source_3",
+            "documentId": "04_psychoeducational_evaluation.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_psych_source_4",
+            "documentId": "04_psychoeducational_evaluation.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_psych_supports_further_eval",
+            "documentId": "04_psychoeducational_evaluation.pdf",
+            "pageNumber": 2,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_psych_verbal_directions",
+            "documentId": "04_psychoeducational_evaluation.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_reading_access_impact",
+            "documentId": "01_initial_referral.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_reading_comprehension",
+            "documentId": "05_academic_evaluation.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_reading_concern_persistent",
+            "documentId": "01_initial_referral.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_reading_difficulty",
+            "documentId": "01_initial_referral.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_referral_area_of_concern",
+            "documentId": "01_initial_referral.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_referral_area_requested_1",
+            "documentId": "01_initial_referral.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_referral_area_requested_2",
+            "documentId": "01_initial_referral.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_referral_area_requested_3",
+            "documentId": "01_initial_referral.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_referral_by",
+            "documentId": "01_initial_referral.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_referral_date",
+            "documentId": "01_initial_referral.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_referral_next_step",
+            "documentId": "01_initial_referral.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_referral_parent_input",
+            "documentId": "01_initial_referral.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_referral_student",
+            "documentId": "01_initial_referral.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_service_frequency",
+            "documentId": "08_initial_iep.pdf",
+            "pageNumber": 2,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_service_location",
+            "documentId": "08_initial_iep.pdf",
+            "pageNumber": 2,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_service_minutes",
+            "documentId": "08_initial_iep.pdf",
+            "pageNumber": 2,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_service_start",
+            "documentId": "08_initial_iep.pdf",
+            "pageNumber": 2,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_slp_date",
+            "documentId": "06_speech_language_evaluation.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_slp_evaluator",
+            "documentId": "06_speech_language_evaluation.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_slp_intelligibility",
+            "documentId": "06_speech_language_evaluation.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_slp_language",
+            "documentId": "06_speech_language_evaluation.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_slp_no_eligibility",
+            "documentId": "06_speech_language_evaluation.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_slp_no_impairment",
+            "documentId": "06_speech_language_evaluation.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_slp_no_separate_need",
+            "documentId": "06_speech_language_evaluation.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_slp_no_service",
+            "documentId": "06_speech_language_evaluation.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_slp_purpose",
+            "documentId": "06_speech_language_evaluation.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_slp_reading_unresolved",
+            "documentId": "06_speech_language_evaluation.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_student_district",
+            "documentId": "01_initial_referral.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_student_dob",
+            "documentId": "01_initial_referral.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_student_grade",
+            "documentId": "01_initial_referral.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_student_school",
+            "documentId": "01_initial_referral.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          }
+        ],
+        "perDocumentCoverage": [
+          {
+            "documentId": "01_initial_referral.pdf",
+            "goldenFactCount": 16,
+            "matchedCount": 0,
+            "recall": 0
+          },
+          {
+            "documentId": "02_evaluation_plan.pdf",
+            "goldenFactCount": 16,
+            "matchedCount": 0,
+            "recall": 0
+          },
+          {
+            "documentId": "03_parent_evaluation_consent.pdf",
+            "goldenFactCount": 6,
+            "matchedCount": 0,
+            "recall": 0
+          },
+          {
+            "documentId": "04_psychoeducational_evaluation.pdf",
+            "goldenFactCount": 16,
+            "matchedCount": 0,
+            "recall": 0
+          },
+          {
+            "documentId": "05_academic_evaluation.pdf",
+            "goldenFactCount": 13,
+            "matchedCount": 0,
+            "recall": 0
+          },
+          {
+            "documentId": "06_speech_language_evaluation.pdf",
+            "goldenFactCount": 10,
+            "matchedCount": 0,
+            "recall": 0
+          },
+          {
+            "documentId": "07_eligibility_determination.pdf",
+            "goldenFactCount": 11,
+            "matchedCount": 0,
+            "recall": 0
+          },
+          {
+            "documentId": "08_initial_iep.pdf",
+            "goldenFactCount": 29,
+            "matchedCount": 0,
+            "recall": 0
+          }
+        ],
+        "unmatchedCandidateIds": [
+          "reader-candidate-0146c3e415ba",
+          "reader-candidate-01a8dd9f38b1",
+          "reader-candidate-0396de6f2c96",
+          "reader-candidate-06df909b8b28",
+          "reader-candidate-0bb709b82231",
+          "reader-candidate-0bf6ff317a3e",
+          "reader-candidate-0dcc7dd2f621",
+          "reader-candidate-0dd9550d3336",
+          "reader-candidate-0fc4a9824376",
+          "reader-candidate-14c0b84ed99e",
+          "reader-candidate-1aa90cca9f30",
+          "reader-candidate-1b1511d73e8b",
+          "reader-candidate-1bdbaa95bab9",
+          "reader-candidate-1c77c27fbf32",
+          "reader-candidate-1e98c298aa54",
+          "reader-candidate-208168ce015d",
+          "reader-candidate-212677506f28",
+          "reader-candidate-2390432cbe41",
+          "reader-candidate-260e0a95c5a9",
+          "reader-candidate-2768e40f6cc7",
+          "reader-candidate-2f69ceb97e6a",
+          "reader-candidate-325895593d91",
+          "reader-candidate-34b79b5fe85f",
+          "reader-candidate-39bccb2f29ec",
+          "reader-candidate-3be7333aea25",
+          "reader-candidate-3cfb32fe185c",
+          "reader-candidate-41b349415ff2",
+          "reader-candidate-437049b2a5a4",
+          "reader-candidate-44b5c7ac12bb",
+          "reader-candidate-469ddb30fa86",
+          "reader-candidate-4b11517d0d2c",
+          "reader-candidate-4c15416b3255",
+          "reader-candidate-50e0a197c366",
+          "reader-candidate-53b679a73e61",
+          "reader-candidate-5518d45a8734",
+          "reader-candidate-5526215db345",
+          "reader-candidate-56a9e1f8c9a4",
+          "reader-candidate-6059513720a6",
+          "reader-candidate-63cb2238cc5c",
+          "reader-candidate-661d3bfb51e7",
+          "reader-candidate-68718c7a883f",
+          "reader-candidate-6a641f0ddf35",
+          "reader-candidate-6bbea3094c40",
+          "reader-candidate-6c174e25d99c",
+          "reader-candidate-6c6cf0a6383e",
+          "reader-candidate-6c86f17d85bd",
+          "reader-candidate-6f8db0d23c67",
+          "reader-candidate-70eb5f6aef7e",
+          "reader-candidate-750d1cc9e1c4",
+          "reader-candidate-776050727904",
+          "reader-candidate-7aa95a20d6e2",
+          "reader-candidate-7b93ad3117dd",
+          "reader-candidate-7ef4ada35737",
+          "reader-candidate-815a033db5f4",
+          "reader-candidate-822906e093a1",
+          "reader-candidate-832a6327f508",
+          "reader-candidate-89fff0fb1562",
+          "reader-candidate-8ba8e8fa8725",
+          "reader-candidate-8d51a639d4eb",
+          "reader-candidate-8e798de155f7",
+          "reader-candidate-8fc89af1c8db",
+          "reader-candidate-928fa945d2f5",
+          "reader-candidate-95a1aa6c1272",
+          "reader-candidate-95b20a269919",
+          "reader-candidate-99f3c88be8e8",
+          "reader-candidate-9a34ef99376d",
+          "reader-candidate-9b8285a68ab6",
+          "reader-candidate-9bf8c8bc6c54",
+          "reader-candidate-9da6621bcb30",
+          "reader-candidate-9ef547c7bfb2",
+          "reader-candidate-a1b42d511675",
+          "reader-candidate-a2d917bcd744",
+          "reader-candidate-a406310144af",
+          "reader-candidate-a44123a22ed7",
+          "reader-candidate-a5f8700b9320",
+          "reader-candidate-a958a8790dec",
+          "reader-candidate-aa6d3e7a7d9f",
+          "reader-candidate-b0878d09be4f",
+          "reader-candidate-b5ab5d5cf976",
+          "reader-candidate-c08bd73e4d3e",
+          "reader-candidate-c671882e4cf4",
+          "reader-candidate-ca73b9acf7bd",
+          "reader-candidate-ca8b9ad48b4e",
+          "reader-candidate-ca93c3ae6d74",
+          "reader-candidate-d2cf7e6cdc93",
+          "reader-candidate-ddf7ca38ec5d",
+          "reader-candidate-e07d3fa0e9df",
+          "reader-candidate-e440efea7cd3",
+          "reader-candidate-e553b5c5ccdb",
+          "reader-candidate-e7067f100cf7",
+          "reader-candidate-e755e865f5aa",
+          "reader-candidate-e7e795bf29fd",
+          "reader-candidate-e82bf61ef7d8",
+          "reader-candidate-e935fd8dca69",
+          "reader-candidate-ec130f354d40",
+          "reader-candidate-f197d92283ca",
+          "reader-candidate-f50f2ee0a7b0",
+          "reader-candidate-f69fe750bc9b",
+          "reader-candidate-fcae45204c7f",
+          "reader-candidate-ff3551931546"
+        ],
+        "duplicateCandidateIds": []
+      }
+    },
+    "B": {
+      "label": "B",
+      "studyRunId": "3b7cab6e-7140-4495-b704-47b400e1e615",
+      "gradeability": {
+        "studyRunId": "3b7cab6e-7140-4495-b704-47b400e1e615",
+        "gradeable": true,
+        "blockers": [],
+        "traceAudit": {
+          "studyRunId": "3b7cab6e-7140-4495-b704-47b400e1e615",
+          "attemptId": "688d7ef3-e99b-4b23-ae0b-e44f3a9938a3",
+          "traceEventCount": 332,
+          "acceptedEvidenceEventCount": 154,
+          "factProposedEventCount": 165,
+          "completedPayload": {
+            "toolCalls": 165,
+            "durationMs": 126570,
+            "inputTokens": 17010,
+            "wallClockMs": 126569,
+            "mergeDedupMs": 61,
+            "outputTokens": 43841,
+            "modelCallCount": 8,
+            "reasoningSteps": 8,
+            "verificationMs": 22456,
+            "acceptedFactCount": 154,
+            "dedupRemovedCount": 0,
+            "extractionPhaseMs": 104051,
+            "rejectedFactCount": 11,
+            "candidateFactCount": 0,
+            "rawParsedFactCount": 0,
+            "verifierErrorCount": 0,
+            "cacheReadInputTokens": null,
+            "extractionJsonLength": 0,
+            "cacheWriteInputTokens": null,
+            "preMergeCandidateCount": 171,
+            "partialDocumentFailures": 0,
+            "postMergeCandidateCount": 171,
+            "verifierSubmissionCount": 165,
+            "peakConcurrentModelCalls": 8,
+            "readerArchitectureVariant": "parallel_document",
+            "candidatesWithEvidenceCount": 0,
+            "normalizationDroppedFactCount": 0
+          },
+          "architectureVariant": "parallel_document"
+        },
+        "persistedFactFields": [
+          "candidateFactId",
+          "sourceDocumentId",
+          "page",
+          "reasonCodes",
+          "decisionAuthority",
+          "authoritative"
+        ],
+        "recoverySources": [
+          "reader-accepted-facts/1 in private storage or export for studyRunId 3b7cab6e-7140-4495-b704-47b400e1e615"
+        ]
+      },
+      "factsPath": "supabase://document-pages/40bd9c51-15c6-42fc-a902-3c186e750e53/reader-accepted-facts/3b7cab6e-7140-4495-b704-47b400e1e615.json",
+      "acceptedFactsSource": "storage",
+      "attemptId": "688d7ef3-e99b-4b23-ae0b-e44f3a9938a3",
+      "comparison": {
+        "summary": {
+          "goldenFactCount": 117,
+          "candidateCount": 154,
+          "matchedGoldenCount": 0,
+          "recall": 0,
+          "precision": 0,
+          "duplicateCandidateCount": 0,
+          "unmatchedCandidateCount": 154,
+          "verificationIncomplete": false
+        },
+        "perGoldenFact": [
+          {
+            "goldenFactId": "clm_academic_date",
+            "documentId": "05_academic_evaluation.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_academic_evaluator",
+            "documentId": "05_academic_evaluation.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_academic_focus",
+            "documentId": "05_academic_evaluation.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_academic_need",
+            "documentId": "05_academic_evaluation.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_academic_recommendation_1",
+            "documentId": "05_academic_evaluation.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_academic_recommendation_2",
+            "documentId": "05_academic_evaluation.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_academic_recommendation_3",
+            "documentId": "05_academic_evaluation.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_connected_text_slow",
+            "documentId": "05_academic_evaluation.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_consent_area_1",
+            "documentId": "03_parent_evaluation_consent.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_consent_area_2",
+            "documentId": "03_parent_evaluation_consent.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_consent_area_3",
+            "documentId": "03_parent_evaluation_consent.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_consent_follows_plan",
+            "documentId": "03_parent_evaluation_consent.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_consent_given",
+            "documentId": "03_parent_evaluation_consent.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_consent_given_by",
+            "documentId": "03_parent_evaluation_consent.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_elig_by",
+            "documentId": "07_eligibility_determination.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_elig_category",
+            "documentId": "07_eligibility_determination.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_elig_date",
+            "documentId": "07_eligibility_determination.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_elig_eligible",
+            "documentId": "07_eligibility_determination.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_elig_not_medical",
+            "documentId": "07_eligibility_determination.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_elig_primary_need",
+            "documentId": "07_eligibility_determination.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_elig_requires_sdi",
+            "documentId": "07_eligibility_determination.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_elig_reviewed_1",
+            "documentId": "07_eligibility_determination.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_elig_reviewed_2",
+            "documentId": "07_eligibility_determination.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_elig_reviewed_3",
+            "documentId": "07_eligibility_determination.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_elig_type",
+            "documentId": "07_eligibility_determination.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_frequent_pauses",
+            "documentId": "05_academic_evaluation.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_goal_accuracy",
+            "documentId": "08_initial_iep.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_goal_area",
+            "documentId": "08_initial_iep.pdf",
+            "pageNumber": 3,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_goal_baseline",
+            "documentId": "08_initial_iep.pdf",
+            "pageNumber": 2,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_goal_baseline_source",
+            "documentId": "08_initial_iep.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_goal_condition",
+            "documentId": "08_initial_iep.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_goal_mastery",
+            "documentId": "08_initial_iep.pdf",
+            "pageNumber": 2,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_goal_measurement",
+            "documentId": "08_initial_iep.pdf",
+            "pageNumber": 2,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_goal_start",
+            "documentId": "08_initial_iep.pdf",
+            "pageNumber": 2,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_goal_target_date",
+            "documentId": "08_initial_iep.pdf",
+            "pageNumber": 2,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_goal_target_wcpm",
+            "documentId": "08_initial_iep.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_iep_accommodation_1",
+            "documentId": "08_initial_iep.pdf",
+            "pageNumber": 2,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_iep_accommodation_2",
+            "documentId": "08_initial_iep.pdf",
+            "pageNumber": 2,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_iep_addresses",
+            "documentId": "08_initial_iep.pdf",
+            "pageNumber": 3,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_iep_date",
+            "documentId": "08_initial_iep.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_iep_has_goal",
+            "documentId": "08_initial_iep.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_iep_has_service",
+            "documentId": "08_initial_iep.pdf",
+            "pageNumber": 2,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_iep_implements_eligibility",
+            "documentId": "08_initial_iep.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_iep_period",
+            "documentId": "08_initial_iep.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_iep_progress_reporting_frequency",
+            "documentId": "08_initial_iep.pdf",
+            "pageNumber": 2,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_iep_progress_reporting_method",
+            "documentId": "08_initial_iep.pdf",
+            "pageNumber": 2,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_iep_student",
+            "documentId": "08_initial_iep.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_iep_team_role_1",
+            "documentId": "08_initial_iep.pdf",
+            "pageNumber": 2,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_iep_team_role_2",
+            "documentId": "08_initial_iep.pdf",
+            "pageNumber": 2,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_iep_team_role_3",
+            "documentId": "08_initial_iep.pdf",
+            "pageNumber": 2,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_iep_team_role_4",
+            "documentId": "08_initial_iep.pdf",
+            "pageNumber": 2,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_isolated_word_stronger",
+            "documentId": "05_academic_evaluation.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_orf_accuracy",
+            "documentId": "05_academic_evaluation.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_orf_wcpm",
+            "documentId": "05_academic_evaluation.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_plan_area_proposed_1",
+            "documentId": "02_evaluation_plan.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_plan_area_proposed_2",
+            "documentId": "02_evaluation_plan.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_plan_area_proposed_3",
+            "documentId": "02_evaluation_plan.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_plan_consent_required",
+            "documentId": "02_evaluation_plan.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_plan_date",
+            "documentId": "02_evaluation_plan.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_plan_existing_info_1",
+            "documentId": "02_evaluation_plan.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_plan_existing_info_2",
+            "documentId": "02_evaluation_plan.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_plan_existing_info_3",
+            "documentId": "02_evaluation_plan.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_plan_existing_info_4",
+            "documentId": "02_evaluation_plan.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_plan_info_to_gather_1",
+            "documentId": "02_evaluation_plan.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_plan_info_to_gather_2",
+            "documentId": "02_evaluation_plan.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_plan_info_to_gather_3",
+            "documentId": "02_evaluation_plan.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_plan_info_to_gather_4",
+            "documentId": "02_evaluation_plan.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_plan_prepared_by",
+            "documentId": "02_evaluation_plan.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_plan_responds_to_referral",
+            "documentId": "02_evaluation_plan.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_plan_type",
+            "documentId": "02_evaluation_plan.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_psych_cognitive_range",
+            "documentId": "04_psychoeducational_evaluation.pdf",
+            "pageNumber": 2,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_psych_consistent_concern",
+            "documentId": "04_psychoeducational_evaluation.pdf",
+            "pageNumber": 2,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_psych_cooperation",
+            "documentId": "04_psychoeducational_evaluation.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_psych_date",
+            "documentId": "04_psychoeducational_evaluation.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_psych_evaluator",
+            "documentId": "04_psychoeducational_evaluation.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_psych_no_category",
+            "documentId": "04_psychoeducational_evaluation.pdf",
+            "pageNumber": 2,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_psych_no_global_cognitive",
+            "documentId": "04_psychoeducational_evaluation.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_psych_no_minutes",
+            "documentId": "04_psychoeducational_evaluation.pdf",
+            "pageNumber": 2,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_psych_no_sped_conclusion",
+            "documentId": "04_psychoeducational_evaluation.pdf",
+            "pageNumber": 2,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_psych_recommend_academic",
+            "documentId": "04_psychoeducational_evaluation.pdf",
+            "pageNumber": 2,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_psych_source_1",
+            "documentId": "04_psychoeducational_evaluation.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_psych_source_2",
+            "documentId": "04_psychoeducational_evaluation.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_psych_source_3",
+            "documentId": "04_psychoeducational_evaluation.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_psych_source_4",
+            "documentId": "04_psychoeducational_evaluation.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_psych_supports_further_eval",
+            "documentId": "04_psychoeducational_evaluation.pdf",
+            "pageNumber": 2,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_psych_verbal_directions",
+            "documentId": "04_psychoeducational_evaluation.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_reading_access_impact",
+            "documentId": "01_initial_referral.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_reading_comprehension",
+            "documentId": "05_academic_evaluation.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_reading_concern_persistent",
+            "documentId": "01_initial_referral.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_reading_difficulty",
+            "documentId": "01_initial_referral.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_referral_area_of_concern",
+            "documentId": "01_initial_referral.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_referral_area_requested_1",
+            "documentId": "01_initial_referral.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_referral_area_requested_2",
+            "documentId": "01_initial_referral.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_referral_area_requested_3",
+            "documentId": "01_initial_referral.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_referral_by",
+            "documentId": "01_initial_referral.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_referral_date",
+            "documentId": "01_initial_referral.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_referral_next_step",
+            "documentId": "01_initial_referral.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_referral_parent_input",
+            "documentId": "01_initial_referral.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_referral_student",
+            "documentId": "01_initial_referral.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_service_frequency",
+            "documentId": "08_initial_iep.pdf",
+            "pageNumber": 2,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_service_location",
+            "documentId": "08_initial_iep.pdf",
+            "pageNumber": 2,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_service_minutes",
+            "documentId": "08_initial_iep.pdf",
+            "pageNumber": 2,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_service_start",
+            "documentId": "08_initial_iep.pdf",
+            "pageNumber": 2,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_slp_date",
+            "documentId": "06_speech_language_evaluation.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_slp_evaluator",
+            "documentId": "06_speech_language_evaluation.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_slp_intelligibility",
+            "documentId": "06_speech_language_evaluation.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_slp_language",
+            "documentId": "06_speech_language_evaluation.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_slp_no_eligibility",
+            "documentId": "06_speech_language_evaluation.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_slp_no_impairment",
+            "documentId": "06_speech_language_evaluation.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_slp_no_separate_need",
+            "documentId": "06_speech_language_evaluation.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_slp_no_service",
+            "documentId": "06_speech_language_evaluation.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_slp_purpose",
+            "documentId": "06_speech_language_evaluation.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_slp_reading_unresolved",
+            "documentId": "06_speech_language_evaluation.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_student_district",
+            "documentId": "01_initial_referral.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_student_dob",
+            "documentId": "01_initial_referral.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_student_grade",
+            "documentId": "01_initial_referral.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          },
+          {
+            "goldenFactId": "clm_student_school",
+            "documentId": "01_initial_referral.pdf",
+            "pageNumber": 1,
+            "status": "missed",
+            "matchedCandidateId": null,
+            "competingCandidateIds": []
+          }
+        ],
+        "perDocumentCoverage": [
+          {
+            "documentId": "01_initial_referral.pdf",
+            "goldenFactCount": 16,
+            "matchedCount": 0,
+            "recall": 0
+          },
+          {
+            "documentId": "02_evaluation_plan.pdf",
+            "goldenFactCount": 16,
+            "matchedCount": 0,
+            "recall": 0
+          },
+          {
+            "documentId": "03_parent_evaluation_consent.pdf",
+            "goldenFactCount": 6,
+            "matchedCount": 0,
+            "recall": 0
+          },
+          {
+            "documentId": "04_psychoeducational_evaluation.pdf",
+            "goldenFactCount": 16,
+            "matchedCount": 0,
+            "recall": 0
+          },
+          {
+            "documentId": "05_academic_evaluation.pdf",
+            "goldenFactCount": 13,
+            "matchedCount": 0,
+            "recall": 0
+          },
+          {
+            "documentId": "06_speech_language_evaluation.pdf",
+            "goldenFactCount": 10,
+            "matchedCount": 0,
+            "recall": 0
+          },
+          {
+            "documentId": "07_eligibility_determination.pdf",
+            "goldenFactCount": 11,
+            "matchedCount": 0,
+            "recall": 0
+          },
+          {
+            "documentId": "08_initial_iep.pdf",
+            "goldenFactCount": 29,
+            "matchedCount": 0,
+            "recall": 0
+          }
+        ],
+        "unmatchedCandidateIds": [
+          "reader-candidate-00ae66ef1cae",
+          "reader-candidate-01a3170bf23c",
+          "reader-candidate-01ad0dc214d0",
+          "reader-candidate-035e6b982dc7",
+          "reader-candidate-04070c4c62fd",
+          "reader-candidate-0426c3f87830",
+          "reader-candidate-057aab8fb082",
+          "reader-candidate-05ff4978a2f6",
+          "reader-candidate-060da00eab4b",
+          "reader-candidate-07a6f327e167",
+          "reader-candidate-0be54238fb70",
+          "reader-candidate-10f9e6fa4319",
+          "reader-candidate-13dcce613bf9",
+          "reader-candidate-158978c81e56",
+          "reader-candidate-1984e3f562bc",
+          "reader-candidate-1bbf8accc00f",
+          "reader-candidate-1d658b7e5b00",
+          "reader-candidate-1f259a16513c",
+          "reader-candidate-22a12f295f6e",
+          "reader-candidate-24cfb1082742",
+          "reader-candidate-27b5e97f51cc",
+          "reader-candidate-2a1b6e8cc42d",
+          "reader-candidate-2b984e9136b2",
+          "reader-candidate-2cabcc8277db",
+          "reader-candidate-2dd8982269bc",
+          "reader-candidate-2e9aa661556e",
+          "reader-candidate-2f1bddc998d8",
+          "reader-candidate-32faa1f054c2",
+          "reader-candidate-338cc831a472",
+          "reader-candidate-3751fcfa6193",
+          "reader-candidate-3ab4e568452a",
+          "reader-candidate-3d0ef70a14ee",
+          "reader-candidate-3e2f2f48e413",
+          "reader-candidate-3ebbef4e621a",
+          "reader-candidate-3faa890f88f1",
+          "reader-candidate-405c4c858fc0",
+          "reader-candidate-4335b115479b",
+          "reader-candidate-44f92c5283af",
+          "reader-candidate-462938781b58",
+          "reader-candidate-46b2dc8e301f",
+          "reader-candidate-485bdcc3f9c2",
+          "reader-candidate-4f1e5fd9852f",
+          "reader-candidate-4f7a94caa954",
+          "reader-candidate-52b96251ec90",
+          "reader-candidate-548d6798ef37",
+          "reader-candidate-57568a888adb",
+          "reader-candidate-5a33b8ab1342",
+          "reader-candidate-5c669572d0ac",
+          "reader-candidate-5f5b23f3a8bf",
+          "reader-candidate-612d1ce50de9",
+          "reader-candidate-6136718996d5",
+          "reader-candidate-63dbcf0c8fee",
+          "reader-candidate-6628eb25d244",
+          "reader-candidate-677448887109",
+          "reader-candidate-6826713c06fb",
+          "reader-candidate-684721b64cbf",
+          "reader-candidate-6a620a22af66",
+          "reader-candidate-6eb7f63ea128",
+          "reader-candidate-7121387aafdf",
+          "reader-candidate-71e426123dbe",
+          "reader-candidate-725982c5316a",
+          "reader-candidate-74699e0f99a2",
+          "reader-candidate-7635c40a4e27",
+          "reader-candidate-769356a53425",
+          "reader-candidate-77a5f36c122d",
+          "reader-candidate-7810783e8e44",
+          "reader-candidate-7a7ef31db01e",
+          "reader-candidate-7b06ccf7a16b",
+          "reader-candidate-7b7d8583c45f",
+          "reader-candidate-7be827d9ac9c",
+          "reader-candidate-7c7d70673f34",
+          "reader-candidate-7cc822f8d01b",
+          "reader-candidate-7ddfbcd423d3",
+          "reader-candidate-7e3e75eb055f",
+          "reader-candidate-7fa92c0dd890",
+          "reader-candidate-8060ef48bd6a",
+          "reader-candidate-83421081ceee",
+          "reader-candidate-83aebfc8635e",
+          "reader-candidate-851d1b59e076",
+          "reader-candidate-86c36f97c956",
+          "reader-candidate-8a791690202e",
+          "reader-candidate-8f90e21d1867",
+          "reader-candidate-91889f66ce80",
+          "reader-candidate-9492f66b693b",
+          "reader-candidate-952fe5c9090e",
+          "reader-candidate-96751470b66d",
+          "reader-candidate-96ab6c8ca6cc",
+          "reader-candidate-96d7cb2ff65a",
+          "reader-candidate-9a89bba39c18",
+          "reader-candidate-9bb36cab111c",
+          "reader-candidate-9f34d325b0db",
+          "reader-candidate-9f7a6d87ed39",
+          "reader-candidate-a01f45d56907",
+          "reader-candidate-a2149e1a5acb",
+          "reader-candidate-a6498f30c1be",
+          "reader-candidate-a6dfd9c45a23",
+          "reader-candidate-a80df6a3fb96",
+          "reader-candidate-a8369c9d30b5",
+          "reader-candidate-a87c5ad6785b",
+          "reader-candidate-aa6ff61fc67e",
+          "reader-candidate-ac55af2c9736",
+          "reader-candidate-ac74d395803f",
+          "reader-candidate-ad2b3ebaee1e",
+          "reader-candidate-ae17c3f08f0f",
+          "reader-candidate-aea840dbd978",
+          "reader-candidate-b09241c9efde",
+          "reader-candidate-b15c96f69622",
+          "reader-candidate-b2ff9e1ff256",
+          "reader-candidate-b36704743699",
+          "reader-candidate-b4563df1b00f",
+          "reader-candidate-b63a5595c72b",
+          "reader-candidate-b7d789a4636a",
+          "reader-candidate-b8930431e1d2",
+          "reader-candidate-ba671ff77782",
+          "reader-candidate-bab82ac76ff8",
+          "reader-candidate-be7233a2be65",
+          "reader-candidate-c094abd0a818",
+          "reader-candidate-c19fbeecf993",
+          "reader-candidate-c31fb86a783d",
+          "reader-candidate-c377e1c21b2d",
+          "reader-candidate-c39f6a3b6417",
+          "reader-candidate-c4c38c2a6178",
+          "reader-candidate-c5a97413ae51",
+          "reader-candidate-c73f0c5e69df",
+          "reader-candidate-c87e0c7b3e5b",
+          "reader-candidate-c8e66ca8dab3",
+          "reader-candidate-ca707efd40c5",
+          "reader-candidate-d38b093340b5",
+          "reader-candidate-d41cd70d048a",
+          "reader-candidate-d49f504a1596",
+          "reader-candidate-d4bba047b29a",
+          "reader-candidate-d69daa39eef6",
+          "reader-candidate-d6fcdd574c18",
+          "reader-candidate-dbd072f101ad",
+          "reader-candidate-dcf6802fd5ff",
+          "reader-candidate-deb09bf72e65",
+          "reader-candidate-e08ef39b8147",
+          "reader-candidate-e27d38e52f19",
+          "reader-candidate-e6a2d2155aec",
+          "reader-candidate-ebbcf6349f29",
+          "reader-candidate-f26ed9e79e78",
+          "reader-candidate-f29f20314137",
+          "reader-candidate-f3217c0f4f1e",
+          "reader-candidate-f609aedd6478",
+          "reader-candidate-f72194d4161c",
+          "reader-candidate-f7d429ca671b",
+          "reader-candidate-f934bb593efb",
+          "reader-candidate-fa9fb35fc1c2",
+          "reader-candidate-fb739149b82b",
+          "reader-candidate-fc4ea70ca603",
+          "reader-candidate-fe034acb9652",
+          "reader-candidate-fec5a368534a",
+          "reader-candidate-ff62aae8ab00",
+          "reader-candidate-ff744393b9e6"
+        ],
+        "duplicateCandidateIds": []
+      }
+    }
+  }
+}

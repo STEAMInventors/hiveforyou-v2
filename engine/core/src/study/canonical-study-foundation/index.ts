@@ -9,4 +9,11 @@ export { hashCanonicalStudyFoundationBody } from "./hash-body.js";
 export { normalizeVerifiedField } from "./normalize-verified-field.js";
 export { orderDocumentsAndRecords } from "./order-documents-and-records.js";
 export { verifyProposedField } from "./verify-proposed-field.js";
-export { tryDerivedPrimitive, parseFrequency, ratePerWeek, explicitTotalPerWeek } from "./primitives.js";
+export { COMPARISON_NORMALIZE_STEPS } from "./comparison-normalize.js";
+export {
+  tryDerivedPrimitive,
+  parseFrequency,
+  ratePerWeek,
+  explicitTotalPerWeek,
+  unitsEquivalent,
+} from "./primitives.js";

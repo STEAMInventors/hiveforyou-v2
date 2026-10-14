@@ -75,7 +75,25 @@ export function explicitTotalPerWeek(expression: string): DerivedPrimitiveResult
   if (!Number.isFinite(value) || value <= 0) {
     return { ok: false, reason: "explicit total duration is not a positive number" };
   }
-  return { ok: true, value, unit: "minutes_per_week" };
+  return { ok: true, value, unit: "min/week" };
+}
+
+const UNIT_CANON: Record<string, string> = {
+  "min/week": "min/week",
+  minutes_per_week: "min/week",
+  "minutes per week": "min/week",
+  "min per week": "min/week",
+};
+
+export function unitsEquivalent(a: string | null | undefined, b: string | null | undefined): boolean {
+  if (!a || !b) {
+    return false;
+  }
+  const norm = (u: string) => {
+    const k = u.trim().toLowerCase().replace(/\s+/g, " ");
+    return UNIT_CANON[k] ?? k;
+  };
+  return norm(a) === norm(b);
 }
 
 export function tryDerivedPrimitive(

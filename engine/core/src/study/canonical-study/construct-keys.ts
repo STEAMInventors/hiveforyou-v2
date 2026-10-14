@@ -1,32 +1,15 @@
-import {
-  applyComparableNormalizeSteps,
-  DEFAULT_COMPARABLE_NORMALIZE_STEPS,
-  parseFieldSynonyms,
-  type ProposalConstruct,
-  type ProposalDomainPack,
-} from "@hiveforyou/domain-pack";
+import { applyComparableNormalizeSteps, parseFieldSynonyms, type ProposalConstruct, type ProposalDomainPack } from "@hiveforyou/domain-pack";
+
+import { COMPARISON_NORMALIZE_STEPS } from "../canonical-study-foundation/comparison-normalize.js";
 
 import type { IndexedRecordVersion } from "./indexed-foundation.js";
 
 function normalizeStepsForField(
-  pack: ProposalDomainPack,
-  recordTypeId: string,
-  constructId?: string,
+  _pack: ProposalDomainPack,
+  _recordTypeId: string,
+  _constructId?: string,
 ): readonly ("lowercase" | "trim_punctuation" | "vocabulary_synonyms")[] {
-  if (constructId) {
-    return pack.constructs?.[constructId]?.normalize ?? DEFAULT_COMPARABLE_NORMALIZE_STEPS;
-  }
-  const record = pack.recordTypes.find((r) => r.id === recordTypeId);
-  const merged = new Set<string>();
-  for (const constructKey of record?.usesConstructs ?? []) {
-    for (const step of pack.constructs?.[constructKey]?.normalize ?? []) {
-      merged.add(step);
-    }
-  }
-  if (merged.size === 0) {
-    return DEFAULT_COMPARABLE_NORMALIZE_STEPS;
-  }
-  return [...merged] as ("lowercase" | "trim_punctuation" | "vocabulary_synonyms")[];
+  return COMPARISON_NORMALIZE_STEPS;
 }
 
 export function normalizedFieldValue(

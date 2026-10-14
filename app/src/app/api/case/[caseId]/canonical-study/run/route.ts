@@ -16,11 +16,14 @@ type RouteContext = { params: Promise<{ caseId: string }> };
 export async function POST(request: Request, context: RouteContext) {
   const { caseId } = await context.params;
   let studyRunId: string | undefined;
+  let asOfDate: string | undefined;
   try {
-    const body = (await request.json()) as { studyRunId?: string };
+    const body = (await request.json()) as { studyRunId?: string; asOfDate?: string };
     studyRunId = body.studyRunId?.trim();
+    asOfDate = body.asOfDate?.trim();
   } catch {
     studyRunId = undefined;
+    asOfDate = undefined;
   }
 
   if (!studyRunId) {
@@ -30,8 +33,19 @@ export async function POST(request: Request, context: RouteContext) {
     );
   }
 
+  if (asOfDate != null && asOfDate !== "" && !/^\d{4}-\d{2}-\d{2}$/.test(asOfDate)) {
+    return NextResponse.json(
+      { error: "INVALID_AS_OF_DATE", message: "asOfDate must be an ISO date (YYYY-MM-DD)." },
+      { status: 400 },
+    );
+  }
+
   try {
-    const result = await runDeterministicCanonicalStudy({ caseId, studyRunId });
+    const result = await runDeterministicCanonicalStudy({
+      caseId,
+      studyRunId,
+      asOfDate: asOfDate || undefined,
+    });
     return NextResponse.json({
       studyRunId: result.studyRunId,
       attemptId: result.attemptId,

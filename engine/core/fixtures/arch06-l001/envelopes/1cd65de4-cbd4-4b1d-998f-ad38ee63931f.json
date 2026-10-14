@@ -1,0 +1,210 @@
+{
+  "attemptId": "adb37691-b473-4938-b63c-d4ea43188d3a",
+  "caseId": "14baf227-7067-4a84-a316-f6cb72a5ecfe",
+  "domainId": "iep",
+  "latencyMs": 24304,
+  "modelId": "claude-opus-5-5",
+  "modelProvider": "anthropic",
+  "occurredAt": "2026-10-13T22:06:39Z",
+  "packContentSha256": "c2baa0439d32496a3110f5388f6048395a9f4c8fdce79b3d0cec36ae6b9a7775",
+  "packId": "iep",
+  "packVersion": "0.3.0-proposed",
+  "parsedModelJson": {
+    "documentTypeId": "iep.referral",
+    "packId": "iep",
+    "packVersion": "0.3.0-proposed",
+    "recordInstances": [
+      {
+        "fields": [
+          {
+            "evidence": {
+              "page": 1,
+              "quote": "Referral for Special Education Evaluation",
+              "sourceDocumentId": "1cd65de4-cbd4-4b1d-998f-ad38ee63931f"
+            },
+            "fieldId": "title",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "quoted",
+            "value": "Referral for Special Education Evaluation",
+            "valueKind": "text"
+          },
+          {
+            "evidence": {
+              "page": 1,
+              "quote": "Referred By: Teacher",
+              "sourceDocumentId": "1cd65de4-cbd4-4b1d-998f-ad38ee63931f"
+            },
+            "fieldId": "author_role",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "classified",
+            "value": "referrer",
+            "valueKind": "code"
+          }
+        ],
+        "instanceIndex": 0,
+        "recordEvidence": {
+          "page": 1,
+          "quote": "Referral for Special Education Evaluation",
+          "sourceDocumentId": "1cd65de4-cbd4-4b1d-998f-ad38ee63931f"
+        },
+        "recordTypeId": "document_header"
+      },
+      {
+        "fields": [
+          {
+            "evidence": {
+              "page": 1,
+              "quote": "Student: Maya Carter",
+              "sourceDocumentId": "1cd65de4-cbd4-4b1d-998f-ad38ee63931f"
+            },
+            "fieldId": "name",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "quoted",
+            "value": "Maya Carter",
+            "valueKind": "text"
+          },
+          {
+            "evidence": {
+              "page": 1,
+              "quote": "Date of Birth: 2017-04-18",
+              "sourceDocumentId": "1cd65de4-cbd4-4b1d-998f-ad38ee63931f"
+            },
+            "fieldId": "birth_date",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "quoted",
+            "value": "2017-04-18",
+            "valueKind": "date"
+          },
+          {
+            "evidence": {
+              "page": 1,
+              "quote": "Grade: 2",
+              "sourceDocumentId": "1cd65de4-cbd4-4b1d-998f-ad38ee63931f"
+            },
+            "fieldId": "grade",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "quoted",
+            "value": "2",
+            "valueKind": "text"
+          },
+          {
+            "evidence": {
+              "page": 1,
+              "quote": "School: Synthetic Elementary School",
+              "sourceDocumentId": "1cd65de4-cbd4-4b1d-998f-ad38ee63931f"
+            },
+            "fieldId": "school",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "quoted",
+            "value": "Synthetic Elementary School",
+            "valueKind": "text"
+          },
+          {
+            "evidence": {
+              "page": 1,
+              "quote": "District: Synthetic District",
+              "sourceDocumentId": "1cd65de4-cbd4-4b1d-998f-ad38ee63931f"
+            },
+            "fieldId": "district",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "quoted",
+            "value": "Synthetic District",
+            "valueKind": "text"
+          }
+        ],
+        "instanceIndex": 0,
+        "recordEvidence": {
+          "page": 1,
+          "quote": "Student: Maya Carter Date of Birth: 2017-04-18 Grade: 2 School: Synthetic Elementary School District: Synthetic District",
+          "sourceDocumentId": "1cd65de4-cbd4-4b1d-998f-ad38ee63931f"
+        },
+        "recordTypeId": "student"
+      },
+      {
+        "fields": [
+          {
+            "evidence": {
+              "page": 1,
+              "quote": "Reason for Referral Maya has difficulty reading connected grade-level text accurately and fluently.",
+              "sourceDocumentId": "1cd65de4-cbd4-4b1d-998f-ad38ee63931f"
+            },
+            "fieldId": "concern",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "quoted",
+            "value": "Maya has difficulty reading connected grade-level text accurately and fluently.",
+            "valueKind": "text"
+          },
+          {
+            "evidence": {
+              "page": 1,
+              "quote": "Referred By: Teacher",
+              "sourceDocumentId": "1cd65de4-cbd4-4b1d-998f-ad38ee63931f"
+            },
+            "fieldId": "source",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "quoted",
+            "value": "Teacher",
+            "valueKind": "text"
+          },
+          {
+            "evidence": {
+              "page": 1,
+              "quote": "Areas Requested for Evaluation • Academic achievement / reading • Reading fluency • Review of educational performance",
+              "sourceDocumentId": "1cd65de4-cbd4-4b1d-998f-ad38ee63931f"
+            },
+            "fieldId": "requested_action",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "quoted",
+            "value": "Academic achievement / reading • Reading fluency • Review of educational performance",
+            "valueKind": "text"
+          },
+          {
+            "evidence": {
+              "page": 1,
+              "quote": "Referral Date: 2024-08-20",
+              "sourceDocumentId": "1cd65de4-cbd4-4b1d-998f-ad38ee63931f"
+            },
+            "fieldId": "referral_date",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "quoted",
+            "value": "2024-08-20",
+            "valueKind": "date"
+          }
+        ],
+        "instanceIndex": 0,
+        "recordEvidence": {
+          "page": 1,
+          "quote": "Referral Date: 2024-08-20 Referred By: Teacher Area of Concern: Reading Fluency Reason for Referral Maya has difficulty reading connected grade-level text accurately and fluently. Existing Classroom Concern Classroom performance and teacher observation indicate persistent difficulty reading connected grade-level text accurately and fluently. The concern is affecting Maya's ability to access grade-level reading activities independently. Areas Requested for Evaluation • Academic achievement / reading • Reading fluency • Review of educational performance",
+          "sourceDocumentId": "1cd65de4-cbd4-4b1d-998f-ad38ee63931f"
+        },
+        "recordTypeId": "referral"
+      }
+    ],
+    "schemaVersion": "hive.pack-driven-reader-extraction/0.2.0",
+    "sourceDocumentId": "1cd65de4-cbd4-4b1d-998f-ad38ee63931f"
+  },
+  "promptVersion": "hive-pack-driven-reader/0.2.0",
+  "rawAssistantText": "```json\n{\n  \"schemaVersion\": \"hive.pack-driven-reader-extraction/0.2.0\",\n  \"packId\": \"iep\",\n  \"packVersion\": \"0.3.0-proposed\",\n  \"documentTypeId\": \"iep.referral\",\n  \"sourceDocumentId\": \"1cd65de4-cbd4-4b1d-998f-ad38ee63931f\",\n  \"recordInstances\": [\n    {\n      \"recordTypeId\": \"document_header\",\n      \"instanceIndex\": 0,\n      \"recordEvidence\": {\n        \"sourceDocumentId\": \"1cd65de4-cbd4-4b1d-998f-ad38ee63931f\",\n        \"page\": 1,\n        \"quote\": \"Referral for Special Education Evaluation\"\n      },\n      \"fields\": [\n        {\n          \"fieldId\": \"title\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"text\",\n          \"value\": \"Referral for Special Education Evaluation\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"1cd65de4-cbd4-4b1d-998f-ad38ee63931f\",\n            \"page\": 1,\n            \"quote\": \"Referral for Special Education Evaluation\"\n          }\n        },\n        {\n          \"fieldId\": \"author_role\",\n          \"provenance\": \"classified\",\n          \"valueKind\": \"code\",\n          \"value\": \"referrer\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"1cd65de4-cbd4-4b1d-998f-ad38ee63931f\",\n            \"page\": 1,\n            \"quote\": \"Referred By: Teacher\"\n          }\n        }\n      ]\n    },\n    {\n      \"recordTypeId\": \"student\",\n      \"instanceIndex\": 0,\n      \"recordEvidence\": {\n        \"sourceDocumentId\": \"1cd65de4-cbd4-4b1d-998f-ad38ee63931f\",\n        \"page\": 1,\n        \"quote\": \"Student: Maya Carter Date of Birth: 2017-04-18 Grade: 2 School: Synthetic Elementary School District: Synthetic District\"\n      },\n      \"fields\": [\n        {\n          \"fieldId\": \"name\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"text\",\n          \"value\": \"Maya Carter\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"1cd65de4-cbd4-4b1d-998f-ad38ee63931f\",\n            \"page\": 1,\n            \"quote\": \"Student: Maya Carter\"\n          }\n        },\n        {\n          \"fieldId\": \"birth_date\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"date\",\n          \"value\": \"2017-04-18\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"1cd65de4-cbd4-4b1d-998f-ad38ee63931f\",\n            \"page\": 1,\n            \"quote\": \"Date of Birth: 2017-04-18\"\n          }\n        },\n        {\n          \"fieldId\": \"grade\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"text\",\n          \"value\": \"2\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"1cd65de4-cbd4-4b1d-998f-ad38ee63931f\",\n            \"page\": 1,\n            \"quote\": \"Grade: 2\"\n          }\n        },\n        {\n          \"fieldId\": \"school\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"text\",\n          \"value\": \"Synthetic Elementary School\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"1cd65de4-cbd4-4b1d-998f-ad38ee63931f\",\n            \"page\": 1,\n            \"quote\": \"School: Synthetic Elementary School\"\n          }\n        },\n        {\n          \"fieldId\": \"district\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"text\",\n          \"value\": \"Synthetic District\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"1cd65de4-cbd4-4b1d-998f-ad38ee63931f\",\n            \"page\": 1,\n            \"quote\": \"District: Synthetic District\"\n          }\n        }\n      ]\n    },\n    {\n      \"recordTypeId\": \"referral\",\n      \"instanceIndex\": 0,\n      \"recordEvidence\": {\n        \"sourceDocumentId\": \"1cd65de4-cbd4-4b1d-998f-ad38ee63931f\",\n        \"page\": 1,\n        \"quote\": \"Referral Date: 2024-08-20 Referred By: Teacher Area of Concern: Reading Fluency Reason for Referral Maya has difficulty reading connected grade-level text accurately and fluently. Existing Classroom Concern Classroom performance and teacher observation indicate persistent difficulty reading connected grade-level text accurately and fluently. The concern is affecting Maya's ability to access grade-level reading activities independently. Areas Requested for Evaluation • Academic achievement / reading • Reading fluency • Review of educational performance\"\n      },\n      \"fields\": [\n        {\n          \"fieldId\": \"concern\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"text\",\n          \"value\": \"Maya has difficulty reading connected grade-level text accurately and fluently.\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"1cd65de4-cbd4-4b1d-998f-ad38ee63931f\",\n            \"page\": 1,\n            \"quote\": \"Reason for Referral Maya has difficulty reading connected grade-level text accurately and fluently.\"\n          }\n        },\n        {\n          \"fieldId\": \"source\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"text\",\n          \"value\": \"Teacher\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"1cd65de4-cbd4-4b1d-998f-ad38ee63931f\",\n            \"page\": 1,\n            \"quote\": \"Referred By: Teacher\"\n          }\n        },\n        {\n          \"fieldId\": \"requested_action\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"text\",\n          \"value\": \"Academic achievement / reading • Reading fluency • Review of educational performance\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"1cd65de4-cbd4-4b1d-998f-ad38ee63931f\",\n            \"page\": 1,\n            \"quote\": \"Areas Requested for Evaluation • Academic achievement / reading • Reading fluency • Review of educational performance\"\n          }\n        },\n        {\n          \"fieldId\": \"referral_date\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"date\",\n          \"value\": \"2024-08-20\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"1cd65de4-cbd4-4b1d-998f-ad38ee63931f\",\n            \"page\": 1,\n            \"quote\": \"Referral Date: 2024-08-20\"\n          }\n        }\n      ]\n    }\n  ]\n}\n```",
+  "schemaVersion": "hive.reader-document-extraction/1",
+  "sourceDocumentId": "1cd65de4-cbd4-4b1d-998f-ad38ee63931f",
+  "status": "SUCCEEDED",
+  "studyRunId": "86dfa706-f7fc-4fe7-a49d-14e154825ec4",
+  "usage": {
+    "cacheReadInputTokens": null,
+    "cacheWriteInputTokens": null,
+    "inputTokens": null,
+    "outputTokens": null
+  },
+  "userId": "40bd9c51-15c6-42fc-a902-3c186e750e53"
+}

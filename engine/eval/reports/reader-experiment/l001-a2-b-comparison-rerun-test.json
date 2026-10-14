@@ -1,0 +1,43 @@
+{
+  "schemaVersion": "reader-golden-comparison/1",
+  "generatedAt": "2026-10-10T18:30:53.493Z",
+  "golden": {
+    "caseId": "l001",
+    "path": "engine/eval/golden/tune/l001.json",
+    "factCount": 117
+  },
+  "runs": {
+    "A2": {
+      "label": "A2",
+      "studyRunId": "621870eb-10e6-4b6d-af6a-3e2447e3d357",
+      "gradeability": {
+        "studyRunId": "621870eb-10e6-4b6d-af6a-3e2447e3d357",
+        "gradeable": false,
+        "blockers": [
+          "No reader-accepted-facts/1 export (accepted CandidateFact payloads are not in agent_run_trace_events).",
+          "No agent_run_trace_events rows for this studyRunId.",
+          "Trace has candidateFactId, sourceDocumentId, page, reasonCodes, decisionAuthority, authoritative only; grading needs construct, value, modality, sourceDocumentId, page, quote, evidence, evidenceRefs per accepted fact."
+        ],
+        "traceAudit": null,
+        "persistedFactFields": [
+          "candidateFactId",
+          "sourceDocumentId",
+          "page",
+          "reasonCodes",
+          "decisionAuthority",
+          "authoritative"
+        ],
+        "recoverySources": [
+          "Private bucket reader-accepted-facts/1 artifact written by agentic Reader qualification."
+        ]
+      },
+      "factsPath": null,
+      "acceptedFactsSource": null,
+      "attemptId": null,
+      "corpusMapping": {
+        "registeredDocumentCount": 0,
+        "mappedSourceDocumentCount": 8
+      }
+    }
+  }
+}

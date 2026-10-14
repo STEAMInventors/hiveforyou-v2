@@ -1,9 +1,6 @@
-import {
-  applyComparableNormalizeSteps,
-  DEFAULT_COMPARABLE_NORMALIZE_STEPS,
-  type ProposalDomainPack,
-  type ProposalRecordField,
-} from "@hiveforyou/domain-pack";
+import { applyComparableNormalizeSteps, type ProposalDomainPack, type ProposalRecordField } from "@hiveforyou/domain-pack";
+
+import { COMPARISON_NORMALIZE_STEPS } from "./comparison-normalize.js";
 import type {
   CanonicalStudyFoundationNormalizedValue,
   CanonicalStudyFoundationProposedField,
@@ -72,20 +69,10 @@ function applyLegacyCodeValue(input: {
 }
 
 function comparableStepsForRecord(
-  pack: ProposalDomainPack,
-  recordTypeId: string,
+  _pack: ProposalDomainPack,
+  _recordTypeId: string,
 ): readonly ("lowercase" | "trim_punctuation" | "vocabulary_synonyms")[] {
-  const record = pack.recordTypes.find((r) => r.id === recordTypeId);
-  const merged = new Set<string>();
-  for (const constructId of record?.usesConstructs ?? []) {
-    for (const step of pack.constructs?.[constructId]?.normalize ?? []) {
-      merged.add(step);
-    }
-  }
-  if (merged.size === 0) {
-    return DEFAULT_COMPARABLE_NORMALIZE_STEPS;
-  }
-  return [...merged] as ("lowercase" | "trim_punctuation" | "vocabulary_synonyms")[];
+  return COMPARISON_NORMALIZE_STEPS;
 }
 
 function applyComparableNormalizeForField(input: {

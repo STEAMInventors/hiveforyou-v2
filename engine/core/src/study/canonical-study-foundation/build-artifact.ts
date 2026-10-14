@@ -23,7 +23,7 @@ import { hashCanonicalStudyFoundationBody } from "./hash-body.js";
 import { normalizeVerifiedField } from "./normalize-verified-field.js";
 import { orderDocumentsAndRecords } from "./order-documents-and-records.js";
 import { buildFieldKey } from "./field-key.js";
-import { tryDerivedPrimitive } from "./primitives.js";
+import { tryDerivedPrimitive, unitsEquivalent } from "./primitives.js";
 import { verifyProposedField } from "./verify-proposed-field.js";
 
 export type CanonicalStudyFoundationDocumentInput = {
@@ -178,29 +178,28 @@ function computeDerivedFields(input: {
         lastReason = attemptResult.reason;
       }
 
-      if (!result?.ok) {
-        const usesFrequencyText =
-          fieldDef.derivation?.operands.includes("frequency_text") ||
-          fieldDef.derivation?.alternates?.some((alternate) =>
-            alternate.operands.includes("frequency_text"),
-          );
-        if (usesFrequencyText) {
-          const frequencyKey = buildFieldKey({
-            sourceDocumentId: group.sourceDocumentId,
-            recordTypeId: group.recordTypeId,
-            instanceIndex: group.instanceIndex,
-            fieldId: "frequency_text",
+      // Explicit weekly total ("150 minutes weekly") may fill ONLY a field declared in min/week.
+      if (!result?.ok && unitsEquivalent(fieldDef.unit, "min/week")) {
+        const frequencyKey = buildFieldKey({
+          sourceDocumentId: group.sourceDocumentId,
+          recordTypeId: group.recordTypeId,
+          instanceIndex: group.instanceIndex,
+          fieldId: "frequency_text",
+        });
+        const frequencyOperand = workingVerifiedByKey.get(frequencyKey);
+        if (frequencyOperand && typeof frequencyOperand.displayValue === "string") {
+          const fallback = tryDerivedPrimitive("explicitTotalPerWeek", {
+            frequency_text: frequencyOperand.displayValue,
           });
-          const frequencyOperand = workingVerifiedByKey.get(frequencyKey);
-          if (frequencyOperand && typeof frequencyOperand.displayValue === "string") {
-            const fallback = tryDerivedPrimitive("explicitTotalPerWeek", {
-              frequency_text: frequencyOperand.displayValue,
-            });
-            if (fallback.ok) {
-              result = fallback;
-            }
+          if (fallback.ok) {
+            result = fallback;
           }
         }
+      }
+
+      // A derived value may never land in a field whose declared unit differs.
+      if (result?.ok && result.unit != null && fieldDef.unit != null && !unitsEquivalent(result.unit, fieldDef.unit)) {
+        result = null;
       }
 
       if (!result?.ok) {
