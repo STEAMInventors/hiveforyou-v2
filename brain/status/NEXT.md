@@ -81,6 +81,10 @@ All six verified by **Aryya Bhattacharyya**, `draft: false`, all primary anchors
 
 **Injection fixture:** mandatory before later tripwire/shadow promotion; not a T1.2 blocker.
 
+## Known failures
+
+- **shadow-golden L001 replay (2 tests)** — pre-existing on origin c478337; Path A; resolve with Path A removal
+
 Review packages: `engine/eval/golden/_review/<case>/` with `*-golden.v4.json`, `*-golden.evidence-index.json`, `*-golden.REVIEW.md`, `build_*_golden.py`.
 
 ## Log

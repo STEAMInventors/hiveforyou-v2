@@ -1,25 +1,15 @@
-import {
-  applyFieldSynonymNormalization,
-  parseFieldSynonyms,
-  type ProposalConstruct,
-  type ProposalDomainPack,
-} from "@hiveforyou/domain-pack";
+import { applyComparableNormalizeSteps, parseFieldSynonyms, type ProposalConstruct, type ProposalDomainPack } from "@hiveforyou/domain-pack";
+
+import { COMPARISON_NORMALIZE_STEPS } from "../canonical-study-foundation/comparison-normalize.js";
 
 import type { IndexedRecordVersion } from "./indexed-foundation.js";
 
-function normalizeText(value: unknown, steps: string[] | undefined, pack: ProposalDomainPack): string {
-  let text = String(value ?? "").trim();
-  for (const step of steps ?? []) {
-    if (step === "lowercase") {
-      text = text.toLowerCase();
-    } else if (step === "trim_punctuation") {
-      text = text.replace(/^[^\w]+|[^\w]+$/g, "");
-    } else if (step === "vocabulary_synonyms") {
-      const entries = parseFieldSynonyms(pack.vocabulary?.fieldSynonyms);
-      text = applyFieldSynonymNormalization(text, entries);
-    }
-  }
-  return text;
+function normalizeStepsForField(
+  _pack: ProposalDomainPack,
+  _recordTypeId: string,
+  _constructId?: string,
+): readonly ("lowercase" | "trim_punctuation" | "vocabulary_synonyms")[] {
+  return COMPARISON_NORMALIZE_STEPS;
 }
 
 export function normalizedFieldValue(
@@ -36,8 +26,9 @@ export function normalizedFieldValue(
   if (raw == null || raw === "") {
     return null;
   }
-  const steps = constructId ? pack.constructs?.[constructId]?.normalize : undefined;
-  return normalizeText(raw, steps, pack);
+  const fieldPath = `${record.recordTypeId}.${fieldId}`;
+  const steps = normalizeStepsForField(pack, record.recordTypeId, constructId);
+  return applyComparableNormalizeSteps(String(raw), steps, pack, fieldPath);
 }
 
 export type ContentKeyResult = {

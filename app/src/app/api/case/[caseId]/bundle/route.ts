@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import { UnauthenticatedError } from "@hiveforyou/core";
 
+import { jsonFromAccessError, requireCaseAccess } from "@/lib/auth/require-case-access";
 import { CaseNotFoundError } from "@/lib/canonical-study/study-service-server";
 import { loadCaseViewBundle } from "@/lib/case/case-bundle-service-server";
 
@@ -21,9 +22,14 @@ export async function GET(request: Request, context: RouteContext) {
   }
 
   try {
+    await requireCaseAccess(request, caseId);
     const bundle = await loadCaseViewBundle({ caseId, intelligenceVersion });
     return NextResponse.json(bundle);
   } catch (error) {
+    const accessResponse = jsonFromAccessError(error);
+    if (accessResponse) {
+      return accessResponse;
+    }
     if (error instanceof UnauthenticatedError) {
       return NextResponse.json(
         { error: "UNAUTHENTICATED", message: "Sign in is required." },

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import { UnauthenticatedError } from "@hiveforyou/core";
 
+import { jsonFromAccessError, requireCaseAccess } from "@/lib/auth/require-case-access";
 import { CaseNotFoundError } from "@/lib/canonical-study/study-service-server";
 import {
   generateProQuerySql,
@@ -25,6 +26,7 @@ export async function POST(request: Request, context: RouteContext) {
   const studyRunId = body.studyRunId.trim();
 
   try {
+    await requireCaseAccess(request, caseId);
     if (typeof body.sql === "string" && body.sql.trim()) {
       const result = await runProQuerySql({ caseId, studyRunId, sql: body.sql });
       return NextResponse.json(result);
@@ -35,6 +37,10 @@ export async function POST(request: Request, context: RouteContext) {
     }
     return NextResponse.json({ error: "REQUEST_OR_SQL_REQUIRED" }, { status: 400 });
   } catch (error) {
+    const accessResponse = jsonFromAccessError(error);
+    if (accessResponse) {
+      return accessResponse;
+    }
     if (error instanceof UnauthenticatedError) {
       return NextResponse.json({ error: "UNAUTHENTICATED" }, { status: 401 });
     }

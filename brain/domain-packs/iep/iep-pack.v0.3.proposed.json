@@ -3,7 +3,7 @@
   "status": "REVIEW_DRAFT_NOT_RUNTIME_COMPATIBLE",
   "manifest": {
     "id": "iep",
-    "version": "0.3.0-proposed",
+    "version": "0.3.1-proposed",
     "name": "Special Education / IEP",
     "jurisdictions": [
       "US-federal-base"
@@ -1607,8 +1607,9 @@
           ],
           "enum": [
             "instruction",
-            "testing",
-            "both",
+            "classroom_testing",
+            "state_district_assessment",
+            "instruction_and_testing",
             "unspecified"
           ]
         },
@@ -2478,6 +2479,22 @@
           ]
         },
         {
+          "id": "need_identified",
+          "valueKind": "classification",
+          "source": [
+            "classified"
+          ],
+          "modality": [
+            "observed"
+          ],
+          "enum": [
+            "yes",
+            "no",
+            "unclear"
+          ],
+          "description": "Whether the evaluation documents a distinct educational need in this area (yes only when clearly supported)."
+        },
+        {
           "id": "recommendation",
           "valueKind": "text",
           "comparison": "none",
@@ -2894,7 +2911,12 @@
         "primitive": "absenceOf",
         "present": {
           "record": "evaluation_finding",
-          "field": "area"
+          "field": "area",
+          "where": {
+            "need_identified": [
+              "yes"
+            ]
+          }
         },
         "absent": {
           "record": "goal",
@@ -2961,8 +2983,8 @@
           "field": "description",
           "where": {
             "context": [
-              "testing",
-              "both"
+              "state_district_assessment",
+              "instruction_and_testing"
             ]
           }
         },
@@ -3092,6 +3114,13 @@
       "PR": "percentile rank",
       "GE": "grade equivalent",
       "CBM": "curriculum-based measurement"
+    },
+    "readerLegacyContextMap": {
+      "accommodation.context": {
+        "testing": "classroom_testing",
+        "both": "instruction_and_testing",
+        "instruction": "instruction"
+      }
     },
     "fieldSynonyms": [
       {
@@ -3312,6 +3341,9 @@
     "images_and_scanned_tables_require_region_evidence",
     "taxonomy_beyond_L001_needs_broader_corpus",
     "accommodation_text_matching_threshold_undefined"
+  ],
+  "changeLog": [
+    "0.3.1-proposed: accommodation context split; need_identified + need_without_goal where-filter; readerLegacyContextMap."
   ],
   "changeLogFromV0_2": [
     "Fact types are records with fields (previously 92 single-field types); one table row or goal is one record with one quote.",

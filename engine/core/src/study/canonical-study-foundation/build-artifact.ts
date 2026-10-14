@@ -23,7 +23,7 @@ import { hashCanonicalStudyFoundationBody } from "./hash-body.js";
 import { normalizeVerifiedField } from "./normalize-verified-field.js";
 import { orderDocumentsAndRecords } from "./order-documents-and-records.js";
 import { buildFieldKey } from "./field-key.js";
-import { tryDerivedPrimitive } from "./primitives.js";
+import { tryDerivedPrimitive, unitsEquivalent } from "./primitives.js";
 import { verifyProposedField } from "./verify-proposed-field.js";
 
 export type CanonicalStudyFoundationDocumentInput = {
@@ -90,13 +90,24 @@ function computeDerivedFields(input: {
   const derivedUnresolved: CanonicalStudyFoundationUnresolvedField[] = [];
   const unresolvedItems: CanonicalStudyFoundationUnresolvedItem[] = [];
 
+  const workingVerifiedByKey = new Map(input.verifiedByKey);
+
   for (const group of input.groupedRecords) {
     const recordDef = input.pack.recordTypes.find((r) => r.id === group.recordTypeId);
     if (!recordDef) {
       continue;
     }
-    for (const fieldDef of recordDef.fields) {
-      if (!fieldDef.source.includes("derived") || !fieldDef.derivation) {
+    const derivedFieldDefs = recordDef.fields.filter(
+      (fieldDef) => fieldDef.source.includes("derived") && fieldDef.derivation,
+    );
+    let progressed = true;
+    let passes = 0;
+    while (progressed && passes < derivedFieldDefs.length + 1) {
+      progressed = false;
+      passes += 1;
+      for (const fieldDef of derivedFieldDefs) {
+      const derivation = fieldDef.derivation;
+      if (!derivation) {
         continue;
       }
       const fieldKey = buildFieldKey({
@@ -105,13 +116,13 @@ function computeDerivedFields(input: {
         instanceIndex: group.instanceIndex,
         fieldId: fieldDef.id,
       });
-      if (input.verifiedByKey.has(fieldKey)) {
+      if (workingVerifiedByKey.has(fieldKey)) {
         continue;
       }
 
       const attempts = [
-        { primitive: fieldDef.derivation.primitive, operands: fieldDef.derivation.operands },
-        ...(fieldDef.derivation.alternates ?? []),
+        { primitive: derivation.primitive, operands: derivation.operands },
+        ...(derivation.alternates ?? []),
       ];
       const envelope = input.envelopeBySource.get(group.sourceDocumentId);
       const base = {
@@ -149,7 +160,7 @@ function computeDerivedFields(input: {
             instanceIndex: group.instanceIndex,
             fieldId: operandId,
           });
-          const verifiedOperand = input.verifiedByKey.get(operandKey);
+          const verifiedOperand = workingVerifiedByKey.get(operandKey);
           if (!verifiedOperand) {
             operandsReady = false;
             break;
@@ -171,46 +182,31 @@ function computeDerivedFields(input: {
         lastReason = attemptResult.reason;
       }
 
-      if (!result?.ok) {
-        const usesFrequencyText =
-          fieldDef.derivation?.operands.includes("frequency_text") ||
-          fieldDef.derivation?.alternates?.some((alternate) =>
-            alternate.operands.includes("frequency_text"),
-          );
-        if (usesFrequencyText) {
-          const frequencyKey = buildFieldKey({
-            sourceDocumentId: group.sourceDocumentId,
-            recordTypeId: group.recordTypeId,
-            instanceIndex: group.instanceIndex,
-            fieldId: "frequency_text",
+      // Explicit weekly total ("150 minutes weekly") may fill ONLY a field declared in min/week.
+      if (!result?.ok && unitsEquivalent(fieldDef.unit, "min/week")) {
+        const frequencyKey = buildFieldKey({
+          sourceDocumentId: group.sourceDocumentId,
+          recordTypeId: group.recordTypeId,
+          instanceIndex: group.instanceIndex,
+          fieldId: "frequency_text",
+        });
+        const frequencyOperand = workingVerifiedByKey.get(frequencyKey);
+        if (frequencyOperand && typeof frequencyOperand.displayValue === "string") {
+          const fallback = tryDerivedPrimitive("explicitTotalPerWeek", {
+            frequency_text: frequencyOperand.displayValue,
           });
-          const frequencyOperand = input.verifiedByKey.get(frequencyKey);
-          if (frequencyOperand && typeof frequencyOperand.displayValue === "string") {
-            const fallback = tryDerivedPrimitive("explicitTotalPerWeek", {
-              frequency_text: frequencyOperand.displayValue,
-            });
-            if (fallback.ok) {
-              result = fallback;
-            }
+          if (fallback.ok) {
+            result = fallback;
           }
         }
       }
 
+      // A derived value may never land in a field whose declared unit differs.
+      if (result?.ok && result.unit != null && fieldDef.unit != null && !unitsEquivalent(result.unit, fieldDef.unit)) {
+        result = null;
+      }
+
       if (!result?.ok) {
-        const missingOperands = !attempted;
-        derivedUnresolved.push({
-          ...base,
-          disposition: "unresolved",
-          reasons: [missingOperands ? "Derived field operands are not all verified." : lastReason],
-        });
-        unresolvedItems.push({
-          id: missingOperands ? `derived-operand:${fieldKey}` : `derived-unsupported:${fieldKey}`,
-          kind: missingOperands ? "derived_operand_unverified" : "unsupported_derivation",
-          message: missingOperands ? `Derived field ${fieldKey} missing verified operands.` : lastReason,
-          sourceDocumentId: group.sourceDocumentId,
-          fieldKey,
-          recordGroupId: group.recordGroupId,
-        });
         continue;
       }
 
@@ -218,9 +214,9 @@ function computeDerivedFields(input: {
         ...base,
         displayValue: result.value,
       };
-      derivedVerified.push({
+      const verifiedDerived = {
         ...proposedLike,
-        disposition: "verified",
+        disposition: "verified" as const,
         verifiedEvidence: [],
         normalized: {
           valueKind: fieldDef.valueKind,
@@ -228,7 +224,54 @@ function computeDerivedFields(input: {
           normalizedValue: result.value,
           unit: result.unit ?? fieldDef.unit ?? null,
         },
-        reasons: [],
+        reasons: [] as [],
+      };
+      derivedVerified.push(verifiedDerived);
+      workingVerifiedByKey.set(fieldKey, verifiedDerived);
+      progressed = true;
+      }
+    }
+
+    for (const fieldDef of derivedFieldDefs) {
+      const fieldKey = buildFieldKey({
+        sourceDocumentId: group.sourceDocumentId,
+        recordTypeId: group.recordTypeId,
+        instanceIndex: group.instanceIndex,
+        fieldId: fieldDef.id,
+      });
+      if (workingVerifiedByKey.has(fieldKey)) {
+        continue;
+      }
+      derivedUnresolved.push({
+        fieldKey,
+        sourceDocumentId: group.sourceDocumentId,
+        recordTypeId: group.recordTypeId,
+        instanceIndex: group.instanceIndex,
+        fieldId: fieldDef.id,
+        documentTypeId: null,
+        valueKind: fieldDef.valueKind,
+        provenance: "derived",
+        modality: fieldDef.modality?.[0] ?? "planned",
+        missingState: null,
+        displayValue: null,
+        evidence: null,
+        envelopeRef: {
+          studyRunId: input.envelopeBySource.get(group.sourceDocumentId)?.studyRunId ?? "",
+          attemptId: input.envelopeBySource.get(group.sourceDocumentId)?.attemptId ?? "",
+          sourceDocumentId: group.sourceDocumentId,
+          envelopeStatus: input.envelopeBySource.get(group.sourceDocumentId)?.status ?? "UNKNOWN",
+        },
+        parseErrors: [],
+        disposition: "unresolved",
+        reasons: ["Derived field operands are not all verified."],
+      });
+      unresolvedItems.push({
+        id: `derived-operand:${fieldKey}`,
+        kind: "derived_operand_unverified",
+        message: `Derived field ${fieldKey} missing verified operands.`,
+        sourceDocumentId: group.sourceDocumentId,
+        fieldKey,
+        recordGroupId: group.recordGroupId,
       });
     }
   }

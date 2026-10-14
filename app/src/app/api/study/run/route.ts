@@ -8,6 +8,8 @@ import {
 } from "@/lib/canonical-study/study-service-server";
 import { UnauthenticatedError, UnknownPromptVersionError } from "@hiveforyou/core";
 
+import { jsonFromAccessError, requireCaseAccess, requireUser } from "@/lib/auth/require-case-access";
+
 import type { StartCanonicalStudyRequest } from "@hiveforyou/shared/canonical-study";
 
 export async function POST(request: Request) {
@@ -28,9 +30,17 @@ export async function POST(request: Request) {
   }
 
   try {
+    await requireUser(request);
+    if (body.caseId?.trim()) {
+      await requireCaseAccess(request, body.caseId.trim());
+    }
     const outcome = await startCanonicalStudyFromRequest(body);
     return NextResponse.json(outcome);
   } catch (error) {
+    const accessResponse = jsonFromAccessError(error);
+    if (accessResponse) {
+      return accessResponse;
+    }
     if (error instanceof UnauthenticatedError) {
       return NextResponse.json(
         { error: "UNAUTHENTICATED", message: "Sign in is required." },

@@ -7,18 +7,25 @@ import {
 } from "@/lib/case-map/case-map-bundle-service-server";
 import { UnauthenticatedError } from "@hiveforyou/core";
 
+import { jsonFromAccessError, requireUser } from "@/lib/auth/require-case-access";
+
 type RouteContext = { params: Promise<{ studyRunId: string }> };
 
-export async function GET(_request: Request, context: RouteContext) {
+export async function GET(request: Request, context: RouteContext) {
   const { studyRunId } = await context.params;
   if (!studyRunId?.trim()) {
     return NextResponse.json({ error: "INVALID_REQUEST" }, { status: 400 });
   }
 
   try {
+    await requireUser(request);
     const bundle = await loadCaseMapViewBundle(studyRunId.trim());
     return NextResponse.json(bundle);
   } catch (error) {
+    const accessResponse = jsonFromAccessError(error);
+    if (accessResponse) {
+      return accessResponse;
+    }
     if (error instanceof UnauthenticatedError) {
       return NextResponse.json({ error: "UNAUTHENTICATED" }, { status: 401 });
     }

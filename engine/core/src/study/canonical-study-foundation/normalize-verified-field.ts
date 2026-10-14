@@ -1,9 +1,6 @@
-import {
-  applyFieldSynonymNormalization,
-  parseFieldSynonyms,
-  type ProposalDomainPack,
-  type ProposalRecordField,
-} from "@hiveforyou/domain-pack";
+import { applyComparableNormalizeSteps, type ProposalDomainPack, type ProposalRecordField } from "@hiveforyou/domain-pack";
+
+import { COMPARISON_NORMALIZE_STEPS } from "./comparison-normalize.js";
 import type {
   CanonicalStudyFoundationNormalizedValue,
   CanonicalStudyFoundationProposedField,
@@ -55,11 +52,6 @@ function resolveUnitAlias(pack: ProposalDomainPack, unit: string | null | undefi
   return unit;
 }
 
-function applyVocabularySynonyms(pack: ProposalDomainPack, text: string): string {
-  const entries = parseFieldSynonyms(pack.vocabulary?.fieldSynonyms);
-  return applyFieldSynonymNormalization(normalizeAttributeRaw(text), entries);
-}
-
 function applyLegacyCodeValue(input: {
   pack: ProposalDomainPack;
   recordTypeId: string;
@@ -76,26 +68,27 @@ function applyLegacyCodeValue(input: {
   return scoped?.[input.code] ?? global?.[input.code] ?? input.code;
 }
 
-function applyConstructNormalize(
-  pack: ProposalDomainPack,
-  recordTypeId: string,
-  text: string,
-): string {
-  const record = pack.recordTypes.find((r) => r.id === recordTypeId);
-  let normalized = text;
-  for (const constructId of record?.usesConstructs ?? []) {
-    const construct = pack.constructs?.[constructId];
-    for (const step of construct?.normalize ?? []) {
-      if (step === "lowercase") {
-        normalized = normalized.toLowerCase();
-      } else if (step === "trim_punctuation") {
-        normalized = normalized.replace(/[^\w\s/-]+/g, " ").replace(/\s+/g, " ").trim();
-      } else if (step === "vocabulary_synonyms") {
-        normalized = applyVocabularySynonyms(pack, normalized);
-      }
-    }
-  }
-  return normalized;
+function comparableStepsForRecord(
+  _pack: ProposalDomainPack,
+  _recordTypeId: string,
+): readonly ("lowercase" | "trim_punctuation" | "vocabulary_synonyms")[] {
+  return COMPARISON_NORMALIZE_STEPS;
+}
+
+function applyComparableNormalizeForField(input: {
+  pack: ProposalDomainPack;
+  recordTypeId: string;
+  fieldId: string;
+  text: string;
+}): string {
+  const fieldPath = `${input.recordTypeId}.${input.fieldId}`;
+  const raw = normalizeAttributeRaw(input.text);
+  return applyComparableNormalizeSteps(
+    raw,
+    comparableStepsForRecord(input.pack, input.recordTypeId),
+    input.pack,
+    fieldPath,
+  );
 }
 
 export function normalizeVerifiedField(input: {
@@ -136,7 +129,8 @@ export function normalizeVerifiedField(input: {
         unit,
       };
     }
-    case "code": {
+    case "code":
+    case "classification": {
       const rawCode =
         typeof displayValue === "string" ? displayValue.trim().toLowerCase() : displayValue;
       const code =
@@ -156,7 +150,12 @@ export function normalizeVerifiedField(input: {
     }
     case "text": {
       const raw = typeof displayValue === "string" ? displayValue : String(displayValue ?? "");
-      const normalized = applyConstructNormalize(input.pack, input.field.recordTypeId, raw);
+      const normalized = applyComparableNormalizeForField({
+        pack: input.pack,
+        recordTypeId: input.field.recordTypeId,
+        fieldId: input.field.fieldId,
+        text: raw,
+      });
       return {
         valueKind,
         displayValue,

@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 
 import { UnauthenticatedError } from "@hiveforyou/core";
 
+import { jsonFromAccessError, requireUser } from "@/lib/auth/require-case-access";
+
 import { CaseNotFoundError } from "@/lib/canonical-study/study-service-server";
 import { StudyRunNotFoundError } from "@/lib/evidence/evidence-trace-service-server";
 import {
@@ -19,6 +21,7 @@ export async function GET(request: Request, context: RouteContext) {
   const originalFilenameHint = new URL(request.url).searchParams.get("filename");
 
   try {
+    await requireUser(request);
     const file = await loadSourceDocumentFileForStudyRun({
       studyRunId,
       sourceDocumentId,
@@ -33,6 +36,10 @@ export async function GET(request: Request, context: RouteContext) {
       },
     });
   } catch (error) {
+    const accessResponse = jsonFromAccessError(error);
+    if (accessResponse) {
+      return accessResponse;
+    }
     if (error instanceof UnauthenticatedError) {
       return NextResponse.json(
         { error: "UNAUTHENTICATED", message: "Sign in is required." },

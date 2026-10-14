@@ -41,6 +41,7 @@ export function evaluateWhenClause(
   when: ProposalRequirementWhen | undefined,
   indexed: IndexedFoundation,
   sourceContext: CanonicalStudySourceContext,
+  scopeSourceDocumentIds?: Set<string>,
 ): PrimitiveResult {
   if (!when) {
     return { ok: true };
@@ -53,7 +54,68 @@ export function evaluateWhenClause(
     return result.found ? { ok: true } : { ok: false, reason: "applicability_false" };
   }
   if (when.primitive === "ageOnDate") {
-    return { ok: false, reason: "ageOnDate_unresolved_reference_or_dates" };
+    const w = when as {
+      birthDate?: string;
+      onDate?: string;
+      atLeast?: number;
+      atLeastFromReference?: string;
+      offsetYears?: number;
+    };
+    if (!w.birthDate || !w.onDate) {
+      return { ok: false, reason: "ageOnDate_paths_missing" };
+    }
+
+    const birth = parsePackFieldPath(w.birthDate);
+    const birthValues = new Set<string>();
+    for (const record of indexed.records) {
+      if (!birth || record.recordTypeId !== birth.recordTypeId) {
+        continue;
+      }
+      const v = record.provenanceByFieldKey[birth.fieldId]?.normalized.normalizedValue;
+      if (typeof v === "string" && /^\d{4}-\d{2}-\d{2}$/.test(v)) {
+        birthValues.add(v);
+      }
+    }
+    if (birthValues.size !== 1) {
+      return {
+        ok: false,
+        reason: birthValues.size === 0 ? "ageOnDate_birth_date_missing" : "ageOnDate_birth_date_conflict",
+      };
+    }
+    const birthIso = [...birthValues][0]!;
+
+    const scopeRecords = indexed.records.filter(
+      (r) => !scopeSourceDocumentIds || scopeSourceDocumentIds.has(r.sourceDocumentId),
+    );
+    const onChip = resolvePackFieldValue(indexed, w.onDate, scopeRecords);
+    const onIso = onChip?.normalized.normalizedValue;
+    if (typeof onIso !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(onIso)) {
+      return { ok: false, reason: "ageOnDate_on_date_missing" };
+    }
+
+    let threshold: number | null = typeof w.atLeast === "number" ? w.atLeast : null;
+    if (threshold == null && w.atLeastFromReference) {
+      const rows = lookupReferenceTable(indexed.pack, sourceContext, w.atLeastFromReference) as {
+        state?: string;
+        age_of_majority?: number;
+      }[];
+      const state =
+        typeof sourceContext.jurisdiction === "object" && sourceContext.jurisdiction != null
+          ? sourceContext.jurisdiction.state
+          : undefined;
+      const row = state ? rows.find((item) => item.state === state) : undefined;
+      if (typeof row?.age_of_majority === "number") {
+        threshold = row.age_of_majority + (w.offsetYears ?? 0);
+      }
+    }
+    if (threshold == null) {
+      return { ok: false, reason: "ageOnDate_reference_unavailable" };
+    }
+
+    const [by, bm, bd] = birthIso.split("-").map(Number) as [number, number, number];
+    const [oy, om, od] = onIso.split("-").map(Number) as [number, number, number];
+    const age = oy - by - (om < bm || (om === bm && od < bd) ? 1 : 0);
+    return age >= threshold ? { ok: true, value: { age } } : { ok: false, reason: "applicability_false" };
   }
   return { ok: false, reason: `unsupported_when_primitive:${when.primitive}` };
 }

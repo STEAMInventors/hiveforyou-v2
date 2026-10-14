@@ -4,7 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "exports": {
-    ".": "./pack.ts"
+    ".": "./pack.ts",
+    "./qualification/arch05-l001": "./qualification/arch05-l001-acceptance.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",

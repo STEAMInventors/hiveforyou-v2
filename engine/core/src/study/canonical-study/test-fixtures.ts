@@ -320,10 +320,11 @@ export function buildSyntheticFoundation(input: {
     sanitizedError?: ReaderDocumentExtractionEnvelope["sanitizedError"];
     extractionStatusOverride?: "MISSING_ENVELOPE";
   }>;
+  pack?: ProposalDomainPack;
   packContentSha256?: string;
 }) {
   return buildCanonicalStudyFoundation({
-    pack: SYNTHETIC_PACK,
+    pack: input.pack ?? SYNTHETIC_PACK,
     packContentSha256: input.packContentSha256 ?? "a".repeat(64),
     caseId: "case-test",
     createdAt: "2026-10-12T00:00:00.000Z",

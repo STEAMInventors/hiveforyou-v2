@@ -9,6 +9,7 @@ import {
   CaseNotFoundError,
   runDiscoverFromRequest,
 } from "@/lib/document-discovery/discover-service-server";
+import { jsonFromAccessError, requireCaseAccess, requireUser } from "@/lib/auth/require-case-access";
 import { serverMisconfiguredResponse } from "@/lib/env/server-misconfigured";
 import { readServerEnv } from "@/lib/env/server-env";
 
@@ -42,6 +43,8 @@ export async function POST(request: Request) {
   }
 
   try {
+    await requireUser(request);
+    await requireCaseAccess(request, body.caseId);
     const outcome = await runDiscoverFromRequest({
       caseId: body.caseId,
       sourceDocumentIds: body.sourceDocumentIds,
@@ -59,6 +62,10 @@ export async function POST(request: Request) {
     return NextResponse.json(outcome);
   } catch (error) {
     console.error("[api/discover/run] discover run failed", error);
+    const accessResponse = jsonFromAccessError(error);
+    if (accessResponse) {
+      return accessResponse;
+    }
     if (error instanceof UnauthenticatedError) {
       return NextResponse.json(
         { error: "UNAUTHENTICATED", message: "Sign in is required." },

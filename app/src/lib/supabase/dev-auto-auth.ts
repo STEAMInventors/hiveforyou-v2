@@ -1,5 +1,7 @@
 import type { AuthError, SupabaseClient } from "@supabase/supabase-js";
 
+import { assertAuthBypassDisabledInProduction } from "@/lib/preview/preview-gate";
+
 function isMissingSessionGetUserError(error: AuthError): boolean {
   if (error.name === "AuthSessionMissingError") {
     return true;
@@ -54,10 +56,19 @@ function readPreviewAuthCredentials(): ImplicitSession | null {
   return { email, password, logLabel: "preview-auth" };
 }
 
-function readImplicitSessionCredentials(): ImplicitSession | null {
-  const preview = readPreviewAuthCredentials();
+export type EnsureDevSupabaseSessionOptions = {
+  /** Preview password gate satisfied for this request (HTTP Basic or route-level check). */
+  allowPreviewImplicitAuth?: boolean;
+};
+
+function readImplicitSessionCredentials(
+  options?: EnsureDevSupabaseSessionOptions,
+): ImplicitSession | null {
   if (process.env.HIVE_PREVIEW_PASSWORD?.trim()) {
-    return preview;
+    if (!options?.allowPreviewImplicitAuth) {
+      return null;
+    }
+    return readPreviewAuthCredentials();
   }
   return readDevAuthCredentials();
 }
@@ -68,8 +79,12 @@ function readImplicitSessionCredentials(): ImplicitSession | null {
  * Preview: HIVE_PREVIEW_PASSWORD set (after the basic gate) uses the preview user instead.
  * Credentials stay server-side (not NEXT_PUBLIC_*).
  */
-export async function ensureDevSupabaseSession(supabase: SupabaseClient): Promise<void> {
-  const credentials = readImplicitSessionCredentials();
+export async function ensureDevSupabaseSession(
+  supabase: SupabaseClient,
+  options?: EnsureDevSupabaseSessionOptions,
+): Promise<void> {
+  assertAuthBypassDisabledInProduction();
+  const credentials = readImplicitSessionCredentials(options);
   if (!credentials) {
     return;
   }

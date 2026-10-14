@@ -85,9 +85,15 @@ def call_pack_driven_extraction(
         response = lm(messages=messages)
     text = _extract_assistant_text(response)
     parsed = try_parse_json_object(text)
-    usage = normalize_model_usage(
-        lm.history[-1].get("usage") if getattr(lm, "history", None) else None
-    )
+    usage_raw = None
+    history = getattr(lm, "history", None)
+    if history:
+        usage_raw = history[-1].get("usage")
+    if usage_raw is None:
+        usage_raw = getattr(response, "usage", None)
+    if usage_raw is None and isinstance(response, dict):
+        usage_raw = response.get("usage")
+    usage = normalize_model_usage(usage_raw)
     usage_dict: dict[str, int | None] = {
         "input_tokens": usage.input_tokens,
         "output_tokens": usage.output_tokens,

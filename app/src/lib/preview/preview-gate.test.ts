@@ -3,6 +3,12 @@ import { describe, expect, it } from "vitest";
 import {
   authorizationMatchesPreviewPassword,
   constantTimeEqual,
+  isHiveDebugApiPath,
+  isHiveDebugPagePath,
+  assertAuthBypassDisabledInProduction,
+  AuthBypassRefusedInProductionError,
+  isHiveAdminUserId,
+  isHiveDebugRoutesEnabled,
   isPreviewPasswordGateEnabled,
   readBasicAuthPassword,
 } from "./preview-gate";
@@ -41,5 +47,38 @@ describe("preview password gate", () => {
     expect(authorizationMatchesPreviewPassword(basic("other", "wrong"), source)).toBe(false);
     expect(authorizationMatchesPreviewPassword(null, source)).toBe(false);
     expect(authorizationMatchesPreviewPassword(basic("ignored", "gate-secret"), {})).toBe(false);
+  });
+
+  it("enables debug routes only when HIVE_ENABLE_DEBUG_ROUTES is true", () => {
+    expect(isHiveDebugRoutesEnabled({})).toBe(false);
+    expect(isHiveDebugRoutesEnabled({ HIVE_ENABLE_DEBUG_ROUTES: "true" })).toBe(true);
+  });
+
+  it("recognizes debug API and page paths", () => {
+    expect(isHiveDebugApiPath("/api/case/abc/canonical-debug")).toBe(true);
+    expect(isHiveDebugApiPath("/api/case/abc/bundle")).toBe(false);
+    expect(isHiveDebugPagePath("/hives/abc/extraction-debug")).toBe(true);
+  });
+
+  it("refuses auth bypass env configuration on Vercel production", () => {
+    expect(() =>
+      assertAuthBypassDisabledInProduction({
+        VERCEL_ENV: "production",
+        HIVE_DEV_AUTO_AUTH: "true",
+      }),
+    ).toThrow(AuthBypassRefusedInProductionError);
+    expect(() =>
+      assertAuthBypassDisabledInProduction({
+        VERCEL_ENV: "preview",
+        HIVE_PREVIEW_PASSWORD: "gate",
+      }),
+    ).not.toThrow();
+  });
+
+  it("resolves admin user ids from HIVE_ADMIN_USER_IDS", () => {
+    expect(isHiveAdminUserId("admin-1", { HIVE_ADMIN_USER_IDS: "admin-1, admin-2" })).toBe(
+      true,
+    );
+    expect(isHiveAdminUserId("other", { HIVE_ADMIN_USER_IDS: "admin-1" })).toBe(false);
   });
 });

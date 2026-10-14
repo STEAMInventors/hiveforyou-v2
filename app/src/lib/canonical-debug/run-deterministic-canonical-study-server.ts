@@ -9,6 +9,7 @@ import {
   buildCanonicalStudyFoundation,
   proposalPackSnapshotPathForHash,
   requireSessionUserId,
+  applyCanonicalStudyInterpretationIfCompatible,
   resolveCanonicalStudyRulesetIdentity,
   resolveDebugCanonicalStudyDomainPack,
   type CanonicalStudyRulesetIdentity,
@@ -22,13 +23,19 @@ import {
 } from "@hiveforyou/core/document/trusted-document-pages";
 import type { CanonicalStudySourceContext } from "@hiveforyou/shared/canonical-study-artifact";
 import type { CanonicalStudyArtifact } from "@hiveforyou/shared/canonical-study-artifact";
-import type { CanonicalStudyFoundationArtifact } from "@hiveforyou/shared/canonical-study-foundation";
+import type {
+  CanonicalStudyDocumentExtractionStatus,
+  CanonicalStudyFoundationArtifact,
+} from "@hiveforyou/shared/canonical-study-foundation";
 import {
   canonicalStudyArtifactPath,
   canonicalStudyFoundationArtifactPath,
   documentPagesStoragePath,
 } from "@hiveforyou/shared/hive-artifact-paths";
-import type { ReaderDocumentExtractionEnvelope } from "@hiveforyou/shared/reader-document-extraction";
+import {
+  READER_DOCUMENT_EXTRACTION_SCHEMA_VERSION,
+  type ReaderDocumentExtractionEnvelope,
+} from "@hiveforyou/shared/reader-document-extraction";
 
 import { CaseNotFoundError } from "@/lib/canonical-study/study-service-server";
 import { StudyRunNotFoundError } from "@/lib/case-map/case-map-bundle-service-server";
@@ -113,6 +120,7 @@ function buildSourceContext(input: {
     filename?: string;
     customerLabel?: string;
   }>;
+  asOfDate?: string;
 }): CanonicalStudySourceContext {
   const logicalDocuments = input.logicalDocuments
     .map((doc) => {
@@ -128,7 +136,25 @@ function buildSourceContext(input: {
     })
     .filter((doc): doc is NonNullable<typeof doc> => doc !== null);
 
-  return logicalDocuments.length > 0 ? { logicalDocuments } : {};
+  const context: CanonicalStudySourceContext = {};
+  if (logicalDocuments.length > 0) {
+    context.logicalDocuments = logicalDocuments;
+  }
+  if (input.asOfDate) {
+    context.asOfDate = input.asOfDate;
+  }
+  return context;
+}
+
+function isoDateFromStudyRunCreatedAt(createdAt: string | null | undefined): string | undefined {
+  if (!createdAt?.trim()) {
+    return undefined;
+  }
+  const parsed = new Date(createdAt);
+  if (Number.isNaN(parsed.getTime())) {
+    return undefined;
+  }
+  return parsed.toISOString().slice(0, 10);
 }
 
 function firstEnvelope(
@@ -242,6 +268,33 @@ function stampDebugCanonicalStudyMetadata<T extends object>(
   };
 }
 
+function buildMissingEnvelopePlaceholder(input: {
+  sourceDocumentId: string;
+  template: ReaderDocumentExtractionEnvelope;
+}): ReaderDocumentExtractionEnvelope {
+  return {
+    schemaVersion: READER_DOCUMENT_EXTRACTION_SCHEMA_VERSION,
+    studyRunId: input.template.studyRunId,
+    attemptId: input.template.attemptId,
+    caseId: input.template.caseId,
+    userId: input.template.userId,
+    sourceDocumentId: input.sourceDocumentId,
+    domainId: input.template.domainId,
+    packId: input.template.packId,
+    packVersion: input.template.packVersion,
+    packContentSha256: input.template.packContentSha256,
+    promptVersion: input.template.promptVersion,
+    modelProvider: input.template.modelProvider,
+    modelId: input.template.modelId,
+    status: "MODEL_ERROR",
+    occurredAt: input.template.occurredAt,
+    sanitizedError: {
+      code: "MISSING_ENVELOPE",
+      message: `No persisted reader envelope for source document ${input.sourceDocumentId}.`,
+    },
+  };
+}
+
 function envelopeContainsExtractedFacts(envelope: ReaderDocumentExtractionEnvelope): boolean {
   if (envelope.status !== "SUCCEEDED" || !envelope.parsedModelJson) {
     return false;
@@ -269,6 +322,7 @@ export type RunDeterministicCanonicalStudyResult = {
 export async function runDeterministicCanonicalStudy(input: {
   caseId: string;
   studyRunId: string;
+  asOfDate?: string;
 }): Promise<RunDeterministicCanonicalStudyResult> {
   const sessionUserId = requireSessionUserId(await getAuthenticatedUserId());
   const gateway = createSupabaseHiveGateway(await createServerSupabaseClient());
@@ -344,6 +398,11 @@ export async function runDeterministicCanonicalStudy(input: {
     envelopePackVersion: envelopePackMetadata.packVersion,
     envelopePackContentSha256: envelopePackMetadata.packContentSha256,
   });
+  const interpretation = applyCanonicalStudyInterpretationIfCompatible({
+    readerPack: structuralPack.pack,
+    readerPackContentSha256: structuralPack.contentSha256,
+    domainId: sampleEnvelope.domainId,
+  });
   const canonicalRuleset = resolveCanonicalStudyRulesetIdentity();
   const debugContext = { structuralPack, canonicalRuleset };
 
@@ -362,12 +421,16 @@ export async function runDeterministicCanonicalStudy(input: {
     }
   }
 
-  const foundationDocuments = [];
+  const foundationDocuments: Array<{
+    sourceDocumentId: string;
+    envelope: ReaderDocumentExtractionEnvelope;
+    documentPages: ReturnType<typeof bindDocumentPagesToSourceDocumentId> | null;
+    extractionStatusOverride?: CanonicalStudyDocumentExtractionStatus;
+  }> = [];
   for (const sourceDocumentId of loaded.orderedSourceDocumentIds) {
-    const envelope = loaded.envelopesBySourceDocumentId.get(sourceDocumentId);
-    if (!envelope) {
-      continue;
-    }
+    const envelope =
+      loaded.envelopesBySourceDocumentId.get(sourceDocumentId) ??
+      buildMissingEnvelopePlaceholder({ sourceDocumentId, template: sampleEnvelope });
     const sha256 = shaBySourceId.get(sourceDocumentId);
     let documentPages = null;
     if (sha256) {
@@ -394,6 +457,9 @@ export async function runDeterministicCanonicalStudy(input: {
       sourceDocumentId,
       envelope,
       documentPages,
+      extractionStatusOverride: loaded.envelopesBySourceDocumentId.has(sourceDocumentId)
+        ? undefined
+        : ("MISSING_ENVELOPE" as const),
     });
   }
 
@@ -401,20 +467,31 @@ export async function runDeterministicCanonicalStudy(input: {
     throw new RawExtractionNotFoundError();
   }
 
-  const affectedDocumentIds = foundationDocuments
-    .filter(
-      (doc) => envelopeContainsExtractedFacts(doc.envelope) && doc.documentPages === null,
-    )
-    .map((doc) => doc.sourceDocumentId)
-    .sort((a, b) => a.localeCompare(b));
-  if (affectedDocumentIds.length > 0) {
-    throw new SourcePagesUnavailableError(affectedDocumentIds);
+  const missingPagesWithExtractedFacts = foundationDocuments
+    .filter((doc) => {
+      if (doc.documentPages) {
+        return false;
+      }
+      if (doc.envelope.status !== "SUCCEEDED") {
+        return false;
+      }
+      const instances = doc.envelope.parsedModelJson?.recordInstances;
+      if (!Array.isArray(instances)) {
+        return false;
+      }
+      return instances.some(
+        (instance) => Array.isArray(instance.fields) && instance.fields.length > 0,
+      );
+    })
+    .map((doc) => doc.sourceDocumentId);
+  if (missingPagesWithExtractedFacts.length > 0) {
+    throw new SourcePagesUnavailableError(missingPagesWithExtractedFacts);
   }
 
   const createdAt = new Date().toISOString();
   const foundation = stampDebugCanonicalStudyMetadata(
     buildCanonicalStudyFoundation({
-      pack: structuralPack.pack,
+      pack: interpretation.studyPack,
       packContentSha256: structuralPack.contentSha256,
       caseId: input.caseId,
       createdAt,
@@ -423,18 +500,32 @@ export async function runDeterministicCanonicalStudy(input: {
     debugContext,
   );
 
+  const asOfDate =
+    input.asOfDate?.trim() ||
+    isoDateFromStudyRunCreatedAt(run.startedAt) ||
+    undefined;
+
   const sourceContext = buildSourceContext({
-    logicalDocuments: logicalDocuments.map((doc) => ({
-      sourceDocumentId: doc.sourceDocumentId,
-      logicalDocumentId: doc.id,
-      filename: doc.title,
-    })),
+    asOfDate,
+    logicalDocuments: [
+      ...sourceDocuments.map((doc) => ({
+        sourceDocumentId: doc.id,
+        filename: doc.originalFilename,
+      })),
+      ...logicalDocuments.map((doc) => ({
+        sourceDocumentId: doc.sourceDocumentId,
+        logicalDocumentId: doc.id,
+        filename: doc.title,
+      })),
+    ],
   });
 
   const artifact = stampDebugCanonicalStudyMetadata(
     buildCanonicalStudy({
-      pack: structuralPack.pack,
+      pack: interpretation.studyPack,
       packContentSha256: structuralPack.contentSha256,
+      interpretationRulesetId: interpretation.interpretationRulesetId,
+      interpretationRulesetContentSha256: interpretation.interpretationRulesetContentSha256,
       foundation,
       sourceContext,
       createdAt,

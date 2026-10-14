@@ -1,11 +1,11 @@
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { join } from "node:path";
 
+import type { ProposalDomainPack } from "@hiveforyou/domain-pack";
 import {
   compilePackDrivenReaderPrompt,
   parseAndValidatePackDrivenExtraction,
-  type ProposalDomainPack,
-} from "@hiveforyou/domain-pack";
+} from "@hiveforyou/domain-pack/pack-driven-reader";
 import { selectRecordDefinitions } from "../../../engine/domain-pack/src/pack-driven-reader/select-checklist.js";
 import {
   buildReaderGoldenComparisonReport,

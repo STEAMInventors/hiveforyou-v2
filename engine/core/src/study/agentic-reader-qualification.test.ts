@@ -36,8 +36,8 @@ import {
 import { loadProposalDomainPack, verifyPackDrivenProposalPackPackaged } from "./load-proposal-domain-pack";
 import { PROPOSAL_PACK_RELATIVE_PATH } from "./resolve-hive-monorepo-root";
 
-const COMMITTED_IEP_V03_PROPOSED_PACK_CONTENT_SHA256 =
-  "c2baa0439d32496a3110f5388f6048395a9f4c8fdce79b3d0cec36ae6b9a7775";
+const COMMITTED_IEP_PACK_CONTENT_SHA256 =
+  "b5b86076329a32febea5f31ea21b352266497cbc6b54150b94c6884535b8e735";
 
 describe("resolveReaderMode", () => {
   it("defaults off when env unset", () => {
@@ -310,7 +310,7 @@ describe("agentic reader qualification", () => {
 
   it("loads committed IEP v0.3 proposed pack with stable content SHA", () => {
     const loaded = loadProposalDomainPack({});
-    expect(loaded.contentSha256).toBe(COMMITTED_IEP_V03_PROPOSED_PACK_CONTENT_SHA256);
+    expect(loaded.contentSha256).toBe(COMMITTED_IEP_PACK_CONTENT_SHA256);
   });
 
   it("loads proposal pack from cwd when only a Vercel-style traced brain tree exists", () => {
@@ -324,7 +324,7 @@ describe("agentic reader qualification", () => {
     try {
       process.chdir(fakeTaskRoot);
       expect(loadPackDrivenProposalPackContentSha256({})).toBe(
-        COMMITTED_IEP_V03_PROPOSED_PACK_CONTENT_SHA256,
+        COMMITTED_IEP_PACK_CONTENT_SHA256,
       );
     } finally {
       process.chdir(previousCwd);
@@ -337,7 +337,7 @@ describe("agentic reader qualification", () => {
     const env = { HIVE_PACK_DRIVEN_READER_PROPOSAL_JSON: repoPath };
     expect(packDrivenProposalPackPath(env)).toBe(repoPath);
     expect(loadProposalDomainPack(env).contentSha256).toBe(
-      COMMITTED_IEP_V03_PROPOSED_PACK_CONTENT_SHA256,
+      COMMITTED_IEP_PACK_CONTENT_SHA256,
     );
     expect(() => verifyPackDrivenProposalPackPackaged(env)).not.toThrow();
   });

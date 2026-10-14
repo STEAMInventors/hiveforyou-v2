@@ -6,6 +6,8 @@
 *.env.production text eol=lf working-tree-encoding=UTF-8
 *.env.example text eol=lf working-tree-encoding=UTF-8
 worker.config.env text eol=lf working-tree-encoding=UTF-8
+brain/domain-packs/** -text
+engine/core/fixtures/** -text
 *.pdf binary
 *.png binary
 *.ico binary

@@ -1,0 +1,176 @@
+{
+  "schemaVersion": "reader-golden-comparison/1",
+  "generatedAt": "2026-10-10T15:57:35.093Z",
+  "golden": {
+    "caseId": "l001",
+    "path": "engine/eval/golden/tune/l001.json",
+    "factCount": 117
+  },
+  "runs": {
+    "A": {
+      "label": "A",
+      "studyRunId": "689de40f-f99e-4959-a3bd-ccfda313e478",
+      "gradeability": {
+        "studyRunId": "689de40f-f99e-4959-a3bd-ccfda313e478",
+        "gradeable": false,
+        "blockers": [
+          "No reader-accepted-facts/1 export (accepted CandidateFact payloads are not in agent_run_trace_events or study_artifacts).",
+          "Trace has candidateFactId, sourceDocumentId, page, reasonCodes, decisionAuthority, authoritative only; grading needs construct, value, modality, sourceDocumentId, page, quote, evidence, evidenceRefs per accepted fact."
+        ],
+        "traceAudit": {
+          "studyRunId": "689de40f-f99e-4959-a3bd-ccfda313e478",
+          "attemptId": "879ce957-5885-42de-80a2-ece52437bcf9",
+          "traceEventCount": 109,
+          "acceptedEvidenceEventCount": 45,
+          "factProposedEventCount": 48,
+          "completedPayload": {
+            "toolCalls": 57,
+            "durationMs": 98359,
+            "inputTokens": 7378,
+            "outputTokens": 13676,
+            "modelCallCount": 1,
+            "reasoningSteps": 1,
+            "acceptedFactCount": 45,
+            "rejectedFactCount": 3,
+            "candidateFactCount": 48,
+            "rawParsedFactCount": 48,
+            "verifierErrorCount": 0,
+            "cacheReadInputTokens": 0,
+            "extractionJsonLength": 27115,
+            "cacheWriteInputTokens": 4887,
+            "verifierSubmissionCount": 48,
+            "readerArchitectureVariant": "case_wide",
+            "candidatesWithEvidenceCount": 48,
+            "normalizationDroppedFactCount": 0
+          },
+          "architectureVariant": "case_wide"
+        },
+        "persistedFactFields": [
+          "candidateFactId",
+          "sourceDocumentId",
+          "page",
+          "reasonCodes",
+          "decisionAuthority",
+          "authoritative"
+        ],
+        "recoverySources": [
+          "Captured POST /study/reader response with accepted_candidate_facts only (not candidateFacts)."
+        ]
+      },
+      "factsPath": null
+    },
+    "A2": {
+      "label": "A2",
+      "studyRunId": "621870eb-10e6-4b6d-af6a-3e2447e3d357",
+      "gradeability": {
+        "studyRunId": "621870eb-10e6-4b6d-af6a-3e2447e3d357",
+        "gradeable": false,
+        "blockers": [
+          "No reader-accepted-facts/1 export (accepted CandidateFact payloads are not in agent_run_trace_events or study_artifacts).",
+          "Trace has candidateFactId, sourceDocumentId, page, reasonCodes, decisionAuthority, authoritative only; grading needs construct, value, modality, sourceDocumentId, page, quote, evidence, evidenceRefs per accepted fact."
+        ],
+        "traceAudit": {
+          "studyRunId": "621870eb-10e6-4b6d-af6a-3e2447e3d357",
+          "attemptId": "693ebc40-f0e0-4257-84a4-77f1c43a4635",
+          "traceEventCount": 211,
+          "acceptedEvidenceEventCount": 96,
+          "factProposedEventCount": 100,
+          "completedPayload": {
+            "toolCalls": 109,
+            "durationMs": 196287,
+            "inputTokens": 7378,
+            "outputTokens": 26422,
+            "modelCallCount": 1,
+            "reasoningSteps": 1,
+            "acceptedFactCount": 96,
+            "rejectedFactCount": 4,
+            "candidateFactCount": 100,
+            "rawParsedFactCount": 100,
+            "verifierErrorCount": 0,
+            "cacheReadInputTokens": 0,
+            "extractionJsonLength": 54277,
+            "cacheWriteInputTokens": 6585,
+            "verifierSubmissionCount": 100,
+            "readerArchitectureVariant": "case_wide",
+            "candidatesWithEvidenceCount": 100,
+            "normalizationDroppedFactCount": 0
+          },
+          "architectureVariant": "case_wide"
+        },
+        "persistedFactFields": [
+          "candidateFactId",
+          "sourceDocumentId",
+          "page",
+          "reasonCodes",
+          "decisionAuthority",
+          "authoritative"
+        ],
+        "recoverySources": [
+          "Captured POST /study/reader response with accepted_candidate_facts only (not candidateFacts)."
+        ]
+      },
+      "factsPath": null
+    },
+    "B": {
+      "label": "B",
+      "studyRunId": "141ffeb0-dd0f-40d8-8c2c-bf5341fda1f9",
+      "gradeability": {
+        "studyRunId": "141ffeb0-dd0f-40d8-8c2c-bf5341fda1f9",
+        "gradeable": false,
+        "blockers": [
+          "No reader-accepted-facts/1 export (accepted CandidateFact payloads are not in agent_run_trace_events or study_artifacts).",
+          "Trace has candidateFactId, sourceDocumentId, page, reasonCodes, decisionAuthority, authoritative only; grading needs construct, value, modality, sourceDocumentId, page, quote, evidence, evidenceRefs per accepted fact."
+        ],
+        "traceAudit": {
+          "studyRunId": "141ffeb0-dd0f-40d8-8c2c-bf5341fda1f9",
+          "attemptId": "c3b9e2a1-22ab-4e8c-b609-fc61d5b43e01",
+          "traceEventCount": 590,
+          "acceptedEvidenceEventCount": 272,
+          "factProposedEventCount": 293,
+          "completedPayload": {
+            "toolCalls": 165,
+            "durationMs": 128281,
+            "inputTokens": 17010,
+            "wallClockMs": 128281,
+            "mergeDedupMs": 61,
+            "outputTokens": 43968,
+            "modelCallCount": 8,
+            "reasoningSteps": 8,
+            "verificationMs": 23374,
+            "acceptedFactCount": 153,
+            "dedupRemovedCount": 0,
+            "extractionPhaseMs": 104845,
+            "rejectedFactCount": 12,
+            "candidateFactCount": 0,
+            "rawParsedFactCount": 0,
+            "verifierErrorCount": 0,
+            "cacheReadInputTokens": null,
+            "extractionJsonLength": 0,
+            "cacheWriteInputTokens": null,
+            "preMergeCandidateCount": 170,
+            "partialDocumentFailures": 0,
+            "postMergeCandidateCount": 170,
+            "verifierSubmissionCount": 165,
+            "peakConcurrentModelCalls": 8,
+            "readerArchitectureVariant": "parallel_document",
+            "candidatesWithEvidenceCount": 0,
+            "normalizationDroppedFactCount": 0
+          },
+          "architectureVariant": "parallel_document"
+        },
+        "persistedFactFields": [
+          "candidateFactId",
+          "sourceDocumentId",
+          "page",
+          "reasonCodes",
+          "decisionAuthority",
+          "authoritative"
+        ],
+        "recoverySources": [
+          "Captured POST /study/reader response with accepted_candidate_facts only (not candidateFacts)."
+        ]
+      },
+      "factsPath": null
+    }
+  }
+}

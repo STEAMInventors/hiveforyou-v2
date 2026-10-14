@@ -17,7 +17,7 @@ export type CanonicalStudySourceContext = {
     logicalDocumentId?: string;
     filename?: string;
   }>;
-  jurisdiction?: string;
+  jurisdiction?: { state?: string };
   referenceTables?: Record<string, { rows: unknown[] }>;
   /** Study qualification or reporting anchor date supplied by the caller. */
   asOfDate?: string;

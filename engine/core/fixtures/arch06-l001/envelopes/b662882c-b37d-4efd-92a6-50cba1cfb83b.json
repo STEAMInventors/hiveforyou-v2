@@ -1,0 +1,236 @@
+{
+  "attemptId": "adb37691-b473-4938-b63c-d4ea43188d3a",
+  "caseId": "14baf227-7067-4a84-a316-f6cb72a5ecfe",
+  "domainId": "iep",
+  "latencyMs": 29479,
+  "modelId": "claude-opus-5-5",
+  "modelProvider": "anthropic",
+  "occurredAt": "2026-10-13T22:06:44Z",
+  "packContentSha256": "c2baa0439d32496a3110f5388f6048395a9f4c8fdce79b3d0cec36ae6b9a7775",
+  "packId": "iep",
+  "packVersion": "0.3.0-proposed",
+  "parsedModelJson": {
+    "documentTypeId": "iep.consent",
+    "packId": "iep",
+    "packVersion": "0.3.0-proposed",
+    "recordInstances": [
+      {
+        "fields": [
+          {
+            "evidence": {
+              "page": 1,
+              "quote": "Parent Consent for Initial Special Education Evaluation",
+              "sourceDocumentId": "b662882c-b37d-4efd-92a6-50cba1cfb83b"
+            },
+            "fieldId": "title",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "quoted",
+            "value": "Parent Consent for Initial Special Education Evaluation",
+            "valueKind": "text"
+          },
+          {
+            "evidence": {
+              "page": 1,
+              "quote": "Parent/Guardian Signature: [Synthetic signature omitted] Date: 2024-09-04",
+              "sourceDocumentId": "b662882c-b37d-4efd-92a6-50cba1cfb83b"
+            },
+            "fieldId": "document_date",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "quoted",
+            "value": "2024-09-04",
+            "valueKind": "date"
+          },
+          {
+            "evidence": {
+              "page": 1,
+              "quote": "Parent/Guardian Acknowledgement Parent/Guardian Signature: [Synthetic signature omitted] Date: 2024-09-04",
+              "sourceDocumentId": "b662882c-b37d-4efd-92a6-50cba1cfb83b"
+            },
+            "fieldId": "author_role",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "classified",
+            "value": "parent_guardian",
+            "valueKind": "code"
+          },
+          {
+            "evidence": {
+              "page": 1,
+              "quote": "Parent Consent for Initial Special Education Evaluation",
+              "sourceDocumentId": "b662882c-b37d-4efd-92a6-50cba1cfb83b"
+            },
+            "fieldId": "subtype",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "classified",
+            "value": "initial",
+            "valueKind": "code"
+          }
+        ],
+        "instanceIndex": 0,
+        "recordEvidence": {
+          "page": 1,
+          "quote": "Parent Consent for Initial Special Education Evaluation SYNTHETIC DEVELOPMENT RECORD — NOT A REAL STUDENT Student Information Student: Maya Carter Date of Birth: 2017-04-18 Grade: 2 School: Synthetic Elementary School District: Synthetic District Purpose of Evaluation The parent/guardian gives consent for an initial special-education evaluation in the identified areas below. Consent authorizes the district to gather information needed to understand the student's educational needs related to reading fluency. Consent for evaluation does not guarantee eligibility for special education or the provision of special education services. Evaluation Areas [X] Academic achievement / reading [X] Reading fluency [X] Review of educational performance Consent Selection [X] I consent to the proposed initial evaluation. [ ] I do not consent to the proposed initial evaluation. Parent/Guardian Acknowledgement Parent/Guardian Signature: [Synthetic signature omitted] Date: 2024-09-04",
+          "sourceDocumentId": "b662882c-b37d-4efd-92a6-50cba1cfb83b"
+        },
+        "recordTypeId": "document_header"
+      },
+      {
+        "fields": [
+          {
+            "evidence": {
+              "page": 1,
+              "quote": "Student: Maya Carter",
+              "sourceDocumentId": "b662882c-b37d-4efd-92a6-50cba1cfb83b"
+            },
+            "fieldId": "name",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "quoted",
+            "value": "Maya Carter",
+            "valueKind": "text"
+          },
+          {
+            "evidence": {
+              "page": 1,
+              "quote": "Date of Birth: 2017-04-18",
+              "sourceDocumentId": "b662882c-b37d-4efd-92a6-50cba1cfb83b"
+            },
+            "fieldId": "birth_date",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "quoted",
+            "value": "2017-04-18",
+            "valueKind": "date"
+          },
+          {
+            "evidence": {
+              "page": 1,
+              "quote": "Grade: 2",
+              "sourceDocumentId": "b662882c-b37d-4efd-92a6-50cba1cfb83b"
+            },
+            "fieldId": "grade",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "quoted",
+            "value": "2",
+            "valueKind": "text"
+          },
+          {
+            "evidence": {
+              "page": 1,
+              "quote": "School: Synthetic Elementary School",
+              "sourceDocumentId": "b662882c-b37d-4efd-92a6-50cba1cfb83b"
+            },
+            "fieldId": "school",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "quoted",
+            "value": "Synthetic Elementary School",
+            "valueKind": "text"
+          },
+          {
+            "evidence": {
+              "page": 1,
+              "quote": "District: Synthetic District",
+              "sourceDocumentId": "b662882c-b37d-4efd-92a6-50cba1cfb83b"
+            },
+            "fieldId": "district",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "quoted",
+            "value": "Synthetic District",
+            "valueKind": "text"
+          }
+        ],
+        "instanceIndex": 0,
+        "recordEvidence": {
+          "page": 1,
+          "quote": "Student: Maya Carter Date of Birth: 2017-04-18 Grade: 2 School: Synthetic Elementary School District: Synthetic District",
+          "sourceDocumentId": "b662882c-b37d-4efd-92a6-50cba1cfb83b"
+        },
+        "recordTypeId": "student"
+      },
+      {
+        "fields": [
+          {
+            "evidence": {
+              "page": 1,
+              "quote": "[X] I consent to the proposed initial evaluation.",
+              "sourceDocumentId": "b662882c-b37d-4efd-92a6-50cba1cfb83b"
+            },
+            "fieldId": "action",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "quoted",
+            "value": "proposed initial evaluation",
+            "valueKind": "text"
+          },
+          {
+            "evidence": {
+              "page": 1,
+              "quote": "Consent Selection [X] I consent to the proposed initial evaluation. [ ] I do not consent to the proposed initial evaluation.",
+              "sourceDocumentId": "b662882c-b37d-4efd-92a6-50cba1cfb83b"
+            },
+            "fieldId": "decision",
+            "missingState": null,
+            "modality": "decided",
+            "provenance": "quoted",
+            "value": "[X] I consent to the proposed initial evaluation.",
+            "valueKind": "text"
+          },
+          {
+            "evidence": {
+              "page": 1,
+              "quote": "Evaluation Areas [X] Academic achievement / reading [X] Reading fluency [X] Review of educational performance",
+              "sourceDocumentId": "b662882c-b37d-4efd-92a6-50cba1cfb83b"
+            },
+            "fieldId": "scope",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "quoted",
+            "value": "[X] Academic achievement / reading [X] Reading fluency [X] Review of educational performance",
+            "valueKind": "text"
+          },
+          {
+            "evidence": {
+              "page": 1,
+              "quote": "Parent/Guardian Signature: [Synthetic signature omitted] Date: 2024-09-04",
+              "sourceDocumentId": "b662882c-b37d-4efd-92a6-50cba1cfb83b"
+            },
+            "fieldId": "consent_date",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "quoted",
+            "value": "2024-09-04",
+            "valueKind": "date"
+          }
+        ],
+        "instanceIndex": 0,
+        "recordEvidence": {
+          "page": 1,
+          "quote": "Evaluation Areas [X] Academic achievement / reading [X] Reading fluency [X] Review of educational performance Consent Selection [X] I consent to the proposed initial evaluation. [ ] I do not consent to the proposed initial evaluation. Parent/Guardian Acknowledgement Parent/Guardian Signature: [Synthetic signature omitted] Date: 2024-09-04",
+          "sourceDocumentId": "b662882c-b37d-4efd-92a6-50cba1cfb83b"
+        },
+        "recordTypeId": "consent"
+      }
+    ],
+    "schemaVersion": "hive.pack-driven-reader-extraction/0.2.0",
+    "sourceDocumentId": "b662882c-b37d-4efd-92a6-50cba1cfb83b"
+  },
+  "promptVersion": "hive-pack-driven-reader/0.2.0",
+  "rawAssistantText": "```json\n{\n  \"schemaVersion\": \"hive.pack-driven-reader-extraction/0.2.0\",\n  \"packId\": \"iep\",\n  \"packVersion\": \"0.3.0-proposed\",\n  \"documentTypeId\": \"iep.consent\",\n  \"sourceDocumentId\": \"b662882c-b37d-4efd-92a6-50cba1cfb83b\",\n  \"recordInstances\": [\n    {\n      \"recordTypeId\": \"document_header\",\n      \"instanceIndex\": 0,\n      \"recordEvidence\": {\n        \"sourceDocumentId\": \"b662882c-b37d-4efd-92a6-50cba1cfb83b\",\n        \"page\": 1,\n        \"quote\": \"Parent Consent for Initial Special Education Evaluation SYNTHETIC DEVELOPMENT RECORD — NOT A REAL STUDENT Student Information Student: Maya Carter Date of Birth: 2017-04-18 Grade: 2 School: Synthetic Elementary School District: Synthetic District Purpose of Evaluation The parent/guardian gives consent for an initial special-education evaluation in the identified areas below. Consent authorizes the district to gather information needed to understand the student's educational needs related to reading fluency. Consent for evaluation does not guarantee eligibility for special education or the provision of special education services. Evaluation Areas [X] Academic achievement / reading [X] Reading fluency [X] Review of educational performance Consent Selection [X] I consent to the proposed initial evaluation. [ ] I do not consent to the proposed initial evaluation. Parent/Guardian Acknowledgement Parent/Guardian Signature: [Synthetic signature omitted] Date: 2024-09-04\"\n      },\n      \"fields\": [\n        {\n          \"fieldId\": \"title\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"text\",\n          \"value\": \"Parent Consent for Initial Special Education Evaluation\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"b662882c-b37d-4efd-92a6-50cba1cfb83b\",\n            \"page\": 1,\n            \"quote\": \"Parent Consent for Initial Special Education Evaluation\"\n          }\n        },\n        {\n          \"fieldId\": \"document_date\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"date\",\n          \"value\": \"2024-09-04\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"b662882c-b37d-4efd-92a6-50cba1cfb83b\",\n            \"page\": 1,\n            \"quote\": \"Parent/Guardian Signature: [Synthetic signature omitted] Date: 2024-09-04\"\n          }\n        },\n        {\n          \"fieldId\": \"author_role\",\n          \"provenance\": \"classified\",\n          \"valueKind\": \"code\",\n          \"value\": \"parent_guardian\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"b662882c-b37d-4efd-92a6-50cba1cfb83b\",\n            \"page\": 1,\n            \"quote\": \"Parent/Guardian Acknowledgement Parent/Guardian Signature: [Synthetic signature omitted] Date: 2024-09-04\"\n          }\n        },\n        {\n          \"fieldId\": \"subtype\",\n          \"provenance\": \"classified\",\n          \"valueKind\": \"code\",\n          \"value\": \"initial\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"b662882c-b37d-4efd-92a6-50cba1cfb83b\",\n            \"page\": 1,\n            \"quote\": \"Parent Consent for Initial Special Education Evaluation\"\n          }\n        }\n      ]\n    },\n    {\n      \"recordTypeId\": \"student\",\n      \"instanceIndex\": 0,\n      \"recordEvidence\": {\n        \"sourceDocumentId\": \"b662882c-b37d-4efd-92a6-50cba1cfb83b\",\n        \"page\": 1,\n        \"quote\": \"Student: Maya Carter Date of Birth: 2017-04-18 Grade: 2 School: Synthetic Elementary School District: Synthetic District\"\n      },\n      \"fields\": [\n        {\n          \"fieldId\": \"name\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"text\",\n          \"value\": \"Maya Carter\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"b662882c-b37d-4efd-92a6-50cba1cfb83b\",\n            \"page\": 1,\n            \"quote\": \"Student: Maya Carter\"\n          }\n        },\n        {\n          \"fieldId\": \"birth_date\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"date\",\n          \"value\": \"2017-04-18\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"b662882c-b37d-4efd-92a6-50cba1cfb83b\",\n            \"page\": 1,\n            \"quote\": \"Date of Birth: 2017-04-18\"\n          }\n        },\n        {\n          \"fieldId\": \"grade\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"text\",\n          \"value\": \"2\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"b662882c-b37d-4efd-92a6-50cba1cfb83b\",\n            \"page\": 1,\n            \"quote\": \"Grade: 2\"\n          }\n        },\n        {\n          \"fieldId\": \"school\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"text\",\n          \"value\": \"Synthetic Elementary School\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"b662882c-b37d-4efd-92a6-50cba1cfb83b\",\n            \"page\": 1,\n            \"quote\": \"School: Synthetic Elementary School\"\n          }\n        },\n        {\n          \"fieldId\": \"district\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"text\",\n          \"value\": \"Synthetic District\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"b662882c-b37d-4efd-92a6-50cba1cfb83b\",\n            \"page\": 1,\n            \"quote\": \"District: Synthetic District\"\n          }\n        }\n      ]\n    },\n    {\n      \"recordTypeId\": \"consent\",\n      \"instanceIndex\": 0,\n      \"recordEvidence\": {\n        \"sourceDocumentId\": \"b662882c-b37d-4efd-92a6-50cba1cfb83b\",\n        \"page\": 1,\n        \"quote\": \"Evaluation Areas [X] Academic achievement / reading [X] Reading fluency [X] Review of educational performance Consent Selection [X] I consent to the proposed initial evaluation. [ ] I do not consent to the proposed initial evaluation. Parent/Guardian Acknowledgement Parent/Guardian Signature: [Synthetic signature omitted] Date: 2024-09-04\"\n      },\n      \"fields\": [\n        {\n          \"fieldId\": \"action\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"text\",\n          \"value\": \"proposed initial evaluation\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"b662882c-b37d-4efd-92a6-50cba1cfb83b\",\n            \"page\": 1,\n            \"quote\": \"[X] I consent to the proposed initial evaluation.\"\n          }\n        },\n        {\n          \"fieldId\": \"decision\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"text\",\n          \"value\": \"[X] I consent to the proposed initial evaluation.\",\n          \"modality\": \"decided\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"b662882c-b37d-4efd-92a6-50cba1cfb83b\",\n            \"page\": 1,\n            \"quote\": \"Consent Selection [X] I consent to the proposed initial evaluation. [ ] I do not consent to the proposed initial evaluation.\"\n          }\n        },\n        {\n          \"fieldId\": \"scope\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"text\",\n          \"value\": \"[X] Academic achievement / reading [X] Reading fluency [X] Review of educational performance\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"b662882c-b37d-4efd-92a6-50cba1cfb83b\",\n            \"page\": 1,\n            \"quote\": \"Evaluation Areas [X] Academic achievement / reading [X] Reading fluency [X] Review of educational performance\"\n          }\n        },\n        {\n          \"fieldId\": \"consent_date\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"date\",\n          \"value\": \"2024-09-04\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"b662882c-b37d-4efd-92a6-50cba1cfb83b\",\n            \"page\": 1,\n            \"quote\": \"Parent/Guardian Signature: [Synthetic signature omitted] Date: 2024-09-04\"\n          }\n        }\n      ]\n    }\n  ]\n}\n```",
+  "schemaVersion": "hive.reader-document-extraction/1",
+  "sourceDocumentId": "b662882c-b37d-4efd-92a6-50cba1cfb83b",
+  "status": "SUCCEEDED",
+  "studyRunId": "86dfa706-f7fc-4fe7-a49d-14e154825ec4",
+  "usage": {
+    "cacheReadInputTokens": null,
+    "cacheWriteInputTokens": null,
+    "inputTokens": null,
+    "outputTokens": null
+  },
+  "userId": "40bd9c51-15c6-42fc-a902-3c186e750e53"
+}

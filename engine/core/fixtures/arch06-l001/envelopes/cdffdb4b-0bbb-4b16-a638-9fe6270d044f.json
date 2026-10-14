@@ -1,0 +1,432 @@
+{
+  "attemptId": "adb37691-b473-4938-b63c-d4ea43188d3a",
+  "caseId": "14baf227-7067-4a84-a316-f6cb72a5ecfe",
+  "domainId": "iep",
+  "latencyMs": 48373,
+  "modelId": "claude-opus-5-5",
+  "modelProvider": "anthropic",
+  "occurredAt": "2026-10-13T22:07:03Z",
+  "packContentSha256": "c2baa0439d32496a3110f5388f6048395a9f4c8fdce79b3d0cec36ae6b9a7775",
+  "packId": "iep",
+  "packVersion": "0.3.0-proposed",
+  "parsedModelJson": {
+    "documentTypeId": "iep.evaluation.psychoeducational",
+    "packId": "iep",
+    "packVersion": "0.3.0-proposed",
+    "recordInstances": [
+      {
+        "fields": [
+          {
+            "evidence": {
+              "page": 1,
+              "quote": "Psychoeducational Evaluation Report",
+              "sourceDocumentId": "cdffdb4b-0bbb-4b16-a638-9fe6270d044f"
+            },
+            "fieldId": "title",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "quoted",
+            "value": "Psychoeducational Evaluation Report",
+            "valueKind": "text"
+          },
+          {
+            "evidence": {
+              "page": 1,
+              "quote": "Evaluation Date: 2024-10-15",
+              "sourceDocumentId": "cdffdb4b-0bbb-4b16-a638-9fe6270d044f"
+            },
+            "fieldId": "document_date",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "quoted",
+            "value": "2024-10-15",
+            "valueKind": "date"
+          },
+          {
+            "evidence": {
+              "page": 1,
+              "quote": "Evaluator: School psychologist",
+              "sourceDocumentId": "cdffdb4b-0bbb-4b16-a638-9fe6270d044f"
+            },
+            "fieldId": "author_role",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "classified",
+            "value": "school_evaluator",
+            "valueKind": "code"
+          },
+          {
+            "evidence": {
+              "page": 1,
+              "quote": "Parent consent for the initial evaluation",
+              "sourceDocumentId": "cdffdb4b-0bbb-4b16-a638-9fe6270d044f"
+            },
+            "fieldId": "subtype",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "classified",
+            "value": "initial",
+            "valueKind": "code"
+          }
+        ],
+        "instanceIndex": 0,
+        "recordEvidence": {
+          "page": 1,
+          "quote": "Psychoeducational Evaluation Report",
+          "sourceDocumentId": "cdffdb4b-0bbb-4b16-a638-9fe6270d044f"
+        },
+        "recordTypeId": "document_header"
+      },
+      {
+        "fields": [
+          {
+            "evidence": {
+              "page": 1,
+              "quote": "Student: Maya Carter",
+              "sourceDocumentId": "cdffdb4b-0bbb-4b16-a638-9fe6270d044f"
+            },
+            "fieldId": "name",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "quoted",
+            "value": "Maya Carter",
+            "valueKind": "text"
+          },
+          {
+            "evidence": {
+              "page": 1,
+              "quote": "Date of Birth: 2017-04-18",
+              "sourceDocumentId": "cdffdb4b-0bbb-4b16-a638-9fe6270d044f"
+            },
+            "fieldId": "birth_date",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "quoted",
+            "value": "2017-04-18",
+            "valueKind": "date"
+          },
+          {
+            "evidence": {
+              "page": 1,
+              "quote": "Grade: 2",
+              "sourceDocumentId": "cdffdb4b-0bbb-4b16-a638-9fe6270d044f"
+            },
+            "fieldId": "grade",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "quoted",
+            "value": "2",
+            "valueKind": "text"
+          },
+          {
+            "evidence": {
+              "page": 1,
+              "quote": "School: Synthetic Elementary School",
+              "sourceDocumentId": "cdffdb4b-0bbb-4b16-a638-9fe6270d044f"
+            },
+            "fieldId": "school",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "quoted",
+            "value": "Synthetic Elementary School",
+            "valueKind": "text"
+          },
+          {
+            "evidence": {
+              "page": 1,
+              "quote": "District: Synthetic District",
+              "sourceDocumentId": "cdffdb4b-0bbb-4b16-a638-9fe6270d044f"
+            },
+            "fieldId": "district",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "quoted",
+            "value": "Synthetic District",
+            "valueKind": "text"
+          }
+        ],
+        "instanceIndex": 0,
+        "recordEvidence": {
+          "page": 1,
+          "quote": "Student: Maya Carter Date of Birth: 2017-04-18 Grade: 2 School: Synthetic Elementary School District: Synthetic District",
+          "sourceDocumentId": "cdffdb4b-0bbb-4b16-a638-9fe6270d044f"
+        },
+        "recordTypeId": "student"
+      },
+      {
+        "fields": [
+          {
+            "evidence": {
+              "page": 2,
+              "quote": "The primary referral concern is reading fluency.",
+              "sourceDocumentId": "cdffdb4b-0bbb-4b16-a638-9fe6270d044f"
+            },
+            "fieldId": "area",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "quoted",
+            "value": "reading fluency",
+            "valueKind": "text"
+          },
+          {
+            "evidence": {
+              "page": 2,
+              "quote": "The primary referral concern is reading fluency.",
+              "sourceDocumentId": "cdffdb4b-0bbb-4b16-a638-9fe6270d044f"
+            },
+            "fieldId": "finding",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "quoted",
+            "value": "The primary referral concern is reading fluency.",
+            "valueKind": "text"
+          }
+        ],
+        "instanceIndex": 0,
+        "recordEvidence": {
+          "page": 2,
+          "quote": "The primary referral concern is reading fluency.",
+          "sourceDocumentId": "cdffdb4b-0bbb-4b16-a638-9fe6270d044f"
+        },
+        "recordTypeId": "evaluation_finding"
+      },
+      {
+        "fields": [
+          {
+            "evidence": {
+              "page": 2,
+              "quote": "General reasoning and cognitive functioning are broadly within the expected range for age.",
+              "sourceDocumentId": "cdffdb4b-0bbb-4b16-a638-9fe6270d044f"
+            },
+            "fieldId": "area",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "quoted",
+            "value": "General reasoning and cognitive functioning",
+            "valueKind": "text"
+          },
+          {
+            "evidence": {
+              "page": 2,
+              "quote": "General reasoning and cognitive functioning are broadly within the expected range for age.",
+              "sourceDocumentId": "cdffdb4b-0bbb-4b16-a638-9fe6270d044f"
+            },
+            "fieldId": "finding",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "quoted",
+            "value": "General reasoning and cognitive functioning are broadly within the expected range for age.",
+            "valueKind": "text"
+          }
+        ],
+        "instanceIndex": 1,
+        "recordEvidence": {
+          "page": 2,
+          "quote": "General reasoning and cognitive functioning are broadly within the expected range for age.",
+          "sourceDocumentId": "cdffdb4b-0bbb-4b16-a638-9fe6270d044f"
+        },
+        "recordTypeId": "evaluation_finding"
+      },
+      {
+        "fields": [
+          {
+            "evidence": {
+              "page": 2,
+              "quote": "No global cognitive limitation is identified as the primary explanation for the reading-fluency concern.",
+              "sourceDocumentId": "cdffdb4b-0bbb-4b16-a638-9fe6270d044f"
+            },
+            "fieldId": "area",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "quoted",
+            "value": "global cognitive limitation",
+            "valueKind": "text"
+          },
+          {
+            "evidence": {
+              "page": 2,
+              "quote": "No global cognitive limitation is identified as the primary explanation for the reading-fluency concern.",
+              "sourceDocumentId": "cdffdb4b-0bbb-4b16-a638-9fe6270d044f"
+            },
+            "fieldId": "finding",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "quoted",
+            "value": "No global cognitive limitation is identified as the primary explanation for the reading-fluency concern.",
+            "valueKind": "text"
+          }
+        ],
+        "instanceIndex": 2,
+        "recordEvidence": {
+          "page": 2,
+          "quote": "No global cognitive limitation is identified as the primary explanation for the reading-fluency concern.",
+          "sourceDocumentId": "cdffdb4b-0bbb-4b16-a638-9fe6270d044f"
+        },
+        "recordTypeId": "evaluation_finding"
+      },
+      {
+        "fields": [
+          {
+            "evidence": {
+              "page": 2,
+              "quote": "Teacher information indicates the reading difficulty is persistent in classroom reading tasks.",
+              "sourceDocumentId": "cdffdb4b-0bbb-4b16-a638-9fe6270d044f"
+            },
+            "fieldId": "area",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "quoted",
+            "value": "classroom reading tasks",
+            "valueKind": "text"
+          },
+          {
+            "evidence": {
+              "page": 2,
+              "quote": "Teacher information indicates the reading difficulty is persistent in classroom reading tasks.",
+              "sourceDocumentId": "cdffdb4b-0bbb-4b16-a638-9fe6270d044f"
+            },
+            "fieldId": "finding",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "quoted",
+            "value": "Teacher information indicates the reading difficulty is persistent in classroom reading tasks.",
+            "valueKind": "text"
+          }
+        ],
+        "instanceIndex": 3,
+        "recordEvidence": {
+          "page": 2,
+          "quote": "Teacher information indicates the reading difficulty is persistent in classroom reading tasks.",
+          "sourceDocumentId": "cdffdb4b-0bbb-4b16-a638-9fe6270d044f"
+        },
+        "recordTypeId": "evaluation_finding"
+      },
+      {
+        "fields": [
+          {
+            "evidence": {
+              "page": 2,
+              "quote": "Maya is able to participate in classroom discussion and understand ordinary verbal directions.",
+              "sourceDocumentId": "cdffdb4b-0bbb-4b16-a638-9fe6270d044f"
+            },
+            "fieldId": "area",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "quoted",
+            "value": "classroom discussion",
+            "valueKind": "text"
+          },
+          {
+            "evidence": {
+              "page": 2,
+              "quote": "Maya is able to participate in classroom discussion and understand ordinary verbal directions.",
+              "sourceDocumentId": "cdffdb4b-0bbb-4b16-a638-9fe6270d044f"
+            },
+            "fieldId": "finding",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "quoted",
+            "value": "Maya is able to participate in classroom discussion and understand ordinary verbal directions.",
+            "valueKind": "text"
+          }
+        ],
+        "instanceIndex": 4,
+        "recordEvidence": {
+          "page": 2,
+          "quote": "Maya is able to participate in classroom discussion and understand ordinary verbal directions.",
+          "sourceDocumentId": "cdffdb4b-0bbb-4b16-a638-9fe6270d044f"
+        },
+        "recordTypeId": "evaluation_finding"
+      },
+      {
+        "fields": [
+          {
+            "evidence": {
+              "page": 2,
+              "quote": "The psychoeducational information supports continued educational evaluation of Maya's reading achievement and fluency.",
+              "sourceDocumentId": "cdffdb4b-0bbb-4b16-a638-9fe6270d044f"
+            },
+            "fieldId": "area",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "quoted",
+            "value": "reading achievement and fluency",
+            "valueKind": "text"
+          },
+          {
+            "evidence": {
+              "page": 2,
+              "quote": "Classroom performance and teacher report remain consistent with a reading-fluency concern.",
+              "sourceDocumentId": "cdffdb4b-0bbb-4b16-a638-9fe6270d044f"
+            },
+            "fieldId": "finding",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "quoted",
+            "value": "Classroom performance and teacher report remain consistent with a reading-fluency concern.",
+            "valueKind": "text"
+          }
+        ],
+        "instanceIndex": 5,
+        "recordEvidence": {
+          "page": 2,
+          "quote": "The psychoeducational information supports continued educational evaluation of Maya's reading achievement and fluency. Classroom performance and teacher report remain consistent with a reading-fluency concern.",
+          "sourceDocumentId": "cdffdb4b-0bbb-4b16-a638-9fe6270d044f"
+        },
+        "recordTypeId": "evaluation_finding"
+      },
+      {
+        "fields": [
+          {
+            "evidence": {
+              "page": 2,
+              "quote": "Academic assessment of reading achievement and fluency should be completed next, before the team considers eligibility.",
+              "sourceDocumentId": "cdffdb4b-0bbb-4b16-a638-9fe6270d044f"
+            },
+            "fieldId": "area",
+            "missingState": null,
+            "modality": "observed",
+            "provenance": "quoted",
+            "value": "reading achievement and fluency",
+            "valueKind": "text"
+          },
+          {
+            "evidence": {
+              "page": 2,
+              "quote": "Academic assessment of reading achievement and fluency should be completed next, before the team considers eligibility.",
+              "sourceDocumentId": "cdffdb4b-0bbb-4b16-a638-9fe6270d044f"
+            },
+            "fieldId": "recommendation",
+            "missingState": null,
+            "modality": "planned",
+            "provenance": "quoted",
+            "value": "Academic assessment of reading achievement and fluency should be completed next, before the team considers eligibility.",
+            "valueKind": "text"
+          }
+        ],
+        "instanceIndex": 6,
+        "recordEvidence": {
+          "page": 2,
+          "quote": "Academic assessment of reading achievement and fluency should be completed next, before the team considers eligibility.",
+          "sourceDocumentId": "cdffdb4b-0bbb-4b16-a638-9fe6270d044f"
+        },
+        "recordTypeId": "evaluation_finding"
+      }
+    ],
+    "schemaVersion": "hive.pack-driven-reader-extraction/0.2.0",
+    "sourceDocumentId": "cdffdb4b-0bbb-4b16-a638-9fe6270d044f"
+  },
+  "promptVersion": "hive-pack-driven-reader/0.2.0",
+  "rawAssistantText": "```json\n{\n  \"schemaVersion\": \"hive.pack-driven-reader-extraction/0.2.0\",\n  \"packId\": \"iep\",\n  \"packVersion\": \"0.3.0-proposed\",\n  \"documentTypeId\": \"iep.evaluation.psychoeducational\",\n  \"sourceDocumentId\": \"cdffdb4b-0bbb-4b16-a638-9fe6270d044f\",\n  \"recordInstances\": [\n    {\n      \"recordTypeId\": \"document_header\",\n      \"instanceIndex\": 0,\n      \"recordEvidence\": {\n        \"sourceDocumentId\": \"cdffdb4b-0bbb-4b16-a638-9fe6270d044f\",\n        \"page\": 1,\n        \"quote\": \"Psychoeducational Evaluation Report\"\n      },\n      \"fields\": [\n        {\n          \"fieldId\": \"title\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"text\",\n          \"value\": \"Psychoeducational Evaluation Report\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"cdffdb4b-0bbb-4b16-a638-9fe6270d044f\",\n            \"page\": 1,\n            \"quote\": \"Psychoeducational Evaluation Report\"\n          }\n        },\n        {\n          \"fieldId\": \"document_date\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"date\",\n          \"value\": \"2024-10-15\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"cdffdb4b-0bbb-4b16-a638-9fe6270d044f\",\n            \"page\": 1,\n            \"quote\": \"Evaluation Date: 2024-10-15\"\n          }\n        },\n        {\n          \"fieldId\": \"author_role\",\n          \"provenance\": \"classified\",\n          \"valueKind\": \"code\",\n          \"value\": \"school_evaluator\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"cdffdb4b-0bbb-4b16-a638-9fe6270d044f\",\n            \"page\": 1,\n            \"quote\": \"Evaluator: School psychologist\"\n          }\n        },\n        {\n          \"fieldId\": \"subtype\",\n          \"provenance\": \"classified\",\n          \"valueKind\": \"code\",\n          \"value\": \"initial\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"cdffdb4b-0bbb-4b16-a638-9fe6270d044f\",\n            \"page\": 1,\n            \"quote\": \"Parent consent for the initial evaluation\"\n          }\n        }\n      ]\n    },\n    {\n      \"recordTypeId\": \"student\",\n      \"instanceIndex\": 0,\n      \"recordEvidence\": {\n        \"sourceDocumentId\": \"cdffdb4b-0bbb-4b16-a638-9fe6270d044f\",\n        \"page\": 1,\n        \"quote\": \"Student: Maya Carter Date of Birth: 2017-04-18 Grade: 2 School: Synthetic Elementary School District: Synthetic District\"\n      },\n      \"fields\": [\n        {\n          \"fieldId\": \"name\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"text\",\n          \"value\": \"Maya Carter\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"cdffdb4b-0bbb-4b16-a638-9fe6270d044f\",\n            \"page\": 1,\n            \"quote\": \"Student: Maya Carter\"\n          }\n        },\n        {\n          \"fieldId\": \"birth_date\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"date\",\n          \"value\": \"2017-04-18\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"cdffdb4b-0bbb-4b16-a638-9fe6270d044f\",\n            \"page\": 1,\n            \"quote\": \"Date of Birth: 2017-04-18\"\n          }\n        },\n        {\n          \"fieldId\": \"grade\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"text\",\n          \"value\": \"2\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"cdffdb4b-0bbb-4b16-a638-9fe6270d044f\",\n            \"page\": 1,\n            \"quote\": \"Grade: 2\"\n          }\n        },\n        {\n          \"fieldId\": \"school\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"text\",\n          \"value\": \"Synthetic Elementary School\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"cdffdb4b-0bbb-4b16-a638-9fe6270d044f\",\n            \"page\": 1,\n            \"quote\": \"School: Synthetic Elementary School\"\n          }\n        },\n        {\n          \"fieldId\": \"district\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"text\",\n          \"value\": \"Synthetic District\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"cdffdb4b-0bbb-4b16-a638-9fe6270d044f\",\n            \"page\": 1,\n            \"quote\": \"District: Synthetic District\"\n          }\n        }\n      ]\n    },\n    {\n      \"recordTypeId\": \"evaluation_finding\",\n      \"instanceIndex\": 0,\n      \"recordEvidence\": {\n        \"sourceDocumentId\": \"cdffdb4b-0bbb-4b16-a638-9fe6270d044f\",\n        \"page\": 2,\n        \"quote\": \"The primary referral concern is reading fluency.\"\n      },\n      \"fields\": [\n        {\n          \"fieldId\": \"area\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"text\",\n          \"value\": \"reading fluency\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"cdffdb4b-0bbb-4b16-a638-9fe6270d044f\",\n            \"page\": 2,\n            \"quote\": \"The primary referral concern is reading fluency.\"\n          }\n        },\n        {\n          \"fieldId\": \"finding\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"text\",\n          \"value\": \"The primary referral concern is reading fluency.\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"cdffdb4b-0bbb-4b16-a638-9fe6270d044f\",\n            \"page\": 2,\n            \"quote\": \"The primary referral concern is reading fluency.\"\n          }\n        }\n      ]\n    },\n    {\n      \"recordTypeId\": \"evaluation_finding\",\n      \"instanceIndex\": 1,\n      \"recordEvidence\": {\n        \"sourceDocumentId\": \"cdffdb4b-0bbb-4b16-a638-9fe6270d044f\",\n        \"page\": 2,\n        \"quote\": \"General reasoning and cognitive functioning are broadly within the expected range for age.\"\n      },\n      \"fields\": [\n        {\n          \"fieldId\": \"area\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"text\",\n          \"value\": \"General reasoning and cognitive functioning\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"cdffdb4b-0bbb-4b16-a638-9fe6270d044f\",\n            \"page\": 2,\n            \"quote\": \"General reasoning and cognitive functioning are broadly within the expected range for age.\"\n          }\n        },\n        {\n          \"fieldId\": \"finding\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"text\",\n          \"value\": \"General reasoning and cognitive functioning are broadly within the expected range for age.\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"cdffdb4b-0bbb-4b16-a638-9fe6270d044f\",\n            \"page\": 2,\n            \"quote\": \"General reasoning and cognitive functioning are broadly within the expected range for age.\"\n          }\n        }\n      ]\n    },\n    {\n      \"recordTypeId\": \"evaluation_finding\",\n      \"instanceIndex\": 2,\n      \"recordEvidence\": {\n        \"sourceDocumentId\": \"cdffdb4b-0bbb-4b16-a638-9fe6270d044f\",\n        \"page\": 2,\n        \"quote\": \"No global cognitive limitation is identified as the primary explanation for the reading-fluency concern.\"\n      },\n      \"fields\": [\n        {\n          \"fieldId\": \"area\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"text\",\n          \"value\": \"global cognitive limitation\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"cdffdb4b-0bbb-4b16-a638-9fe6270d044f\",\n            \"page\": 2,\n            \"quote\": \"No global cognitive limitation is identified as the primary explanation for the reading-fluency concern.\"\n          }\n        },\n        {\n          \"fieldId\": \"finding\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"text\",\n          \"value\": \"No global cognitive limitation is identified as the primary explanation for the reading-fluency concern.\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"cdffdb4b-0bbb-4b16-a638-9fe6270d044f\",\n            \"page\": 2,\n            \"quote\": \"No global cognitive limitation is identified as the primary explanation for the reading-fluency concern.\"\n          }\n        }\n      ]\n    },\n    {\n      \"recordTypeId\": \"evaluation_finding\",\n      \"instanceIndex\": 3,\n      \"recordEvidence\": {\n        \"sourceDocumentId\": \"cdffdb4b-0bbb-4b16-a638-9fe6270d044f\",\n        \"page\": 2,\n        \"quote\": \"Teacher information indicates the reading difficulty is persistent in classroom reading tasks.\"\n      },\n      \"fields\": [\n        {\n          \"fieldId\": \"area\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"text\",\n          \"value\": \"classroom reading tasks\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"cdffdb4b-0bbb-4b16-a638-9fe6270d044f\",\n            \"page\": 2,\n            \"quote\": \"Teacher information indicates the reading difficulty is persistent in classroom reading tasks.\"\n          }\n        },\n        {\n          \"fieldId\": \"finding\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"text\",\n          \"value\": \"Teacher information indicates the reading difficulty is persistent in classroom reading tasks.\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"cdffdb4b-0bbb-4b16-a638-9fe6270d044f\",\n            \"page\": 2,\n            \"quote\": \"Teacher information indicates the reading difficulty is persistent in classroom reading tasks.\"\n          }\n        }\n      ]\n    },\n    {\n      \"recordTypeId\": \"evaluation_finding\",\n      \"instanceIndex\": 4,\n      \"recordEvidence\": {\n        \"sourceDocumentId\": \"cdffdb4b-0bbb-4b16-a638-9fe6270d044f\",\n        \"page\": 2,\n        \"quote\": \"Maya is able to participate in classroom discussion and understand ordinary verbal directions.\"\n      },\n      \"fields\": [\n        {\n          \"fieldId\": \"area\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"text\",\n          \"value\": \"classroom discussion\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"cdffdb4b-0bbb-4b16-a638-9fe6270d044f\",\n            \"page\": 2,\n            \"quote\": \"Maya is able to participate in classroom discussion and understand ordinary verbal directions.\"\n          }\n        },\n        {\n          \"fieldId\": \"finding\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"text\",\n          \"value\": \"Maya is able to participate in classroom discussion and understand ordinary verbal directions.\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"cdffdb4b-0bbb-4b16-a638-9fe6270d044f\",\n            \"page\": 2,\n            \"quote\": \"Maya is able to participate in classroom discussion and understand ordinary verbal directions.\"\n          }\n        }\n      ]\n    },\n    {\n      \"recordTypeId\": \"evaluation_finding\",\n      \"instanceIndex\": 5,\n      \"recordEvidence\": {\n        \"sourceDocumentId\": \"cdffdb4b-0bbb-4b16-a638-9fe6270d044f\",\n        \"page\": 2,\n        \"quote\": \"The psychoeducational information supports continued educational evaluation of Maya's reading achievement and fluency. Classroom performance and teacher report remain consistent with a reading-fluency concern.\"\n      },\n      \"fields\": [\n        {\n          \"fieldId\": \"area\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"text\",\n          \"value\": \"reading achievement and fluency\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"cdffdb4b-0bbb-4b16-a638-9fe6270d044f\",\n            \"page\": 2,\n            \"quote\": \"The psychoeducational information supports continued educational evaluation of Maya's reading achievement and fluency.\"\n          }\n        },\n        {\n          \"fieldId\": \"finding\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"text\",\n          \"value\": \"Classroom performance and teacher report remain consistent with a reading-fluency concern.\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"cdffdb4b-0bbb-4b16-a638-9fe6270d044f\",\n            \"page\": 2,\n            \"quote\": \"Classroom performance and teacher report remain consistent with a reading-fluency concern.\"\n          }\n        }\n      ]\n    },\n    {\n      \"recordTypeId\": \"evaluation_finding\",\n      \"instanceIndex\": 6,\n      \"recordEvidence\": {\n        \"sourceDocumentId\": \"cdffdb4b-0bbb-4b16-a638-9fe6270d044f\",\n        \"page\": 2,\n        \"quote\": \"Academic assessment of reading achievement and fluency should be completed next, before the team considers eligibility.\"\n      },\n      \"fields\": [\n        {\n          \"fieldId\": \"area\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"text\",\n          \"value\": \"reading achievement and fluency\",\n          \"modality\": \"observed\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"cdffdb4b-0bbb-4b16-a638-9fe6270d044f\",\n            \"page\": 2,\n            \"quote\": \"Academic assessment of reading achievement and fluency should be completed next, before the team considers eligibility.\"\n          }\n        },\n        {\n          \"fieldId\": \"recommendation\",\n          \"provenance\": \"quoted\",\n          \"valueKind\": \"text\",\n          \"value\": \"Academic assessment of reading achievement and fluency should be completed next, before the team considers eligibility.\",\n          \"modality\": \"planned\",\n          \"missingState\": null,\n          \"evidence\": {\n            \"sourceDocumentId\": \"cdffdb4b-0bbb-4b16-a638-9fe6270d044f\",\n            \"page\": 2,\n            \"quote\": \"Academic assessment of reading achievement and fluency should be completed next, before the team considers eligibility.\"\n          }\n        }\n      ]\n    }\n  ]\n}\n```",
+  "schemaVersion": "hive.reader-document-extraction/1",
+  "sourceDocumentId": "cdffdb4b-0bbb-4b16-a638-9fe6270d044f",
+  "status": "SUCCEEDED",
+  "studyRunId": "86dfa706-f7fc-4fe7-a49d-14e154825ec4",
+  "usage": {
+    "cacheReadInputTokens": null,
+    "cacheWriteInputTokens": null,
+    "inputTokens": null,
+    "outputTokens": null
+  },
+  "userId": "40bd9c51-15c6-42fc-a902-3c186e750e53"
+}

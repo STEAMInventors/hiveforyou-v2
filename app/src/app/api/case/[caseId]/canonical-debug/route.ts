@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 
 import { UnauthenticatedError } from "@hiveforyou/core";
 
+import { jsonFromAccessError, requireAdmin, requireCaseAccess } from "@/lib/auth/require-case-access";
+import { denyUnlessHiveDebugRoutesEnabled } from "@/lib/preview/hive-debug-server";
 import { CaseNotFoundError } from "@/lib/canonical-study/study-service-server";
 import { StudyRunNotFoundError } from "@/lib/case-map/case-map-bundle-service-server";
 import {
@@ -12,6 +14,11 @@ import {
 type RouteContext = { params: Promise<{ caseId: string }> };
 
 export async function GET(request: Request, context: RouteContext) {
+  const disabled = denyUnlessHiveDebugRoutesEnabled();
+  if (disabled) {
+    return disabled;
+  }
+
   const { caseId } = await context.params;
   const url = new URL(request.url);
   const studyRunId = url.searchParams.get("studyRunId")?.trim();
@@ -23,9 +30,15 @@ export async function GET(request: Request, context: RouteContext) {
   }
 
   try {
+    await requireAdmin(request);
+    await requireCaseAccess(request, caseId);
     const artifact = await loadDeterministicCanonicalStudyArtifact({ caseId, studyRunId });
     return NextResponse.json(artifact);
   } catch (error) {
+    const accessResponse = jsonFromAccessError(error);
+    if (accessResponse) {
+      return accessResponse;
+    }
     if (error instanceof UnauthenticatedError) {
       return NextResponse.json(
         { error: "UNAUTHENTICATED", message: "Sign in is required." },

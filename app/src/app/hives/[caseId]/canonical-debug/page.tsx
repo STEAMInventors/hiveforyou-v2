@@ -1,3 +1,7 @@
+import { notFound } from "next/navigation";
+
+import { ensureDebugCasePageAccess } from "@/lib/auth/require-case-access";
+import { isHiveDebugRoutesEnabled } from "@/lib/preview/preview-gate";
 import { HiveFooter } from "@/components/HiveFooter";
 import { HiveHeader } from "@/components/HiveHeader";
 import { CanonicalStudyDebugView } from "@/components/canonical-debug/CanonicalStudyDebugView";
@@ -8,7 +12,12 @@ type PageProps = {
 };
 
 export default async function CanonicalDebugPage({ params, searchParams }: PageProps) {
+  if (!isHiveDebugRoutesEnabled()) {
+    notFound();
+  }
+
   const { caseId } = await params;
+  await ensureDebugCasePageAccess(caseId);
   const query = await searchParams;
   const initialStudyRunId = query.studyRunId?.trim();
 
