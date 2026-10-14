@@ -4,6 +4,7 @@ import { createServerClient } from "@supabase/ssr";
 import { cookies, headers } from "next/headers";
 
 import {
+  assertAuthBypassDisabledInProduction,
   authorizationMatchesPreviewPassword,
   isPreviewPasswordGateEnabled,
 } from "@/lib/preview/preview-gate";
@@ -33,14 +34,18 @@ export async function createServerSupabaseClient() {
 }
 
 export async function getAuthenticatedUserId(): Promise<string | null> {
-  if (isPreviewPasswordGateEnabled()) {
+  assertAuthBypassDisabledInProduction();
+  const previewGateEnabled = isPreviewPasswordGateEnabled();
+  let allowPreviewImplicitAuth = false;
+  if (previewGateEnabled) {
     const headerList = await headers();
     if (!authorizationMatchesPreviewPassword(headerList.get("authorization"))) {
       return null;
     }
+    allowPreviewImplicitAuth = true;
   }
   const supabase = await createServerSupabaseClient();
-  await ensureDevSupabaseSession(supabase);
+  await ensureDevSupabaseSession(supabase, { allowPreviewImplicitAuth });
   const { data, error } = await supabase.auth.getUser();
   if (error || !data.user) {
     return null;

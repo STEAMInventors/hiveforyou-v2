@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 
+import { ensureDebugCasePageAccess } from "@/lib/auth/require-case-access";
 import { isHiveDebugRoutesEnabled } from "@/lib/preview/preview-gate";
 import { HiveFooter } from "@/components/HiveFooter";
 import { HiveHeader } from "@/components/HiveHeader";
@@ -16,6 +17,7 @@ export default async function ExtractionDebugPage({ params, searchParams }: Page
   }
 
   const { caseId } = await params;
+  await ensureDebugCasePageAccess(caseId);
   const query = await searchParams;
   const initialStudyRunId = query.studyRunId?.trim();
 

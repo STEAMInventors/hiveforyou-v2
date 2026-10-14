@@ -10,6 +10,7 @@ import {
   startIntakeFromRequest,
   type StartIntakeBody,
 } from "@/lib/intake/intake-service-server";
+import { jsonFromAccessError, requireCaseAccess, requireUser } from "@/lib/auth/require-case-access";
 import { isInngestIntakePipeline } from "@/lib/intake/pipeline";
 
 export const runtime = "nodejs";
@@ -32,6 +33,10 @@ export async function POST(request: Request) {
   }
 
   try {
+    await requireUser(request);
+    if (body.caseId?.trim()) {
+      await requireCaseAccess(request, body.caseId.trim());
+    }
     const opened = await startIntakeFromRequest(body);
     if (!isInngestIntakePipeline()) {
       void opened.begin().catch((error: unknown) => {
@@ -45,6 +50,10 @@ export async function POST(request: Request) {
       status: opened.run.status,
     });
   } catch (error) {
+    const accessResponse = jsonFromAccessError(error);
+    if (accessResponse) {
+      return accessResponse;
+    }
     if (error instanceof UnauthenticatedError) {
       return NextResponse.json(
         { error: "UNAUTHENTICATED", message: "Sign in is required." },

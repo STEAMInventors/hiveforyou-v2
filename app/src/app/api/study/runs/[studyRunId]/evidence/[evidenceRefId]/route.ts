@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 
 import { UnauthenticatedError } from "@hiveforyou/core";
 
+import { jsonFromAccessError, requireUser } from "@/lib/auth/require-case-access";
+
 import { CaseNotFoundError } from "@/lib/canonical-study/study-service-server";
 import {
   EvidenceRefNotFoundError,
@@ -11,13 +13,18 @@ import {
 
 type RouteContext = { params: Promise<{ studyRunId: string; evidenceRefId: string }> };
 
-export async function GET(_request: Request, context: RouteContext) {
+export async function GET(request: Request, context: RouteContext) {
   const { studyRunId, evidenceRefId } = await context.params;
 
   try {
+    await requireUser(request);
     const trace = await resolveEvidenceTraceForStudyRun({ studyRunId, evidenceRefId });
     return NextResponse.json({ evidence: trace });
   } catch (error) {
+    const accessResponse = jsonFromAccessError(error);
+    if (accessResponse) {
+      return accessResponse;
+    }
     if (error instanceof UnauthenticatedError) {
       return NextResponse.json(
         { error: "UNAUTHENTICATED", message: "Sign in is required." },
