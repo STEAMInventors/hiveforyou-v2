@@ -23,6 +23,7 @@ describe("ensureDevSupabaseSession", () => {
     delete process.env.HIVE_PREVIEW_AUTH_EMAIL;
     delete process.env.HIVE_PREVIEW_AUTH_PASSWORD;
     delete process.env.VERCEL;
+    delete process.env.VERCEL_ENV;
   });
 
   afterEach(() => {
@@ -163,15 +164,25 @@ describe("ensureDevSupabaseSession", () => {
     });
   });
 
+  it("refuses HIVE_DEV_AUTO_AUTH on Vercel production even when the preview gate is configured", async () => {
+    vi.stubEnv("VERCEL_ENV", "production");
+    process.env.HIVE_PREVIEW_PASSWORD = "gate";
+    process.env.HIVE_PREVIEW_AUTH_EMAIL = "preview@example.com";
+    process.env.HIVE_PREVIEW_AUTH_PASSWORD = "preview-secret";
+    process.env.HIVE_DEV_AUTO_AUTH = "1";
+    const { client } = mockSupabase();
+
+    await expect(
+      ensureDevSupabaseSession(client as never, { allowPreviewImplicitAuth: true }),
+    ).rejects.toThrow("Auth bypass configuration is not allowed in production.");
+  });
+
   it("signs in the preview user on Vercel when the preview password is set", async () => {
     vi.stubEnv("NODE_ENV", "production");
     vi.stubEnv("VERCEL", "1");
     process.env.HIVE_PREVIEW_PASSWORD = "gate";
     process.env.HIVE_PREVIEW_AUTH_EMAIL = " preview@example.com ";
     process.env.HIVE_PREVIEW_AUTH_PASSWORD = " preview-secret ";
-    process.env.HIVE_DEV_AUTO_AUTH = "1";
-    process.env.HIVE_DEV_AUTH_EMAIL = "dev@example.com";
-    process.env.HIVE_DEV_AUTH_PASSWORD = "secret";
     const { client, getUser, signInWithPassword } = mockSupabase();
     getUser.mockResolvedValue({ data: { user: null }, error: null });
     signInWithPassword.mockResolvedValue({ data: { session: {} }, error: null });
