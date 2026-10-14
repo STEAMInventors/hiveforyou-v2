@@ -170,56 +170,45 @@ describe("ensureDevSupabaseSession", () => {
     process.env.HIVE_PREVIEW_AUTH_EMAIL = "preview@example.com";
     process.env.HIVE_PREVIEW_AUTH_PASSWORD = "preview-secret";
     process.env.HIVE_DEV_AUTO_AUTH = "1";
-    const { client } = mockSupabase();
+    const { client, signInWithPassword } = mockSupabase();
 
-    await expect(
-      ensureDevSupabaseSession(client as never, { allowPreviewImplicitAuth: true }),
-    ).rejects.toThrow("Auth bypass configuration is not allowed in production.");
+    await expect(ensureDevSupabaseSession(client as never)).rejects.toThrow(
+      "Auth bypass configuration is not allowed in production.",
+    );
+    expect(signInWithPassword).not.toHaveBeenCalled();
   });
 
-  it("signs in the preview user on Vercel when the preview password is set", async () => {
+  it("does not sign in a shared preview user when preview auth credentials are set", async () => {
     vi.stubEnv("NODE_ENV", "production");
     vi.stubEnv("VERCEL", "1");
     process.env.HIVE_PREVIEW_PASSWORD = "gate";
     process.env.HIVE_PREVIEW_AUTH_EMAIL = " preview@example.com ";
     process.env.HIVE_PREVIEW_AUTH_PASSWORD = " preview-secret ";
     const { client, getUser, signInWithPassword } = mockSupabase();
-    getUser.mockResolvedValue({ data: { user: null }, error: null });
-    signInWithPassword.mockResolvedValue({ data: { session: {} }, error: null });
-
-    await ensureDevSupabaseSession(client as never, { allowPreviewImplicitAuth: true });
-
-    expect(signInWithPassword).toHaveBeenCalledWith({
-      email: "preview@example.com",
-      password: "preview-secret",
-    });
-  });
-
-  it("does not sign in the preview user until the preview gate is satisfied", async () => {
-    vi.stubEnv("NODE_ENV", "production");
-    vi.stubEnv("VERCEL", "1");
-    process.env.HIVE_PREVIEW_PASSWORD = "gate";
-    process.env.HIVE_PREVIEW_AUTH_EMAIL = "preview@example.com";
-    process.env.HIVE_PREVIEW_AUTH_PASSWORD = "preview-secret";
-    const { client, signInWithPassword } = mockSupabase();
 
     await ensureDevSupabaseSession(client as never);
 
+    expect(getUser).not.toHaveBeenCalled();
     expect(signInWithPassword).not.toHaveBeenCalled();
   });
 
-  it("does not fall back to dev credentials when preview user credentials are missing", async () => {
+  it("uses the local dev user and ignores preview auth credentials", async () => {
     vi.stubEnv("NODE_ENV", "development");
-    process.env.HIVE_PREVIEW_PASSWORD = "gate";
     process.env.HIVE_DEV_AUTO_AUTH = "1";
     process.env.HIVE_DEV_AUTH_EMAIL = "dev@example.com";
     process.env.HIVE_DEV_AUTH_PASSWORD = "secret";
-    const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
-    const { client, signInWithPassword } = mockSupabase();
+    process.env.HIVE_PREVIEW_PASSWORD = "gate";
+    process.env.HIVE_PREVIEW_AUTH_EMAIL = "preview@example.com";
+    process.env.HIVE_PREVIEW_AUTH_PASSWORD = "preview-secret";
+    const { client, getUser, signInWithPassword } = mockSupabase();
+    getUser.mockResolvedValue({ data: { user: null }, error: null });
+    signInWithPassword.mockResolvedValue({ data: { session: {} }, error: null });
 
-    await ensureDevSupabaseSession(client as never, { allowPreviewImplicitAuth: true });
+    await ensureDevSupabaseSession(client as never);
 
-    expect(signInWithPassword).not.toHaveBeenCalled();
-    expect(consoleError).toHaveBeenCalledWith("[preview-auth] preview user credentials are not set");
+    expect(signInWithPassword).toHaveBeenCalledWith({
+      email: "dev@example.com",
+      password: "secret",
+    });
   });
 });

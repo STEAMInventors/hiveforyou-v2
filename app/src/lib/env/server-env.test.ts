@@ -219,7 +219,6 @@ describe("server environment", () => {
     expect(devSecretOffenders).toEqual([]);
     const previewSecretAllow = new Set([
       "lib/preview/preview-gate.ts",
-      "lib/supabase/dev-auto-auth.ts",
       "lib/env/committed-env-guard.ts",
     ]);
     const previewSecretOffenders = walk(root).filter((file) => {

@@ -9,12 +9,6 @@ function isMissingSessionGetUserError(error: AuthError): boolean {
   return error.message.includes("Auth session missing");
 }
 
-type ImplicitSession = {
-  email: string;
-  password: string;
-  logLabel: "dev-auto-auth" | "preview-auth";
-};
-
 function isDevAutoAuthEnabled(): boolean {
   if (process.env.NODE_ENV !== "development") {
     return false;
@@ -26,7 +20,7 @@ function isDevAutoAuthEnabled(): boolean {
   return optIn === "1" || optIn === "true";
 }
 
-function readDevAuthCredentials(): ImplicitSession | null {
+function readDevAuthCredentials(): { email: string; password: string } | null {
   if (!isDevAutoAuthEnabled()) {
     return null;
   }
@@ -35,56 +29,18 @@ function readDevAuthCredentials(): ImplicitSession | null {
   if (!email || !password) {
     return null;
   }
-  return { email, password, logLabel: "dev-auto-auth" };
+  return { email, password };
 }
 
 /**
- * Preview gate on: sign in as the fixed preview Supabase user (real auth user; RLS unchanged).
- * Independent of NODE_ENV. Runs on Vercel when HIVE_PREVIEW_PASSWORD is set.
- * Call only after the request has passed the HTTP Basic gate.
- */
-function readPreviewAuthCredentials(): ImplicitSession | null {
-  if (!process.env.HIVE_PREVIEW_PASSWORD?.trim()) {
-    return null;
-  }
-  const email = process.env.HIVE_PREVIEW_AUTH_EMAIL?.trim();
-  const password = process.env.HIVE_PREVIEW_AUTH_PASSWORD?.trim();
-  if (!email || !password) {
-    console.error("[preview-auth] preview user credentials are not set");
-    return null;
-  }
-  return { email, password, logLabel: "preview-auth" };
-}
-
-export type EnsureDevSupabaseSessionOptions = {
-  /** Preview password gate satisfied for this request (HTTP Basic or route-level check). */
-  allowPreviewImplicitAuth?: boolean;
-};
-
-function readImplicitSessionCredentials(
-  options?: EnsureDevSupabaseSessionOptions,
-): ImplicitSession | null {
-  if (process.env.HIVE_PREVIEW_PASSWORD?.trim()) {
-    if (!options?.allowPreviewImplicitAuth) {
-      return null;
-    }
-    return readPreviewAuthCredentials();
-  }
-  return readDevAuthCredentials();
-}
-
-/**
- * Establish a normal Supabase session via password sign-in when none exists.
- * Development: HIVE_DEV_AUTO_AUTH=1 and NODE_ENV=development, never on Vercel.
- * Preview: HIVE_PREVIEW_PASSWORD set (after the basic gate) uses the preview user instead.
+ * Local development only: establish a Supabase session via password sign-in when none exists.
+ * Requires HIVE_DEV_AUTO_AUTH=1, NODE_ENV=development, and is never active on Vercel.
+ * The HTTP Basic preview gate does not sign in a user.
  * Credentials stay server-side (not NEXT_PUBLIC_*).
  */
-export async function ensureDevSupabaseSession(
-  supabase: SupabaseClient,
-  options?: EnsureDevSupabaseSessionOptions,
-): Promise<void> {
+export async function ensureDevSupabaseSession(supabase: SupabaseClient): Promise<void> {
   assertAuthBypassDisabledInProduction();
-  const credentials = readImplicitSessionCredentials(options);
+  const credentials = readDevAuthCredentials();
   if (!credentials) {
     return;
   }
@@ -94,7 +50,7 @@ export async function ensureDevSupabaseSession(
     return;
   }
   if (existingError && !isMissingSessionGetUserError(existingError)) {
-    console.error(`[${credentials.logLabel}] getUser failed`, { message: existingError.message });
+    console.error("[dev-auto-auth] getUser failed", { message: existingError.message });
     return;
   }
 
@@ -103,7 +59,7 @@ export async function ensureDevSupabaseSession(
     password: credentials.password,
   });
   if (signInError) {
-    console.error(`[${credentials.logLabel}] signInWithPassword failed`, {
+    console.error("[dev-auto-auth] signInWithPassword failed", {
       message: signInError.message,
     });
   }

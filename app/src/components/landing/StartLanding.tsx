@@ -1,5 +1,8 @@
 import Link from "next/link";
+import { Suspense } from "react";
 
+import { AuthCallbackNotice } from "@/components/auth/AuthCallbackNotice";
+import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton";
 import { UploadExperience } from "@/components/UploadExperience";
 
 import { HiveAppLogo, HiveBrandMark } from "@/components/HiveWordmark";
@@ -16,12 +19,9 @@ export function StartLanding() {
         >
           How it works
         </Link>
-        <Link
-          href="#signin"
-          className="rounded-full bg-[#0D0D0D] px-4 py-2.5 text-sm font-medium text-white no-underline"
-        >
+        <GoogleSignInButton className="rounded-full bg-[#0D0D0D] px-4 py-2.5 text-sm font-medium text-white">
           Sign in
-        </Link>
+        </GoogleSignInButton>
         </div>
       </header>
 
@@ -33,6 +33,10 @@ export function StartLanding() {
               What are you working on?
             </h1>
           </div>
+
+          <Suspense fallback={null}>
+            <AuthCallbackNotice />
+          </Suspense>
 
           <UploadExperience showTrustMessage={false} />
 

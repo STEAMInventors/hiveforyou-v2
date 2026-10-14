@@ -26,7 +26,6 @@ vi.mock("@supabase/ssr", () => ({
 import { getAuthenticatedUserId } from "./server";
 
 const SESSION_USER_ID = "session-user-from-cookie";
-const PREVIEW_USER_ID = "preview-user-after-sign-in";
 
 const SERVER_ENV = {
   NEXT_PUBLIC_SUPABASE_URL: "https://example.supabase.co",
@@ -40,27 +39,14 @@ function basic(user: string, password: string): string {
   return `Basic ${Buffer.from(`${user}:${password}`, "utf8").toString("base64")}`;
 }
 
-describe("getAuthenticatedUserId (SEC-01c preview auth)", () => {
-  let signedIn = false;
-
+describe("getAuthenticatedUserId (SEC-01d session auth)", () => {
   beforeEach(() => {
-    signedIn = false;
     requestHeaders.delete("authorization");
     auth.getUser.mockReset();
     auth.signInWithPassword.mockReset();
-
-    auth.getUser.mockImplementation(async () => {
-      if (!signedIn) {
-        return {
-          data: { user: null },
-          error: { name: "AuthSessionMissingError", message: "Auth session missing!" },
-        };
-      }
-      return { data: { user: { id: PREVIEW_USER_ID } }, error: null };
-    });
-    auth.signInWithPassword.mockImplementation(async () => {
-      signedIn = true;
-      return { data: { session: {} }, error: null };
+    auth.getUser.mockResolvedValue({
+      data: { user: null },
+      error: { name: "AuthSessionMissingError", message: "Auth session missing!" },
     });
 
     for (const [key, value] of Object.entries(SERVER_ENV)) {
@@ -112,7 +98,7 @@ describe("getAuthenticatedUserId (SEC-01c preview auth)", () => {
     expect(auth.signInWithPassword).not.toHaveBeenCalled();
   });
 
-  it("signs in the preview user only when verified Basic credentials are present", async () => {
+  it("returns null when the preview password matches but there is no Supabase session", async () => {
     process.env.HIVE_PREVIEW_PASSWORD = "gate-secret";
     process.env.HIVE_PREVIEW_AUTH_EMAIL = "preview@example.com";
     process.env.HIVE_PREVIEW_AUTH_PASSWORD = "preview-secret";
@@ -120,11 +106,8 @@ describe("getAuthenticatedUserId (SEC-01c preview auth)", () => {
 
     const userId = await getAuthenticatedUserId();
 
-    expect(userId).toBe(PREVIEW_USER_ID);
-    expect(auth.signInWithPassword).toHaveBeenCalledWith({
-      email: "preview@example.com",
-      password: "preview-secret",
-    });
+    expect(userId).toBeNull();
+    expect(auth.signInWithPassword).not.toHaveBeenCalled();
   });
 
   it("returns null when there is no session and preview gate is disabled", async () => {

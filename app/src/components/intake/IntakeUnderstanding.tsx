@@ -6,6 +6,10 @@ import { useEffect, useRef, useState } from "react";
 
 import { commitStagedDocuments } from "@/lib/documents/commit-client";
 import {
+  isUnauthenticatedDocumentCommit,
+  UPLOAD_SIGN_IN_MESSAGE,
+} from "@/lib/documents/commit-errors";
+import {
   clearStoredIntakeRun,
   fetchIntakeRun,
   startIntakeRun,
@@ -27,9 +31,6 @@ function customerErrorMessage(error: unknown): string {
   if (code === "INTAKE_START_FAILED") {
     return "We couldn't start reading your documents. Please try again later.";
   }
-  if (code === "UNAUTHENTICATED") {
-    return "Please sign in again.";
-  }
   return "We couldn't start reading your documents.";
 }
 
@@ -49,6 +50,7 @@ export function IntakeUnderstanding({
   const [view, setView] = useState<Awaited<ReturnType<typeof fetchIntakeRun>> | null>(null);
   const [intakeRunId, setIntakeRunId] = useState<string | null>(resumeRunId ?? null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [showGoogleSignIn, setShowGoogleSignIn] = useState(false);
   const [preRunPhase, setPreRunPhase] = useState<IntakePreRunPhase>(null);
 
   const stagedKey = documents.map((document) => document.id).join("|");
@@ -87,6 +89,7 @@ export function IntakeUnderstanding({
 
     async function begin() {
       setErrorMessage(null);
+      setShowGoogleSignIn(false);
       setPreRunPhase(null);
       try {
         const stagedDocuments = documentsRef.current;
@@ -121,7 +124,13 @@ export function IntakeUnderstanding({
       } catch (error) {
         if (!cancelled) {
           setPreRunPhase(null);
-          setErrorMessage(customerErrorMessage(error));
+          if (isUnauthenticatedDocumentCommit(error)) {
+            setShowGoogleSignIn(true);
+            setErrorMessage(UPLOAD_SIGN_IN_MESSAGE);
+          } else {
+            setShowGoogleSignIn(false);
+            setErrorMessage(customerErrorMessage(error));
+          }
         }
       }
     }
@@ -137,6 +146,7 @@ export function IntakeUnderstanding({
       <IntakeProcessingPanel
         view={view}
         errorMessage={errorMessage}
+        showGoogleSignIn={showGoogleSignIn}
         composerPurpose={composerPurpose}
         preRunPhase={preRunPhase}
         documentCount={stagedCount}

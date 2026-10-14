@@ -42,7 +42,8 @@ import { createOrReuseCase, persistSourceDocument } from "@hiveforyou/core";
 
 import { POST } from "./route";
 
-const PREVIEW_USER_ID = "preview-user-1";
+const USER_A = "user-a-session";
+const USER_B = "user-b-session";
 
 const SERVER_ENV = {
   NEXT_PUBLIC_SUPABASE_URL: "https://example.supabase.co",
@@ -56,9 +57,9 @@ function basic(user: string, password: string): string {
   return `Basic ${Buffer.from(`${user}:${password}`, "utf8").toString("base64")}`;
 }
 
-function commitRequest(): Request {
+function commitRequest(fields?: { userId?: string }): Request {
   const boundary = "----hivepreview";
-  const body = [
+  const lines = [
     `--${boundary}`,
     'Content-Disposition: form-data; name="caseId"',
     "",
@@ -67,6 +68,16 @@ function commitRequest(): Request {
     'Content-Disposition: form-data; name="stagedDocumentId"',
     "",
     "staged-1",
+  ];
+  if (fields?.userId) {
+    lines.push(
+      `--${boundary}`,
+      'Content-Disposition: form-data; name="userId"',
+      "",
+      fields.userId,
+    );
+  }
+  lines.push(
     `--${boundary}`,
     'Content-Disposition: form-data; name="file"; filename="note.txt"',
     "Content-Type: text/plain",
@@ -74,36 +85,32 @@ function commitRequest(): Request {
     "hello",
     `--${boundary}--`,
     "",
-  ].join("\r\n");
+  );
   return new Request("http://localhost/api/documents/commit", {
     method: "POST",
     headers: { "content-type": `multipart/form-data; boundary=${boundary}` },
-    body,
+    body: lines.join("\r\n"),
   });
 }
 
-describe("POST /api/documents/commit preview auth", () => {
-  let signedIn = false;
+describe("POST /api/documents/commit session auth", () => {
+  let sessionUserId: string | null = null;
 
   beforeEach(() => {
-    signedIn = false;
+    sessionUserId = null;
     requestHeaders.delete("authorization");
     vi.mocked(createOrReuseCase).mockClear();
     vi.mocked(persistSourceDocument).mockClear();
     auth.getUser.mockReset();
     auth.signInWithPassword.mockReset();
     auth.getUser.mockImplementation(async () => {
-      if (!signedIn) {
+      if (!sessionUserId) {
         return {
           data: { user: null },
           error: { name: "AuthSessionMissingError", message: "Auth session missing!" },
         };
       }
-      return { data: { user: { id: PREVIEW_USER_ID } }, error: null };
-    });
-    auth.signInWithPassword.mockImplementation(async () => {
-      signedIn = true;
-      return { data: { session: {} }, error: null };
+      return { data: { user: { id: sessionUserId } }, error: null };
     });
 
     for (const [key, value] of Object.entries(SERVER_ENV)) {
@@ -113,22 +120,23 @@ describe("POST /api/documents/commit preview auth", () => {
     delete process.env.HIVE_PREVIEW_AUTH_EMAIL;
     delete process.env.HIVE_PREVIEW_AUTH_PASSWORD;
     delete process.env.HIVE_DEV_AUTO_AUTH;
+    delete process.env.VERCEL_ENV;
   });
 
-  it("stays unauthenticated when the preview password is unset", async () => {
+  it("rejects an upload when there is no Supabase session", async () => {
     const response = await POST(commitRequest());
     expect(response.status).toBe(401);
     await expect(response.json()).resolves.toMatchObject({ error: "UNAUTHENTICATED" });
     expect(auth.signInWithPassword).not.toHaveBeenCalled();
     expect(createOrReuseCase).not.toHaveBeenCalled();
+    expect(persistSourceDocument).not.toHaveBeenCalled();
   });
 
-  it("does not resolve a user when the preview password is wrong", async () => {
+  it("rejects an upload when the preview password matches but there is no Supabase session", async () => {
     process.env.HIVE_PREVIEW_PASSWORD = "gate-secret";
     process.env.HIVE_PREVIEW_AUTH_EMAIL = "preview@example.com";
     process.env.HIVE_PREVIEW_AUTH_PASSWORD = "preview-secret";
-    const authorization = basic("anyone", "wrong");
-    requestHeaders.set("authorization", authorization);
+    requestHeaders.set("authorization", basic("anyone", "gate-secret"));
 
     const response = await POST(commitRequest());
 
@@ -136,29 +144,46 @@ describe("POST /api/documents/commit preview auth", () => {
     await expect(response.json()).resolves.toMatchObject({ error: "UNAUTHENTICATED" });
     expect(auth.signInWithPassword).not.toHaveBeenCalled();
     expect(createOrReuseCase).not.toHaveBeenCalled();
+    expect(persistSourceDocument).not.toHaveBeenCalled();
   });
 
-  it("resolves the preview user id when the preview password matches", async () => {
-    process.env.HIVE_PREVIEW_PASSWORD = "gate-secret";
-    process.env.HIVE_PREVIEW_AUTH_EMAIL = "preview@example.com";
-    process.env.HIVE_PREVIEW_AUTH_PASSWORD = "preview-secret";
-    const authorization = basic("ignored", "gate-secret");
-    requestHeaders.set("authorization", authorization);
+  it("authorizes an upload as the signed-in Supabase user", async () => {
+    sessionUserId = USER_A;
 
     const response = await POST(commitRequest());
 
     expect(response.status).toBe(200);
-    expect(auth.signInWithPassword).toHaveBeenCalledWith({
-      email: "preview@example.com",
-      password: "preview-secret",
-    });
+    expect(auth.signInWithPassword).not.toHaveBeenCalled();
     expect(createOrReuseCase).toHaveBeenCalledWith(
       expect.anything(),
-      expect.objectContaining({ sessionUserId: PREVIEW_USER_ID }),
+      expect.objectContaining({ sessionUserId: USER_A }),
     );
     expect(persistSourceDocument).toHaveBeenCalledWith(
       expect.anything(),
-      expect.objectContaining({ userId: PREVIEW_USER_ID }),
+      expect.objectContaining({ userId: USER_A }),
     );
+  });
+
+  it("keeps each signed-in user on their own document ownership", async () => {
+    sessionUserId = USER_A;
+    await POST(commitRequest());
+
+    sessionUserId = USER_B;
+    const response = await POST(commitRequest({ userId: USER_A }));
+
+    expect(response.status).toBe(200);
+    expect(persistSourceDocument).toHaveBeenLastCalledWith(
+      expect.anything(),
+      expect.objectContaining({ userId: USER_B }),
+    );
+    expect(createOrReuseCase).toHaveBeenLastCalledWith(
+      expect.anything(),
+      expect.objectContaining({ sessionUserId: USER_B }),
+    );
+    const persistedUserIds = vi.mocked(persistSourceDocument).mock.calls.map((call) => {
+      const input = call[1] as { userId?: string };
+      return input.userId;
+    });
+    expect(persistedUserIds).toEqual([USER_A, USER_B]);
   });
 });

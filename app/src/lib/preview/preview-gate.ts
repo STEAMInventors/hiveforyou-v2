@@ -106,6 +106,7 @@ let authBypassProductionRefusalLogged = false;
 /**
  * Fail closed when implicit dev auth is set on Vercel production.
  * The HTTP Basic preview gate (HIVE_PREVIEW_PASSWORD) is an explicit, controlled challenge and is allowed.
+ * Passing that gate does not create a Supabase session.
  */
 export function assertAuthBypassDisabledInProduction(
   source: Record<string, string | undefined> = process.env,

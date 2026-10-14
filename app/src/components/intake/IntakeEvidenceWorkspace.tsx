@@ -8,6 +8,10 @@ import { useCallback, useEffect, useId, useRef, useState } from "react";
 
 import { formatFileSize } from "@/lib/format-file-metadata";
 import { commitStagedDocuments } from "@/lib/documents/commit-client";
+import {
+  isUnauthenticatedDocumentCommit,
+  UPLOAD_SIGN_IN_MESSAGE,
+} from "@/lib/documents/commit-errors";
 import { fetchCaseMapViewBundle } from "@/lib/case-map/case-map-client";
 import { fetchRawExtractionInspectorBundle } from "@/lib/extraction-debug/raw-extraction-inspector-client";
 import {
@@ -25,6 +29,7 @@ import {
 } from "@/lib/intake/study-completion-navigation";
 import { useStagedDocuments } from "@/lib/intake/staged-documents-context";
 import { HiveBuildingModal } from "@/components/hive/HiveBuildingModal";
+import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton";
 import { BuildingHiveSvg } from "@/components/hive-lifecycle/BuildingHiveSvg";
 import { LifecycleRail } from "@/components/hive-lifecycle/LifecycleRail";
 import { StageList } from "@/components/hive-lifecycle/StageList";
@@ -479,8 +484,12 @@ export function IntakeEvidenceWorkspace({ intakeRunId }: { intakeRunId: string }
           await new Promise((resolve) => setTimeout(resolve, 1000));
           attempts += 1;
         }
-      } catch {
-        setErrorMessage("We couldn't add those files. Please try again.");
+      } catch (error) {
+        if (isUnauthenticatedDocumentCommit(error)) {
+          setErrorMessage(UPLOAD_SIGN_IN_MESSAGE);
+        } else {
+          setErrorMessage("We couldn't add those files. Please try again.");
+        }
       } finally {
         setAddingFiles(false);
       }
@@ -561,6 +570,11 @@ export function IntakeEvidenceWorkspace({ intakeRunId }: { intakeRunId: string }
           <p style={{ textAlign: "center", color: "#1A56C4" }} role="alert">
             {errorMessage}
           </p>
+          {errorMessage === UPLOAD_SIGN_IN_MESSAGE ? (
+            <div style={{ display: "flex", justifyContent: "center", marginTop: 16 }}>
+              <GoogleSignInButton />
+            </div>
+          ) : null}
         </main>
       </div>
     );
@@ -798,9 +812,12 @@ export function IntakeEvidenceWorkspace({ intakeRunId }: { intakeRunId: string }
         </div>
 
         {errorMessage ? (
-          <p style={{ margin: 0, fontSize: 14, color: "#1A56C4" }} role="alert">
-            {errorMessage}
-          </p>
+          <div className="flex flex-col items-start gap-3">
+            <p style={{ margin: 0, fontSize: 14, color: "#1A56C4" }} role="alert">
+              {errorMessage}
+            </p>
+            {errorMessage === UPLOAD_SIGN_IN_MESSAGE ? <GoogleSignInButton /> : null}
+          </div>
         ) : null}
 
         <section

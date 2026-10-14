@@ -84,6 +84,8 @@ import {
 
 } from "@/lib/intake/intake-client";
 
+import { commitStagedDocuments } from "@/lib/documents/commit-client";
+
 
 
 const workspaceView: IntakeEvidenceWorkspaceView = {
@@ -492,6 +494,27 @@ describe("IntakeEvidenceWorkspace", () => {
 
     expect(screen.getByTestId("intake-missing-upload")).toHaveTextContent("Upload");
 
+  });
+
+  it("shows Sign in with Google when an added file is rejected as unauthenticated", async () => {
+    vi.mocked(commitStagedDocuments).mockRejectedValue(new Error("UNAUTHENTICATED"));
+
+    const { container } = render(<IntakeEvidenceWorkspace intakeRunId="run-1" />);
+
+    await waitFor(() => {
+      expect(screen.getByText("Your documents")).toBeInTheDocument();
+    });
+
+    const input = container.querySelector('input[type="file"]') as HTMLInputElement;
+    fireEvent.change(input, {
+      target: { files: [new File(["x"], "extra.pdf", { type: "application/pdf" })] },
+    });
+
+    expect(await screen.findByTestId("google-sign-in")).toBeInTheDocument();
+    expect(screen.getByRole("alert")).toHaveTextContent(
+      "Sign in with Google to upload your documents.",
+    );
+    expect(screen.queryByText(/couldn't add those files/i)).not.toBeInTheDocument();
   });
 
 });

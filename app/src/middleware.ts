@@ -61,12 +61,7 @@ export async function middleware(request: NextRequest) {
   });
 
   await supabase.auth.getUser();
-  const previewGatePassed =
-    !isPreviewPasswordGateEnabled() ||
-    authorizationMatchesPreviewPassword(request.headers.get("authorization"));
-  await ensureDevSupabaseSession(supabase, {
-    allowPreviewImplicitAuth: previewGatePassed,
-  });
+  await ensureDevSupabaseSession(supabase);
   return response;
 }
 

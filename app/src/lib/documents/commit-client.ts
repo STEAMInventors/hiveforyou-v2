@@ -1,4 +1,5 @@
 import { getOrCreateClientCaseId } from "@/lib/canonical-study/map-start-request";
+import { DocumentCommitError } from "@/lib/documents/commit-errors";
 import type { StagedDocument } from "@/lib/staged-documents";
 
 export type CommitDocumentsResult = {
@@ -23,7 +24,25 @@ export async function commitStagedDocuments(
     body: form,
   });
   if (!response.ok) {
-    throw new Error("DOCUMENT_COMMIT_FAILED");
+    throw new DocumentCommitError(await commitFailureCode(response));
   }
   return (await response.json()) as CommitDocumentsResult;
+}
+
+async function commitFailureCode(
+  response: Response,
+): Promise<DocumentCommitError["code"]> {
+  if (response.status === 401) {
+    return "UNAUTHENTICATED";
+  }
+  const body = await response.json().catch(() => null);
+  if (
+    body &&
+    typeof body === "object" &&
+    "error" in body &&
+    (body as { error?: unknown }).error === "UNAUTHENTICATED"
+  ) {
+    return "UNAUTHENTICATED";
+  }
+  return "DOCUMENT_COMMIT_FAILED";
 }

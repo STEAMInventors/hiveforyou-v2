@@ -15,11 +15,13 @@ import {
   type Modal1Phase,
 } from "@/components/hive-lifecycle/stages";
 import type { ComposerPurpose } from "@/components/UploadExperience";
+import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton";
 import type { IntakePreRunPhase } from "@/lib/intake/intake-upload-phases";
 
 type IntakeProcessingPanelProps = {
   view: IntakeEvidenceWorkspaceView | null;
   errorMessage?: string | null;
+  showGoogleSignIn?: boolean;
   composerPurpose?: ComposerPurpose | null;
   onClose?: () => void;
   onAddMoreFiles?: () => void;
@@ -78,12 +80,14 @@ function intakeLifecycleTarget(input: {
 function IntakeLifecycleCard({
   target,
   errorMessage,
+  showGoogleSignIn = false,
   processingDelayedMessage,
   onClose,
   onOpenHive,
 }: {
   target: Modal1Phase;
   errorMessage: string | null;
+  showGoogleSignIn?: boolean;
   processingDelayedMessage: string | null;
   onClose?: () => void;
   onOpenHive?: () => void;
@@ -104,16 +108,19 @@ function IntakeLifecycleCard({
         data-testid="intake-processing-panel"
       >
         <h2 id="intake-lifecycle-title" data-testid="intake-heading">
-          We need your help
+          {showGoogleSignIn ? "Sign in to upload" : "We need your help"}
         </h2>
         <p className="sub" role="alert">
           {errorMessage}
         </p>
-        {onClose ? (
+        {showGoogleSignIn || onClose ? (
           <div className="actions">
-            <button type="button" className="btn" onClick={onClose}>
-              Close
-            </button>
+            {showGoogleSignIn ? <GoogleSignInButton className="btn dark" /> : null}
+            {onClose ? (
+              <button type="button" className="btn" onClick={onClose}>
+                Close
+              </button>
+            ) : null}
           </div>
         ) : null}
       </div>
@@ -167,6 +174,7 @@ function IntakeLifecycleCard({
 export function IntakeProcessingPanel({
   view,
   errorMessage = null,
+  showGoogleSignIn = false,
   onClose,
   onOpenHive,
   preRunPhase = null,
@@ -191,6 +199,7 @@ export function IntakeProcessingPanel({
         key={view?.intakeRunId ?? "intake-start"}
         target={target}
         errorMessage={errorMessage}
+        showGoogleSignIn={showGoogleSignIn}
         processingDelayedMessage={processingDelayedMessage}
         onClose={onClose}
         onOpenHive={onOpenHive}
