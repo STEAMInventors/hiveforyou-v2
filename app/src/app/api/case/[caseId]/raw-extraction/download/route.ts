@@ -2,10 +2,7 @@ import { NextResponse } from "next/server";
 
 import { UnauthenticatedError } from "@hiveforyou/core";
 
-<<<<<<< HEAD
 import { jsonFromAccessError, requireAdmin, requireCaseAccess } from "@/lib/auth/require-case-access";
-=======
->>>>>>> ba67a14 (SEC-01a: disable debug routes unless explicitly enabled)
 import { denyUnlessHiveDebugRoutesEnabled } from "@/lib/preview/hive-debug-server";
 import { CaseNotFoundError } from "@/lib/canonical-study/study-service-server";
 import { StudyRunNotFoundError } from "@/lib/case-map/case-map-bundle-service-server";

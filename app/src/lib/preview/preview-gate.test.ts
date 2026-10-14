@@ -5,12 +5,9 @@ import {
   constantTimeEqual,
   isHiveDebugApiPath,
   isHiveDebugPagePath,
-<<<<<<< HEAD
   assertAuthBypassDisabledInProduction,
   AuthBypassRefusedInProductionError,
   isHiveAdminUserId,
-=======
->>>>>>> ba67a14 (SEC-01a: disable debug routes unless explicitly enabled)
   isHiveDebugRoutesEnabled,
   isPreviewPasswordGateEnabled,
   readBasicAuthPassword,
@@ -62,7 +59,6 @@ describe("preview password gate", () => {
     expect(isHiveDebugApiPath("/api/case/abc/bundle")).toBe(false);
     expect(isHiveDebugPagePath("/hives/abc/extraction-debug")).toBe(true);
   });
-<<<<<<< HEAD
 
   it("refuses auth bypass env configuration on Vercel production", () => {
     expect(() =>
@@ -85,6 +81,4 @@ describe("preview password gate", () => {
     );
     expect(isHiveAdminUserId("other", { HIVE_ADMIN_USER_IDS: "admin-1" })).toBe(false);
   });
-=======
->>>>>>> ba67a14 (SEC-01a: disable debug routes unless explicitly enabled)
 });
