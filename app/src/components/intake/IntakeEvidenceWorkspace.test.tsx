@@ -242,7 +242,7 @@ describe("IntakeEvidenceWorkspace", () => {
 
 
 
-  it("routes pack_driven intake study completion to extraction-debug", async () => {
+  it("routes pack_driven intake study completion to the study map", async () => {
 
     vi.mocked(startIntakeStudy).mockResolvedValue({
 
@@ -304,9 +304,7 @@ describe("IntakeEvidenceWorkspace", () => {
 
     await waitFor(() => {
 
-      expect(mockPush).toHaveBeenCalledWith(
-        "/hives/case-1/extraction-debug?studyRunId=study-1",
-      );
+      expect(mockPush).toHaveBeenCalledWith("/study/study-1/map");
 
     });
 

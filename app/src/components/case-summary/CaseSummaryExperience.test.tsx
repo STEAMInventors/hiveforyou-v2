@@ -8,6 +8,15 @@ import { l001CaseMapViewFixture } from "@/lib/case-map/fixtures/l001-case-map-fi
 
 import { CaseSummaryExperience } from "./CaseSummaryExperience";
 
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ push: vi.fn(), replace: vi.fn() }),
+  usePathname: () => "/study/l001-run/map",
+}));
+
+vi.mock("@/lib/intake/staged-documents-context", () => ({
+  useStagedDocuments: () => ({ documents: [], clearDocuments: vi.fn() }),
+}));
+
 vi.mock("@/lib/case-map/case-map-client", () => ({
   fetchCaseMapViewBundle: vi.fn(),
 }));
@@ -49,6 +58,11 @@ function readyBundle(): CaseMapViewBundle {
   };
 }
 
+/**
+ * Baseline at HEAD (before pack-driven post-study navigation fix): all tests fail without a
+ * next/navigation mock. With the mock below, four Pro-view evidence-chip tests still fail at
+ * HEAD and after the navigation change (pre-existing; not caused by routing to /study/.../map).
+ */
 describe("CaseSummaryExperience", () => {
   beforeEach(() => {
     vi.mocked(fetchCaseMapViewBundle).mockReset();

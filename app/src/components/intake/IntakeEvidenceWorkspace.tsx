@@ -13,7 +13,6 @@ import {
   UPLOAD_SIGN_IN_MESSAGE,
 } from "@/lib/documents/commit-errors";
 import { fetchCaseMapViewBundle } from "@/lib/case-map/case-map-client";
-import { fetchRawExtractionInspectorBundle } from "@/lib/extraction-debug/raw-extraction-inspector-client";
 import {
   appendIntakeSources,
   fetchIntakeRun,
@@ -24,7 +23,6 @@ import {
 import {
   buildPostStudyCompletionHref,
   isCanonicalStudyPresentationReady,
-  isPackDrivenStudyAwaitingRawExtraction,
   resolveStudyProcessingModeFromStudyPath,
 } from "@/lib/intake/study-completion-navigation";
 import { useStagedDocuments } from "@/lib/intake/staged-documents-context";
@@ -357,46 +355,11 @@ export function IntakeEvidenceWorkspace({ intakeRunId }: { intakeRunId: string }
 
   useEffect(() => {
     const studyRunId = studyBuild?.studyRunId;
-    const caseId = view?.caseId;
-    if (!studyRunId || !caseId || studyBuild?.target === "complete") {
+    if (!studyRunId || studyBuild?.target === "complete") {
       setStudyDelayedMessage(null);
       return;
     }
-    const processingMode = resolveStudyProcessingModeFromStudyPath(view?.studyPath);
     const timer = setInterval(() => {
-      if (processingMode === "pack_driven_v1") {
-        void Promise.all([
-          fetchRawExtractionInspectorBundle(caseId, studyRunId),
-          fetchCaseMapViewBundle(studyRunId),
-        ])
-          .then(([rawBundle, bundle]) => {
-            if (isStudyProcessingDelayed(bundle.status, bundle.studyStartedAt)) {
-              setStudyDelayedMessage(
-                "This is taking longer than expected. Your hive is still building — you can leave this page open or come back in a few minutes.",
-              );
-            } else {
-              setStudyDelayedMessage(null);
-            }
-            if (rawBundle || bundle.status === "SUCCEEDED") {
-              setStudyBuild((prev) =>
-                prev ? { ...prev, target: "complete", studyRunId } : prev,
-              );
-              studyStartInFlight.current = false;
-              return;
-            }
-            if (isPackDrivenStudyAwaitingRawExtraction(bundle.status)) {
-              return;
-            }
-            if (bundle.status === "FAILED") {
-              studyStartInFlight.current = false;
-              setStudyBuild(null);
-              setErrorMessage("We couldn't complete the study. Please try again in a moment.");
-            }
-          })
-          .catch(() => {});
-        return;
-      }
-
       void fetchCaseMapViewBundle(studyRunId)
         .then((bundle) => {
           if (isStudyProcessingDelayed(bundle.status, bundle.studyStartedAt)) {
@@ -421,7 +384,7 @@ export function IntakeEvidenceWorkspace({ intakeRunId }: { intakeRunId: string }
         .catch(() => {});
     }, 2500);
     return () => clearInterval(timer);
-  }, [studyBuild?.studyRunId, studyBuild?.target, view?.caseId, view?.studyPath]);
+  }, [studyBuild?.studyRunId, studyBuild?.target]);
 
   useEffect(() => {
     if (studyBuild?.target !== "complete" || !studyBuild.studyRunId) {

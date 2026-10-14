@@ -13,9 +13,6 @@ export function buildPostStudyCompletionHref(input: {
   caseId: string;
   studyRunId: string;
 }): string {
-  if (input.processingMode === "pack_driven_v1") {
-    return `/hives/${encodeURIComponent(input.caseId)}/extraction-debug?studyRunId=${encodeURIComponent(input.studyRunId)}`;
-  }
   return `/study/${encodeURIComponent(input.studyRunId)}/map`;
 }
 

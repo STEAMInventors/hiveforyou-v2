@@ -2,7 +2,6 @@
 
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 
@@ -16,8 +15,6 @@ import { buildProvenanceIndex } from "@/lib/case/provenance-index";
 import type { CaseMapViewBundle } from "@/lib/case-map/case-map-view-bundle";
 
 import { fetchCaseMapViewBundle } from "@/lib/case-map/case-map-client";
-import { buildPostStudyCompletionHref } from "@/lib/intake/study-completion-navigation";
-
 import type { CaseSummaryPanelSpec } from "@/lib/case-summary/case-summary-evidence";
 
 import {
@@ -67,7 +64,6 @@ type CaseSummaryExperienceProps = {
 
 
 export function CaseSummaryExperience({ studyRunId, initialBundle }: CaseSummaryExperienceProps) {
-  const router = useRouter();
   const [bundle, setBundle] = useState<CaseMapViewBundle | null>(initialBundle ?? null);
 
   const [loadError, setLoadError] = useState(false);
@@ -114,19 +110,6 @@ export function CaseSummaryExperience({ studyRunId, initialBundle }: CaseSummary
     void load();
 
   }, [initialBundle, load]);
-
-  useEffect(() => {
-    if (!bundle || bundle.processingMode !== "pack_driven_v1") {
-      return;
-    }
-    router.replace(
-      buildPostStudyCompletionHref({
-        processingMode: "pack_driven_v1",
-        caseId: bundle.caseId,
-        studyRunId,
-      }),
-    );
-  }, [bundle, router, studyRunId]);
 
   useEffect(() => {
 
