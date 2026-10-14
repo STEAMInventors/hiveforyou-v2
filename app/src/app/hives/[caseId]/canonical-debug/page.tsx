@@ -1,6 +1,9 @@
 import { notFound } from "next/navigation";
 
+<<<<<<< HEAD
 import { ensureDebugCasePageAccess } from "@/lib/auth/require-case-access";
+=======
+>>>>>>> ba67a14 (SEC-01a: disable debug routes unless explicitly enabled)
 import { isHiveDebugRoutesEnabled } from "@/lib/preview/preview-gate";
 import { HiveFooter } from "@/components/HiveFooter";
 import { HiveHeader } from "@/components/HiveHeader";

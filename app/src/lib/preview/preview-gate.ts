@@ -86,6 +86,7 @@ export function isHiveDebugPagePath(pathname: string): boolean {
     /^\/hives\/[^/]+\/extraction-debug\/?$/i.test(pathname)
   );
 }
+<<<<<<< HEAD
 
 function isTruthyEnvFlag(value: string | undefined): boolean {
   const normalized = value?.trim().toLowerCase();
@@ -145,3 +146,5 @@ export function isHiveAdminUserId(
 ): boolean {
   return readHiveAdminUserIds(source).has(userId.trim());
 }
+=======
+>>>>>>> ba67a14 (SEC-01a: disable debug routes unless explicitly enabled)

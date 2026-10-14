@@ -1,8 +1,13 @@
 import { NextResponse } from "next/server";
 
+<<<<<<< HEAD
 import { jsonFromAccessError, requireAdmin, requireCaseAccess } from "@/lib/auth/require-case-access";
 import { denyUnlessHiveDebugRoutesEnabled } from "@/lib/preview/hive-debug-server";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+=======
+import { denyUnlessHiveDebugRoutesEnabled } from "@/lib/preview/hive-debug-server";
+import { createServerSupabaseClient, getAuthenticatedUserId } from "@/lib/supabase/server";
+>>>>>>> ba67a14 (SEC-01a: disable debug routes unless explicitly enabled)
 
 export async function GET(
   request: Request,
@@ -11,6 +16,14 @@ export async function GET(
   const disabled = denyUnlessHiveDebugRoutesEnabled();
   if (disabled) {
     return disabled;
+<<<<<<< HEAD
+=======
+  }
+
+  const userId = await getAuthenticatedUserId();
+  if (!userId) {
+    return NextResponse.json({ error: "UNAUTHORIZED" }, { status: 401 });
+>>>>>>> ba67a14 (SEC-01a: disable debug routes unless explicitly enabled)
   }
 
   const { caseId } = await context.params;
