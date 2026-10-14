@@ -15,6 +15,8 @@ import { buildProvenanceIndex } from "@/lib/case/provenance-index";
 import type { CaseMapViewBundle } from "@/lib/case-map/case-map-view-bundle";
 
 import { fetchCaseMapViewBundle } from "@/lib/case-map/case-map-client";
+import { readStoredIntakeRunId } from "@/lib/intake/intake-client";
+import { isRawExtractionSucceeded } from "@/lib/intake/study-completion-navigation";
 import type { CaseSummaryPanelSpec } from "@/lib/case-summary/case-summary-evidence";
 
 import {
@@ -281,6 +283,31 @@ export function CaseSummaryExperience({ studyRunId, initialBundle }: CaseSummary
 
 
 
+  if (bundle && isRawExtractionSucceeded(bundle)) {
+    const intakeRunId = bundle.intakeRunId?.trim() || readStoredIntakeRunId();
+    const workspaceHref = intakeRunId
+      ? `/intake/${encodeURIComponent(intakeRunId)}`
+      : "/";
+
+    return (
+      <div
+        className="case-summary"
+        style={shellStyle()}
+        data-testid="case-summary-raw-extraction-complete"
+      >
+        <main style={mainStyle()}>
+          <h1 style={{ margin: 0, fontSize: 24, fontWeight: 600 }}>Document extraction complete</h1>
+          <p style={{ color: "#5F6368" }}>
+            Your documents were processed and saved. Your case summary is not available yet.
+          </p>
+          <Link href={workspaceHref} style={{ fontWeight: 600 }} data-testid="case-summary-back-to-workspace">
+            Back to your documents
+          </Link>
+        </main>
+      </div>
+    );
+  }
+
   if (
     !bundle ||
     bundle.status === "RUNNING" ||
@@ -289,8 +316,6 @@ export function CaseSummaryExperience({ studyRunId, initialBundle }: CaseSummary
   ) {
     return <CaseMapStudyingState rootLabel="Your case" />;
   }
-
-
 
   if (bundle.status === "FAILED" || !bundle.caseMap || !summaryModel || !statusCounts) {
 

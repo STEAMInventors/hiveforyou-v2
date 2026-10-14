@@ -9,6 +9,8 @@ import type { CaseMap, CaseProvenanceBundle, CaseViewV2, ProView } from "@hivefo
 export type CaseMapViewBundle = {
   studyRunId: string;
   caseId: string;
+  /** Intake run that started this study, when known (for workspace navigation). */
+  intakeRunId?: string | null;
   status: StudyRunStatus;
   errorCode?: StudyRunErrorCode;
   caseMap: CaseMap | null;

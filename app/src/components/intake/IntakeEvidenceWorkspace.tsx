@@ -22,9 +22,11 @@ import {
 } from "@/lib/intake/intake-client";
 import {
   buildPostStudyCompletionHref,
-  isCanonicalStudyPresentationReady,
+  isStudyBuildPollingActive,
+  isStudyWorkspaceCompletionReady,
   resolveStudyProcessingModeFromStudyPath,
 } from "@/lib/intake/study-completion-navigation";
+import type { StudyRunStatus } from "@hiveforyou/shared/canonical-study";
 import { useStagedDocuments } from "@/lib/intake/staged-documents-context";
 import { HiveBuildingModal } from "@/components/hive/HiveBuildingModal";
 import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton";
@@ -336,6 +338,46 @@ export function IntakeEvidenceWorkspace({ intakeRunId }: { intakeRunId: string }
   const [dragOver, setDragOver] = useState(false);
   const [studyDelayedMessage, setStudyDelayedMessage] = useState<string | null>(null);
 
+  const applyStudyStartOutcome = useCallback(
+    (session: number, studyRunId: string, runStatus: StudyRunStatus) => {
+      if (runStatus === "FAILED") {
+        setStudyBuild({ session, target: "complete", studyRunId });
+        studyStartInFlight.current = false;
+        return;
+      }
+      void fetchCaseMapViewBundle(studyRunId)
+        .then((bundle) => {
+          if (isStudyWorkspaceCompletionReady(bundle)) {
+            setStudyBuild({ session, target: "complete", studyRunId });
+            studyStartInFlight.current = false;
+            return;
+          }
+          if (isStudyBuildPollingActive(bundle)) {
+            setStudyBuild({ session, target: "migration", studyRunId });
+            return;
+          }
+          if (bundle.status === "FAILED") {
+            setStudyBuild({ session, target: "complete", studyRunId });
+            studyStartInFlight.current = false;
+            return;
+          }
+          studyStartInFlight.current = false;
+          setStudyBuild(null);
+          setErrorMessage("We couldn't complete the study. Please try again in a moment.");
+        })
+        .catch(() => {
+          if (isStudyRunProcessing(runStatus)) {
+            setStudyBuild({ session, target: "migration", studyRunId });
+            return;
+          }
+          studyStartInFlight.current = false;
+          setStudyBuild(null);
+          setErrorMessage("We couldn't complete the study. Please try again in a moment.");
+        });
+    },
+    [],
+  );
+
   const navigateToStudyCompletion = useCallback(
     (studyRunId: string) => {
       if (!view?.caseId) {
@@ -369,7 +411,7 @@ export function IntakeEvidenceWorkspace({ intakeRunId }: { intakeRunId: string }
           } else {
             setStudyDelayedMessage(null);
           }
-          if (isCanonicalStudyPresentationReady(bundle.status)) {
+          if (isStudyWorkspaceCompletionReady(bundle)) {
             setStudyBuild((prev) =>
               prev ? { ...prev, target: "complete", studyRunId: bundle.studyRunId } : prev,
             );
@@ -930,28 +972,6 @@ export function IntakeEvidenceWorkspace({ intakeRunId }: { intakeRunId: string }
                 setErrorMessage(null);
                 void startIntakeStudy(intakeRunId)
                   .then((outcome) => {
-                    const processingMode = resolveStudyProcessingModeFromStudyPath(view?.studyPath);
-                    if (
-                      processingMode === "pack_driven_v1" &&
-                      (outcome.run.status === "SUCCEEDED" || outcome.run.status === "FAILED")
-                    ) {
-                      setStudyBuild({
-                        session,
-                        target: "complete",
-                        studyRunId: outcome.run.studyRunId,
-                      });
-                      studyStartInFlight.current = false;
-                      return;
-                    }
-                    if (isCanonicalStudyPresentationReady(outcome.run.status)) {
-                      setStudyBuild({
-                        session,
-                        target: "complete",
-                        studyRunId: outcome.run.studyRunId,
-                      });
-                      studyStartInFlight.current = false;
-                      return;
-                    }
                     if (isStudyRunProcessing(outcome.run.status)) {
                       setStudyBuild({
                         session,
@@ -960,18 +980,26 @@ export function IntakeEvidenceWorkspace({ intakeRunId }: { intakeRunId: string }
                       });
                       return;
                     }
-                    const detail = outcome.run.errorMessage?.trim();
-                    studyStartInFlight.current = false;
-                    setStudyBuild(null);
-                    const projectionRetryHint =
-                      detail && /case projections/i.test(detail)
-                        ? " After fixing that, click Build once more — Hive will reuse your last analysis instead of calling the model again."
-                        : "";
-                    setErrorMessage(
-                      detail
-                        ? `We couldn't complete the study. ${detail}${projectionRetryHint}`
-                        : "We couldn't complete the study. Please try again in a moment.",
-                    );
+                    if (
+                      outcome.run.status !== "SUCCEEDED" &&
+                      outcome.run.status !== "NEEDS_REVIEW" &&
+                      outcome.run.status !== "FAILED"
+                    ) {
+                      const detail = outcome.run.errorMessage?.trim();
+                      studyStartInFlight.current = false;
+                      setStudyBuild(null);
+                      const projectionRetryHint =
+                        detail && /case projections/i.test(detail)
+                          ? " After fixing that, click Build once more — Hive will reuse your last analysis instead of calling the model again."
+                          : "";
+                      setErrorMessage(
+                        detail
+                          ? `We couldn't complete the study. ${detail}${projectionRetryHint}`
+                          : "We couldn't complete the study. Please try again in a moment.",
+                      );
+                      return;
+                    }
+                    applyStudyStartOutcome(session, outcome.run.studyRunId, outcome.run.status);
                   })
                   .catch(() => {
                     studyStartInFlight.current = false;

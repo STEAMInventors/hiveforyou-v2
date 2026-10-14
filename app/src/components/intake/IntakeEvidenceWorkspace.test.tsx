@@ -7,8 +7,9 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 
 import type { IntakeEvidenceWorkspaceView } from "@hiveforyou/shared/intake";
+import { l001LikeCanonicalSnapshot, projectCaseViewV2Minimal } from "@hiveforyou/core";
 
-
+import { l001CaseMapViewFixture } from "@/lib/case-map/fixtures/l001-case-map-fixture";
 
 import { IntakeEvidenceWorkspace } from "./IntakeEvidenceWorkspace";
 
@@ -72,6 +73,14 @@ vi.mock("@/lib/documents/commit-client", () => ({
 
 
 
+vi.mock("@/lib/case-map/case-map-client", () => ({
+
+  fetchCaseMapViewBundle: vi.fn(),
+
+}));
+
+
+
 import {
 
   fetchIntakeRun,
@@ -85,6 +94,8 @@ import {
 } from "@/lib/intake/intake-client";
 
 import { commitStagedDocuments } from "@/lib/documents/commit-client";
+
+import { fetchCaseMapViewBundle } from "@/lib/case-map/case-map-client";
 
 
 
@@ -236,6 +247,8 @@ describe("IntakeEvidenceWorkspace", () => {
 
     vi.mocked(startIntakeStudy).mockReset();
 
+    vi.mocked(fetchCaseMapViewBundle).mockReset();
+
     vi.mocked(fetchIntakeRun).mockResolvedValue(workspaceView);
 
   });
@@ -243,6 +256,20 @@ describe("IntakeEvidenceWorkspace", () => {
 
 
   it("routes pack_driven intake study completion to the study map", async () => {
+
+    vi.mocked(fetchCaseMapViewBundle).mockResolvedValue({
+      studyRunId: "study-1",
+      caseId: "case-1",
+      intakeRunId: "run-1",
+      status: "SUCCEEDED",
+      processingMode: "pack_driven_v1",
+      caseMap: null,
+      provenance: null,
+      proView: null,
+      caseView: null,
+      canonicalSnapshot: null,
+      projectionsPending: false,
+    });
 
     vi.mocked(startIntakeStudy).mockResolvedValue({
 
@@ -314,6 +341,23 @@ describe("IntakeEvidenceWorkspace", () => {
     vi.mocked(fetchIntakeRun).mockResolvedValue({
       ...workspaceView,
       studyPath: "GENERIC_STUDY",
+    });
+
+    const { caseMap, provenance, proView } = l001CaseMapViewFixture();
+    const canonicalSnapshot = l001LikeCanonicalSnapshot();
+    const caseView = projectCaseViewV2Minimal({ intelligence: canonicalSnapshot, provenance });
+
+    vi.mocked(fetchCaseMapViewBundle).mockResolvedValue({
+      studyRunId: "study-1",
+      caseId: "case-1",
+      status: "SUCCEEDED",
+      processingMode: "canonical_openai_v4",
+      caseMap,
+      provenance,
+      proView,
+      caseView,
+      canonicalSnapshot,
+      projectionsPending: false,
     });
 
     vi.mocked(startIntakeStudy).mockResolvedValue({

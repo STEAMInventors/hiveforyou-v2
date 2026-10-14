@@ -131,6 +131,59 @@ describe("CaseSummaryExperience", () => {
     });
   });
 
+  it("shows extraction-complete state for pack-driven raw extraction without case map", async () => {
+    vi.mocked(fetchCaseMapViewBundle).mockResolvedValue({
+      studyRunId: "study-raw",
+      caseId: "case-1",
+      intakeRunId: "intake-1",
+      status: "SUCCEEDED",
+      processingMode: "pack_driven_v1",
+      caseMap: null,
+      provenance: null,
+      proView: null,
+      caseView: null,
+      canonicalSnapshot: null,
+      projectionsPending: false,
+    });
+
+    render(<CaseSummaryExperience studyRunId="study-raw" />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId("case-summary-raw-extraction-complete")).toBeInTheDocument();
+    });
+    expect(screen.getByRole("heading", { name: "Document extraction complete" })).toBeInTheDocument();
+    expect(
+      screen.getByText(/Your documents were processed and saved\. Your case summary is not available yet\./),
+    ).toBeInTheDocument();
+    expect(screen.getByTestId("case-summary-back-to-workspace")).toHaveAttribute(
+      "href",
+      "/intake/intake-1",
+    );
+    expect(screen.queryByTestId("case-summary-failed")).not.toBeInTheDocument();
+  });
+
+  it("shows failed state for a genuinely failed pack-driven study", async () => {
+    vi.mocked(fetchCaseMapViewBundle).mockResolvedValue({
+      studyRunId: "study-failed",
+      caseId: "case-1",
+      status: "FAILED",
+      processingMode: "pack_driven_v1",
+      caseMap: null,
+      provenance: null,
+      proView: null,
+      caseView: null,
+      canonicalSnapshot: null,
+      projectionsPending: false,
+    });
+
+    render(<CaseSummaryExperience studyRunId="study-failed" />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId("case-summary-failed")).toBeInTheDocument();
+    });
+    expect(screen.queryByTestId("case-summary-raw-extraction-complete")).not.toBeInTheDocument();
+  });
+
   it("shows meeting questions when user marks unsure", async () => {
     render(<CaseSummaryExperience studyRunId="l001-run" initialBundle={readyBundle()} />);
     await waitFor(() => {

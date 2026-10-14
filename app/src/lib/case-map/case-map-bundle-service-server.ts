@@ -83,6 +83,7 @@ export async function loadCaseMapViewBundle(studyRunId: string): Promise<CaseMap
   const base: CaseMapViewBundle = {
     studyRunId: run.studyRunId,
     caseId: run.caseId,
+    intakeRunId: run.intakeRunId ?? null,
     status: run.status,
     errorCode: run.errorCode,
     caseMap: null,
