@@ -106,6 +106,10 @@ function computeDerivedFields(input: {
       progressed = false;
       passes += 1;
       for (const fieldDef of derivedFieldDefs) {
+      const derivation = fieldDef.derivation;
+      if (!derivation) {
+        continue;
+      }
       const fieldKey = buildFieldKey({
         sourceDocumentId: group.sourceDocumentId,
         recordTypeId: group.recordTypeId,
@@ -117,8 +121,8 @@ function computeDerivedFields(input: {
       }
 
       const attempts = [
-        { primitive: fieldDef.derivation.primitive, operands: fieldDef.derivation.operands },
-        ...(fieldDef.derivation.alternates ?? []),
+        { primitive: derivation.primitive, operands: derivation.operands },
+        ...(derivation.alternates ?? []),
       ];
       const envelope = input.envelopeBySource.get(group.sourceDocumentId);
       const base = {
@@ -220,7 +224,7 @@ function computeDerivedFields(input: {
           normalizedValue: result.value,
           unit: result.unit ?? fieldDef.unit ?? null,
         },
-        reasons: [],
+        reasons: [] as [],
       };
       derivedVerified.push(verifiedDerived);
       workingVerifiedByKey.set(fieldKey, verifiedDerived);

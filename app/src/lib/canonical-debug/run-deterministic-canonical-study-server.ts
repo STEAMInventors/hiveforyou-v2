@@ -502,7 +502,7 @@ export async function runDeterministicCanonicalStudy(input: {
 
   const asOfDate =
     input.asOfDate?.trim() ||
-    isoDateFromStudyRunCreatedAt(run.createdAt) ||
+    isoDateFromStudyRunCreatedAt(run.startedAt) ||
     undefined;
 
   const sourceContext = buildSourceContext({
