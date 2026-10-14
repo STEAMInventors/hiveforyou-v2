@@ -426,10 +426,11 @@ describe("ARCH-05 P0 corrections", () => {
 
   describe("P0.3 unit-safe parsing", () => {
     it("parses explicit weekly duration totals without session counts", () => {
+      // changed by ARCH-06 Fix 1
       expect(explicitTotalPerWeek("150 minutes weekly")).toEqual({
         ok: true,
         value: 150,
-        unit: "minutes_per_week",
+        unit: "min/week",
       });
       expect(parseFrequency("150 minutes weekly").ok).toBe(false);
       expect(tryDerivedPrimitive("parseFrequency", { frequency_text: "150 minutes weekly" }).ok).toBe(

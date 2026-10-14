@@ -24,7 +24,15 @@ import { computeCanonicalStudyRulesetContentSha256 } from "./hash-body.js";
 import {
   applyCanonicalStudyInterpretationIfCompatible,
 } from "../resolve-canonical-study-interpretation.js";
-import { resolveDebugCanonicalStudyDomainPack } from "../resolve-approved-proposal-domain-pack.js";
+import {
+  proposalPackSnapshotPathForHash,
+  resolveDebugCanonicalStudyDomainPack,
+} from "../resolve-approved-proposal-domain-pack.js";
+import {
+  computeProposalPackContentSha256,
+  validateProposalDomainPack,
+} from "@hiveforyou/domain-pack/pack-driven-reader";
+import type { ProposalDomainPack } from "@hiveforyou/domain-pack";
 import type { IndexedRecordVersion } from "./indexed-foundation.js";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
@@ -44,6 +52,23 @@ type Arch06FixtureManifest = {
   }>;
 };
 
+function loadArch06SnapshotPack(contentSha256: string): ProposalDomainPack {
+  const path = proposalPackSnapshotPathForHash(contentSha256);
+  if (!existsSync(path)) {
+    throw new Error(`ARCH06_L001_PACK_SNAPSHOT_MISSING:${path}`);
+  }
+  const parsed = JSON.parse(readFileSync(path, "utf8")) as ProposalDomainPack;
+  const validation = validateProposalDomainPack(parsed);
+  if (!validation.valid) {
+    throw new Error(`ARCH06_L001_PACK_SNAPSHOT_INVALID:${path}`);
+  }
+  const hash = computeProposalPackContentSha256(parsed).toLowerCase();
+  if (hash !== contentSha256.toLowerCase()) {
+    throw new Error(`ARCH06_L001_PACK_SNAPSHOT_HASH_MISMATCH:${path}:${hash}`);
+  }
+  return parsed;
+}
+
 function loadArch06FixtureManifest(): Arch06FixtureManifest | null {
   const path = join(FIXTURE_ROOT, "manifest.json");
   if (!existsSync(path)) {
@@ -58,13 +83,9 @@ function loadArch06Study(asOfDate: string) {
     throw new Error("ARCH06_L001_FIXTURES_MISSING");
   }
   const readerPackSha = manifest.packContentSha256;
-  const structuralPack = resolveDebugCanonicalStudyDomainPack({
-    envelopePackId: "iep",
-    envelopePackVersion: "0.3.0-proposed",
-    envelopePackContentSha256: readerPackSha,
-  });
+  const readerPack = loadArch06SnapshotPack(readerPackSha);
   const interpretation = applyCanonicalStudyInterpretationIfCompatible({
-    readerPack: structuralPack.pack,
+    readerPack,
     readerPackContentSha256: readerPackSha,
     domainId: "iep",
   });
@@ -252,11 +273,13 @@ describe("ARCH-06 L001 integration", () => {
       (entity) =>
         entity.recordTypeId === "present_level" && entity.contentKey?.includes("area=reading fluency"),
     );
-    const goalEntity = artifact.entities.find(
-      (entity) => entity.recordTypeId === "goal" && entity.contentKey?.includes("area=reading fluency"),
-    );
     expect(presentEntity?.contentKey).toContain("area=reading fluency");
-    expect(goalEntity?.contentKey).toContain("area=reading fluency");
+    // goal keyed on measure per pack; ARCH-06 ticket 2a corrected
+    const resolvedGoals = artifact.entities.filter(
+      (entity) => entity.recordTypeId === "goal" && entity.status === "resolved",
+    );
+    expect(resolvedGoals).toHaveLength(1);
+    expect(resolvedGoals[0]?.contentKey).toContain("measure.score_type=words_correct_per_minute");
     expect(
       artifact.flags.some(
         (flag) => flag.checkId === "goal_without_present_level" && flag.status === "fired",

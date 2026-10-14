@@ -256,10 +256,11 @@ describe("ARCH-05 canonical study qualification", () => {
   });
 
   it("derives an explicit weekly total without treating it as a session rate", () => {
+    // changed by ARCH-06 Fix 1
     expect(explicitTotalPerWeek("150 minutes weekly")).toEqual({
       ok: true,
       value: 150,
-      unit: "minutes_per_week",
+      unit: "min/week",
     });
     expect(explicitTotalPerWeek("30 minutes, 2 times a week").ok).toBe(false);
     const pack = {
@@ -340,7 +341,7 @@ describe("ARCH-05 canonical study qualification", () => {
     });
     const derived = foundation.verifiedFields.find((field) => field.fieldId === "minutes_per_week");
     expect(derived?.normalized.normalizedValue).toBe(150);
-    expect(derived?.normalized.unit).toBe("minutes_per_week");
+    expect(derived?.normalized.unit).toBe("min/week"); // changed by ARCH-06 Fix 1
     expect(derived?.provenance).toBe("derived");
   });
 
@@ -746,7 +747,8 @@ describe("ARCH-05 canonical study qualification", () => {
     expect(absence?.operands.length).toBeGreaterThan(0);
     const reevaluation = first.flags.find((flag) => flag.checkId === "reevaluation_interval");
     expect(reevaluation?.status).toBe("unresolved");
-    expect(reevaluation?.message).toBe("missing_operand:comparison_end");
+    // changed by ARCH-06 Fix 5
+    expect(reevaluation?.message).toBe("missing_as_of_date");
     expect(reevaluation?.operands).toHaveLength(1);
     expect(first.flags.find((flag) => flag.checkId === "services_down_progress_insufficient")?.message).toBe(
       "coChange_semantics_incomplete:window,direction_comparator",
