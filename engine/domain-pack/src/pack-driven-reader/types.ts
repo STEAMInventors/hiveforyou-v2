@@ -54,6 +54,32 @@ export type ProposalDomainPack = {
    */
   seriesObservationDateFieldIds?: string[];
   referenceTables?: ProposalReferenceTables;
+  /** Declarative case timeline event rules (Path B chronological assembly). */
+  caseTimeline?: ProposalCaseTimeline;
+};
+
+export type ProposalTimelineDateKind =
+  | "document_date"
+  | "event_date"
+  | "effective_date"
+  | "reporting_period"
+  | "observation_date";
+
+export type ProposalCaseTimelineEvent = {
+  id: string;
+  label: string;
+  documentTypeId?: string;
+  recordTypeId?: string;
+  dateFieldPath?: string;
+  dateKind: ProposalTimelineDateKind;
+  /** Display-only tie-break when sortDate is equal; not temporal precedence. */
+  sameDateSortKey?: number;
+  /** Verified field paths establishing the event occurred (pack record.field paths). */
+  eventEvidenceFieldPaths?: string[];
+};
+
+export type ProposalCaseTimeline = {
+  events: ProposalCaseTimelineEvent[];
 };
 
 export type ProposalRelationshipRules = {

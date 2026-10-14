@@ -17,6 +17,7 @@ export function computeProposalPackContentSha256(pack: ProposalDomainPack): stri
     readingNotes: pack.readingNotes,
     vocabulary: pack.vocabulary ?? {},
     genericUnclassifiedChecklist: pack.genericUnclassifiedChecklist ?? null,
+    ...(pack.caseTimeline ? { caseTimeline: pack.caseTimeline } : {}),
   };
   return createHash("sha256").update(JSON.stringify(payload)).digest("hex");
 }

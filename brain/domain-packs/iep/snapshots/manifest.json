@@ -16,6 +16,14 @@
       "path": "b5b86076329a32febea5f31ea21b352266497cbc6b54150b94c6884535b8e735.json",
       "source": "git:11458e7:brain/domain-packs/iep/iep-pack.v0.3.proposed.json",
       "note": "Current working pack after ARCH-06c versioning (accommodation context split, need_identified where-filter, readerLegacyContextMap)."
+    },
+    {
+      "packId": "iep",
+      "packVersion": "0.3.2-proposed-timeline",
+      "packContentSha256": "720f727b50a5ee653d2d41c19a65ebcd47aeba2e6d3626f388f81475c13e5e99",
+      "path": "720f727b50a5ee653d2d41c19a65ebcd47aeba2e6d3626f388f81475c13e5e99.json",
+      "source": "git:timeline-ticket:brain/domain-packs/iep/iep-pack.v0.3.proposed.json",
+      "note": "Adds caseTimeline for Path B chronological assembly (v0.3.2-proposed-timeline)."
     }
   ]
 }

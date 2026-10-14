@@ -198,6 +198,54 @@ export type CanonicalStudyFlag = {
   message: string;
 };
 
+export type CanonicalStudyTimelineDateKind =
+  | "document_date"
+  | "event_date"
+  | "effective_date"
+  | "reporting_period"
+  | "observation_date";
+
+export type CanonicalStudyTimelineEntryStatus =
+  | "verified"
+  | "missing_date"
+  | "incomplete_extraction"
+  | "date_conflict";
+
+export type CanonicalStudyTimelineEntry = {
+  entryId: string;
+  eventId: string;
+  label: string;
+  status: CanonicalStudyTimelineEntryStatus;
+  sortDate: string | null;
+  dateKind: CanonicalStudyTimelineDateKind;
+  dateFieldPath: string | null;
+  sourceDocumentId: string;
+  documentTypeId: string | null;
+  recordGroupId: string | null;
+  eventEvidence: CanonicalStudyProvenanceChip[];
+  dateEvidence: CanonicalStudyProvenanceChip[];
+  supportingFactProvenance: CanonicalStudyProvenanceChip[];
+  relatedEntityIds: string[];
+  extractionStatus: CanonicalStudyDocumentExtractionStatus;
+  classificationStatus: CanonicalStudyDocumentClassificationStatus;
+  /** Display-only; same calendar day does not imply temporal precedence. */
+  sameDateSortKey: number;
+};
+
+export type CanonicalStudyTimelineRelationship = {
+  id: string;
+  kind: CanonicalStudyDocumentLineageEdge["kind"];
+  fromSourceDocumentId: string;
+  toSourceDocumentId: string;
+};
+
+export type CanonicalStudyTimeline = {
+  dated: CanonicalStudyTimelineEntry[];
+  dateUnknown: CanonicalStudyTimelineEntry[];
+  incomplete: CanonicalStudyTimelineEntry[];
+  relationships: CanonicalStudyTimelineRelationship[];
+};
+
 export type CanonicalStudyCounts = {
   entities: number;
   entityIdentityUnresolved: number;
@@ -211,6 +259,7 @@ export type CanonicalStudyCounts = {
   unresolvedItems: number;
   rejectedFields: number;
   orphans: number;
+  timelineEntries: number;
 };
 
 export type CanonicalStudyArtifactBody = {
@@ -248,6 +297,7 @@ export type CanonicalStudyArtifactBody = {
   unresolvedItems: CanonicalStudyFoundationUnresolvedItem[];
   rejectedFields: CanonicalStudyFoundationRejectedField[];
   orphans: CanonicalStudyOrphanRecord[];
+  timeline: CanonicalStudyTimeline;
   counts: CanonicalStudyCounts;
 };
 

@@ -3,7 +3,7 @@
   "status": "REVIEW_DRAFT_NOT_RUNTIME_COMPATIBLE",
   "manifest": {
     "id": "iep",
-    "version": "0.3.1-proposed",
+    "version": "0.3.2-proposed-timeline",
     "name": "Special Education / IEP",
     "jurisdictions": [
       "US-federal-base"
@@ -486,6 +486,84 @@
       "action_date"
     ],
     "conflictWhenDifferentParties": true
+  },
+  "caseTimeline": {
+    "events": [
+      {
+        "id": "referral",
+        "label": "Referral for special education evaluation",
+        "documentTypeId": "iep.referral",
+        "recordTypeId": "referral",
+        "dateFieldPath": "referral.referral_date",
+        "dateKind": "event_date",
+        "sameDateSortKey": 10,
+        "eventEvidenceFieldPaths": ["referral.referral_date"]
+      },
+      {
+        "id": "evaluation_plan",
+        "label": "Evaluation plan",
+        "documentTypeId": "iep.evaluation.plan",
+        "dateFieldPath": "document_header.document_date",
+        "dateKind": "document_date",
+        "sameDateSortKey": 20,
+        "eventEvidenceFieldPaths": ["document_header.title"]
+      },
+      {
+        "id": "consent",
+        "label": "Parent consent to evaluate",
+        "documentTypeId": "iep.consent",
+        "recordTypeId": "consent",
+        "dateFieldPath": "consent.consent_date",
+        "dateKind": "event_date",
+        "sameDateSortKey": 30,
+        "eventEvidenceFieldPaths": ["consent.consent_date"]
+      },
+      {
+        "id": "evaluation_psychoeducational",
+        "label": "Psychoeducational evaluation",
+        "documentTypeId": "iep.evaluation.psychoeducational",
+        "dateFieldPath": "document_header.document_date",
+        "dateKind": "document_date",
+        "sameDateSortKey": 40,
+        "eventEvidenceFieldPaths": ["document_header.title"]
+      },
+      {
+        "id": "evaluation_academic",
+        "label": "Academic evaluation",
+        "documentTypeId": "iep.evaluation.academic",
+        "dateFieldPath": "document_header.document_date",
+        "dateKind": "document_date",
+        "sameDateSortKey": 50,
+        "eventEvidenceFieldPaths": ["document_header.title"]
+      },
+      {
+        "id": "evaluation_speech_language",
+        "label": "Speech-language evaluation",
+        "documentTypeId": "iep.evaluation.speech_language",
+        "dateFieldPath": "document_header.document_date",
+        "dateKind": "document_date",
+        "sameDateSortKey": 60,
+        "eventEvidenceFieldPaths": ["document_header.title"]
+      },
+      {
+        "id": "eligibility",
+        "label": "Eligibility determination",
+        "documentTypeId": "iep.eligibility",
+        "dateFieldPath": "document_header.document_date",
+        "dateKind": "document_date",
+        "sameDateSortKey": 70,
+        "eventEvidenceFieldPaths": ["eligibility.decision"]
+      },
+      {
+        "id": "initial_iep",
+        "label": "Initial IEP",
+        "documentTypeId": "iep.plan",
+        "dateFieldPath": "document_header.effective_start",
+        "dateKind": "effective_date",
+        "sameDateSortKey": 80,
+        "eventEvidenceFieldPaths": ["document_header.effective_start"]
+      }
+    ]
   },
   "constructs": {
     "measure": {

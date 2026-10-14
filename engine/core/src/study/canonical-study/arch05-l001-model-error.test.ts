@@ -135,5 +135,12 @@ describe("ARCH-05 L001 initial IEP MODEL_ERROR regression", () => {
     ];
     expect(unresolvedFromCoverage.length).toBeGreaterThan(0);
     expect(unresolvedFromCoverage.some((item) => item.message.includes("l001-src-8"))).toBe(true);
+
+    const initialIepIncomplete = study.timeline.incomplete.filter(
+      (entry) => entry.sourceDocumentId === "l001-src-8",
+    );
+    expect(initialIepIncomplete.length).toBeGreaterThan(0);
+    expect(initialIepIncomplete[0]?.status).toBe("incomplete_extraction");
+    expect(study.timeline.dated.some((entry) => entry.eventId === "initial_iep")).toBe(false);
   });
 });

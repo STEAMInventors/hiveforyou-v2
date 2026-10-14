@@ -31,6 +31,7 @@ export * from "./projections/project-pro-view-v3";
 export * from "./projections/project-case-map-v3";
 export * from "./projections/project-case-view-v1";
 export * from "./projections/project-case-view-v2-minimal";
+export * from "./projections/project-canonical-study-timeline";
 export * from "./projections/build-rulebook-document-explainers";
 export { l001LikeCanonicalSnapshot } from "./projections/fixtures/l001-like-canonical-snapshot";
 export { matchParties } from "./atoms/match";

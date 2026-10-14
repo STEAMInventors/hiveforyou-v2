@@ -10,6 +10,7 @@ import {
 } from "@hiveforyou/shared/canonical-study-foundation";
 import { hashCanonicalStudyFoundationBody } from "../canonical-study-foundation/hash-body.js";
 
+import { assembleCaseTimeline } from "./assemble-case-timeline.js";
 import { buildSeries } from "./build-series.js";
 import { composeOperativeViews } from "./compose-operative-views.js";
 import { evaluateInsightChecks } from "./evaluate-insight-checks.js";
@@ -104,6 +105,21 @@ export function buildCanonicalStudy(input: BuildCanonicalStudyInput): CanonicalS
   const requirements = evaluateRequirements({ indexed, operativeViews });
   const flags = evaluateInsightChecks({ indexed, operativeViews, series });
 
+  const documentSlice = input.foundation.documents.map((doc) => ({
+    sourceDocumentId: doc.sourceDocumentId,
+    documentTypeId: doc.documentTypeId,
+    extractionStatus: doc.extractionStatus,
+    classificationStatus: doc.classificationStatus,
+  }));
+  const timeline = assembleCaseTimeline({
+    indexed,
+    entities,
+    documentLineage,
+    documents: documentSlice,
+  });
+  const timelineEntryCount =
+    timeline.dated.length + timeline.dateUnknown.length + timeline.incomplete.length;
+
   const asOfDate = sourceContext.asOfDate ?? null;
 
   const body = {
@@ -141,6 +157,7 @@ export function buildCanonicalStudy(input: BuildCanonicalStudyInput): CanonicalS
     ),
     rejectedFields: input.foundation.rejectedFields,
     orphans,
+    timeline,
     counts: {
       entities: entities.length,
       entityIdentityUnresolved: entities.filter((entity) => entity.status === "identity_unresolved").length,
@@ -154,6 +171,7 @@ export function buildCanonicalStudy(input: BuildCanonicalStudyInput): CanonicalS
       unresolvedItems: input.foundation.unresolvedItems.length + orphanItems.length,
       rejectedFields: input.foundation.rejectedFields.length,
       orphans: orphans.length,
+      timelineEntries: timelineEntryCount,
     },
   };
 
@@ -169,6 +187,7 @@ export { buildIndexedFoundation } from "./indexed-foundation.js";
 export { resolveIdentity } from "./resolve-identity.js";
 export { composeOperativeViews } from "./compose-operative-views.js";
 export { labelRelations } from "./label-relations.js";
+export { assembleCaseTimeline } from "./assemble-case-timeline.js";
 export { buildSeries } from "./build-series.js";
 export { evaluateRequirements } from "./evaluate-requirements.js";
 export { evaluateInsightChecks } from "./evaluate-insight-checks.js";

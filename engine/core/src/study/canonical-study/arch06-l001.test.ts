@@ -30,9 +30,14 @@ import {
 } from "@hiveforyou/domain-pack/pack-driven-reader";
 import type { ProposalDomainPack } from "@hiveforyou/domain-pack";
 import type { IndexedRecordVersion } from "./indexed-foundation.js";
+import { evaluateL001TimelineAcceptance } from "../../../../domain-packs/iep/qualification/l001-timeline-acceptance.js";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const FIXTURE_ROOT = join(HERE, "../../../fixtures/arch06-l001");
+const IEP_TIMELINE_PACK_PATH = join(
+  HERE,
+  "../../../../../brain/domain-packs/iep/iep-pack.v0.3.proposed.json",
+);
 type Arch06FixtureManifest = {
   studyRunId: string;
   attemptId: string;
@@ -121,6 +126,59 @@ function loadArch06Study(asOfDate: string) {
     createdAt: manifest.exportedAt,
   });
   return { foundation, artifact, interpretation };
+}
+
+function loadArch06StudyWithTimelinePack(asOfDate: string) {
+  const manifest = loadArch06FixtureManifest();
+  if (!manifest) {
+    throw new Error("ARCH06_L001_FIXTURES_MISSING");
+  }
+  const readerPack = JSON.parse(readFileSync(IEP_TIMELINE_PACK_PATH, "utf8")) as ProposalDomainPack;
+  const validation = validateProposalDomainPack(readerPack);
+  if (!validation.valid) {
+    throw new Error(`IEP_TIMELINE_PACK_INVALID:${validation.errors.join(";")}`);
+  }
+  const readerPackSha = computeProposalPackContentSha256(readerPack);
+  const interpretation = applyCanonicalStudyInterpretationIfCompatible({
+    readerPack,
+    readerPackContentSha256: readerPackSha,
+    domainId: "iep",
+  });
+  const foundationDocuments = manifest.documents.map((doc) => {
+    const envelope = JSON.parse(readFileSync(join(FIXTURE_ROOT, doc.envelopePath), "utf8"));
+    let documentPages: DocumentPages | null = null;
+    if (doc.pagesPath && existsSync(join(FIXTURE_ROOT, doc.pagesPath))) {
+      const bytes = readFileSync(join(FIXTURE_ROOT, doc.pagesPath));
+      const payload = parseDocumentPagesPayload(bytes);
+      if (payload) {
+        documentPages = bindDocumentPagesToSourceDocumentId(payload.documentPages, doc.sourceDocumentId);
+      }
+    }
+    return { sourceDocumentId: doc.sourceDocumentId, envelope, documentPages };
+  });
+  const foundation = buildCanonicalStudyFoundation({
+    pack: interpretation.studyPack,
+    packContentSha256: readerPackSha,
+    caseId: manifest.caseId,
+    createdAt: manifest.exportedAt,
+    documents: foundationDocuments,
+  });
+  const artifact = buildCanonicalStudy({
+    pack: interpretation.studyPack,
+    packContentSha256: readerPackSha,
+    interpretationRulesetId: interpretation.interpretationRulesetId,
+    interpretationRulesetContentSha256: interpretation.interpretationRulesetContentSha256,
+    foundation,
+    sourceContext: {
+      asOfDate,
+      logicalDocuments: manifest.documents.map((doc) => ({
+        sourceDocumentId: doc.sourceDocumentId,
+        filename: doc.filename,
+      })),
+    },
+    createdAt: manifest.exportedAt,
+  });
+  return { artifact };
 }
 
 describe("ARCH-06 unit fixes", () => {
@@ -302,5 +360,11 @@ describe("ARCH-06 L001 integration", () => {
 
     const second = loadArch06Study(AS_OF);
     expect(second.artifact.contentSha256).toBe(artifact.contentSha256);
+  });
+
+  it("L001 timeline acceptance with timeline-enabled proposed pack", () => {
+    const { artifact } = loadArch06StudyWithTimelinePack(AS_OF);
+    const failed = evaluateL001TimelineAcceptance(artifact).filter((check) => !check.pass);
+    expect(failed, JSON.stringify(failed, null, 2)).toEqual([]);
   });
 });

@@ -37,7 +37,7 @@ import { loadProposalDomainPack, verifyPackDrivenProposalPackPackaged } from "./
 import { PROPOSAL_PACK_RELATIVE_PATH } from "./resolve-hive-monorepo-root";
 
 const COMMITTED_IEP_PACK_CONTENT_SHA256 =
-  "b5b86076329a32febea5f31ea21b352266497cbc6b54150b94c6884535b8e735";
+  "720f727b50a5ee653d2d41c19a65ebcd47aeba2e6d3626f388f81475c13e5e99";
 
 describe("resolveReaderMode", () => {
   it("defaults off when env unset", () => {

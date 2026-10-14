@@ -3,7 +3,12 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 
-import type { CanonicalStudyArtifact } from "@hiveforyou/shared/canonical-study-artifact";
+import { projectCanonicalStudyTimeline } from "@hiveforyou/core";
+import type {
+  CanonicalStudyArtifact,
+  CanonicalStudyProvenanceChip,
+  CanonicalStudyTimelineEntry,
+} from "@hiveforyou/shared/canonical-study-artifact";
 
 type CanonicalStudyDebugArtifact = CanonicalStudyArtifact & {
   readerPack?: {
@@ -32,6 +37,7 @@ export function CanonicalStudyDebugView({
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [copyState, setCopyState] = useState<"idle" | "copied" | "failed">("idle");
+  const [audience, setAudience] = useState<"customer" | "pro">("customer");
 
   const load = useCallback(async () => {
     const trimmed = studyRunId.trim();
@@ -91,6 +97,17 @@ export function CanonicalStudyDebugView({
     studyRunId.trim()
       ? `/api/case/${encodeURIComponent(caseId)}/canonical-debug/download?studyRunId=${encodeURIComponent(studyRunId.trim())}`
       : undefined;
+
+  const projectedTimeline = useMemo(() => {
+    if (!artifact?.timeline) {
+      return null;
+    }
+    return projectCanonicalStudyTimeline(artifact, { audience });
+  }, [artifact, audience]);
+
+  const extractionDebugBase = `/hives/${encodeURIComponent(caseId)}/extraction-debug${
+    studyRunId.trim() ? `?studyRunId=${encodeURIComponent(studyRunId.trim())}` : ""
+  }`;
 
   const backHref = `/hives/${encodeURIComponent(caseId)}/extraction-debug${
     studyRunId.trim() ? `?studyRunId=${encodeURIComponent(studyRunId.trim())}` : ""
@@ -170,6 +187,57 @@ export function CanonicalStudyDebugView({
             </div>
           </section>
 
+          {projectedTimeline ? (
+            <section className="space-y-6 rounded-xl border border-[var(--hfy-line)] bg-[var(--hfy-surface)] p-5">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <h2 className="text-lg font-semibold text-[var(--hfy-text)]">Case timeline</h2>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    className={`hfy-btn ${audience === "customer" ? "hfy-btn--primary" : ""}`}
+                    onClick={() => setAudience("customer")}
+                  >
+                    Customer labels
+                  </button>
+                  <button
+                    type="button"
+                    className={`hfy-btn ${audience === "pro" ? "hfy-btn--primary" : ""}`}
+                    onClick={() => setAudience("pro")}
+                  >
+                    Pro labels
+                  </button>
+                </div>
+              </div>
+              <TimelineSection
+                title="Dated events"
+                entries={projectedTimeline.dated}
+                extractionDebugBase={extractionDebugBase}
+              />
+              <TimelineSection
+                title="Date unknown"
+                entries={projectedTimeline.dateUnknown}
+                extractionDebugBase={extractionDebugBase}
+              />
+              <TimelineSection
+                title="Incomplete extraction"
+                entries={projectedTimeline.incomplete}
+                extractionDebugBase={extractionDebugBase}
+              />
+              {projectedTimeline.relationships.length ? (
+                <div>
+                  <h3 className="mb-2 text-sm font-semibold">Document relationships</h3>
+                  <ul className="space-y-1 text-sm">
+                    {projectedTimeline.relationships.map((rel) => (
+                      <li key={rel.id} className="font-mono text-xs">
+                        {rel.kind}: {rel.fromSourceDocumentId} → {rel.toSourceDocumentId}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : null}
+            </section>
+          ) : null}
+
           <div className="flex flex-wrap gap-3">
             <button type="button" className="hfy-btn" onClick={() => void copyJson()}>
               {copyState === "copied" ? "Copied" : copyState === "failed" ? "Copy failed" : "Copy JSON"}
@@ -189,6 +257,81 @@ export function CanonicalStudyDebugView({
           </pre>
         </>
       ) : null}
+    </div>
+  );
+}
+
+function TimelineSection({
+  title,
+  entries,
+  extractionDebugBase,
+}: {
+  title: string;
+  entries: Array<CanonicalStudyTimelineEntry & { displayLabel?: string }>;
+  extractionDebugBase: string;
+}) {
+  if (!entries.length) {
+    return null;
+  }
+  return (
+    <div>
+      <h3 className="mb-2 text-sm font-semibold">{title}</h3>
+      <ul className="space-y-4">
+        {entries.map((entry) => (
+          <li key={entry.entryId} className="rounded-lg border border-[var(--hfy-line)] p-3 text-sm">
+            <div className="flex flex-wrap items-baseline gap-2">
+              <span className="font-medium">{entry.displayLabel ?? entry.label}</span>
+              <span className="text-[var(--hfy-quiet)]">({entry.status})</span>
+              {entry.sortDate ? <span className="font-mono text-xs">{entry.sortDate}</span> : null}
+            </div>
+            <p className="mt-1 text-xs text-[var(--hfy-quiet)]">
+              {entry.dateKind} · {entry.eventId}
+            </p>
+            <EvidenceBlock label="Event evidence" chips={entry.eventEvidence} base={extractionDebugBase} />
+            <EvidenceBlock label="Date evidence" chips={entry.dateEvidence} base={extractionDebugBase} />
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+function EvidenceBlock({
+  label,
+  chips,
+  base,
+}: {
+  label: string;
+  chips: CanonicalStudyProvenanceChip[];
+  base: string;
+}) {
+  if (!chips.length) {
+    return (
+      <p className="mt-2 text-xs text-[var(--hfy-quiet)]">
+        {label}: none
+      </p>
+    );
+  }
+  return (
+    <div className="mt-2">
+      <p className="text-xs font-semibold">{label}</p>
+      <ul className="mt-1 space-y-1">
+        {chips.map((chip) => {
+          const page = chip.evidence[0]?.page ?? 1;
+          const quote = chip.evidence[0]?.quote ?? "";
+          const href = `${base}&sourceDocumentId=${encodeURIComponent(chip.sourceDocumentId)}&page=${page}`;
+          return (
+            <li key={chip.fieldKey}>
+              <a className="text-[var(--hfy-leaf-deep)] underline" href={href}>
+                {chip.recordTypeId}.{chip.fieldId} p{page}
+              </a>
+              {quote ? (
+                <span className="ml-2 text-[var(--hfy-quiet)]">&ldquo;{quote.slice(0, 80)}&rdquo;</span>
+              ) : null}
+            </li>
+          );
+        })}
+      </ul>
     </div>
   );
 }

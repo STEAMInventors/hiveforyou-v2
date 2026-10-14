@@ -162,6 +162,29 @@ export function validateProposalDomainPack(pack: ProposalDomainPack): ValidatePr
     err(`reading notes ${noteChars} chars exceed ${pack.readingNotes.sizeLimitChars}`);
   }
 
+  for (const event of pack.caseTimeline?.events ?? []) {
+    if (!event.id?.trim()) {
+      err("caseTimeline.events: missing id");
+    }
+    if (!event.label?.trim()) {
+      err(`caseTimeline.${event.id}: missing label`);
+    }
+    if (event.documentTypeId && !docTypes.has(event.documentTypeId)) {
+      err(`caseTimeline.${event.id}: unknown documentTypeId ${event.documentTypeId}`);
+    }
+    if (event.dateFieldPath && !hasPath(event.dateFieldPath)) {
+      err(`caseTimeline.${event.id}: dateFieldPath '${event.dateFieldPath}' not found`);
+    }
+    for (const path of event.eventEvidenceFieldPaths ?? []) {
+      if (!hasPath(path)) {
+        err(`caseTimeline.${event.id}: eventEvidenceFieldPath '${path}' not found`);
+      }
+    }
+    if (event.recordTypeId && !records.has(event.recordTypeId)) {
+      err(`caseTimeline.${event.id}: unknown recordTypeId ${event.recordTypeId}`);
+    }
+  }
+
   for (const message of collectFieldSynonymValidationErrors(pack.vocabulary?.fieldSynonyms)) {
     err(message);
   }

@@ -95,6 +95,8 @@ export const SYNTHETIC_PACK: ProposalDomainPack = {
       },
       fields: [
         { id: "effective_date", valueKind: "date", source: ["quoted"], modality: ["observed"] },
+        { id: "document_date", valueKind: "date", source: ["quoted"], modality: ["observed"] },
+        { id: "title", valueKind: "text", source: ["quoted"], modality: ["observed"] },
       ],
     },
     {
@@ -162,6 +164,28 @@ export const SYNTHETIC_PACK: ProposalDomainPack = {
     },
   ],
   readingNotes: { global: "", byDocumentType: {} },
+  caseTimeline: {
+    events: [
+      {
+        id: "plan_effective",
+        label: "Plan effective",
+        documentTypeId: "doc.plan",
+        dateFieldPath: "document_header.effective_date",
+        dateKind: "effective_date",
+        sameDateSortKey: 1,
+        eventEvidenceFieldPaths: ["document_header.effective_date"],
+      },
+      {
+        id: "plan_document_date",
+        label: "Plan document date",
+        documentTypeId: "doc.plan",
+        dateFieldPath: "document_header.document_date",
+        dateKind: "document_date",
+        sameDateSortKey: 2,
+        eventEvidenceFieldPaths: ["document_header.title"],
+      },
+    ],
+  },
 };
 
 export function envelope(input: {
