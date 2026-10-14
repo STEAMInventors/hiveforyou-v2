@@ -15,6 +15,7 @@ import { composeOperativeViews } from "./compose-operative-views.js";
 import { evaluateInsightChecks } from "./evaluate-insight-checks.js";
 import { evaluateRequirements } from "./evaluate-requirements.js";
 import { hashCanonicalStudyBody } from "./hash-body.js";
+import { CANONICAL_STUDY_RULESET_CONTENT_SHA256 } from "./ruleset-pin.js";
 import { buildIndexedFoundation } from "./indexed-foundation.js";
 import { labelRelations } from "./label-relations.js";
 import { resolveIdentity } from "./resolve-identity.js";
@@ -22,9 +23,7 @@ import { resolveIdentity } from "./resolve-identity.js";
 /** Deterministic canonical study builder identity (separate from Reader Domain Pack snapshots). */
 export const CANONICAL_STUDY_RULESET_ID = "hive.canonical-study.deterministic" as const;
 
-/** Pinned hash of canonical study builder modules (foundation + artifact builders). */
-export const CANONICAL_STUDY_RULESET_CONTENT_SHA256 =
-  "ebb5e6c92b01b541fa8aec191d7147f8f862e1536a78bbb01b7cd9236d981a41" as const;
+export { CANONICAL_STUDY_RULESET_CONTENT_SHA256 } from "./ruleset-pin.js";
 
 export type CanonicalStudyRulesetIdentity = {
   rulesetId: typeof CANONICAL_STUDY_RULESET_ID;

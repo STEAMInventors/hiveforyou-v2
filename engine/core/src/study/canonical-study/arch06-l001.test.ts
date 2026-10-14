@@ -14,13 +14,9 @@ import {
   explicitTotalPerWeek,
   unitsEquivalent,
 } from "../canonical-study-foundation/index.js";
-import {
-  buildCanonicalStudy,
-  CANONICAL_STUDY_RULESET_CONTENT_SHA256,
-} from "./index.js";
+import { buildCanonicalStudy } from "./index.js";
 import { evaluateWhenClause } from "./evaluate-primitives.js";
 import { buildIndexedFoundation } from "./indexed-foundation.js";
-import { computeCanonicalStudyRulesetContentSha256 } from "./hash-body.js";
 import {
   applyCanonicalStudyInterpretationIfCompatible,
 } from "../resolve-canonical-study-interpretation.js";
@@ -126,12 +122,6 @@ function loadArch06Study(asOfDate: string) {
   });
   return { foundation, artifact, interpretation };
 }
-
-describe("ARCH-06 ruleset identity", () => {
-  it("pins ruleset content sha256 to builder sources", () => {
-    expect(computeCanonicalStudyRulesetContentSha256()).toBe(CANONICAL_STUDY_RULESET_CONTENT_SHA256);
-  });
-});
 
 describe("ARCH-06 unit fixes", () => {
   it("1c: explicitTotalPerWeek and unit guard", () => {

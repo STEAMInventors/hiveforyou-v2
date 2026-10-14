@@ -43,7 +43,8 @@
     "golden:shadow": "tsx --env-file=../../.env scripts/golden-shadow-study.mjs",
     "golden:shadow:export-v4": "tsx --env-file=../../.env scripts/shadow-golden/export-v4-claims.mjs",
     "golden:shadow:seed-l001-v4": "node scripts/shadow-golden/seed-l001-v4-claims.mjs",
-    "baseline:study": "tsx --env-file=../../.env scripts/baseline-study.mjs"
+    "baseline:study": "tsx --env-file=../../.env scripts/baseline-study.mjs",
+    "ruleset:hash": "node scripts/ruleset-hash.mjs"
   },
   "dependencies": {
     "@hiveforyou/canonical": "workspace:*",
