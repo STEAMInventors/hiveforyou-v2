@@ -92,6 +92,17 @@ function recordsForDocument(
   });
 }
 
+function isIndexedRecordVersion(
+  record: IndexedRecordVersion | undefined,
+): record is IndexedRecordVersion {
+  return record !== undefined;
+}
+
+function firstIndexedRecordOnly(records: IndexedRecordVersion[]): IndexedRecordVersion[] {
+  const first = records[0];
+  return isIndexedRecordVersion(first) ? [first] : [];
+}
+
 function chipsFromPaths(
   records: IndexedRecordVersion[],
   paths: string[],
@@ -253,9 +264,10 @@ function candidateFromRule(input: {
     ];
   }
 
+  const documentRecords = recordsForDocument(indexed, doc.sourceDocumentId);
   const recordGroups = rule.recordTypeId
     ? recordsForDocument(indexed, doc.sourceDocumentId, rule.recordTypeId)
-    : [recordsForDocument(indexed, doc.sourceDocumentId)[0]].filter(Boolean);
+    : firstIndexedRecordOnly(documentRecords);
 
   if (recordGroups.length === 0 && rule.recordTypeId) {
     return [];
@@ -264,9 +276,7 @@ function candidateFromRule(input: {
   const targets =
     rule.recordTypeId && recordGroups.length > 0
       ? recordGroups
-      : recordsForDocument(indexed, doc.sourceDocumentId).length > 0
-        ? [recordsForDocument(indexed, doc.sourceDocumentId)[0]!]
-        : [];
+      : firstIndexedRecordOnly(documentRecords);
 
   if (targets.length === 0) {
     return [];

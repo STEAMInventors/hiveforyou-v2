@@ -95,6 +95,7 @@ export {
 } from "./logical-page-segmentation";
 export type { ProposalFieldSynonymEntry } from "./pack-driven-reader/field-synonyms.js";
 export type {
+  ProposalCaseTimelineEvent,
   ProposalCompositionRule,
   ProposalConstruct,
   ProposalDomainPack,
@@ -106,6 +107,7 @@ export type {
   ProposalRequirementWhen,
   ProposalRequirements,
   ProposalRelationshipRules,
+  ProposalTimelineDateKind,
 } from "./pack-driven-reader/types.js";
 export {
   applyFieldSynonymNormalization,

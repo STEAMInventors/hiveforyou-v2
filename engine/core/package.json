@@ -15,6 +15,7 @@
     "./model/call-model": "./src/model/call-model.ts",
     "./pack-study-from-projection": "./src/study/narrative/build-pack-study-from-projection.ts",
     "./case-view-plan": "./src/projections/project-case-view-v2-plan.ts",
+    "./projections/canonical-study-timeline": "./src/projections/project-canonical-study-timeline.ts",
     "./study": "./src/study/index.ts",
     "./study/validate-document-evidence": "./src/study/validate-document-evidence.ts",
     "./story/prefer-pack-narrative": "./src/study/story/prefer-pack-narrative.ts",

@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 
-import { projectCanonicalStudyTimeline } from "@hiveforyou/core";
+import { projectCanonicalStudyTimeline } from "@hiveforyou/core/projections/canonical-study-timeline";
 import type {
   CanonicalStudyArtifact,
   CanonicalStudyProvenanceChip,
