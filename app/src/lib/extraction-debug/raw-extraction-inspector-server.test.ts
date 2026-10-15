@@ -7,15 +7,10 @@ import type { HiveGateway, HiveRow } from "@/lib/persistence/hive-gateway";
 
 vi.mock("@/lib/supabase/server", () => ({
   getAuthenticatedUserId: vi.fn(),
-  createServerSupabaseClient: vi.fn(async () => ({})),
+  createAuthenticatedHiveGateway: vi.fn(),
 }));
 
-vi.mock("@/lib/persistence/hive-gateway", () => ({
-  createSupabaseHiveGateway: vi.fn(),
-}));
-
-import { getAuthenticatedUserId } from "@/lib/supabase/server";
-import { createSupabaseHiveGateway } from "@/lib/persistence/hive-gateway";
+import { createAuthenticatedHiveGateway, getAuthenticatedUserId } from "@/lib/supabase/server";
 import {
   RawExtractionNotFoundError,
   loadRawExtractionInspectorBundle,
@@ -134,12 +129,12 @@ function buildGateway(input?: {
 describe("loadRawExtractionInspectorBundle", () => {
   beforeEach(() => {
     vi.mocked(getAuthenticatedUserId).mockReset();
-    vi.mocked(createSupabaseHiveGateway).mockReset();
+    vi.mocked(createAuthenticatedHiveGateway).mockReset();
   });
 
   it("rejects another user's case", async () => {
     vi.mocked(getAuthenticatedUserId).mockResolvedValue("user-other");
-    vi.mocked(createSupabaseHiveGateway).mockReturnValue({
+    vi.mocked(createAuthenticatedHiveGateway).mockResolvedValue({
       selectWhere: vi.fn(async () => []),
     } as never);
 
@@ -150,7 +145,7 @@ describe("loadRawExtractionInspectorBundle", () => {
 
   it("throws when the study run has no raw extraction artifacts", async () => {
     vi.mocked(getAuthenticatedUserId).mockResolvedValue(USER_ID);
-    vi.mocked(createSupabaseHiveGateway).mockReturnValue(buildGateway() as never);
+    vi.mocked(createAuthenticatedHiveGateway).mockResolvedValue(buildGateway() as never);
 
     await expect(
       loadRawExtractionInspectorBundle({ caseId: CASE_ID, studyRunId: STUDY_RUN_ID }),
@@ -159,7 +154,7 @@ describe("loadRawExtractionInspectorBundle", () => {
 
   it("loads when only the study-run manifest exists", async () => {
     vi.mocked(getAuthenticatedUserId).mockResolvedValue(USER_ID);
-    vi.mocked(createSupabaseHiveGateway).mockReturnValue(
+    vi.mocked(createAuthenticatedHiveGateway).mockReturnValue(
       buildGateway({ studyRunManifest: STUDY_RUN_MANIFEST }) as never,
     );
 

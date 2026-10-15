@@ -24,7 +24,6 @@ import {
 } from "@hiveforyou/shared/intake";
 
 import { readServerEnv } from "@/lib/env/server-env";
-import { createSupabaseHiveGateway } from "@/lib/persistence/hive-gateway";
 import { SupabaseIntakeRepository } from "@/lib/persistence/supabase-intake";
 import {
   SupabaseCaseRepository,
@@ -33,7 +32,7 @@ import {
 } from "@/lib/persistence/supabase-repositories";
 import { emitIntakeRequestedEvent } from "@/lib/intake/emit-intake-requested";
 import { isInngestIntakePipeline } from "@/lib/intake/pipeline";
-import { createServerSupabaseClient, getAuthenticatedUserId } from "@/lib/supabase/server";
+import { createAuthenticatedHiveGateway, getAuthenticatedUserId } from "@/lib/supabase/server";
 
 const inlineInFlight = new Map<string, Promise<IntakeRunRecord>>();
 
@@ -64,8 +63,7 @@ export type StartIntakeBody = {
 
 async function intakePersistence(userId: string) {
   const env = readServerEnv();
-  const supabase = await createServerSupabaseClient();
-  const gateway = createSupabaseHiveGateway(supabase);
+  const gateway = await createAuthenticatedHiveGateway();
   return {
     cases: new SupabaseCaseRepository(gateway, userId),
     documents: new SupabaseSourceDocumentRepository(gateway, userId),

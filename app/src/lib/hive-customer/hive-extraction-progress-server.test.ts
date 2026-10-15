@@ -6,19 +6,14 @@ import type { HiveGateway, HiveRow } from "@/lib/persistence/hive-gateway";
 
 vi.mock("@/lib/supabase/server", () => ({
   getAuthenticatedUserId: vi.fn(),
-  createServerSupabaseClient: vi.fn(async () => ({})),
-}));
-
-vi.mock("@/lib/persistence/hive-gateway", () => ({
-  createSupabaseHiveGateway: vi.fn(),
+  createAuthenticatedHiveGateway: vi.fn(),
 }));
 
 vi.mock("@/lib/intake/intake-service-server", () => ({
   readIntakeEvidenceWorkspaceView: vi.fn(),
 }));
 
-import { getAuthenticatedUserId } from "@/lib/supabase/server";
-import { createSupabaseHiveGateway } from "@/lib/persistence/hive-gateway";
+import { createAuthenticatedHiveGateway, getAuthenticatedUserId } from "@/lib/supabase/server";
 import { readIntakeEvidenceWorkspaceView } from "@/lib/intake/intake-service-server";
 import { loadHiveExtractionProgressForSession } from "./hive-extraction-progress-server";
 
@@ -120,13 +115,13 @@ function buildGateway(): HiveGateway {
 describe("loadHiveExtractionProgressForSession", () => {
   beforeEach(() => {
     vi.mocked(getAuthenticatedUserId).mockReset();
-    vi.mocked(createSupabaseHiveGateway).mockReset();
+    vi.mocked(createAuthenticatedHiveGateway).mockReset();
     vi.mocked(readIntakeEvidenceWorkspaceView).mockReset();
   });
 
   it("returns intake document rows when RUNNING with no reader envelopes", async () => {
     vi.mocked(getAuthenticatedUserId).mockResolvedValue(USER_ID);
-    vi.mocked(createSupabaseHiveGateway).mockReturnValue(buildGateway() as never);
+    vi.mocked(createAuthenticatedHiveGateway).mockResolvedValue(buildGateway() as never);
     vi.mocked(readIntakeEvidenceWorkspaceView).mockResolvedValue({
       documents: [
         {

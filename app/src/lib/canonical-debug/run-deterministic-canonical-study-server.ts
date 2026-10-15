@@ -34,7 +34,7 @@ import {
   SupabaseStudyRunRepository,
 } from "@/lib/persistence/supabase-repositories";
 import { SupabaseStudyArtifactRepository } from "@/lib/persistence/supabase-study-artifacts";
-import { createServerSupabaseClient, getAuthenticatedUserId } from "@/lib/supabase/server";
+import { createAuthenticatedHiveGateway, getAuthenticatedUserId } from "@/lib/supabase/server";
 import { requireSessionUserId } from "@hiveforyou/core";
 
 const DOCUMENT_PAGES_BUCKET = "document-pages";
@@ -132,7 +132,7 @@ export async function runDeterministicCanonicalStudyForSession(input: {
   studyRunId: string;
 }): Promise<RunDeterministicCanonicalStudyResult> {
   const sessionUserId = requireSessionUserId(await getAuthenticatedUserId());
-  const gateway = createSupabaseHiveGateway(await createServerSupabaseClient());
+  const gateway = await createAuthenticatedHiveGateway();
   const deps = await buildStudyDeps({
     sessionUserId,
     gateway,
@@ -195,7 +195,7 @@ export async function loadDeterministicCanonicalStudyArtifactForSession(input: {
   studyRunId: string;
 }): Promise<CanonicalStudyArtifact & CanonicalStudyDebugArtifactMetadata> {
   const sessionUserId = requireSessionUserId(await getAuthenticatedUserId());
-  const gateway = createSupabaseHiveGateway(await createServerSupabaseClient());
+  const gateway = await createAuthenticatedHiveGateway();
   const deps = await buildStudyDeps({
     sessionUserId,
     gateway,

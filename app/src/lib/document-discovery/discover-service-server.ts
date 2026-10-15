@@ -32,7 +32,7 @@ import {
   SupabaseSourceDocumentStorage,
 } from "@/lib/persistence/supabase-repositories";
 import { createAdminSupabaseClient } from "@/lib/supabase/admin";
-import { createServerSupabaseClient, getAuthenticatedUserId } from "@/lib/supabase/server";
+import { createAuthenticatedHiveGateway, getAuthenticatedUserId } from "@/lib/supabase/server";
 
 export { UnknownDiscoverPromptVersionError };
 
@@ -58,7 +58,7 @@ export async function runDiscoverFromRequest(input: {
   const adaptive = isAdaptiveDiscoverPromptVersion(env.HIVE_DISCOVER_PROMPT_VERSION);
   const engineConfig = discoverEngineFromServerEnv(env, adaptive);
 
-  const gateway = createSupabaseHiveGateway(await createServerSupabaseClient());
+  const gateway = await createAuthenticatedHiveGateway();
   const adminGateway = createSupabaseHiveGateway(createAdminSupabaseClient());
   const cases = new SupabaseCaseRepository(gateway, sessionUserId);
   const ownedCase = await cases.getById(sessionUserId, input.caseId);

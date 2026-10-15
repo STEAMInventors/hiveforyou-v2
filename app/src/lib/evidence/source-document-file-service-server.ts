@@ -14,7 +14,11 @@ import {
   SupabaseStudyRunRepository,
 } from "@/lib/persistence/supabase-repositories";
 import { createAdminSupabaseClient } from "@/lib/supabase/admin";
-import { createServerSupabaseClient, getAuthenticatedUserId } from "@/lib/supabase/server";
+import {
+  createAuthenticatedHiveGateway,
+  getAuthenticatedUserId,
+} from "@/lib/supabase/server";
+import { usesControlledTestAuthentication } from "@/lib/supabase/controlled-test-mode";
 
 import { StudyRunNotFoundError } from "./evidence-trace-service-server";
 import {
@@ -50,12 +54,16 @@ async function downloadFromSupabaseStorage(input: {
     throw new SourceDocumentStorageError("Unexpected storage bucket.");
   }
 
-  const sessionGateway = createSupabaseHiveGateway(await createServerSupabaseClient());
+  const sessionGateway = await createAuthenticatedHiveGateway();
   const sessionStorage = new SupabaseSourceDocumentStorage(
     sessionGateway,
     env.HIVE_STORAGE_BUCKET,
     input.sessionUserId,
   );
+
+  if (usesControlledTestAuthentication()) {
+    return sessionStorage.get({ bucket: input.bucket, path: input.path });
+  }
 
   try {
     return await sessionStorage.get({ bucket: input.bucket, path: input.path });
@@ -80,7 +88,7 @@ export async function loadSourceDocumentFileForStudyRun(input: {
   originalFilenameHint?: string | null;
 }): Promise<{ bytes: Uint8Array; mimeType: string; filename: string }> {
   const sessionUserId = requireSessionUserId(await getAuthenticatedUserId());
-  const sessionGateway = createSupabaseHiveGateway(await createServerSupabaseClient());
+  const sessionGateway = await createAuthenticatedHiveGateway();
   const runRepo = new SupabaseStudyRunRepository(sessionGateway, sessionUserId);
   const run = await runRepo.getByStudyRunId(input.studyRunId);
   if (!run) {

@@ -9,7 +9,6 @@ import { CaseNotFoundError } from "@/lib/canonical-study/study-service-server";
 import { loadCanonicalCaseByStudyRunId } from "@/lib/case/load-case-by-study-run";
 import type { CaseMapViewBundle } from "@/lib/case-map/case-map-view-bundle";
 import { emitStudyRequestedEvent } from "@/lib/intake/emit-study-requested";
-import { createSupabaseHiveGateway } from "@/lib/persistence/hive-gateway";
 import { SupabaseStudyContextRepository } from "@/lib/persistence/supabase-repositories";
 import {
   loadLatestStructureMapForCase,
@@ -17,7 +16,7 @@ import {
 } from "@/lib/persistence/supabase-case-projections";
 import { SupabaseCaseRepository, SupabaseStudyRunRepository } from "@/lib/persistence/supabase-repositories";
 import { SupabaseCaseCustomerContextRepository } from "@/lib/persistence/supabase-case-customer-context";
-import { createServerSupabaseClient, getAuthenticatedUserId } from "@/lib/supabase/server";
+import { createAuthenticatedHiveGateway, getAuthenticatedUserId } from "@/lib/supabase/server";
 
 export class StudyRunNotFoundError extends Error {
   readonly code = "STUDY_RUN_NOT_FOUND";
@@ -46,7 +45,7 @@ async function requestProjectionRegeneration(
   }
   regenerationInFlight.add(key);
   try {
-    const gateway = createSupabaseHiveGateway(await createServerSupabaseClient());
+    const gateway = await createAuthenticatedHiveGateway();
     const context = await new SupabaseStudyContextRepository(gateway, userId).getByStudyRunId(
       run.studyRunId,
     );
@@ -62,7 +61,7 @@ async function requestProjectionRegeneration(
 
 export async function loadCaseMapViewBundle(studyRunId: string): Promise<CaseMapViewBundle> {
   const sessionUserId = requireSessionUserId(await getAuthenticatedUserId());
-  const gateway = createSupabaseHiveGateway(await createServerSupabaseClient());
+  const gateway = await createAuthenticatedHiveGateway();
   const runRepo = new SupabaseStudyRunRepository(gateway, sessionUserId);
   const run = await runRepo.getByStudyRunId(studyRunId);
   if (!run) {

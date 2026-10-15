@@ -1,5 +1,7 @@
 import type { AuthError, SupabaseClient } from "@supabase/supabase-js";
 
+import { usesControlledTestAuthentication } from "./controlled-test-mode";
+
 function isMissingSessionGetUserError(error: AuthError): boolean {
   if (error.name === "AuthSessionMissingError") {
     return true;
@@ -42,6 +44,9 @@ function readDevAuthCredentials(): ImplicitSession | null {
  * Call only after the request has passed the HTTP Basic gate.
  */
 function readPreviewAuthCredentials(): ImplicitSession | null {
+  if (usesControlledTestAuthentication()) {
+    return null;
+  }
   if (!process.env.HIVE_PREVIEW_PASSWORD?.trim()) {
     return null;
   }

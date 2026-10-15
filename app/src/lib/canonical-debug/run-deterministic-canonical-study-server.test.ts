@@ -58,15 +58,10 @@ import type { HiveGateway, HiveRow } from "@/lib/persistence/hive-gateway";
 
 vi.mock("@/lib/supabase/server", () => ({
   getAuthenticatedUserId: vi.fn(),
-  createServerSupabaseClient: vi.fn(async () => ({})),
+  createAuthenticatedHiveGateway: vi.fn(),
 }));
 
-vi.mock("@/lib/persistence/hive-gateway", () => ({
-  createSupabaseHiveGateway: vi.fn(),
-}));
-
-import { getAuthenticatedUserId } from "@/lib/supabase/server";
-import { createSupabaseHiveGateway } from "@/lib/persistence/hive-gateway";
+import { createAuthenticatedHiveGateway, getAuthenticatedUserId } from "@/lib/supabase/server";
 import {
   PackNotAvailableError,
   SourcePagesUnavailableError,
@@ -324,7 +319,7 @@ describe("runDeterministicCanonicalStudyForSession", () => {
   });
   beforeEach(() => {
     vi.mocked(getAuthenticatedUserId).mockResolvedValue(USER_ID);
-    vi.mocked(createSupabaseHiveGateway).mockReturnValue(buildGateway());
+    vi.mocked(createAuthenticatedHiveGateway).mockResolvedValue(buildGateway());
     delete process.env.HIVE_PACK_DRIVEN_READER_PROPOSAL_JSON;
   });
 
@@ -346,7 +341,7 @@ describe("runDeterministicCanonicalStudyForSession", () => {
       process.env.HIVE_PACK_DRIVEN_READER_PROPOSAL_JSON = packPath;
 
       const gatewayWithoutPages = buildGateway();
-      vi.mocked(createSupabaseHiveGateway).mockReturnValue({
+      vi.mocked(createAuthenticatedHiveGateway).mockResolvedValue({
         ...gatewayWithoutPages,
         async downloadObject(_bucket, path) {
           if (path === documentPagesStoragePath(USER_ID, SOURCE_DOC_SHA)) {

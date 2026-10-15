@@ -22,6 +22,8 @@ describe("ensureDevSupabaseSession", () => {
     delete process.env.HIVE_PREVIEW_PASSWORD;
     delete process.env.HIVE_PREVIEW_AUTH_EMAIL;
     delete process.env.HIVE_PREVIEW_AUTH_PASSWORD;
+    delete process.env.HIVE_CONTROLLED_TEST_MODE;
+    delete process.env.HIVE_TEST_OWNER_USER_ID;
     delete process.env.VERCEL;
   });
 
@@ -182,6 +184,22 @@ describe("ensureDevSupabaseSession", () => {
       email: "preview@example.com",
       password: "preview-secret",
     });
+  });
+
+  it("does not sign in the preview user when controlled test mode is enabled", async () => {
+    vi.stubEnv("NODE_ENV", "production");
+    vi.stubEnv("VERCEL", "1");
+    process.env.HIVE_PREVIEW_PASSWORD = "gate";
+    process.env.HIVE_CONTROLLED_TEST_MODE = "true";
+    process.env.HIVE_TEST_OWNER_USER_ID = "owner-uuid";
+    process.env.SUPABASE_SERVICE_ROLE_KEY = "service-key";
+    process.env.HIVE_PREVIEW_AUTH_EMAIL = "preview@example.com";
+    process.env.HIVE_PREVIEW_AUTH_PASSWORD = "preview-secret";
+    const { client, signInWithPassword } = mockSupabase();
+
+    await ensureDevSupabaseSession(client as never);
+
+    expect(signInWithPassword).not.toHaveBeenCalled();
   });
 
   it("does not fall back to dev credentials when preview user credentials are missing", async () => {

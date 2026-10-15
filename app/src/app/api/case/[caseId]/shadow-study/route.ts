@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 
-import { createServerSupabaseClient, getAuthenticatedUserId } from "@/lib/supabase/server";
+import {
+  createAuthenticatedSupabaseClient,
+  getAuthenticatedUserId,
+} from "@/lib/supabase/server";
 
 export async function GET(
   request: Request,
@@ -18,7 +21,7 @@ export async function GET(
     return NextResponse.json({ error: "STUDY_RUN_ID_REQUIRED" }, { status: 400 });
   }
 
-  const supabase = await createServerSupabaseClient();
+  const supabase = await createAuthenticatedSupabaseClient();
   const { data, error } = await supabase
     .schema("hive")
     .from("shadow_study_artifacts")

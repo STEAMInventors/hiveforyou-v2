@@ -44,7 +44,7 @@ import { SupabaseStudyArtifactRepository } from "@/lib/persistence/supabase-stud
 import { createSupabaseDomainLearningPort } from "@/lib/persistence/supabase-domain-learning";
 import { SupabaseIntakeRepository } from "@/lib/persistence/supabase-intake";
 import { createAdminSupabaseClient } from "@/lib/supabase/admin";
-import { createServerSupabaseClient, getAuthenticatedUserId } from "@/lib/supabase/server";
+import { createAuthenticatedHiveGateway, getAuthenticatedUserId } from "@/lib/supabase/server";
 
 import { loadNormalizedExtractionForSource } from "@/lib/evidence/load-normalized-extraction.server";
 
@@ -92,7 +92,7 @@ async function startIntakeCanonicalStudyFromRunInner(
 ): Promise<CanonicalStudyOutcome> {
   const env = readServerEnv();
   const sessionUserId = requireSessionUserId(await getAuthenticatedUserId());
-  const gateway = createSupabaseHiveGateway(await createServerSupabaseClient());
+  const gateway = await createAuthenticatedHiveGateway();
   const adminGateway = createSupabaseHiveGateway(createAdminSupabaseClient());
   const intake = new SupabaseIntakeRepository(gateway, sessionUserId);
   const run = await intake.getById(sessionUserId, intakeRunId);

@@ -8,13 +8,12 @@ import {
 
 import { CaseNotFoundError } from "@/lib/canonical-study/study-service-server";
 import { StudyRunNotFoundError } from "@/lib/case-map/case-map-bundle-service-server";
-import { createSupabaseHiveGateway } from "@/lib/persistence/hive-gateway";
 import {
   SupabaseCaseRepository,
   SupabaseStudyContextRepository,
   SupabaseStudyRunRepository,
 } from "@/lib/persistence/supabase-repositories";
-import { createServerSupabaseClient, getAuthenticatedUserId } from "@/lib/supabase/server";
+import { createAuthenticatedHiveGateway, getAuthenticatedUserId } from "@/lib/supabase/server";
 
 import { loadReaderDocumentExtractionArtifacts } from "./load-reader-document-extraction-artifacts";
 
@@ -46,7 +45,7 @@ export async function loadRawExtractionInspectorBundle(input: {
   studyRunId: string;
 }): Promise<RawExtractionInspectorBundle & { intakeRunId: string | null }> {
   const sessionUserId = requireSessionUserId(await getAuthenticatedUserId());
-  const gateway = createSupabaseHiveGateway(await createServerSupabaseClient());
+  const gateway = await createAuthenticatedHiveGateway();
 
   const ownedCase = await new SupabaseCaseRepository(gateway, sessionUserId).getById(
     sessionUserId,

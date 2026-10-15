@@ -23,6 +23,10 @@ vi.mock("@supabase/ssr", () => ({
   createServerClient: vi.fn(() => ({ auth })),
 }));
 
+vi.mock("@supabase/supabase-js", () => ({
+  createClient: vi.fn(() => ({})),
+}));
+
 vi.mock("@/lib/persistence/hive-gateway", () => ({
   createSupabaseHiveGateway: vi.fn(() => ({})),
 }));
@@ -43,6 +47,7 @@ import { createOrReuseCase, persistSourceDocument } from "@hiveforyou/core";
 import { POST } from "./route";
 
 const PREVIEW_USER_ID = "preview-user-1";
+const TEST_OWNER_ID = "test-owner-uuid";
 
 const SERVER_ENV = {
   NEXT_PUBLIC_SUPABASE_URL: "https://example.supabase.co",
@@ -112,6 +117,8 @@ describe("POST /api/documents/commit preview auth", () => {
     delete process.env.HIVE_PREVIEW_PASSWORD;
     delete process.env.HIVE_PREVIEW_AUTH_EMAIL;
     delete process.env.HIVE_PREVIEW_AUTH_PASSWORD;
+    delete process.env.HIVE_CONTROLLED_TEST_MODE;
+    delete process.env.HIVE_TEST_OWNER_USER_ID;
     delete process.env.HIVE_DEV_AUTO_AUTH;
   });
 
@@ -160,5 +167,37 @@ describe("POST /api/documents/commit preview auth", () => {
       expect.anything(),
       expect.objectContaining({ userId: PREVIEW_USER_ID }),
     );
+  });
+
+  it("persists uploads under the configured test owner in controlled test mode", async () => {
+    process.env.HIVE_PREVIEW_PASSWORD = "gate-secret";
+    process.env.HIVE_CONTROLLED_TEST_MODE = "true";
+    process.env.HIVE_TEST_OWNER_USER_ID = TEST_OWNER_ID;
+    requestHeaders.set("authorization", basic("ignored", "gate-secret"));
+
+    const response = await POST(commitRequest());
+
+    expect(response.status).toBe(200);
+    expect(auth.signInWithPassword).not.toHaveBeenCalled();
+    expect(createOrReuseCase).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({ sessionUserId: TEST_OWNER_ID }),
+    );
+    expect(persistSourceDocument).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({ userId: TEST_OWNER_ID }),
+    );
+  });
+
+  it("fail-closes when controlled test mode is missing the test owner", async () => {
+    process.env.HIVE_PREVIEW_PASSWORD = "gate-secret";
+    process.env.HIVE_CONTROLLED_TEST_MODE = "true";
+    requestHeaders.set("authorization", basic("ignored", "gate-secret"));
+
+    const response = await POST(commitRequest());
+
+    expect(response.status).toBe(500);
+    await expect(response.json()).resolves.toMatchObject({ error: "AUTH_SESSION_FAILED" });
+    expect(createOrReuseCase).not.toHaveBeenCalled();
   });
 });

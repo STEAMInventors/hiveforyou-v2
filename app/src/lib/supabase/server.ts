@@ -1,6 +1,7 @@
 import "server-only";
 
 import { createServerClient } from "@supabase/ssr";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { cookies, headers } from "next/headers";
 
 import {
@@ -8,8 +9,17 @@ import {
   isPreviewPasswordGateEnabled,
 } from "@/lib/preview/preview-gate";
 import { readServerEnv } from "@/lib/env/server-env";
+import { createSupabaseHiveGateway, type HiveGateway } from "@/lib/persistence/hive-gateway";
 
+import { createAdminSupabaseClient } from "./admin";
+import {
+  ControlledTestAuthMisconfiguredError,
+  requireControlledTestOwnerUserId,
+  usesControlledTestAuthentication,
+} from "./controlled-test-mode";
 import { ensureDevSupabaseSession } from "./dev-auto-auth";
+
+export { ControlledTestAuthMisconfiguredError };
 
 export async function createServerSupabaseClient() {
   const env = readServerEnv();
@@ -38,6 +48,9 @@ export async function getAuthenticatedUserId(): Promise<string | null> {
     if (!authorizationMatchesPreviewPassword(headerList.get("authorization"))) {
       return null;
     }
+    if (usesControlledTestAuthentication()) {
+      return requireControlledTestOwnerUserId();
+    }
   }
   const supabase = await createServerSupabaseClient();
   await ensureDevSupabaseSession(supabase);
@@ -46,4 +59,19 @@ export async function getAuthenticatedUserId(): Promise<string | null> {
     return null;
   }
   return data.user.id;
+}
+
+/** Session client for normal auth; service-role client when controlled-test mode is active. */
+export async function createAuthenticatedSupabaseClient(): Promise<SupabaseClient> {
+  if (usesControlledTestAuthentication()) {
+    readServerEnv();
+    return createAdminSupabaseClient();
+  }
+  return createServerSupabaseClient();
+}
+
+/** Trusted persistence gateway for the authenticated workflow owner. */
+export async function createAuthenticatedHiveGateway(): Promise<HiveGateway> {
+  const client = await createAuthenticatedSupabaseClient();
+  return createSupabaseHiveGateway(client);
 }

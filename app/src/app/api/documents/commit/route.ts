@@ -8,14 +8,13 @@ import {
 
 import { serverMisconfiguredResponse } from "@/lib/env/server-misconfigured";
 import { readServerEnv } from "@/lib/env/server-env";
-import { createSupabaseHiveGateway } from "@/lib/persistence/hive-gateway";
 import {
   SupabaseCaseRepository,
   SupabaseSourceDocumentRepository,
   SupabaseSourceDocumentStorage,
 } from "@/lib/persistence/supabase-repositories";
 import { mapWithConcurrency } from "@hiveforyou/intake";
-import { createServerSupabaseClient, getAuthenticatedUserId } from "@/lib/supabase/server";
+import { createAuthenticatedHiveGateway, getAuthenticatedUserId } from "@/lib/supabase/server";
 
 export const runtime = "nodejs";
 
@@ -200,7 +199,7 @@ export async function POST(request: Request) {
     }
 
     try {
-      const gateway = createSupabaseHiveGateway(await createServerSupabaseClient());
+      const gateway = await createAuthenticatedHiveGateway();
       const cases = new SupabaseCaseRepository(gateway, sessionUserId);
       const caseRecord = await createOrReuseCase(cases, {
         sessionUserId,

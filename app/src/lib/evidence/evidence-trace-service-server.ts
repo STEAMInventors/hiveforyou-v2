@@ -9,14 +9,13 @@ import type { ResolvedEvidenceRef } from "@hiveforyou/shared/projections";
 
 import { CaseNotFoundError } from "@/lib/canonical-study/study-service-server";
 import { loadCanonicalCaseByStudyRunId } from "@/lib/case/load-case-by-study-run";
-import { createSupabaseHiveGateway } from "@/lib/persistence/hive-gateway";
 import { loadLatestStructureMapForCase } from "@/lib/persistence/supabase-case-projections";
 import {
   SupabaseCaseRepository,
   SupabaseStudyRunRepository,
 } from "@/lib/persistence/supabase-repositories";
 import { SupabaseIntakeRepository } from "@/lib/persistence/supabase-intake";
-import { createServerSupabaseClient, getAuthenticatedUserId } from "@/lib/supabase/server";
+import { createAuthenticatedHiveGateway, getAuthenticatedUserId } from "@/lib/supabase/server";
 
 import { loadNormalizedExtractionForSource } from "./load-normalized-extraction.server";
 
@@ -59,7 +58,7 @@ export async function resolveEvidenceTraceForStudyRun(input: {
   evidenceRefId: string;
 }): Promise<ResolvedEvidenceRef> {
   const sessionUserId = requireSessionUserId(await getAuthenticatedUserId());
-  const gateway = createSupabaseHiveGateway(await createServerSupabaseClient());
+  const gateway = await createAuthenticatedHiveGateway();
   const runRepo = new SupabaseStudyRunRepository(gateway, sessionUserId);
   const run = await runRepo.getByStudyRunId(input.studyRunId);
   if (!run) {

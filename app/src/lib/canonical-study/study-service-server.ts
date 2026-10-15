@@ -33,7 +33,7 @@ import { SupabaseStudyArtifactRepository } from "@/lib/persistence/supabase-stud
 import { createSupabaseDomainLearningPort } from "@/lib/persistence/supabase-domain-learning";
 import { SupabaseDiscoverArtifactRepository } from "@/lib/persistence/supabase-discover";
 import { createAdminSupabaseClient } from "@/lib/supabase/admin";
-import { createServerSupabaseClient, getAuthenticatedUserId } from "@/lib/supabase/server";
+import { createAuthenticatedHiveGateway, getAuthenticatedUserId } from "@/lib/supabase/server";
 import type { StructureMap } from "@hiveforyou/shared/discover";
 import { HIVE_STRUCTURE_MAP_SCHEMA } from "@hiveforyou/shared/discover";
 
@@ -58,7 +58,7 @@ export async function startCanonicalStudyFromRequest(
     env,
     isV4PromptVersion(prompt.version) ? "v4" : "v3",
   );
-  const gateway = createSupabaseHiveGateway(await createServerSupabaseClient());
+  const gateway = await createAuthenticatedHiveGateway();
   const adminGateway = createSupabaseHiveGateway(createAdminSupabaseClient());
   const domainLearning = createSupabaseDomainLearningPort(
     gateway,
