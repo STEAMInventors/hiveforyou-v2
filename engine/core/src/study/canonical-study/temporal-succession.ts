@@ -22,6 +22,15 @@ export function hasVerifiedTemporalSuccession(
   later: IndexedRecordVersion,
   indexed: IndexedFoundation,
 ): { ok: boolean; basis: string | null } {
+  return hasVerifiedLogicalSuccession(earlier, later, indexed);
+}
+
+/** Logical plan/version succession from verified event dates — never from sort rank alone. */
+export function hasVerifiedLogicalSuccession(
+  earlier: IndexedRecordVersion,
+  later: IndexedRecordVersion,
+  indexed: IndexedFoundation,
+): { ok: boolean; basis: string | null } {
   const rules = resolveRelationshipRules(indexed.pack);
   const earlierEvent = temporalDateForRecord(earlier, indexed);
   const laterEvent = temporalDateForRecord(later, indexed);

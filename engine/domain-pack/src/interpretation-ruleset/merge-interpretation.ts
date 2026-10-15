@@ -142,6 +142,8 @@ export function mergeInterpretationOntoReaderPack(
     relationshipRules: overlay.relationshipRules ?? readerPack.relationshipRules,
     seriesObservationDateFieldIds:
       overlay.seriesObservationDateFieldIds ?? readerPack.seriesObservationDateFieldIds,
+    seriesOrderingDateFallback:
+      overlay.seriesOrderingDateFallback ?? readerPack.seriesOrderingDateFallback,
     compositionRules: compositionRules.length > 0 ? compositionRules : readerPack.compositionRules,
     recordTypes,
     insightChecks,

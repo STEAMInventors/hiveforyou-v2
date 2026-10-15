@@ -24,7 +24,7 @@ export const CANONICAL_STUDY_RULESET_ID = "hive.canonical-study.deterministic" a
 
 /** Pinned hash of canonical study builder modules (foundation + artifact builders). */
 export const CANONICAL_STUDY_RULESET_CONTENT_SHA256 =
-  "ef01462fc144a0b971d41a867905b698b35b1028dd0322c6341d05cfa2803140" as const;
+  "12ef7c1ac1600e6117634bdc64b66af73bc2b36e07835e7ede4b0a6bf9797838" as const;
 
 export type CanonicalStudyRulesetIdentity = {
   rulesetId: typeof CANONICAL_STUDY_RULESET_ID;
@@ -100,7 +100,7 @@ export function buildCanonicalStudy(input: BuildCanonicalStudyInput): CanonicalS
 
   const { entities, possiblySameLinks, orphans, orphanItems } = resolveIdentity(indexed);
   const { operativeViews, documentLineage } = composeOperativeViews({ indexed, entities });
-  const { relations, unresolvedComparisons } = labelRelations({ indexed, entities });
+  const { relations, relationClusters, unresolvedComparisons } = labelRelations({ indexed, entities });
   const series = buildSeries({ indexed, entities });
   const requirements = evaluateRequirements({ indexed, operativeViews });
   const flags = evaluateInsightChecks({ indexed, operativeViews, series });
@@ -132,6 +132,7 @@ export function buildCanonicalStudy(input: BuildCanonicalStudyInput): CanonicalS
     entities,
     operativeViews,
     relations,
+    relationClusters,
     unresolvedComparisons,
     series,
     requirements,
@@ -147,6 +148,7 @@ export function buildCanonicalStudy(input: BuildCanonicalStudyInput): CanonicalS
       entityIdentityUnresolved: entities.filter((entity) => entity.status === "identity_unresolved").length,
       operativeViews: operativeViews.length,
       relations: relations.length,
+      relationClusters: relationClusters.length,
       unresolvedComparisons: unresolvedComparisons.length,
       series: series.length,
       requirements: requirements.length,

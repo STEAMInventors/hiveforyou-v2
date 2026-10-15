@@ -104,6 +104,7 @@ export const SYNTHETIC_PACK: ProposalDomainPack = {
         scope: "case",
         keyFields: [],
         caseSingletonMerge: "guaranteed_unique",
+        strongIdentifierFieldIds: ["birth_date", "name"],
         versionAxis: "document.orderingDate",
       },
       fields: [

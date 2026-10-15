@@ -17,7 +17,8 @@
     "compare:intake-runs": "node --env-file=.env.local node_modules/tsx/dist/cli.mjs scripts/compare-intake-runs.ts",
     "compare:study-runs": "node --env-file=.env.local node_modules/tsx/dist/cli.mjs scripts/compare-study-runs.ts",
     "backfill:study-projections": "node --env-file=.env.local node_modules/tsx/dist/cli.mjs scripts/backfill-study-projections.ts",
-    "l001:agentic-reader-qualification": "node --env-file=.env.local node_modules/tsx/dist/cli.mjs scripts/l001-agentic-reader-qualification.ts"
+    "l001:agentic-reader-qualification": "node --env-file=.env.local node_modules/tsx/dist/cli.mjs scripts/l001-agentic-reader-qualification.ts",
+    "arch05:l001-qualification": "node --env-file=.env.local node_modules/tsx/dist/cli.mjs scripts/arch05-l001-real-qualification.ts"
   },
   "dependencies": {
     "@gutenye/ocr-node": "^1.4.8",

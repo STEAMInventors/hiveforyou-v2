@@ -7,9 +7,10 @@ import { StudyRunNotFoundError } from "@/lib/case-map/case-map-bundle-service-se
 import {
   PackNotAvailableError,
   SourcePagesUnavailableError,
-  runDeterministicCanonicalStudy,
+  runDeterministicCanonicalStudyForSession,
+  RawExtractionNotFoundError,
+  DeterministicCanonicalStudyConflictError,
 } from "@/lib/canonical-debug/run-deterministic-canonical-study-server";
-import { RawExtractionNotFoundError } from "@/lib/extraction-debug/raw-extraction-inspector-server";
 
 type RouteContext = { params: Promise<{ caseId: string }> };
 
@@ -31,7 +32,7 @@ export async function POST(request: Request, context: RouteContext) {
   }
 
   try {
-    const result = await runDeterministicCanonicalStudy({ caseId, studyRunId });
+    const result = await runDeterministicCanonicalStudyForSession({ caseId, studyRunId });
     return NextResponse.json({
       studyRunId: result.studyRunId,
       attemptId: result.attemptId,
@@ -97,13 +98,25 @@ export async function POST(request: Request, context: RouteContext) {
         { status: 409 },
       );
     }
-    if (error instanceof Error && error.message === "CANONICAL_STUDY_ARTIFACT_CONFLICT") {
+    if (
+      error instanceof DeterministicCanonicalStudyConflictError ||
+      (error instanceof Error && error.message === "CANONICAL_STUDY_ARTIFACT_CONFLICT")
+    ) {
       return NextResponse.json(
         {
           error: "CANONICAL_STUDY_ARTIFACT_CONFLICT",
           message: "Canonical study artifacts already exist with different content.",
         },
         { status: 409 },
+      );
+    }
+    if (error instanceof Error && error.message === "DETERMINISTIC_CANONICAL_STUDY_BUILD_TIMEOUT") {
+      return NextResponse.json(
+        {
+          error: "DETERMINISTIC_CANONICAL_STUDY_BUILD_TIMEOUT",
+          message: "Timed out waiting for the worker to finish Build Hive.",
+        },
+        { status: 504 },
       );
     }
     console.error("[api/case/canonical-study/run] UNEXPECTED", {

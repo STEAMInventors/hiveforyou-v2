@@ -6,6 +6,8 @@ export const HIVE_INNGEST_APP_ID = "hiveforyou";
 export const HIVE_EVENT_PING = "hive/ping" as const;
 export const HIVE_EVENT_INTAKE_REQUESTED = "hive/intake.requested" as const;
 export const HIVE_EVENT_STUDY_REQUESTED = "hive/study.requested" as const;
+export const HIVE_EVENT_DETERMINISTIC_CANONICAL_STUDY_BUILD =
+  "hive/deterministic-canonical-study.build" as const;
 
 export const hivePingEventDataSchema = z.object({
   userId: z.string().min(1),
@@ -35,6 +37,21 @@ export type HiveStudyRequestedEventData = z.infer<typeof hiveStudyRequestedEvent
 /** Deterministic Inngest event id for study queueing (dedupes double-clicks). */
 export function buildStudyRequestedEventId(studyRunId: string): string {
   return `study:${studyRunId.trim()}`;
+}
+
+export const hiveDeterministicCanonicalStudyBuildEventDataSchema = z.object({
+  userId: z.string().min(1),
+  caseId: z.string().min(1),
+  studyRunId: z.string().min(1),
+});
+
+export type HiveDeterministicCanonicalStudyBuildEventData = z.infer<
+  typeof hiveDeterministicCanonicalStudyBuildEventDataSchema
+>;
+
+/** Dedupes repeat Build Hive clicks for the same study run. */
+export function buildDeterministicCanonicalStudyBuildEventId(studyRunId: string): string {
+  return `deterministic-canonical:${studyRunId.trim()}`;
 }
 
 /** Deterministic Inngest event id for intake queueing (dedupes double-clicks). */

@@ -116,26 +116,30 @@ describe("ARCH-05 quote atoms against stored L001 pages", () => {
 });
 
 describe("ARCH-05 canonical study qualification", () => {
-  it("merges a guaranteed-unique student and exposes conflicting fields", () => {
+  it("merges a guaranteed-unique student when strong identifiers agree", () => {
     const foundation = buildSyntheticFoundation({
-      documents: [docWithStudent("doc-1", "Alice", "2010-01-01"), docWithStudent("doc-2", "Alice", "2010-01-02")],
+      documents: [docWithStudent("doc-1", "Alice", "2010-01-01"), docWithStudent("doc-2", "Alice", "2010-01-01")],
     });
     const study = buildCanonicalStudy({ pack: SYNTHETIC_PACK, packContentSha256: PACK_SHA, foundation });
     const students = study.entities.filter((entity) => entity.recordTypeId === "student");
     expect(students).toHaveLength(1);
     expect(students[0]?.reasons).toContain("case_singleton_guaranteed_unique");
-    expect(students[0]?.reasons).toContain("conflicting_fields:birth_date");
     const headers = study.entities.filter((entity) => entity.recordTypeId === "document_header");
     expect(headers).toHaveLength(2);
     expect(headers.every((entity) => entity.status === "resolved" && entity.reasons.includes("document_scoped"))).toBe(
       true,
     );
-    const birth = study.operativeViews
-      .flatMap((view) => view.records)
-      .filter((record) => record.recordTypeId === "student")
-      .flatMap((record) => record.fields)
-      .find((field) => field.fieldId === "birth_date");
-    expect(birth?.status).toBe("conflicted");
+  });
+
+  it("blocks student merge when strong identifiers conflict", () => {
+    const foundation = buildSyntheticFoundation({
+      documents: [docWithStudent("doc-1", "Alice", "2010-01-01"), docWithStudent("doc-2", "Alice", "2010-01-02")],
+    });
+    const study = buildCanonicalStudy({ pack: SYNTHETIC_PACK, packContentSha256: PACK_SHA, foundation });
+    const students = study.entities.filter((entity) => entity.recordTypeId === "student");
+    expect(students.length).toBeGreaterThanOrEqual(2);
+    expect(students.every((entity) => entity.reasons.includes("strong_identity_conflict"))).toBe(true);
+    expect(study.possiblySameLinks.some((link) => link.reason === "strong_identity_conflict_candidate")).toBe(true);
   });
 
   it("merges repeatability-false singletons when caseSingletonMerge is unset", () => {
@@ -172,6 +176,10 @@ describe("ARCH-05 canonical study qualification", () => {
           requiredFields: ["task", "score_type"],
           comparedIfBothPresent: ["instrument"],
           normalize: ["lowercase", "trim_punctuation", "vocabulary_synonyms"],
+          seriesRestatementPolicy: {
+            eventIdentityFieldIds: ["observed_on"],
+            allowExplicitRestatementCorroboration: true,
+          },
         },
       },
       vocabulary: {

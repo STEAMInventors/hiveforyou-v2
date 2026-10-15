@@ -32,7 +32,7 @@ const REPO_ROOT = process.cwd();
 const STUDY_RUN_ID = "d1d6f7fa-df5f-4fb9-8fe4-2b064b1d49d0";
 const ATTEMPT_ID = "6246c078-3d04-4834-9f5b-884cc237c016";
 const READER_PACK_SHA = "c2baa0439d32496a3110f5388f6048395a9f4c8fdce79b3d0cec36ae6b9a7775";
-const EXPECTED_RULESET_SHA = "ef01462fc144a0b971d41a867905b698b35b1028dd0322c6341d05cfa2803140";
+const EXPECTED_RULESET_SHA = "12ef7c1ac1600e6117634bdc64b66af73bc2b36e07835e7ede4b0a6bf9797838";
 const BUCKET = "document-pages";
 const OUT_DIR = join(REPO_ROOT, "artifacts", "arch05-l001-qualification");
 

@@ -1,8 +1,8 @@
 /**
  * ARCH-05 L001 qualification runner (TypeScript entry).
- * Prefer: node worker/scripts/arch05-l001-real-qualification.mjs from repo root.
+ * Prefer: pnpm --filter @hiveforyou/worker arch05:l001-qualification
  */
 console.error(
-  "Use worker/scripts/arch05-l001-real-qualification.mjs from the repository root (Supabase + local worker/.env.local).",
+  "Use: pnpm --filter @hiveforyou/worker arch05:l001-qualification (requires worker/.env.local and Supabase)",
 );
 process.exit(1);

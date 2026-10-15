@@ -43,5 +43,6 @@ export type InterpretationOverlay = {
   insightCheckReplacements?: ProposalInsightCheck[];
   vocabulary?: ProposalDomainPack["vocabulary"];
   seriesObservationDateFieldIds?: ProposalDomainPack["seriesObservationDateFieldIds"];
+  seriesOrderingDateFallback?: ProposalDomainPack["seriesOrderingDateFallback"];
   compositionRules?: ProposalDomainPack["compositionRules"];
 };

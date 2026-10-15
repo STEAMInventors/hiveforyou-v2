@@ -9,6 +9,7 @@ import type { ProposalDomainPack } from "@hiveforyou/domain-pack";
 
 import { buildSeriesDimensionKey, valuesEquivalent } from "./construct-keys.js";
 import type { IndexedFoundation, IndexedRecordVersion } from "./indexed-foundation.js";
+import { resolveRelationshipRules } from "./indexed-foundation.js";
 import { stableId } from "./stable-id.js";
 
 const VALUE_ROLES = ["value", "baseline_value", "target_value"] as const;
@@ -77,11 +78,60 @@ function observedDateForRecord(
       return value;
     }
   }
-  return record.orderingDate;
+  const rules = resolveRelationshipRules(pack);
+  return rules.seriesOrderingDateFallback ? record.orderingDate : null;
 }
 
-function observationSignature(observation: CanonicalStudySeriesObservation): string {
-  return `${observation.role}|${observation.observedDate ?? ""}|${JSON.stringify(observation.value.normalizedValue)}`;
+function observationIdentitySignature(observation: CanonicalStudySeriesObservation): string {
+  return `${observation.role}|${observation.observedDate ?? ""}|${JSON.stringify(observation.value.normalizedValue)}|${observation.provenance.fieldKey}`;
+}
+
+function eventIdentityMatches(
+  left: IndexedRecordVersion,
+  right: IndexedRecordVersion,
+  constructId: string,
+  pack: ProposalDomainPack,
+): boolean {
+  const policy = pack.constructs?.[constructId]?.seriesRestatementPolicy;
+  const fieldIds = policy?.eventIdentityFieldIds ?? ["observed_on"];
+  for (const fieldId of fieldIds) {
+    const leftValue = left.provenanceByFieldKey[fieldId]?.normalized.normalizedValue;
+    const rightValue = right.provenanceByFieldKey[fieldId]?.normalized.normalizedValue;
+    if (leftValue != null && rightValue != null && JSON.stringify(leftValue) !== JSON.stringify(rightValue)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+function canCorroborateObservation(input: {
+  existing: CanonicalStudySeriesObservation;
+  candidate: CanonicalStudySeriesObservation;
+  existingRecord: IndexedRecordVersion;
+  candidateRecord: IndexedRecordVersion;
+  constructId: string;
+  pack: ProposalDomainPack;
+}): boolean {
+  const policy = input.pack.constructs?.[input.constructId]?.seriesRestatementPolicy;
+  if (!policy?.allowExplicitRestatementCorroboration) {
+    return false;
+  }
+  if (input.existing.role !== input.candidate.role) {
+    return false;
+  }
+  if (input.existing.observedDate !== input.candidate.observedDate) {
+    return false;
+  }
+  if (
+    JSON.stringify(input.existing.value.normalizedValue) !==
+    JSON.stringify(input.candidate.value.normalizedValue)
+  ) {
+    return false;
+  }
+  if (input.existing.provenance.fieldKey === input.candidate.provenance.fieldKey) {
+    return false;
+  }
+  return eventIdentityMatches(input.existingRecord, input.candidateRecord, input.constructId, input.pack);
 }
 
 function appendObservation(input: {
@@ -137,11 +187,27 @@ function appendObservation(input: {
       provenance: chip,
       corroboratingProvenance: [],
     };
-    const signature = observationSignature(candidate);
-    const existing = series.observations.find((observation) => observationSignature(observation) === signature);
-    if (existing) {
-      if (!provenanceEquals(existing.provenance, chip) && !existing.corroboratingProvenance.some((item) => provenanceEquals(item, chip))) {
-        existing.corroboratingProvenance.push(chip);
+    const duplicate = series.observations.find(
+      (observation) => observationIdentitySignature(observation) === observationIdentitySignature(candidate),
+    );
+    if (duplicate) {
+      continue;
+    }
+
+    const corroborationTarget = series.observations.find((observation) =>
+      canCorroborateObservation({
+        existing: observation,
+        candidate,
+        existingRecord:
+          input.indexed.recordsByGroupId.get(observation.provenance.recordGroupId) ?? input.indexedVersion,
+        candidateRecord: input.indexedVersion,
+        constructId: input.constructId,
+        pack: input.indexed.pack,
+      }),
+    );
+    if (corroborationTarget) {
+      if (!corroborationTarget.corroboratingProvenance.some((item) => item.fieldKey === chip.fieldKey)) {
+        corroborationTarget.corroboratingProvenance.push(chip);
       }
       continue;
     }
@@ -169,8 +235,8 @@ function mergeSeriesObservations(
   source: CanonicalStudySeries,
 ): void {
   for (const observation of source.observations) {
-    const signature = observationSignature(observation);
-    const existing = target.observations.find((item) => observationSignature(item) === signature);
+    const signature = observationIdentitySignature(observation);
+    const existing = target.observations.find((item) => observationIdentitySignature(item) === signature);
     if (existing) {
       if (
         !provenanceEquals(existing.provenance, observation.provenance) &&

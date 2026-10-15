@@ -23,6 +23,7 @@ import { hashCanonicalStudyFoundationBody } from "./hash-body.js";
 import { normalizeVerifiedField } from "./normalize-verified-field.js";
 import { orderDocumentsAndRecords } from "./order-documents-and-records.js";
 import { buildFieldKey } from "./field-key.js";
+import { assignSourceOccurrenceIds } from "./assign-source-occurrence-ids.js";
 import { tryDerivedPrimitive } from "./primitives.js";
 import { verifyProposedField } from "./verify-proposed-field.js";
 
@@ -139,8 +140,11 @@ function computeDerivedFields(input: {
       let result: ReturnType<typeof tryDerivedPrimitive> | null = null;
       let lastReason = "Derived field operands are not all verified.";
       let attempted = false;
+      let winningPrimitive: string | null = null;
+      let winningOperandFieldKeys: string[] = [];
       for (const attempt of attempts) {
         const operandValues: Record<string, unknown> = {};
+        const operandFieldKeys: string[] = [];
         let operandsReady = true;
         for (const operandId of attempt.operands) {
           const operandKey = buildFieldKey({
@@ -154,6 +158,7 @@ function computeDerivedFields(input: {
             operandsReady = false;
             break;
           }
+          operandFieldKeys.push(operandKey);
           operandValues[operandId] = verifiedOperand.normalized.normalizedValue;
           if (operandId === "frequency_text" && typeof verifiedOperand.displayValue === "string") {
             operandValues.frequency_text = verifiedOperand.displayValue;
@@ -166,34 +171,11 @@ function computeDerivedFields(input: {
         const attemptResult = tryDerivedPrimitive(attempt.primitive, operandValues);
         if (attemptResult.ok) {
           result = attemptResult;
+          winningPrimitive = attempt.primitive;
+          winningOperandFieldKeys = operandFieldKeys;
           break;
         }
         lastReason = attemptResult.reason;
-      }
-
-      if (!result?.ok) {
-        const usesFrequencyText =
-          fieldDef.derivation?.operands.includes("frequency_text") ||
-          fieldDef.derivation?.alternates?.some((alternate) =>
-            alternate.operands.includes("frequency_text"),
-          );
-        if (usesFrequencyText) {
-          const frequencyKey = buildFieldKey({
-            sourceDocumentId: group.sourceDocumentId,
-            recordTypeId: group.recordTypeId,
-            instanceIndex: group.instanceIndex,
-            fieldId: "frequency_text",
-          });
-          const frequencyOperand = input.verifiedByKey.get(frequencyKey);
-          if (frequencyOperand && typeof frequencyOperand.displayValue === "string") {
-            const fallback = tryDerivedPrimitive("explicitTotalPerWeek", {
-              frequency_text: frequencyOperand.displayValue,
-            });
-            if (fallback.ok) {
-              result = fallback;
-            }
-          }
-        }
       }
 
       if (!result?.ok) {
@@ -229,6 +211,9 @@ function computeDerivedFields(input: {
           unit: result.unit ?? fieldDef.unit ?? null,
         },
         reasons: [],
+        derivationTrace: winningPrimitive
+          ? { primitive: winningPrimitive, operandFieldKeys: winningOperandFieldKeys.slice().sort() }
+          : undefined,
       });
     }
   }
@@ -311,6 +296,14 @@ export function buildCanonicalStudyFoundation(
   verifiedFields.sort((a, b) => a.fieldKey.localeCompare(b.fieldKey));
   unresolvedFields.sort((a, b) => a.fieldKey.localeCompare(b.fieldKey));
 
+  const occurrenceAssignment = assignSourceOccurrenceIds({
+    pack: input.pack,
+    groupedRecords,
+    fieldOutcomes: [...verifiedFields, ...rejectedFields, ...unresolvedFields],
+  });
+  const groupedRecordsWithOccurrences = occurrenceAssignment.groupedRecords;
+  unresolvedItems.push(...occurrenceAssignment.unstableOccurrenceItems);
+
   const docTypeMap = documentTypeBySource({
     proposedFields: flattened.proposedFields,
     envelopes,
@@ -338,7 +331,7 @@ export function buildCanonicalStudyFoundation(
   const ordered = orderDocumentsAndRecords({
     pack: input.pack,
     verifiedFields,
-    groupedRecords,
+    groupedRecords: groupedRecordsWithOccurrences,
     documentTypeBySourceId: docTypeMap,
     allSourceDocumentIds: input.documents.map((doc) => doc.sourceDocumentId),
     trustedPagesSuppliedBySource: new Map(

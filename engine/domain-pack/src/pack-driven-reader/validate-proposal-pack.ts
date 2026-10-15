@@ -71,7 +71,14 @@ export function validateProposalDomainPack(pack: ProposalDomainPack): ValidatePr
     if (!id) {
       continue;
     }
-    for (const k of [...(id.keyFields ?? []), ...(id.keyFieldsIfPresent ?? []), ...(id.disambiguators ?? [])]) {
+    for (const k of [
+      ...(id.keyFields ?? []),
+      ...(id.keyFieldsIfPresent ?? []),
+      ...(id.disambiguators ?? []),
+      ...(id.strongIdentifierFieldIds ?? []),
+      ...(id.identityEvidenceFieldIds ?? []),
+      ...(id.occurrenceAnchorFieldIds ?? []),
+    ]) {
       if (!ids.has(k)) err(`${r.id}: key or disambiguator '${k}' is not a field`);
       if (FORBIDDEN_KEY.test(k)) err(`${r.id}: key '${k}' is a version axis, not content`);
     }

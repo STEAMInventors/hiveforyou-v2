@@ -50,10 +50,30 @@ export type ProposalDomainPack = {
   compositionRules?: ProposalCompositionRule[];
   /**
    * Record-local field ids tried in order when inferring series observation dates.
-   * Falls back to document ordering date when none are verified.
+   * Falls back to document ordering date only when seriesOrderingDateFallback is true.
    */
   seriesObservationDateFieldIds?: string[];
+  /** When false (default), missing semantic observation dates stay unresolved — no orderingDate substitute. */
+  seriesOrderingDateFallback?: boolean;
   referenceTables?: ProposalReferenceTables;
+};
+
+export type ProposalMatchingPolicyDimension =
+  | "construct"
+  | "unit"
+  | "temporal"
+  | "context"
+  | "subject";
+
+export type ProposalMatchingPolicy = {
+  requiredDimensions?: ProposalMatchingPolicyDimension[];
+};
+
+export type ProposalSeriesRestatementPolicy = {
+  /** Verified field ids that must align to collapse observations (e.g. observed_on). */
+  eventIdentityFieldIds?: string[];
+  /** When true, a verified MATCHES/restatement cluster may corroborate observations. */
+  allowExplicitRestatementCorroboration?: boolean;
 };
 
 export type ProposalRelationshipRules = {
@@ -63,6 +83,19 @@ export type ProposalRelationshipRules = {
   temporalSuccessionFieldIds?: string[];
   /** Different parties on the same comparable slot without succession => CONFLICT. */
   conflictWhenDifferentParties?: boolean;
+  /** UNCHANGED across documents requires verified logical succession, not sort order alone. */
+  unchangedRequiresLogicalSuccession?: boolean;
+  /** Per field id matching eligibility (record-local field ids). */
+  matchingPolicyByFieldId?: Record<string, ProposalMatchingPolicy>;
+};
+
+export type ProposalConstruct = {
+  description?: string;
+  requiredFields?: string[];
+  comparedIfBothPresent?: string[];
+  normalize?: string[];
+  onPartialMatch?: string;
+  seriesRestatementPolicy?: ProposalSeriesRestatementPolicy;
 };
 
 export type ProposalCompositionRule = {
@@ -188,6 +221,14 @@ export type ProposalRecordType = {
      */
     caseSingletonMerge?: "guaranteed_unique" | "never_auto_merge";
     /**
+     * Verified fields that must agree for case singleton merge; conflict blocks merge.
+     */
+    strongIdentifierFieldIds?: string[];
+    /** Minimum verified identity fields required before case singleton merge is allowed. */
+    identityEvidenceFieldIds?: string[];
+    /** Field ids used to build occurrence anchor keys before evidence quotes. */
+    occurrenceAnchorFieldIds?: string[];
+    /**
      * version: same content key across documents is one versioned entity.
      * independent_assertions: same-period records stay separate corroborating assertions.
      */
@@ -223,14 +264,6 @@ export type ProposalRecordField = {
       operands: string[];
     }>;
   };
-};
-
-export type ProposalConstruct = {
-  description?: string;
-  requiredFields?: string[];
-  comparedIfBothPresent?: string[];
-  normalize?: string[];
-  onPartialMatch?: string;
 };
 
 export type CaseDocumentManifestEntry = {

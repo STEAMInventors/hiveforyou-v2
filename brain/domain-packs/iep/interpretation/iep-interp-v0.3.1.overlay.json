@@ -21,8 +21,13 @@
       "start_date",
       "action_date"
     ],
-    "conflictWhenDifferentParties": true
+    "conflictWhenDifferentParties": true,
+    "unchangedRequiresLogicalSuccession": true,
+    "matchingPolicyByFieldId": {
+      "value": { "requiredDimensions": ["construct", "temporal", "unit"] }
+    }
   },
+  "seriesOrderingDateFallback": false,
   "seriesObservationDateFieldIds": [
     "observed_on",
     "reporting_period",
@@ -63,7 +68,15 @@
     {
       "id": "student",
       "identity": {
-        "caseSingletonMerge": "guaranteed_unique"
+        "caseSingletonMerge": "guaranteed_unique",
+        "strongIdentifierFieldIds": ["birth_date", "legal_name", "student_id"],
+        "identityEvidenceFieldIds": ["legal_name"]
+      }
+    },
+    {
+      "id": "evaluation_finding",
+      "identity": {
+        "crossDocumentMerge": "independent_assertions"
       }
     },
     {
@@ -104,7 +117,8 @@
         "keyFields": ["list_section", "line_text"],
         "keyFieldsIfPresent": [],
         "disambiguators": [],
-        "versionAxis": "document.orderingDate"
+        "versionAxis": "document.orderingDate",
+        "occurrenceAnchorFieldIds": ["list_section", "line_text"]
       },
       "fieldsAppend": [
         {

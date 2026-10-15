@@ -70,7 +70,7 @@ import { createSupabaseHiveGateway } from "@/lib/persistence/hive-gateway";
 import {
   PackNotAvailableError,
   SourcePagesUnavailableError,
-  runDeterministicCanonicalStudy,
+  runDeterministicCanonicalStudyForSession,
 } from "./run-deterministic-canonical-study-server";
 
 const USER_ID = "user-1";
@@ -318,7 +318,10 @@ function buildGateway(): HiveGateway {
   };
 }
 
-describe("runDeterministicCanonicalStudy", () => {
+describe("runDeterministicCanonicalStudyForSession", () => {
+  beforeEach(() => {
+    process.env.HIVE_DETERMINISTIC_CANONICAL_STUDY_EXECUTOR = "inline";
+  });
   beforeEach(() => {
     vi.mocked(getAuthenticatedUserId).mockResolvedValue(USER_ID);
     vi.mocked(createSupabaseHiveGateway).mockReturnValue(buildGateway());
@@ -327,7 +330,7 @@ describe("runDeterministicCanonicalStudy", () => {
 
   it("returns PACK_NOT_AVAILABLE when Reader envelope pack is unavailable", async () => {
     await expect(
-      runDeterministicCanonicalStudy({ caseId: CASE_ID, studyRunId: STUDY_RUN_ID }),
+      runDeterministicCanonicalStudyForSession({ caseId: CASE_ID, studyRunId: STUDY_RUN_ID }),
     ).rejects.toBeInstanceOf(PackNotAvailableError);
   });
 
@@ -354,7 +357,7 @@ describe("runDeterministicCanonicalStudy", () => {
       });
 
       await expect(
-        runDeterministicCanonicalStudy({ caseId: CASE_ID, studyRunId: STUDY_RUN_ID }),
+        runDeterministicCanonicalStudyForSession({ caseId: CASE_ID, studyRunId: STUDY_RUN_ID }),
       ).rejects.toMatchObject({
         name: "SourcePagesUnavailableError",
         affectedDocumentIds: [SOURCE_DOC_ID],
@@ -375,7 +378,7 @@ describe("runDeterministicCanonicalStudy", () => {
       );
       process.env.HIVE_PACK_DRIVEN_READER_PROPOSAL_JSON = packPath;
 
-      const result = await runDeterministicCanonicalStudy({
+      const result = await runDeterministicCanonicalStudyForSession({
         caseId: CASE_ID,
         studyRunId: STUDY_RUN_ID,
       });

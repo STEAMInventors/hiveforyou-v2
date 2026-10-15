@@ -23,9 +23,16 @@ export type CanonicalStudySourceContext = {
   asOfDate?: string;
 };
 
+export type CanonicalStudyDerivationTrace = {
+  primitive: string;
+  operandFieldKeys: string[];
+};
+
 export type CanonicalStudyProvenanceChip = {
   fieldKey: string;
   recordGroupId: string;
+  /** Source-local occurrence id when present on foundation grouped records. */
+  sourceOccurrenceId?: string;
   sourceDocumentId: string;
   recordTypeId: string;
   instanceIndex: number;
@@ -33,10 +40,14 @@ export type CanonicalStudyProvenanceChip = {
   evidence: CanonicalStudyFoundationEvidence[];
   normalized: CanonicalStudyFoundationNormalizedValue;
   envelopeRef: CanonicalStudyFoundationEnvelopeRef;
+  /** Foundation provenance class: quoted | derived | classified */
+  provenanceClass?: string;
+  derivationTrace?: CanonicalStudyDerivationTrace;
 };
 
 export type CanonicalStudyRecordVersion = {
   recordGroupId: string;
+  sourceOccurrenceId?: string;
   sourceDocumentId: string;
   recordTypeId: string;
   instanceIndex: number;
@@ -122,6 +133,22 @@ export type CanonicalStudyRelation = {
   right: CanonicalStudyProvenanceChip;
   temporalBasis: string | null;
   partyBasis: string | null;
+  /** When set, redundant MATCHES for this pair are represented by the cluster. */
+  relationClusterId?: string | null;
+};
+
+export type CanonicalStudyRelationClusterKind =
+  | "matches"
+  | "corroboration"
+  | "version_axis";
+
+export type CanonicalStudyRelationCluster = {
+  id: string;
+  kind: CanonicalStudyRelationClusterKind;
+  recordTypeId: string;
+  fieldId: string;
+  memberFieldKeys: string[];
+  entityIds: string[];
 };
 
 export type CanonicalStudyUnresolvedComparison = {
@@ -203,6 +230,7 @@ export type CanonicalStudyCounts = {
   entityIdentityUnresolved: number;
   operativeViews: number;
   relations: number;
+  relationClusters: number;
   unresolvedComparisons: number;
   series: number;
   requirements: number;
@@ -240,6 +268,7 @@ export type CanonicalStudyArtifactBody = {
   entities: CanonicalStudyEntity[];
   operativeViews: CanonicalStudyOperativeView[];
   relations: CanonicalStudyRelation[];
+  relationClusters: CanonicalStudyRelationCluster[];
   unresolvedComparisons: CanonicalStudyUnresolvedComparison[];
   series: CanonicalStudySeries[];
   requirements: CanonicalStudyRequirementResult[];

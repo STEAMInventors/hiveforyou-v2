@@ -76,6 +76,23 @@ export {
   type RawExtractionInspectorBundle,
   type RawExtractionInspectorDocument,
 } from "./raw-extraction-inspector";
+export {
+  loadReaderDocumentExtractionArtifacts,
+  type LoadedReaderDocumentExtractionArtifacts,
+  type DeterministicCanonicalStudyObjectStorage,
+} from "./load-reader-document-extraction-artifacts";
+export {
+  RawExtractionNotFoundError,
+  CanonicalStudyArtifactsNotFoundError,
+  SourcePagesUnavailableError,
+  DeterministicCanonicalStudyConflictError,
+  runDeterministicCanonicalStudy,
+  loadDeterministicCanonicalStudyArtifact,
+  type RunDeterministicCanonicalStudyResult,
+  type DeterministicCanonicalStudyWritableStorage,
+  type CanonicalStudyDebugArtifactMetadata,
+  type CanonicalStudyDebugReaderPackMetadata,
+} from "./run-deterministic-canonical-study";
 export * from "./engine-v3";
 export * from "./validate-proposal-v4";
 export * from "./openai-engine-v4";

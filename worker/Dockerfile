@@ -54,6 +54,10 @@ COPY engine/domain-packs/iep/study/agents.json ./pack/agents.json
 COPY engine/eval/reports/reader-experiment/prompt-hashes.json ./pack/reader-experiment-prompt-hashes.json
 COPY engine/intake/fixtures/l001/manifest.json ./pack/l001-qualification-manifest.json
 COPY brain/domain-packs/iep/iep-pack.v0.3.proposed.json ./pack/iep-pack.v0.3.proposed.json
+COPY brain/domain-packs/iep/snapshots ./brain/domain-packs/iep/snapshots
+COPY brain/domain-packs/iep/interpretation ./brain/domain-packs/iep/interpretation
+ENV HIVE_PROPOSAL_PACK_SNAPSHOTS_DIR=/app/brain/domain-packs/iep/snapshots
+ENV HIVE_DOMAIN_PACKS_BRAIN_DIR=/app/brain/domain-packs
 
 ENV HIVE_READER_EXPERIMENT_PROMPT_HASHES_JSON=/app/pack/reader-experiment-prompt-hashes.json
 ENV HIVE_L001_QUALIFICATION_MANIFEST_JSON=/app/pack/l001-qualification-manifest.json

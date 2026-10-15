@@ -1,0 +1,343 @@
+﻿diff --git a/agents/src/hive_agents/pack_loader.py b/agents/src/hive_agents/pack_loader.py
+index f103221..c0f7e39 100644
+--- a/agents/src/hive_agents/pack_loader.py
++++ b/agents/src/hive_agents/pack_loader.py
+@@ -31,6 +31,26 @@ class StudyAgentInstructions(BaseModel):
+         return self
+ 
+ 
++class ReaderCoverageVocabularyTerm(BaseModel):
++    model_config = ConfigDict(extra="forbid")
++
++    termId: str
++    label: str
++    abbreviations: list[str] | None = None
++    contextRequired: bool | None = None
++
++
++class ReaderCoverageExport(BaseModel):
++    model_config = ConfigDict(extra="forbid")
++
++    domainLabel: str
++    documentTypes: list[str]
++    familyRoles: list[str]
++    relationshipKinds: list[str]
++    focusConstructs: list[str]
++    vocabulary: list[ReaderCoverageVocabularyTerm]
++
++
+ class AgentPack(BaseModel):
+     """Phase 2 ``StudyAgentsExportArtifact`` (``scripts/pack-export.ts``)."""
+ 
+@@ -42,6 +62,7 @@ class AgentPack(BaseModel):
+     domainId: str
+     domainPackId: str
+     domainPackVersion: str
++    readerCoverage: ReaderCoverageExport
+     agents: StudyAgentInstructions
+ 
+     @field_validator("schemaVersion")
+diff --git a/agents/src/hive_agents/reader_prompt/assemble.py b/agents/src/hive_agents/reader_prompt/assemble.py
+index 3560c57..90d3bff 100644
+--- a/agents/src/hive_agents/reader_prompt/assemble.py
++++ b/agents/src/hive_agents/reader_prompt/assemble.py
+@@ -7,6 +7,9 @@ from hive_agents.pack_loader import AgentPack
+ from hive_agents.reader import reader_instructions_from_pack
+ from hive_agents.reader_prompt.constants import PROMPT_VERSION, READER_ARCHITECTURE_VARIANTS
+ from hive_agents.reader_prompt.golden_reference import golden_reference_methodology_for_reader
++from hive_agents.reader_prompt.section6_golden_inspired import (
++    build_case_wide_domain_coverage_checklist,
++)
+ from hive_agents.reader_prompt.sections_shared import (
+     shared_sections_after_checklist,
+     shared_sections_before_golden_methodology,
+@@ -44,9 +47,13 @@ def assemble_reader_architecture_prompt(
+     )
+     shared_before = shared_sections_before_golden_methodology(architecture=normalized)
+     golden_body = golden_reference_methodology_for_reader()
+-    shared_after = shared_sections_after_checklist()
++    shared_after = shared_sections_after_checklist(architecture=normalized)
+ 
+-    stable = "\n\n".join([pack_header, shared_before, golden_body, shared_after])
++    stable_parts = [pack_header, shared_before]
++    if normalized == "case_wide":
++        stable_parts.append(build_case_wide_domain_coverage_checklist(pack))
++    stable_parts.extend([golden_body, shared_after])
++    stable = "\n\n".join(stable_parts)
+     manifest_parts = []
+     if engine1_context_block and engine1_context_block.strip():
+         manifest_parts.append(engine1_context_block.strip())
+diff --git a/agents/src/hive_agents/reader_prompt/section6_golden_inspired.py b/agents/src/hive_agents/reader_prompt/section6_golden_inspired.py
+index 842f28f..d65f91c 100644
+--- a/agents/src/hive_agents/reader_prompt/section6_golden_inspired.py
++++ b/agents/src/hive_agents/reader_prompt/section6_golden_inspired.py
+@@ -1,19 +1,111 @@
+-"""Variant A — §6 only (golden-inspired extraction checklist)."""
+-
+-SECTION_6_GOLDEN_INSPIRED = """\
+-## 6. DOMAIN EXTRACTION CHECKLIST
+-
+-Study the entire supplied document collection together. Identify every meaningful source-supported atomic fact.
+-
+-For each logical document and relevant section:
+-- Capture exact values, units, dates, and time periods as stated.
+-- Separate goals, measurements, services, frequency, session length, setting, and effective dates when independently stated.
+-- Capture evaluations, scores, percentiles, findings, recommendations, eligibility, consent, referrals, services, supports, accommodations, placement, and progress when present.
+-- Preserve exact source-document identities in evidence; use persisted sourceDocumentId values from the manifest.
+-- Distinguish historical versus current facts using time anchors (occurred-on or effective-period values); do not conflate periods.
+-- Note cross-document reading hooks (evaluations explaining present levels, progress tied to goals, prior versus current plans) without merging or adjudicating conflicts.
+-- Extract unexpected but important facts outside predefined categories when the source text supports them.
+-- Never fabricate facts, quotes, or evidence.
+-- Do not record missing-information gaps as established facts; omit unsupported items.
+-- Do not declare legally binding conclusions or certify evidence; propose candidates only.
++from __future__ import annotations
++
++from hive_agents.pack_loader import AgentPack, ReaderCoverageExport, ReaderCoverageVocabularyTerm
++
++
++def _reader_guidance_bullets(reader_text: str) -> list[str]:
++    paragraphs = [p.strip() for p in reader_text.split("\n\n") if p.strip()]
++    bullets: list[str] = []
++    for paragraph in paragraphs:
++        for line in paragraph.splitlines():
++            stripped = line.strip()
++            if stripped:
++                bullets.append(stripped)
++    return bullets
++
++
++def _format_vocabulary_term(term: ReaderCoverageVocabularyTerm) -> str:
++    parts = [f"`{term.termId}` — {term.label}"]
++    if term.abbreviations:
++        parts.append(f"abbrev: {', '.join(term.abbreviations)}")
++    if term.contextRequired:
++        parts.append("contextRequired: expand only when nearby text supports this domain meaning")
++    return "; ".join(parts)
++
++
++def build_case_wide_domain_coverage_checklist(pack: AgentPack) -> str:
++    """Hive Prompt Standard section 6 — pack-derived case-wide coverage checklist."""
++    coverage: ReaderCoverageExport = pack.readerCoverage
++    guidance = _reader_guidance_bullets(pack.agents.reader)
++
++    document_types = "\n".join(f"- {dt}" for dt in coverage.documentTypes)
++    focus = (
++        "\n".join(f"- `{key}`" for key in coverage.focusConstructs)
++        or "- (none listed in pack export)"
++    )
++    family_roles = "\n".join(f"- {role}" for role in coverage.familyRoles)
++    relationships = "\n".join(f"- `{kind}`" for kind in coverage.relationshipKinds)
++    vocabulary_lines = "\n".join(
++        f"- {_format_vocabulary_term(term)}" for term in coverage.vocabulary
++    )
++    guidance_lines = "\n".join(f"- {item}" for item in guidance)
++
++    return f"""\
++## 6. DOMAIN-AWARE COVERAGE CHECKLIST (case-wide)
++
++Domain orientation: **{coverage.domainLabel}** (`domainId={pack.domainId}`).
++
++This checklist uses Domain Pack definitions for **what to look for** and **how to name** constructs.
++Pack vocabulary, document types, and construct keys are **not evidence**. Every candidate fact still
++requires an exact page quote from the untrusted document bundle.
++
++### 6.1 Logical document types (from pack)
++
++When Engine 1 assigns a document type, examine the pages against the reader guidance in section 6.3 and the
++focus constructs in section 6.2 when that type typically carries them. Types defined for this domain:
++
++{document_types}
++
++### 6.2 Focus constructs and measurements (when evidenced)
++
++When text supports them, propose facts using these pack-emphasized construct measures (snake_case):
++
++{focus}
++
++Also capture services, frequencies, session lengths, durations, settings, dates, periods, scores,
++eligibility labels, and entity relationships whenever independently stated in the source.
++
++### 6.3 Pack reader extraction guidance (apply on every document)
++
++{guidance_lines}
++
++### 6.4 Structure map roles and relationships
++
++Use trusted Engine 1 structure map **family roles** (for example prior vs current plan) and
++**relationship kinds** when linking facts across documents:
++
++Family roles:
++{family_roles}
++
++Relationship kinds:
++{relationships}
++
++### 6.5 Recognition vocabulary (naming only)
++
++Use these terms to normalize labels in `construct` and `textValue` when the document supports the
++meaning. Never propose a fact solely because a term appears in this list.
++
++{vocabulary_lines}
++
++### 6.6 Per-document examination workflow
++
++For **each** logical document in the trusted manifest:
++
++1. Read all pages (tools or provided bundle).
++2. Map the document to the closest pack document type when known.
++3. Walk sections 6.2-6.3: extract every source-supported atomic fact with exact evidence.
++4. Note cross-document hooks (evaluations explaining present levels, progress tied to goals,
++   amendments referencing plan dates, prior vs current plans) as separate facts with their own quotes.
++5. Treat different plan periods as time-bounded facts; do not merge incompatible values across periods.
++
++### 6.7 Final self-check (mandatory before returning candidateFacts)
++
++For **each** logical document again:
++
++- Re-scan pages for supported facts matching sections 6.1-6.3 (constructs, measurements, services, dates,
++  relationships) that are **not yet** in your candidate list.
++- If supported text was missed, add the candidate with exact `sourceDocumentId`, `page`, and `quote`.
++- If nothing additional is supported, leave the list unchanged for that document.
++- Do **not** invent values, quotes, or facts to satisfy the checklist.
++- Do **not** treat empty form rows, absent sections, or pack vocabulary as proof of a factual value.
+ """
+diff --git a/agents/src/hive_agents/reader_prompt/sections_shared.py b/agents/src/hive_agents/reader_prompt/sections_shared.py
+index 51e8ba1..f719a54 100644
+--- a/agents/src/hive_agents/reader_prompt/sections_shared.py
++++ b/agents/src/hive_agents/reader_prompt/sections_shared.py
+@@ -120,6 +120,10 @@ A document with zero extractable facts is acceptable; do not invent facts to fil
+ Do not treat absent sections as proof a fact is missing unless the source explicitly shows an empty labeled field (those are not candidate facts).
+ """
+ 
++SECTION_10_CASE_WIDE_SUPPLEMENT = """\
++For case-wide extraction, you must complete §6.7 (per-document final self-check) before returning `candidateFacts`.
++"""
++
+ SECTION_11_ABSTENTION = """\
+ ## 11. ABSTENTION, AMBIGUITY AND FAILURE HANDLING
+ 
+@@ -149,13 +153,16 @@ def shared_sections_before_checklist() -> str:
+     return shared_sections_before_golden_methodology(architecture="case_wide")
+ 
+ 
+-def shared_sections_after_checklist() -> str:
++def shared_sections_after_checklist(*, architecture: str = "case_wide") -> str:
++    completeness = SECTION_10_COMPLETENESS.strip()
++    if architecture == "case_wide":
++        completeness = f"{completeness}\n\n{SECTION_10_CASE_WIDE_SUPPLEMENT.strip()}"
+     return "\n\n".join(
+         [
+             SECTION_7_ATOMIC.strip(),
+             SECTION_8_EVIDENCE.strip(),
+             SECTION_9_OUTPUT.strip(),
+-            SECTION_10_COMPLETENESS.strip(),
++            completeness,
+             SECTION_11_ABSTENTION.strip(),
+         ]
+     )
+diff --git a/scripts/pack-export.ts b/scripts/pack-export.ts
+index b9963f2..dfe8c55 100644
+--- a/scripts/pack-export.ts
++++ b/scripts/pack-export.ts
+@@ -2,7 +2,11 @@ import { mkdirSync, realpathSync, writeFileSync } from "node:fs";
+ import { dirname, join } from "node:path";
+ import { fileURLToPath } from "node:url";
+ 
+-import type { DomainPack, StudyAgentInstructions } from "@hiveforyou/domain-pack";
++import type {
++  DomainPack,
++  DomainPackVocabularyTerm,
++  StudyAgentInstructions,
++} from "@hiveforyou/domain-pack";
+ import { getDomainPackByDomainId } from "@hiveforyou/domain-pack";
+ import "@hiveforyou/domain-packs";
+ 
+@@ -12,14 +16,66 @@ export const STUDY_AGENT_ROLES = ["intake", "reader", "investigator", "writer"]
+ 
+ export type StudyAgentRole = (typeof STUDY_AGENT_ROLES)[number];
+ 
++export type ReaderCoverageVocabularyTerm = {
++  termId: string;
++  label: string;
++  abbreviations?: string[];
++  contextRequired?: boolean;
++};
++
++/** Pack-derived Reader orientation (document types, constructs, vocabulary — not evidence). */
++export type ReaderCoverageExport = {
++  domainLabel: string;
++  documentTypes: string[];
++  familyRoles: string[];
++  relationshipKinds: string[];
++  focusConstructs: string[];
++  vocabulary: ReaderCoverageVocabularyTerm[];
++};
++
+ export type StudyAgentsExportArtifact = {
+   schemaVersion: typeof STUDY_AGENTS_EXPORT_SCHEMA_VERSION;
+   domainId: string;
+   domainPackId: string;
+   domainPackVersion: string;
++  readerCoverage: ReaderCoverageExport;
+   agents: StudyAgentInstructions;
+ };
+ 
++function serializeVocabularyTerm(term: DomainPackVocabularyTerm): ReaderCoverageVocabularyTerm {
++  const out: ReaderCoverageVocabularyTerm = {
++    termId: term.termId,
++    label: term.label,
++  };
++  if (term.abbreviations?.length) {
++    out.abbreviations = [...term.abbreviations];
++  }
++  if (term.contextRequired) {
++    out.contextRequired = true;
++  }
++  return out;
++}
++
++export function buildReaderCoverageExport(pack: DomainPack, domainId: string): ReaderCoverageExport {
++  const study = pack.study;
++  if (!study) {
++    throw new Error(`Domain pack "${domainId}" has no study snapshot.`);
++  }
++  const discover = pack.discover;
++  if (!discover) {
++    throw new Error(`Domain pack "${domainId}" has no discover snapshot for readerCoverage.`);
++  }
++  const vocabulary = pack.recognitionVocabulary ?? [];
++  return {
++    domainLabel: study.domainLabel,
++    documentTypes: [...discover.documentTypes],
++    familyRoles: [...discover.familyRoles],
++    relationshipKinds: [...discover.relationshipKinds],
++    focusConstructs: [...(study.focusConstructs ?? [])],
++    vocabulary: vocabulary.map(serializeVocabularyTerm),
++  };
++}
++
+ const SAFE_DOMAIN_ID = /^[a-z][a-z0-9-]*$/;
+ 
+ export function assertSafeDomainId(domainId: string): void {
+@@ -72,11 +128,13 @@ export function buildStudyAgentsExportArtifact(
+     throw new Error(`Domain pack "${domainId}" has no study snapshot.`);
+   }
+   const agents = validateStudyAgentInstructions(study.agents, domainId);
++  const readerCoverage = buildReaderCoverageExport(pack, domainId);
+   return {
+     schemaVersion: STUDY_AGENTS_EXPORT_SCHEMA_VERSION,
+     domainId: study.domainId,
+     domainPackId: study.domainPackId,
+     domainPackVersion: study.domainPackVersion,
++    readerCoverage,
+     agents: {
+       intake: agents.intake,
+       reader: agents.reader,
+@@ -101,6 +159,7 @@ export function serializeStudyAgentsExportJson(artifact: StudyAgentsExportArtifa
+     domainId: artifact.domainId,
+     domainPackId: artifact.domainPackId,
+     domainPackVersion: artifact.domainPackVersion,
++    readerCoverage: artifact.readerCoverage,
+     agents: {
+       intake: artifact.agents.intake,
+       reader: artifact.agents.reader,

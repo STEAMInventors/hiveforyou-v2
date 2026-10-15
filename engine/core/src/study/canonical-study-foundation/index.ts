@@ -1,4 +1,10 @@
 export {
+  assignSourceOccurrenceIds,
+  resolveSourceOccurrenceIdForRecord,
+  type SourceOccurrenceAnchorBasis,
+  type SourceOccurrenceAssignment,
+} from "./assign-source-occurrence-ids.js";
+export {
   buildCanonicalStudyFoundation,
   type BuildCanonicalStudyFoundationInput,
   type CanonicalStudyFoundationDocumentInput,

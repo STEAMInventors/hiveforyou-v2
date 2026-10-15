@@ -2,16 +2,20 @@ import type {
   CanonicalStudyEntity,
   CanonicalStudyProvenanceChip,
   CanonicalStudyRelation,
+  CanonicalStudyRelationCluster,
   CanonicalStudyUnresolvedComparison,
 } from "@hiveforyou/shared/canonical-study-artifact";
 
 import type { IndexedFoundation, IndexedRecordVersion } from "./indexed-foundation.js";
 import { resolveRelationshipRules } from "./indexed-foundation.js";
-import { hasVerifiedTemporalSuccession } from "./temporal-succession.js";
+import { compactMatchRelations } from "./relation-clusters.js";
+import { isMatchEligible } from "./relation-match-eligibility.js";
+import { hasVerifiedLogicalSuccession } from "./temporal-succession.js";
 import { stableId } from "./stable-id.js";
 
 export type LabelRelationsResult = {
   relations: CanonicalStudyRelation[];
+  relationClusters: CanonicalStudyRelationCluster[];
   unresolvedComparisons: CanonicalStudyUnresolvedComparison[];
 };
 
@@ -50,7 +54,7 @@ export function labelRelations(input: {
 }): LabelRelationsResult {
   const { indexed, entities } = input;
   const rules = resolveRelationshipRules(indexed.pack);
-  const relations: CanonicalStudyRelation[] = [];
+  const rawRelations: CanonicalStudyRelation[] = [];
   const unresolvedComparisons: CanonicalStudyUnresolvedComparison[] = [];
 
   for (const entity of entities) {
@@ -120,17 +124,59 @@ export function labelRelations(input: {
             const laterVersion = earlierVersion === leftVersion ? rightVersion : leftVersion;
             const earlierChip = earlierVersion === leftVersion ? left : right;
             const laterChip = laterVersion === leftVersion ? right : left;
-            const succession = hasVerifiedTemporalSuccession(earlierVersion, laterVersion, indexed);
-            const label = succession.ok ? "UNCHANGED" : "MATCHES";
-            relations.push({
-              id: stableId(`rel:${label.toLowerCase()}:${left.fieldKey}:${right.fieldKey}`),
-              label,
+            const succession = hasVerifiedLogicalSuccession(earlierVersion, laterVersion, indexed);
+            const crossDocument = left.sourceDocumentId !== right.sourceDocumentId;
+
+            if (
+              succession.ok &&
+              (!crossDocument || !rules.unchangedRequiresLogicalSuccession || succession.ok)
+            ) {
+              rawRelations.push({
+                id: stableId(`rel:unchanged:${left.fieldKey}:${right.fieldKey}`),
+                label: "UNCHANGED",
+                entityId: entity.id,
+                fieldId,
+                left: earlierChip,
+                right: laterChip,
+                temporalBasis: succession.basis,
+                partyBasis: null,
+                relationClusterId: null,
+              });
+              continue;
+            }
+
+            if (
+              isMatchEligible({
+                indexed,
+                leftVersion,
+                rightVersion,
+                left,
+                right,
+                fieldId,
+                recordTypeId: entity.recordTypeId,
+              })
+            ) {
+              rawRelations.push({
+                id: stableId(`rel:matches:${left.fieldKey}:${right.fieldKey}`),
+                label: "MATCHES",
+                entityId: entity.id,
+                fieldId,
+                left,
+                right,
+                temporalBasis: null,
+                partyBasis: null,
+                relationClusterId: null,
+              });
+              continue;
+            }
+
+            unresolvedComparisons.push({
+              id: stableId(`unresolved:${entity.id}:${fieldId}:${left.fieldKey}:${right.fieldKey}`),
               entityId: entity.id,
               fieldId,
-              left: label === "UNCHANGED" ? earlierChip : left,
-              right: label === "UNCHANGED" ? laterChip : right,
-              temporalBasis: succession.ok ? succession.basis : null,
-              partyBasis: null,
+              left,
+              right,
+              reason: "equal_value_match_ineligible",
             });
             continue;
           }
@@ -148,10 +194,10 @@ export function labelRelations(input: {
           const later = earlier === leftVersion ? rightVersion : leftVersion;
           const earlierChip = earlier === leftVersion ? left : right;
           const laterChip = later === leftVersion ? right : left;
-          const succession = hasVerifiedTemporalSuccession(earlier, later, indexed);
+          const succession = hasVerifiedLogicalSuccession(earlier, later, indexed);
 
           if (partiesDiffer) {
-            relations.push({
+            rawRelations.push({
               id: stableId(`rel:conflict:${left.fieldKey}:${right.fieldKey}`),
               label: "CONFLICT",
               entityId: entity.id,
@@ -160,12 +206,13 @@ export function labelRelations(input: {
               right,
               temporalBasis: succession.basis,
               partyBasis: `${leftParty}|${rightParty}`,
+              relationClusterId: null,
             });
             continue;
           }
 
           if (succession.ok) {
-            relations.push({
+            rawRelations.push({
               id: stableId(`rel:change:${earlierChip.fieldKey}:${laterChip.fieldKey}`),
               label: "CHANGE",
               entityId: entity.id,
@@ -174,6 +221,7 @@ export function labelRelations(input: {
               right: laterChip,
               temporalBasis: succession.basis,
               partyBasis: leftParty && rightParty ? `${leftParty}|${rightParty}` : null,
+              relationClusterId: null,
             });
             continue;
           }
@@ -193,17 +241,22 @@ export function labelRelations(input: {
     }
   }
 
-  labelIndependentAssertions({ indexed, entities, relations });
+  labelIndependentAssertions({ indexed, entities, rawRelations, unresolvedComparisons });
 
-  relations.sort((a, b) => a.id.localeCompare(b.id));
+  const compacted = compactMatchRelations(rawRelations, entities);
   unresolvedComparisons.sort((a, b) => a.id.localeCompare(b.id));
-  return { relations, unresolvedComparisons };
+  return {
+    relations: compacted.relations,
+    relationClusters: compacted.relationClusters,
+    unresolvedComparisons,
+  };
 }
 
 function labelIndependentAssertions(input: {
   indexed: IndexedFoundation;
   entities: CanonicalStudyEntity[];
-  relations: CanonicalStudyRelation[];
+  rawRelations: CanonicalStudyRelation[];
+  unresolvedComparisons: CanonicalStudyUnresolvedComparison[];
 }): void {
   const groups = new Map<string, CanonicalStudyEntity[]>();
   for (const entity of input.entities) {
@@ -237,7 +290,33 @@ function labelIndependentAssertions(input: {
           if (!valuesEqual(left, right)) {
             continue;
           }
-          input.relations.push({
+          const leftIndexed = findIndexedVersion(input.indexed, left);
+          const rightIndexed = findIndexedVersion(input.indexed, right);
+          if (!leftIndexed || !rightIndexed) {
+            continue;
+          }
+          if (
+            !isMatchEligible({
+              indexed: input.indexed,
+              leftVersion: leftIndexed,
+              rightVersion: rightIndexed,
+              left,
+              right,
+              fieldId,
+              recordTypeId: leftEntity.recordTypeId,
+            })
+          ) {
+            input.unresolvedComparisons.push({
+              id: stableId(`unresolved:${leftEntity.id}:${fieldId}:${left.fieldKey}:${right.fieldKey}`),
+              entityId: leftEntity.id,
+              fieldId,
+              left,
+              right,
+              reason: "equal_value_match_ineligible",
+            });
+            continue;
+          }
+          input.rawRelations.push({
             id: stableId(`rel:matches:${left.fieldKey}:${right.fieldKey}`),
             label: "MATCHES",
             entityId: leftEntity.id,
@@ -246,6 +325,7 @@ function labelIndependentAssertions(input: {
             right,
             temporalBasis: null,
             partyBasis: null,
+            relationClusterId: null,
           });
         }
       }

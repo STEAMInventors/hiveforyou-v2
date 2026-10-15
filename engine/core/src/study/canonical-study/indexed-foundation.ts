@@ -4,6 +4,8 @@ import type {
   CanonicalStudyFoundationGroupedRecord,
   CanonicalStudyFoundationVerifiedField,
 } from "@hiveforyou/shared/canonical-study-foundation";
+
+import { resolveSourceOccurrenceIdForRecord } from "../canonical-study-foundation/assign-source-occurrence-ids.js";
 import type {
   CanonicalStudyProvenanceChip,
   CanonicalStudySourceContext,
@@ -11,6 +13,7 @@ import type {
 
 export type IndexedRecordVersion = {
   recordGroupId: string;
+  sourceOccurrenceId: string;
   sourceDocumentId: string;
   recordTypeId: string;
   instanceIndex: number;
@@ -36,10 +39,14 @@ export type IndexedFoundation = {
   >;
 };
 
-function toProvenanceChip(field: CanonicalStudyFoundationVerifiedField): CanonicalStudyProvenanceChip {
+function toProvenanceChip(
+  field: CanonicalStudyFoundationVerifiedField,
+  sourceOccurrenceId: string,
+): CanonicalStudyProvenanceChip {
   return {
     fieldKey: field.fieldKey,
     recordGroupId: "",
+    sourceOccurrenceId,
     sourceDocumentId: field.sourceDocumentId,
     recordTypeId: field.recordTypeId,
     instanceIndex: field.instanceIndex,
@@ -47,6 +54,8 @@ function toProvenanceChip(field: CanonicalStudyFoundationVerifiedField): Canonic
     evidence: field.verifiedEvidence,
     normalized: field.normalized,
     envelopeRef: field.envelopeRef,
+    provenanceClass: field.provenance,
+    derivationTrace: field.derivationTrace,
   };
 }
 
@@ -75,15 +84,22 @@ function buildRecords(input: {
   for (const group of input.foundation.groupedRecords) {
     const fields = fieldsByRecord.get(group.recordGroupId) ?? [];
     const ordering = input.orderingBySource.get(group.sourceDocumentId);
+    const sourceOccurrenceId = resolveSourceOccurrenceIdForRecord({
+      sourceDocumentId: group.sourceDocumentId,
+      recordTypeId: group.recordTypeId,
+      instanceIndex: group.instanceIndex,
+      sourceOccurrenceId: group.sourceOccurrenceId,
+    });
     const provenanceByFieldKey: Record<string, CanonicalStudyProvenanceChip> = {};
     for (const field of fields) {
       provenanceByFieldKey[field.fieldId] = {
-        ...toProvenanceChip(field),
+        ...toProvenanceChip(field, sourceOccurrenceId),
         recordGroupId: group.recordGroupId,
       };
     }
     records.push({
       recordGroupId: group.recordGroupId,
+      sourceOccurrenceId,
       sourceDocumentId: group.sourceDocumentId,
       recordTypeId: group.recordTypeId,
       instanceIndex: group.instanceIndex,
@@ -192,5 +208,8 @@ export function resolveRelationshipRules(pack: ProposalDomainPack) {
     changeRequiresTemporalSuccession: pack.relationshipRules?.changeRequiresTemporalSuccession ?? true,
     temporalSuccessionFieldIds: pack.relationshipRules?.temporalSuccessionFieldIds ?? [],
     conflictWhenDifferentParties: pack.relationshipRules?.conflictWhenDifferentParties ?? true,
+    unchangedRequiresLogicalSuccession: pack.relationshipRules?.unchangedRequiresLogicalSuccession ?? true,
+    matchingPolicyByFieldId: pack.relationshipRules?.matchingPolicyByFieldId ?? {},
+    seriesOrderingDateFallback: pack.seriesOrderingDateFallback ?? false,
   };
 }

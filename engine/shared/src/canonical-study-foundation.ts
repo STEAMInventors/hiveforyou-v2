@@ -58,12 +58,27 @@ export type CanonicalStudyFoundationProposedField = {
   parseErrors: string[];
 };
 
+export type CanonicalStudyFoundationSourceOccurrenceAnchorBasis =
+  | "verified_word_span"
+  | "verified_page_quote"
+  | "proposed_page_quote"
+  | "field_fingerprint_fallback"
+  | "pack_anchor_fields";
+
 export type CanonicalStudyFoundationGroupedRecord = {
   recordGroupId: string;
+  /** Stable source-local occurrence identity (Stage 1); optional on legacy foundation rows. */
+  sourceOccurrenceId?: string;
+  sourceOccurrenceAnchorBasis?: CanonicalStudyFoundationSourceOccurrenceAnchorBasis;
   sourceDocumentId: string;
   recordTypeId: string;
   instanceIndex: number;
   fieldKeys: string[];
+};
+
+export type CanonicalStudyFoundationDerivationTrace = {
+  primitive: string;
+  operandFieldKeys: string[];
 };
 
 export type CanonicalStudyFoundationVerifiedField = CanonicalStudyFoundationProposedField & {
@@ -71,6 +86,7 @@ export type CanonicalStudyFoundationVerifiedField = CanonicalStudyFoundationProp
   verifiedEvidence: CanonicalStudyFoundationEvidence[];
   normalized: CanonicalStudyFoundationNormalizedValue;
   reasons: [];
+  derivationTrace?: CanonicalStudyFoundationDerivationTrace;
 };
 
 export type CanonicalStudyFoundationRejectedField = CanonicalStudyFoundationProposedField & {
@@ -114,7 +130,8 @@ export type CanonicalStudyFoundationUnresolvedItem = {
     | "amendment_link_unresolved"
     | "unsupported_derivation"
     | "derived_operand_unverified"
-    | "orphan_record";
+    | "orphan_record"
+    | "unstable_occurrence_identity";
   message: string;
   sourceDocumentId?: string;
   fieldKey?: string;

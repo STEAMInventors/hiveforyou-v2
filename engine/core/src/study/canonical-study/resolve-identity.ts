@@ -39,6 +39,7 @@ function disambiguatorMaterial(record: IndexedRecordVersion, indexed: IndexedFou
 function toEntityRecordVersion(record: IndexedRecordVersion): CanonicalStudyEntity["recordVersions"][0] {
   return {
     recordGroupId: record.recordGroupId,
+    sourceOccurrenceId: record.sourceOccurrenceId,
     sourceDocumentId: record.sourceDocumentId,
     recordTypeId: record.recordTypeId,
     instanceIndex: record.instanceIndex,
@@ -76,6 +77,46 @@ function buildEntity(
     recordVersions: sortedVersions.map(toEntityRecordVersion),
     reasons,
   };
+}
+
+function strongIdentityConflictFieldIds(
+  versions: IndexedRecordVersion[],
+  indexed: IndexedFoundation,
+  recordTypeId: string,
+): string[] {
+  const strongIds =
+    recordDef(indexed, recordTypeId)?.identity?.strongIdentifierFieldIds ?? [];
+  if (strongIds.length === 0) {
+    return [];
+  }
+  const conflicts: string[] = [];
+  for (const fieldId of strongIds) {
+    const values = new Set(
+      versions
+        .map((version) => version.provenanceByFieldKey[fieldId])
+        .filter((chip): chip is CanonicalStudyProvenanceChip => chip != null)
+        .map((chip) => JSON.stringify(chip.normalized.normalizedValue)),
+    );
+    if (values.size > 1) {
+      conflicts.push(fieldId);
+    }
+  }
+  return conflicts;
+}
+
+function hasInsufficientSingletonEvidence(
+  versions: IndexedRecordVersion[],
+  indexed: IndexedFoundation,
+  recordTypeId: string,
+): boolean {
+  const evidenceIds =
+    recordDef(indexed, recordTypeId)?.identity?.identityEvidenceFieldIds ?? [];
+  if (evidenceIds.length === 0) {
+    return false;
+  }
+  return versions.some((version) =>
+    !evidenceIds.some((fieldId) => version.provenanceByFieldKey[fieldId] != null),
+  );
 }
 
 function conflictingFieldIds(versions: IndexedRecordVersion[]): string[] {
@@ -252,15 +293,46 @@ export function resolveIdentity(indexed: IndexedFoundation): ResolveIdentityResu
         (identity.caseSingletonMerge === "guaranteed_unique" ||
           recordDef(indexed, recordTypeId)?.repeatable === false)
       ) {
-        const conflicts = conflictingFieldIds(allVersions);
-        const reasons =
-          identity.caseSingletonMerge === "guaranteed_unique"
-            ? ["case_singleton_guaranteed_unique"]
-            : ["case_singleton_repeatable_false"];
-        if (conflicts.length > 0) {
-          reasons.push(`conflicting_fields:${conflicts.join(",")}`);
+        const strongConflicts = strongIdentityConflictFieldIds(allVersions, indexed, recordTypeId);
+        const insufficientEvidence = hasInsufficientSingletonEvidence(allVersions, indexed, recordTypeId);
+        if (strongConflicts.length > 0 || insufficientEvidence) {
+          const reason = strongConflicts.length > 0 ? "strong_identity_conflict" : "insufficient_singleton_evidence";
+          for (const version of allVersions) {
+            entities.push(
+              buildEntity(recordTypeId, [version], null, "resolved", [
+                reason,
+                ...(strongConflicts.length > 0
+                  ? [`conflicting_strong_identifiers:${strongConflicts.join(",")}`]
+                  : []),
+              ]),
+            );
+          }
+          if (strongConflicts.length > 0 && allVersions.length >= 2) {
+            for (let i = 0; i < allVersions.length; i++) {
+              for (let j = i + 1; j < allVersions.length; j++) {
+                possiblySameLinks.push({
+                  id: stableId(`possibly_same:${allVersions[i]!.recordGroupId}:${allVersions[j]!.recordGroupId}`),
+                  leftEntityId: buildEntity(recordTypeId, [allVersions[i]!], null, "resolved", []).id,
+                  rightEntityId: buildEntity(recordTypeId, [allVersions[j]!], null, "resolved", []).id,
+                  recordTypeId,
+                  reason: "strong_identity_conflict_candidate",
+                  leftProvenance: chipsForRecord(allVersions[i]!),
+                  rightProvenance: chipsForRecord(allVersions[j]!),
+                });
+              }
+            }
+          }
+        } else {
+          const softConflicts = conflictingFieldIds(allVersions);
+          const reasons =
+            identity.caseSingletonMerge === "guaranteed_unique"
+              ? ["case_singleton_guaranteed_unique"]
+              : ["case_singleton_repeatable_false"];
+          if (softConflicts.length > 0) {
+            reasons.push(`conflicting_fields:${softConflicts.join(",")}`);
+          }
+          entities.push(buildEntity(recordTypeId, allVersions, null, "resolved", reasons));
         }
-        entities.push(buildEntity(recordTypeId, allVersions, null, "resolved", reasons));
       } else {
         for (const version of allVersions) {
           entities.push(

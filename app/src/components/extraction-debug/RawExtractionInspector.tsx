@@ -375,7 +375,7 @@ export function RawExtractionInspector({
               disabled={canonicalRunState === "running" || !studyRunId.trim()}
               onClick={() => void runCanonicalStudy()}
             >
-              {canonicalRunState === "running" ? "Running…" : "Run Canonical Study (internal)"}
+              {canonicalRunState === "running" ? "Building hive…" : "Build Hive (internal)"}
             </button>
           </div>
 

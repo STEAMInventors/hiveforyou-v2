@@ -6,7 +6,7 @@ import { CaseNotFoundError } from "@/lib/canonical-study/study-service-server";
 import { StudyRunNotFoundError } from "@/lib/case-map/case-map-bundle-service-server";
 import {
   CanonicalStudyArtifactsNotFoundError,
-  loadDeterministicCanonicalStudyArtifact,
+  loadDeterministicCanonicalStudyArtifactForSession,
 } from "@/lib/canonical-debug/run-deterministic-canonical-study-server";
 
 type RouteContext = { params: Promise<{ caseId: string }> };
@@ -23,7 +23,7 @@ export async function GET(request: Request, context: RouteContext) {
   }
 
   try {
-    const artifact = await loadDeterministicCanonicalStudyArtifact({ caseId, studyRunId });
+    const artifact = await loadDeterministicCanonicalStudyArtifactForSession({ caseId, studyRunId });
     return NextResponse.json(artifact);
   } catch (error) {
     if (error instanceof UnauthenticatedError) {
