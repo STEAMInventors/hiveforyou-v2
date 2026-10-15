@@ -53,7 +53,7 @@ COPY --from=build /repo/worker/dist/package.json ./package.json
 COPY engine/domain-packs/iep/study/agents.json ./pack/agents.json
 COPY engine/eval/reports/reader-experiment/prompt-hashes.json ./pack/reader-experiment-prompt-hashes.json
 COPY engine/intake/fixtures/l001/manifest.json ./pack/l001-qualification-manifest.json
-COPY brain/domain-packs/iep/iep-pack.v0.3.proposed.json ./pack/iep-pack.v0.3.proposed.json
+COPY brain/domain-packs/iep/snapshots/c2baa0439d32496a3110f5388f6048395a9f4c8fdce79b3d0cec36ae6b9a7775.json ./pack/iep-pack.v0.3.proposed.json
 COPY brain/domain-packs/iep/snapshots ./brain/domain-packs/iep/snapshots
 COPY brain/domain-packs/iep/interpretation ./brain/domain-packs/iep/interpretation
 ENV HIVE_PROPOSAL_PACK_SNAPSHOTS_DIR=/app/brain/domain-packs/iep/snapshots
