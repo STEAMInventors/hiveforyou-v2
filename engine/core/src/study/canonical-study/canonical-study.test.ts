@@ -304,6 +304,60 @@ describe("projectCanonicalStudyReport", () => {
     ).toBe("approved");
   });
 
+  it("regression: indexes provenance when record versions key chips by fieldId", () => {
+    const artifact = buildSampleArtifact();
+    const resolvedVersion = artifact.entities
+      .flatMap((entity) => entity.recordVersions)
+      .find((version) => Object.keys(version.provenanceByFieldKey).length > 0)!;
+    const sampleChip = Object.values(resolvedVersion.provenanceByFieldKey)[0]!;
+    expect(sampleChip.fieldKey).toContain("|");
+    expect(resolvedVersion.fieldKeys).toContain(sampleChip.fieldKey);
+
+    artifact.entities.push({
+      id: "entity-identity-unresolved",
+      recordTypeId: "goal",
+      status: "identity_unresolved",
+      contentKey: null,
+      reasons: ["conflicting_identity_keys"],
+      recordVersions: [
+        {
+          ...resolvedVersion,
+          recordGroupId: "unresolved-group",
+          instanceIndex: 99,
+          fieldKeys: [sampleChip.fieldKey],
+          provenanceByFieldKey: {
+            [sampleChip.fieldId]: { ...sampleChip },
+          },
+        },
+      ],
+    });
+
+    const publication = {
+      customerProReportsPermitted: false,
+      packApprovalLabel: CANONICAL_STUDY_DEBUG_PACK_APPROVAL,
+    };
+
+    const customer = projectCanonicalStudyReport({
+      artifact,
+      audience: "customer",
+      ...publication,
+    });
+    const pro = projectCanonicalStudyReport({
+      artifact,
+      audience: "pro",
+      ...publication,
+    });
+
+    const identityQuestion = customer.body.openQuestions.find(
+      (item) => item.id === "identity:entity-identity-unresolved",
+    );
+    expect(identityQuestion?.kind).toBe("identity_unresolved");
+    expect(identityQuestion?.claimRefs).toEqual([
+      { fieldKey: sampleChip.fieldKey, contextKind: "provenance_chip", contextId: "entity-identity-unresolved" },
+    ]);
+    expect(pro.body.entityLedger.some((row) => row.claimRef.fieldKey === sampleChip.fieldKey)).toBe(true);
+  });
+
   it("rejects projections with unknown claim refs", () => {
     const artifact = buildSampleArtifact();
     const customer = projectCanonicalStudyReport({

@@ -33,6 +33,7 @@ import {
 import {
   assertCanonicalStudyReportProjection,
   indexProvenanceChips,
+  resolveProvenanceChipForRecordField,
 } from "./validate-canonical-study-report-projection.js";
 
 export type ProjectCanonicalStudyReportInput = CanonicalStudyReportPublicationInput & {
@@ -118,7 +119,8 @@ function collectEntityFacts(artifact: CanonicalStudyArtifact): CanonicalStudyRep
   for (const entity of artifact.entities) {
     for (const version of entity.recordVersions) {
       for (const fieldKey of version.fieldKeys) {
-        const chip = version.provenanceByFieldKey[fieldKey] ?? chipIndex.get(fieldKey);
+        const chip =
+          resolveProvenanceChipForRecordField(version, fieldKey) ?? chipIndex.get(fieldKey);
         if (!chip) {
           continue;
         }
@@ -214,9 +216,13 @@ function buildOpenQuestions(artifact: CanonicalStudyArtifact): CanonicalStudyRep
       title: `${entity.recordTypeId} identity unresolved`,
       detail: entity.reasons.join("; ") || "Identity could not be resolved from supplied evidence.",
       claimRefs: entity.recordVersions.flatMap((version) =>
-        version.fieldKeys.map((fieldKey) =>
-          claimRef(fieldKey, { contextKind: "provenance_chip", contextId: entity.id }),
-        ),
+        version.fieldKeys.flatMap((fieldKey) => {
+          const chip = resolveProvenanceChipForRecordField(version, fieldKey);
+          if (!chip) {
+            return [];
+          }
+          return [claimRef(chip.fieldKey, { contextKind: "provenance_chip", contextId: entity.id })];
+        }),
       ),
     });
   }
@@ -330,7 +336,8 @@ function buildProLedger(
   for (const entity of [...artifact.entities].sort((a, b) => a.id.localeCompare(b.id))) {
     for (const version of entity.recordVersions) {
       for (const fieldKey of [...version.fieldKeys].sort()) {
-        const chip = version.provenanceByFieldKey[fieldKey] ?? chipIndex.get(fieldKey);
+        const chip =
+          resolveProvenanceChipForRecordField(version, fieldKey) ?? chipIndex.get(fieldKey);
         if (!chip) {
           continue;
         }

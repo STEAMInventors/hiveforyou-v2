@@ -1,6 +1,7 @@
 import type {
   CanonicalStudyArtifact,
   CanonicalStudyProvenanceChip,
+  CanonicalStudyRecordVersion,
 } from "@hiveforyou/shared/canonical-study-artifact";
 import type {
   CanonicalStudyReportClaimRef,
@@ -21,6 +22,48 @@ function walkChip(chip: CanonicalStudyProvenanceChip, index: Map<string, Canonic
   index.set(chip.fieldKey, chip);
 }
 
+/** Record versions list composite keys in fieldKeys but index provenance by fieldId. */
+export function resolveProvenanceChipForRecordField(
+  version: Pick<CanonicalStudyRecordVersion, "provenanceByFieldKey">,
+  compositeFieldKey: string,
+): CanonicalStudyProvenanceChip | undefined {
+  const direct = version.provenanceByFieldKey[compositeFieldKey];
+  if (direct) {
+    return direct;
+  }
+  const lastPipe = compositeFieldKey.lastIndexOf("|");
+  if (lastPipe >= 0) {
+    const fieldId = compositeFieldKey.slice(lastPipe + 1);
+    const byFieldId = version.provenanceByFieldKey[fieldId];
+    if (byFieldId) {
+      return byFieldId;
+    }
+  }
+  return Object.values(version.provenanceByFieldKey).find(
+    (chip) => chip.fieldKey === compositeFieldKey,
+  );
+}
+
+function indexRecordVersionProvenance(
+  version: CanonicalStudyRecordVersion,
+  index: Map<string, CanonicalStudyProvenanceChip>,
+): void {
+  const indexedFieldKeys = new Set<string>();
+  for (const compositeFieldKey of version.fieldKeys) {
+    const chip = resolveProvenanceChipForRecordField(version, compositeFieldKey);
+    if (chip && !indexedFieldKeys.has(chip.fieldKey)) {
+      indexedFieldKeys.add(chip.fieldKey);
+      walkChip(chip, index);
+    }
+  }
+  for (const chip of Object.values(version.provenanceByFieldKey)) {
+    if (!indexedFieldKeys.has(chip.fieldKey)) {
+      indexedFieldKeys.add(chip.fieldKey);
+      walkChip(chip, index);
+    }
+  }
+}
+
 export function indexProvenanceChips(
   artifact: CanonicalStudyArtifact,
 ): Map<string, CanonicalStudyProvenanceChip> {
@@ -28,12 +71,7 @@ export function indexProvenanceChips(
 
   for (const entity of artifact.entities) {
     for (const version of entity.recordVersions) {
-      for (const fieldKey of version.fieldKeys) {
-        const chip = version.provenanceByFieldKey[fieldKey];
-        if (chip) {
-          walkChip(chip, index);
-        }
-      }
+      indexRecordVersionProvenance(version, index);
     }
   }
 
