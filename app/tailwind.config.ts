@@ -54,6 +54,23 @@ const config: Config = {
 
         },
 
+        customerHive: {
+          surface: "#f7f9ff",
+          "on-surface": "#1F2328",
+          "on-surface-variant": "#4A525C",
+          "on-surface-muted": "#6B737D",
+          primary: "#00562d",
+          "primary-read": "#197040",
+          "primary-fixed": "#a1f5b8",
+          secondary: "#286fe8",
+          "tertiary-fixed": "#ffdea4",
+          "honey-chip": "#FFF6DC",
+          border: "#E3E6EA",
+          "surface-lowest": "#ffffff",
+          "surface-low": "#f1f4fa",
+          "surface-container": "#ebeef5",
+        },
+
         hive: {
 
           navy: "var(--hive-color-navy)",

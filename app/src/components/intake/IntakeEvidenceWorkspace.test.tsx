@@ -240,7 +240,7 @@ describe("IntakeEvidenceWorkspace", () => {
 
 
 
-  it("routes pack_driven intake study completion to extraction-debug", async () => {
+  it("routes pack_driven intake study start to the building progress page", async () => {
 
     vi.mocked(startIntakeStudy).mockResolvedValue({
 
@@ -296,14 +296,16 @@ describe("IntakeEvidenceWorkspace", () => {
 
     await waitFor(() => {
 
-      expect(startIntakeStudy).toHaveBeenCalledWith("run-1");
+      expect(startIntakeStudy).toHaveBeenCalledWith("run-1", {
+        processingMode: "pack_driven_v1",
+      });
 
     });
 
     await waitFor(() => {
 
       expect(mockPush).toHaveBeenCalledWith(
-        "/hives/case-1/extraction-debug?studyRunId=study-1",
+        "/hives/case-1/building?studyRunId=study-1",
       );
 
     });
@@ -346,7 +348,9 @@ describe("IntakeEvidenceWorkspace", () => {
     fireEvent.click(screen.getByTestId("intake-build-my-study"));
 
     await waitFor(() => {
-      expect(startIntakeStudy).toHaveBeenCalledWith("run-1");
+      expect(startIntakeStudy).toHaveBeenCalledWith("run-1", {
+        processingMode: "canonical_openai_v4",
+      });
     });
 
     await waitFor(() => {

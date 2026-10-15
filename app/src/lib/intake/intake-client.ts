@@ -112,9 +112,16 @@ export async function appendIntakeSources(
   }
 }
 
-export async function startIntakeStudy(intakeRunId: string): Promise<CanonicalStudyOutcome> {
+export async function startIntakeStudy(
+  intakeRunId: string,
+  options?: { processingMode?: "canonical_openai_v4" | "pack_driven_v1" },
+): Promise<CanonicalStudyOutcome> {
   const response = await fetch(`/api/intake/runs/${intakeRunId}/study`, {
     method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(
+      options?.processingMode ? { processingMode: options.processingMode } : {},
+    ),
   });
   if (!response.ok) {
     throw new Error("INTAKE_STUDY_FAILED");

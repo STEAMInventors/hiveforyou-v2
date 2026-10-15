@@ -9,7 +9,6 @@ import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { formatFileSize } from "@/lib/format-file-metadata";
 import { commitStagedDocuments } from "@/lib/documents/commit-client";
 import { fetchCaseMapViewBundle } from "@/lib/case-map/case-map-client";
-import { fetchRawExtractionInspectorBundle } from "@/lib/extraction-debug/raw-extraction-inspector-client";
 import {
   appendIntakeSources,
   fetchIntakeRun,
@@ -18,9 +17,9 @@ import {
   startIntakeStudy,
 } from "@/lib/intake/intake-client";
 import {
+  buildHiveBuildingHref,
   buildPostStudyCompletionHref,
   isCanonicalStudyPresentationReady,
-  isPackDrivenStudyAwaitingRawExtraction,
   resolveStudyProcessingModeFromStudyPath,
 } from "@/lib/intake/study-completion-navigation";
 import { useStagedDocuments } from "@/lib/intake/staged-documents-context";
@@ -357,41 +356,7 @@ export function IntakeEvidenceWorkspace({ intakeRunId }: { intakeRunId: string }
       setStudyDelayedMessage(null);
       return;
     }
-    const processingMode = resolveStudyProcessingModeFromStudyPath(view?.studyPath);
     const timer = setInterval(() => {
-      if (processingMode === "pack_driven_v1") {
-        void Promise.all([
-          fetchRawExtractionInspectorBundle(caseId, studyRunId),
-          fetchCaseMapViewBundle(studyRunId),
-        ])
-          .then(([rawBundle, bundle]) => {
-            if (isStudyProcessingDelayed(bundle.status, bundle.studyStartedAt)) {
-              setStudyDelayedMessage(
-                "This is taking longer than expected. Your hive is still building — you can leave this page open or come back in a few minutes.",
-              );
-            } else {
-              setStudyDelayedMessage(null);
-            }
-            if (rawBundle || bundle.status === "SUCCEEDED") {
-              setStudyBuild((prev) =>
-                prev ? { ...prev, target: "complete", studyRunId } : prev,
-              );
-              studyStartInFlight.current = false;
-              return;
-            }
-            if (isPackDrivenStudyAwaitingRawExtraction(bundle.status)) {
-              return;
-            }
-            if (bundle.status === "FAILED") {
-              studyStartInFlight.current = false;
-              setStudyBuild(null);
-              setErrorMessage("We couldn't complete the study. Please try again in a moment.");
-            }
-          })
-          .catch(() => {});
-        return;
-      }
-
       void fetchCaseMapViewBundle(studyRunId)
         .then((bundle) => {
           if (isStudyProcessingDelayed(bundle.status, bundle.studyStartedAt)) {
@@ -948,19 +913,24 @@ export function IntakeEvidenceWorkspace({ intakeRunId }: { intakeRunId: string }
                 const session = Date.now();
                 setStudyBuild({ session, target: "migration" });
                 setErrorMessage(null);
-                void startIntakeStudy(intakeRunId)
+                const processingMode = resolveStudyProcessingModeFromStudyPath(view?.studyPath);
+                void startIntakeStudy(intakeRunId, { processingMode })
                   .then((outcome) => {
-                    const processingMode = resolveStudyProcessingModeFromStudyPath(view?.studyPath);
-                    if (
-                      processingMode === "pack_driven_v1" &&
-                      (outcome.run.status === "SUCCEEDED" || outcome.run.status === "FAILED")
-                    ) {
-                      setStudyBuild({
-                        session,
-                        target: "complete",
-                        studyRunId: outcome.run.studyRunId,
-                      });
+                    if (processingMode === "pack_driven_v1") {
+                      if (!view?.caseId) {
+                        studyStartInFlight.current = false;
+                        setStudyBuild(null);
+                        setErrorMessage("We couldn't start the study. Please try again.");
+                        return;
+                      }
                       studyStartInFlight.current = false;
+                      setStudyBuild(null);
+                      router.push(
+                        buildHiveBuildingHref({
+                          caseId: view.caseId,
+                          studyRunId: outcome.run.studyRunId,
+                        }),
+                      );
                       return;
                     }
                     if (isCanonicalStudyPresentationReady(outcome.run.status)) {
@@ -1026,12 +996,12 @@ export function IntakeEvidenceWorkspace({ intakeRunId }: { intakeRunId: string }
                   strokeLinejoin="round"
                 />
               </svg>
-              {studyBuild ? "Hiving…" : "Build my hive"}
+              {studyBuild ? "Hiving…" : "Build hive"}
             </button>
           </section>
         ) : null}
       </main>
-      {studyBuild ? (
+      {studyBuild && view?.studyPath !== "DOMAIN_PACK" ? (
         <StudyLifecycleModal
           key={studyBuild.session}
           target={studyBuild.target}
