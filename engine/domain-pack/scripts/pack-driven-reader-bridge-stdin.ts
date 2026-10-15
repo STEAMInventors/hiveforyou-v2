@@ -4,6 +4,8 @@
  */
 import {
   compilePackDrivenReaderPrompt,
+  computeProposalPackContentSha256,
+  validateProposalDomainPack,
   type CompilePackDrivenReaderPromptInput,
 } from "../src/pack-driven-reader/index.js";
 import { parseAndValidatePackDrivenExtraction } from "../src/pack-driven-reader/parse-extraction.js";
@@ -16,6 +18,10 @@ type BridgeRequest =
       pack: ProposalDomainPack;
       raw: unknown;
       expectedSourceDocumentId: string;
+    }
+  | {
+      op: "hash";
+      pack: ProposalDomainPack;
     };
 
 async function readStdin(): Promise<string> {
@@ -40,6 +46,15 @@ if (input.op === "compile") {
     expectedSourceDocumentId: input.expectedSourceDocumentId,
   });
   process.stdout.write(JSON.stringify(result));
+} else if (input.op === "hash") {
+  const validation = validateProposalDomainPack(input.pack);
+  process.stdout.write(
+    JSON.stringify({
+      valid: validation.valid,
+      errors: validation.errors,
+      packContentSha256: computeProposalPackContentSha256(input.pack).toLowerCase(),
+    }),
+  );
 } else {
   process.stderr.write("unknown op");
   process.exit(1);

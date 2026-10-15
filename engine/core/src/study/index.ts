@@ -68,6 +68,15 @@ export {
   type ResolvedDebugCanonicalStudyDomainPack,
 } from "./resolve-approved-proposal-domain-pack.js";
 export {
+  ReaderProposalPackBindingError,
+  readProposalPackSnapshotManifest,
+  resolveDefaultProposalPackIdentityForDomain,
+  resolveProposalPackIdentityFromContentHash,
+  resolveStudyReaderProposalPackBinding,
+  type ProposalPackIdentity,
+  type ProposalPackSnapshotManifestEntry,
+} from "./resolve-proposal-pack-identity.js";
+export {
   assertReaderDocumentExtractionAttemptManifestObjectKey,
   assertReaderDocumentExtractionEnvelopeObjectKey,
   buildRawExtractionInspectorBundle,

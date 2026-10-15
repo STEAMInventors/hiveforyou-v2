@@ -114,6 +114,22 @@ def compile_pack_driven_reader_prompt_via_node(
     )
 
 
+def compute_proposal_pack_content_sha256_via_node(
+    pack: Mapping[str, Any],
+    *,
+    repo_root: Path | None = None,
+) -> str:
+    raw = _invoke_bridge({"op": "hash", "pack": dict(pack)}, repo_root=repo_root)
+    if not raw.get("valid"):
+        errors = raw.get("errors")
+        detail = "; ".join(errors) if isinstance(errors, list) else "validation failed"
+        raise PackDrivenReaderCompilerError(f"proposal pack validation failed: {detail}")
+    content_sha256 = str(raw.get("packContentSha256", "")).strip().lower()
+    if len(content_sha256) != 64:
+        raise PackDrivenReaderCompilerError("proposal pack hash bridge returned invalid digest")
+    return content_sha256
+
+
 def parse_pack_driven_extraction_via_node(
     *,
     pack: Mapping[str, Any],

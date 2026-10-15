@@ -22,10 +22,19 @@ export type StudyReaderLimitsWire = {
   maxReasoningSteps: number;
 };
 
+export type StudyReaderProposalPackIdentityWire = {
+  packId: string;
+  packVersion: string;
+  packContentSha256: string;
+};
+
 export type StudyReaderRequestWire = {
   caseId: string;
   userId: string;
   domainId: string;
+  packId?: string;
+  packVersion?: string;
+  packContentSha256?: string;
   studyRunId: string;
   attemptId: string;
   documents: StudyReaderDocumentWire[];
@@ -58,6 +67,7 @@ export function buildStudyReaderRequestFromTrustedPages(input: {
   caseId: string;
   userId: string;
   domainId: string;
+  proposalPack?: StudyReaderProposalPackIdentityWire;
   studyRunId: string;
   attemptId: string;
   bundles: TrustedDocumentPageBundle[];
@@ -72,6 +82,13 @@ export function buildStudyReaderRequestFromTrustedPages(input: {
     caseId: input.caseId,
     userId: input.userId,
     domainId: input.domainId,
+    ...(input.proposalPack
+      ? {
+          packId: input.proposalPack.packId,
+          packVersion: input.proposalPack.packVersion,
+          packContentSha256: input.proposalPack.packContentSha256,
+        }
+      : {}),
     studyRunId: input.studyRunId,
     attemptId: input.attemptId,
     documents,

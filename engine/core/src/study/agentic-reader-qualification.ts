@@ -11,6 +11,10 @@ import {
 
 import { hashCanonicalJson } from "./fingerprint";
 import { hiveMonorepoRoot } from "./resolve-hive-monorepo-root.js";
+import {
+  resolveDefaultProposalPackIdentityForDomain,
+  type ProposalPackIdentity,
+} from "./resolve-proposal-pack-identity.js";
 
 export const AGENTIC_READER_QUALIFICATION_NAMESPACE = "agentic-reader-qualification/1" as const;
 
@@ -271,22 +275,38 @@ export function packDrivenProposalPackPath(
   return join(hiveMonorepoRoot(), "brain", "domain-packs", "iep", "iep-pack.v0.3.proposed.json");
 }
 
+export function loadPackDrivenProposalPackIdentity(
+  domainId = "iep",
+  env: Record<string, string | undefined> = process.env,
+): ProposalPackIdentity {
+  try {
+    return resolveDefaultProposalPackIdentityForDomain(domainId, env);
+  } catch {
+    const path = packDrivenProposalPackPath(env);
+    let raw: string;
+    try {
+      raw = readFileSync(path, "utf8");
+    } catch (error) {
+      const errno = error as NodeJS.ErrnoException;
+      if (errno?.code === "ENOENT") {
+        throw new Error(`PACK_DRIVEN_PROPOSAL_PACK_MISSING:${path}`);
+      }
+      throw error;
+    }
+    const parsed = JSON.parse(raw) as ProposalDomainPack;
+    return {
+      packId: parsed.manifest.id,
+      packVersion: parsed.manifest.version,
+      packContentSha256: computeProposalPackContentSha256(parsed).toLowerCase(),
+    };
+  }
+}
+
 export function loadPackDrivenProposalPackContentSha256(
   env: Record<string, string | undefined> = process.env,
+  domainId = "iep",
 ): string {
-  const path = packDrivenProposalPackPath(env);
-  let raw: string;
-  try {
-    raw = readFileSync(path, "utf8");
-  } catch (error) {
-    const errno = error as NodeJS.ErrnoException;
-    if (errno?.code === "ENOENT") {
-      throw new Error(`PACK_DRIVEN_PROPOSAL_PACK_MISSING:${path}`);
-    }
-    throw error;
-  }
-  const parsed = JSON.parse(raw) as ProposalDomainPack;
-  return computeProposalPackContentSha256(parsed).toLowerCase();
+  return loadPackDrivenProposalPackIdentity(domainId, env).packContentSha256;
 }
 
 export function resolveReaderArchitectureVariant(

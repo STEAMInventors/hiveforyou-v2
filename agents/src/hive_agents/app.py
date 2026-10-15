@@ -55,6 +55,11 @@ from hive_agents.reader_mode import (
     resolve_effective_reader_mode,
     PACK_DRIVEN_READER_MODE,
 )
+from hive_agents.pack_driven_reader.resolve_proposal_pack import (
+    PackNotAvailableError,
+    ProposalPackIdentity,
+    _identity_from_request,
+)
 from hive_agents.pack_driven_reader.run import (
     PackDrivenRunCorrelation,
     per_document_results_to_wire,
@@ -174,6 +179,28 @@ def _pack_driven_run_correlation(
         model_provider=settings.model_provider,
         model_id=settings.model_name,
     )
+
+
+def _pack_driven_proposal_identity_from_request(
+    request: StudyReaderRequest,
+) -> ProposalPackIdentity:
+    if not request.pack_id or not request.pack_version or not request.pack_content_sha256:
+        raise Engine1ReaderContextError(
+            "PACK_DRIVEN_PROPOSAL_PACK_IDENTITY_REQUIRED",
+            "packId, packVersion, and packContentSha256 are required for pack-driven Reader.",
+        )
+    try:
+        return _identity_from_request(
+            domain_id=request.domain_id,
+            pack_id=request.pack_id,
+            pack_version=request.pack_version,
+            pack_content_sha256=request.pack_content_sha256,
+        )
+    except PackNotAvailableError as exc:
+        raise Engine1ReaderContextError(
+            "PACK_DRIVEN_PROPOSAL_PACK_IDENTITY_INVALID",
+            str(exc),
+        ) from exc
 
 
 def _trace_persist_failure_error_code(exc: ReaderTraceError) -> str:
@@ -371,6 +398,7 @@ def execute_study_reader(
                 engine1_reader_context_json=request.engine1_reader_context_json,
                 settings=settings,
                 correlation=_pack_driven_run_correlation(request, settings),
+                proposal_pack_identity=_pack_driven_proposal_identity_from_request(request),
             )
             per_document_wire = per_document_results_to_wire(per_document)
         else:
@@ -413,6 +441,7 @@ def execute_study_reader(
                 engine1_reader_context_json=request.engine1_reader_context_json,
                 settings=settings,
                 correlation=_pack_driven_run_correlation(request, settings),
+                proposal_pack_identity=_pack_driven_proposal_identity_from_request(request),
             )
             per_document_wire = per_document_results_to_wire(per_document)
         else:

@@ -286,6 +286,11 @@ describe("agentic reader qualification worker flow", () => {
       caseId: CASE_A,
       userId: USER_A,
       domainId: "iep",
+      proposalPack: {
+        packId: "iep",
+        packVersion: "0.3.0-proposed",
+        packContentSha256: "c".repeat(64),
+      },
       studyRunId: "33333333-3333-4333-8333-333333333333",
       attemptId: "55555555-5555-4555-8555-555555555555",
       readerMode: "pack_driven",

@@ -4,6 +4,7 @@ import {
   READER_EXPERIMENT_L001_MAX_REASONING_STEPS,
   READER_EXPERIMENT_L001_MAX_TOOL_CALLS,
   buildL001QualificationSourceDocumentIdToFilename,
+  loadPackDrivenProposalPackIdentity,
   resolveReaderArchitectureVariant,
   resolveReaderMode,
 } from "@hiveforyou/core/study";
@@ -221,10 +222,16 @@ export async function runAgenticReaderQualification(
     });
     stage = "REQUEST_BUILD";
     const readerMode = resolveReaderMode(env);
+    const proposalPack =
+      readerMode === "pack_driven"
+        ? loadPackDrivenProposalPackIdentity(ensure.prompt.artifact.domainId, env)
+        : undefined;
+
     const request = buildStudyReaderRequestFromTrustedPages({
       caseId,
       userId,
       domainId: ensure.prompt.artifact.domainId,
+      ...(proposalPack ? { proposalPack } : {}),
       studyRunId: running.studyRunId,
       attemptId,
       bundles,

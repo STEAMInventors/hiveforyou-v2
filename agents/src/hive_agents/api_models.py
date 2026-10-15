@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from pathlib import Path
 from typing import Literal
 
@@ -14,6 +15,7 @@ STUDY_READER_API_SCHEMA_VERSION: Literal["study-reader/1"] = "study-reader/1"
 DEFAULT_MAX_DOCUMENTS = 64
 DEFAULT_MAX_PAGES = 512
 DEFAULT_MAX_WORDS_PER_PAGE = 20_000
+SHA256_HEX = re.compile(r"^[a-f0-9]{64}$")
 
 
 class PageWordInput(BaseModel):
@@ -160,6 +162,18 @@ class StudyReaderRequest(BaseModel):
         default=None,
         validation_alias=AliasChoices("readerMode", "reader_mode"),
     )
+    pack_id: str | None = Field(
+        default=None,
+        validation_alias=AliasChoices("packId", "pack_id"),
+    )
+    pack_version: str | None = Field(
+        default=None,
+        validation_alias=AliasChoices("packVersion", "pack_version"),
+    )
+    pack_content_sha256: str | None = Field(
+        default=None,
+        validation_alias=AliasChoices("packContentSha256", "pack_content_sha256"),
+    )
 
     @field_validator("reader_mode", mode="before")
     @classmethod
@@ -178,6 +192,43 @@ class StudyReaderRequest(BaseModel):
         if not stripped:
             raise ValueError("caseId, userId, domainId, studyRunId, and attemptId must be non-empty.")
         return stripped
+
+    @field_validator("pack_id", "pack_version")
+    @classmethod
+    def _normalize_optional_pack_strings(cls, value: str | None) -> str | None:
+        if value is None:
+            return None
+        stripped = value.strip()
+        return stripped or None
+
+    @field_validator("pack_content_sha256")
+    @classmethod
+    def _normalize_pack_content_sha256(cls, value: str | None) -> str | None:
+        if value is None:
+            return None
+        stripped = value.strip().lower()
+        return stripped or None
+
+    @model_validator(mode="after")
+    def _validate_pack_driven_identity(self) -> StudyReaderRequest:
+        if self.reader_mode != "pack_driven":
+            return self
+        missing: list[str] = []
+        if not self.pack_id:
+            missing.append("packId")
+        if not self.pack_version:
+            missing.append("packVersion")
+        if not self.pack_content_sha256:
+            missing.append("packContentSha256")
+        if missing:
+            raise ValueError(
+                "packId, packVersion, and packContentSha256 are required when readerMode is pack_driven."
+            )
+        if self.pack_content_sha256 and not SHA256_HEX.match(self.pack_content_sha256):
+            raise ValueError("packContentSha256 must be a lowercase SHA-256 hex digest.")
+        if self.pack_id and self.pack_id != self.domain_id:
+            raise ValueError("packId must match domainId for pack-driven Reader requests.")
+        return self
 
     @model_validator(mode="after")
     def _validate_collection_bounds(self) -> StudyReaderRequest:

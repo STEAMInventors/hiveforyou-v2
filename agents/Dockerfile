@@ -20,35 +20,12 @@ RUN --mount=type=cache,target=/root/.local/share/pnpm/store \
 COPY engine/domain-pack engine/domain-pack
 COPY engine/shared engine/shared
 COPY engine/domain-packs/_shared engine/domain-packs/_shared
+COPY brain/domain-packs ./brain/domain-packs
 
 RUN pnpm --filter @hiveforyou/domain-pack run build:pack-driven-bridge
 
-COPY brain/domain-packs/iep/iep-pack.v0.3.proposed.json ./pack/iep-pack.v0.3.proposed.json
-
-RUN node --input-type=module -e "\
-import { readFileSync } from 'node:fs';\
-import { createHash } from 'node:crypto';\
-const path = './pack/iep-pack.v0.3.proposed.json';\
-const expectedSha = 'c2baa0439d32496a3110f5388f6048395a9f4c8fdce79b3d0cec36ae6b9a7775';\
-let pack;\
-try { pack = JSON.parse(readFileSync(path, 'utf8')); } catch { throw new Error('PACK_DRIVEN_PROPOSAL_PACK_INVALID:' + path + ':json'); }\
-const payload = {\
-  schemaVersion: pack.schemaVersion,\
-  manifest: pack.manifest,\
-  documentTypes: pack.documentTypes,\
-  recordTypes: pack.recordTypes,\
-  constructs: pack.constructs ?? {},\
-  fieldSources: pack.fieldSources ?? {},\
-  modalities: pack.modalities ?? [],\
-  missingStates: pack.missingStates ?? [],\
-  evidencePolicy: pack.evidencePolicy ?? {},\
-  readingNotes: pack.readingNotes,\
-  vocabulary: pack.vocabulary ?? {},\
-  genericUnclassifiedChecklist: pack.genericUnclassifiedChecklist ?? null,\
-};\
-const sha = createHash('sha256').update(JSON.stringify(payload)).digest('hex');\
-if (sha !== expectedSha) throw new Error('PACK_DRIVEN_PROPOSAL_PACK_PIN_MISMATCH:' + path);\
-"
+ENV HIVE_DOMAIN_PACKS_BRAIN_DIR=/repo/brain/domain-packs
+RUN pnpm --filter @hiveforyou/domain-pack run verify:proposal-pack-snapshots
 
 FROM --platform=linux/arm64 python:3.12-slim-bookworm AS build
 
@@ -71,7 +48,7 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 
 COPY engine/domain-packs/iep/study/agents.json ./pack/agents.json
 COPY --from=pack-bridge-build /repo/engine/domain-pack/dist/pack-driven-reader-bridge.mjs ./pack/pack-driven-reader-bridge.mjs
-COPY --from=pack-bridge-build /repo/pack/iep-pack.v0.3.proposed.json ./pack/iep-pack.v0.3.proposed.json
+COPY --from=pack-bridge-build /repo/brain/domain-packs ./brain/domain-packs
 
 FROM --platform=linux/arm64 python:3.12-slim-bookworm AS runtime
 
@@ -95,7 +72,7 @@ ENV PATH="/app/.venv/bin:${PATH}" \
     HIVE_AGENTS_BIND_HOST=127.0.0.1 \
     HIVE_AGENTS_BIND_PORT=4320 \
     HIVE_PACK_DRIVEN_READER_COMPILER_JS=/app/pack/pack-driven-reader-bridge.mjs \
-    HIVE_PACK_DRIVEN_READER_PROPOSAL_JSON=/app/pack/iep-pack.v0.3.proposed.json
+    HIVE_DOMAIN_PACKS_BRAIN_DIR=/app/brain/domain-packs
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 \
   CMD python -c "import os, urllib.request; h=os.environ.get('HIVE_AGENTS_BIND_HOST','127.0.0.1'); p=os.environ.get('HIVE_AGENTS_BIND_PORT','4320'); urllib.request.urlopen(f'http://{h}:{p}/health', timeout=4).read()"

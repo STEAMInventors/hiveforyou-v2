@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from pathlib import Path
 from unittest.mock import MagicMock
 
 import pytest
@@ -10,6 +11,12 @@ from hive_agents.app import execute_study_reader
 from hive_agents.pack_driven_reader.map_to_candidate import pack_extraction_to_candidate_facts
 from hive_agents.reader import DocumentPage, PageWord, ReaderRunResult
 from hive_agents.settings import get_settings
+
+IEP_PROPOSAL_PACK_IDENTITY = {
+    "packId": "iep",
+    "packVersion": "0.3.0-proposed",
+    "packContentSha256": "c2baa0439d32496a3110f5388f6048395a9f4c8fdce79b3d0cec36ae6b9a7775",
+}
 
 
 def test_pack_extraction_to_candidate_facts_skips_missing() -> None:
@@ -91,6 +98,7 @@ def test_execute_study_reader_pack_driven_branch(
             "caseId": "case-1",
             "userId": "user-1",
             "domainId": "iep",
+            **IEP_PROPOSAL_PACK_IDENTITY,
             "studyRunId": "run-1",
             "attemptId": "attempt-1",
             "readerMode": "pack_driven",
@@ -187,9 +195,16 @@ def test_parser_exception_preserves_raw_assistant_text(monkeypatch: pytest.Monke
     def fake_parse(**_kwargs: object) -> object:
         raise ValueError("parser_exploded")
 
+    from hive_agents.pack_driven_reader.resolve_proposal_pack import ResolvedProposalDomainPack
+
     monkeypatch.setattr(
-        "hive_agents.pack_driven_reader.run.load_proposal_domain_pack",
-        lambda _path: {"schemaVersion": "pack/0", "manifest": {"id": "iep", "version": "0.3"}},
+        "hive_agents.pack_driven_reader.run.resolve_and_load_proposal_domain_pack",
+        lambda **_kwargs: ResolvedProposalDomainPack(
+            pack={"schemaVersion": "pack/0", "manifest": {"id": "iep", "version": "0.3"}},
+            path=Path("/tmp/fake-pack.json"),
+            content_sha256="a" * 64,
+            source="override",
+        ),
     )
     monkeypatch.setattr("hive_agents.pack_driven_reader.run.compile_pack_driven_reader_prompt", fake_compile)
     monkeypatch.setattr("hive_agents.pack_driven_reader.run.call_pack_driven_extraction", fake_extract)
@@ -317,6 +332,7 @@ def test_trace_flush_failure_returns_envelopes_and_failed_audit(
             "caseId": "case-1",
             "userId": "user-1",
             "domainId": "iep",
+            **IEP_PROPOSAL_PACK_IDENTITY,
             "studyRunId": "run-1",
             "attemptId": "attempt-1",
             "readerMode": "pack_driven",

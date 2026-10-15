@@ -83,6 +83,26 @@ class Settings(BaseSettings):
         default=None,
         validation_alias="PACK_DRIVEN_READER_PROPOSAL_JSON",
     )
+    domain_packs_brain_dir: Path | None = Field(
+        default=None,
+        validation_alias="DOMAIN_PACKS_BRAIN_DIR",
+    )
+    proposal_pack_snapshots_dir: Path | None = Field(
+        default=None,
+        validation_alias="PROPOSAL_PACK_SNAPSHOTS_DIR",
+    )
+    pack_driven_reader_pack_id: str | None = Field(
+        default=None,
+        validation_alias="PACK_DRIVEN_READER_PACK_ID",
+    )
+    pack_driven_reader_pack_version: str | None = Field(
+        default=None,
+        validation_alias="PACK_DRIVEN_READER_PACK_VERSION",
+    )
+    pack_driven_reader_pack_content_sha256: str | None = Field(
+        default=None,
+        validation_alias="PACK_DRIVEN_READER_PACK_CONTENT_SHA256",
+    )
 
     @field_validator("reader_experiment_truncate_verification", mode="before")
     @classmethod
@@ -148,6 +168,32 @@ class Settings(BaseSettings):
         if isinstance(value, Path):
             return value
         raise ValueError("PACK_DRIVEN_READER_PROPOSAL_JSON must be a path string")
+
+    @field_validator("domain_packs_brain_dir", "proposal_pack_snapshots_dir", mode="before")
+    @classmethod
+    def _parse_optional_path(cls, value: object) -> object:
+        if value is None or (isinstance(value, str) and not value.strip()):
+            return None
+        if isinstance(value, str):
+            return Path(value.strip())
+        if isinstance(value, Path):
+            return value
+        raise ValueError("Path env vars must be path strings")
+
+    @field_validator(
+        "pack_driven_reader_pack_id",
+        "pack_driven_reader_pack_version",
+        "pack_driven_reader_pack_content_sha256",
+        mode="before",
+    )
+    @classmethod
+    def _strip_optional_pack_identity(cls, value: object) -> object:
+        if value is None:
+            return None
+        if isinstance(value, str):
+            stripped = value.strip()
+            return stripped or None
+        return value
 
     @field_validator("reader_parallel_concurrency", mode="before")
     @classmethod

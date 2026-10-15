@@ -3,7 +3,6 @@ from __future__ import annotations
 import asyncio
 import time
 from dataclasses import dataclass, field
-from pathlib import Path
 from typing import Any
 
 import dspy
@@ -11,9 +10,13 @@ import dspy
 from hive_agents.engine1_trust import Engine1ReaderContextError
 from hive_agents.pack_driven_reader.adapter import (
     compile_pack_driven_reader_prompt,
-    default_iep_v03_proposed_pack_path,
-    load_proposal_domain_pack,
     pages_to_pack_driven_payload,
+)
+from hive_agents.pack_driven_reader.resolve_proposal_pack import (
+    PackNotAvailableError,
+    ProposalPackIdentity,
+    _identity_from_request,
+    resolve_and_load_proposal_domain_pack,
 )
 from hive_agents.pack_driven_reader.document_extraction_envelope import (
     build_reader_document_extraction_envelope,
@@ -144,13 +147,6 @@ def _post_extraction_processing_failure_result(
         pack_content_sha256=pack_content_sha256,
         document_extraction_envelope=captured_envelope,
     )
-
-
-def resolve_proposal_pack_path(settings: Any) -> Path:
-    override = getattr(settings, "pack_driven_reader_proposal_json", None)
-    if override is not None:
-        return Path(override).expanduser().resolve()
-    return default_iep_v03_proposed_pack_path()
 
 
 def _pages_for_document(pages: list[DocumentPage], source_document_id: str) -> list[DocumentPage]:
@@ -411,6 +407,7 @@ def run_pack_driven_reader(
     engine1_reader_context_json: str,
     settings: Any,
     correlation: PackDrivenRunCorrelation,
+    proposal_pack_identity: ProposalPackIdentity | None = None,
 ) -> tuple[ReaderRunResult, list[PackDrivenDocumentResult], dict[str, Any], list[dict[str, Any]]]:
     if not engine1_reader_context_json.strip():
         raise Engine1ReaderContextError(
@@ -418,8 +415,19 @@ def run_pack_driven_reader(
             "Pack-driven Reader requires engine1ReaderContextJson from the worker.",
         )
 
-    pack_path = resolve_proposal_pack_path(settings)
-    proposal_pack = load_proposal_domain_pack(pack_path)
+    try:
+        resolved_pack = resolve_and_load_proposal_domain_pack(
+            domain_id=correlation.domain_id,
+            settings=settings,
+            requested_identity=proposal_pack_identity,
+        )
+    except PackNotAvailableError as exc:
+        raise Engine1ReaderContextError(
+            "PACK_DRIVEN_PROPOSAL_PACK_NOT_AVAILABLE",
+            str(exc),
+        ) from exc
+    pack_path = resolved_pack.path
+    proposal_pack = resolved_pack.pack
     logical_docs, document_order = parse_engine1_logical_documents(engine1_reader_context_json)
     case_manifest = build_case_manifest(logical_docs)
     engine1_type_by_id = {doc.source_document_id: doc.document_type_id for doc in logical_docs}

@@ -2,10 +2,12 @@ from __future__ import annotations
 
 import asyncio
 import json
+from pathlib import Path
 from unittest.mock import MagicMock
 
 import pytest
 
+from hive_agents.pack_driven_reader.resolve_proposal_pack import ResolvedProposalDomainPack
 from hive_agents.pack_driven_reader.run import PackDrivenRunCorrelation, run_pack_driven_reader
 from hive_agents.reader import DocumentPage, PageWord, ReaderVerifyContext
 from hive_agents.settings import Settings
@@ -51,6 +53,15 @@ def _page(source_document_id: str) -> DocumentPage:
     )
 
 
+def _fake_resolved_pack() -> ResolvedProposalDomainPack:
+    return ResolvedProposalDomainPack(
+        pack={"schemaVersion": "pack/0", "manifest": {"id": "iep", "version": "0.3.0-proposed"}},
+        path=Path("/tmp/fake-pack.json"),
+        content_sha256="a" * 64,
+        source="override",
+    )
+
+
 def test_pack_driven_fan_in_preserves_document_order(monkeypatch: pytest.MonkeyPatch) -> None:
     ids = ["doc-b", "doc-a", "doc-c"]
     completion_order: list[str] = []
@@ -70,8 +81,8 @@ def test_pack_driven_fan_in_preserves_document_order(monkeypatch: pytest.MonkeyP
         )
 
     monkeypatch.setattr(
-        "hive_agents.pack_driven_reader.run.load_proposal_domain_pack",
-        lambda _path: {"schemaVersion": "pack/0"},
+        "hive_agents.pack_driven_reader.run.resolve_and_load_proposal_domain_pack",
+        lambda **_kwargs: _fake_resolved_pack(),
     )
     monkeypatch.setattr(
         "hive_agents.pack_driven_reader.run._process_single_document",
@@ -109,8 +120,8 @@ def test_pack_driven_reports_failed_document_tasks(monkeypatch: pytest.MonkeyPat
         )
 
     monkeypatch.setattr(
-        "hive_agents.pack_driven_reader.run.load_proposal_domain_pack",
-        lambda _path: {"schemaVersion": "pack/0"},
+        "hive_agents.pack_driven_reader.run.resolve_and_load_proposal_domain_pack",
+        lambda **_kwargs: _fake_resolved_pack(),
     )
     monkeypatch.setattr(
         "hive_agents.pack_driven_reader.run._process_single_document",
@@ -162,8 +173,8 @@ def test_pack_driven_bounded_parallelism(monkeypatch: pytest.MonkeyPatch) -> Non
         )
 
     monkeypatch.setattr(
-        "hive_agents.pack_driven_reader.run.load_proposal_domain_pack",
-        lambda _path: {"schemaVersion": "pack/0"},
+        "hive_agents.pack_driven_reader.run.resolve_and_load_proposal_domain_pack",
+        lambda **_kwargs: _fake_resolved_pack(),
     )
     monkeypatch.setattr(
         "hive_agents.pack_driven_reader.run._process_single_document",
@@ -240,8 +251,13 @@ def test_wrong_engine1_classification_does_not_block_extraction(monkeypatch: pyt
         )
 
     monkeypatch.setattr(
-        "hive_agents.pack_driven_reader.run.load_proposal_domain_pack",
-        lambda _path: {"schemaVersion": "pack/0", "documentTypes": [], "recordTypes": []},
+        "hive_agents.pack_driven_reader.run.resolve_and_load_proposal_domain_pack",
+        lambda **_kwargs: ResolvedProposalDomainPack(
+            pack={"schemaVersion": "pack/0", "documentTypes": [], "recordTypes": []},
+            path=Path("/tmp/fake-pack.json"),
+            content_sha256="a" * 64,
+            source="override",
+        ),
     )
     monkeypatch.setattr("hive_agents.pack_driven_reader.run.compile_pack_driven_reader_prompt", fake_compile)
     monkeypatch.setattr("hive_agents.pack_driven_reader.run.call_pack_driven_extraction", fake_extract)
@@ -367,8 +383,8 @@ def test_successful_and_failed_sibling_documents_both_available(
         return original_process(**kwargs)
 
     monkeypatch.setattr(
-        "hive_agents.pack_driven_reader.run.load_proposal_domain_pack",
-        lambda _path: {"schemaVersion": "pack/0", "manifest": {"id": "iep", "version": "0.3"}},
+        "hive_agents.pack_driven_reader.run.resolve_and_load_proposal_domain_pack",
+        lambda **_kwargs: _fake_resolved_pack(),
     )
     monkeypatch.setattr("hive_agents.pack_driven_reader.run.compile_pack_driven_reader_prompt", fake_compile)
     monkeypatch.setattr("hive_agents.pack_driven_reader.run.call_pack_driven_extraction", fake_extract)
