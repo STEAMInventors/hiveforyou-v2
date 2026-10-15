@@ -244,6 +244,35 @@ class StudyReaderResponse(BaseModel):
     )
 
 
+STUDY_WRITER_API_SCHEMA_VERSION: Literal["study-writer/1"] = "study-writer/1"
+
+
+class StudyWriterRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    schema_version: Literal["study-writer/1"] = Field(
+        default=STUDY_WRITER_API_SCHEMA_VERSION,
+        validation_alias=AliasChoices("schemaVersion", "schema_version"),
+        serialization_alias="schemaVersion",
+    )
+    input: dict[str, object]
+
+
+class StudyWriterResponse(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    schema_version: Literal["study-writer/1"] = Field(
+        default=STUDY_WRITER_API_SCHEMA_VERSION,
+        serialization_alias="schemaVersion",
+    )
+    proposal: dict[str, object]
+    model_identifier: str = Field(serialization_alias="modelIdentifier")
+    token_usage: dict[str, int | None] | None = Field(
+        default=None,
+        serialization_alias="tokenUsage",
+    )
+
+
 class PackDomainMismatchError(ValueError):
     pass
 

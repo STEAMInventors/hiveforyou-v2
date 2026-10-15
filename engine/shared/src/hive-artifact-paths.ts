@@ -66,3 +66,13 @@ export function canonicalStudyArtifactPath(
 ): string {
   return `${userId}/canonical-study/${studyRunId}/${attemptId}.json`;
 }
+
+/** Shadow Writer proposal + validation record (idempotent key in filename). */
+export function hiveWriterShadowRecordPath(
+  userId: string,
+  studyRunId: string,
+  audience: "customer" | "pro",
+  idempotencyKey: string,
+): string {
+  return `${userId}/hive-writer-shadow/${studyRunId}/${audience}/${idempotencyKey}.json`;
+}

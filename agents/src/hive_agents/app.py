@@ -14,6 +14,8 @@ from hive_agents.api_models import (
     StudyReaderAudit,
     StudyReaderRequest,
     StudyReaderResponse,
+    StudyWriterRequest,
+    StudyWriterResponse,
     resolve_agent_pack_for_domain,
 )
 from hive_agents.auth import is_authorized
@@ -64,6 +66,7 @@ from hive_agents.verifier_client import (
     ReaderVerifierError,
     reader_verifier_config_from_env,
 )
+from hive_agents.writer import run_hive_writer
 
 
 logger = logging.getLogger(__name__)
@@ -661,4 +664,37 @@ async def study_reader(
         audit=audit,
         per_document_results=per_document_results,
         document_extractions=document_extractions,
+    )
+
+
+@app.post("/study/writer", response_model=StudyWriterResponse)
+async def study_writer(
+    request: StudyWriterRequest,
+    authorization: Annotated[str | None, Header()] = None,
+) -> StudyWriterResponse:
+    _require_service_auth(authorization)
+    try:
+        get_settings().validate_lm_env()
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail=_error_body("LM_CONFIG_INVALID", str(exc)),
+        ) from exc
+    try:
+        result = await run_in_threadpool(run_hive_writer, writer_input=dict(request.input))
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=_error_body("WRITER_MODEL_JSON_INVALID", str(exc)),
+        ) from exc
+    except Exception as exc:
+        logger.exception("study writer failed")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=_error_body("WRITER_FAILED", "Writer execution failed."),
+        ) from exc
+    return StudyWriterResponse(
+        proposal=result.proposal,
+        model_identifier=result.model_identifier,
+        token_usage=result.token_usage,
     )
