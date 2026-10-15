@@ -14,12 +14,14 @@
   "dependencies": {
     "@hiveforyou/canonical": "workspace:*",
     "@hiveforyou/core": "workspace:*",
-    "@hiveforyou/model-providers": "workspace:*",
     "@hiveforyou/domain-pack": "workspace:*",
     "@hiveforyou/domain-packs": "workspace:*",
     "@hiveforyou/intake": "workspace:*",
     "@hiveforyou/intake-node": "workspace:*",
+    "@hiveforyou/model-providers": "workspace:*",
     "@hiveforyou/shared": "workspace:*",
+    "@json-render/core": "0.21.1",
+    "@json-render/react": "0.21.1",
     "@napi-rs/canvas": "^0.1.80",
     "@supabase/ssr": "^0.6.1",
     "@supabase/supabase-js": "^2.49.4",
@@ -30,7 +32,8 @@
     "pdfjs-dist": "^5.4.296",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "server-only": "^0.0.1"
+    "server-only": "^0.0.1",
+    "zod": "^4.6.5"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.6.3",

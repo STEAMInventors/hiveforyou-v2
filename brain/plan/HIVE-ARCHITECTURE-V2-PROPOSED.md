@@ -300,6 +300,24 @@ Proposed **target** Reader surface at runtime: secrets + `MODEL_*` + `READER_PAR
 
 ---
 
+## Three-Contract Boundary: Canonical Study → Report Projection → UI Tree
+
+HiveForYou keeps **three independent, versioned contracts** on the path from canonical intelligence to rendered Customer/Pro reports:
+
+1. **`hive.canonical-study/1`** — canonical facts, identities, relationships, measurements, and provenance (the validated artifact).
+2. **`canonical-study-report/1`** — deterministic, validated, audience-specific **factual projections** derived from the artifact (Customer body vs Pro body).
+3. **`hive-ui-tree/1`** — component selection, layout, ordering, and presentation only. Elements reference report/artifact data **by id** (`claimRef`, `relationId`, `sectionId`, `seriesId`, etc.). Factual text, quotes, and measurements are **never** copied into UI-tree props.
+
+Invariants:
+
+- UI-tree regeneration and validation **must not** invoke document extraction or canonical-study execution.
+- Invalid UI-tree or Writer output **fails closed**; the app falls back to deterministic React report views without altering canonical claims.
+- The Writer (when introduced) may propose presentation structure only; it cannot create, alter, or delete canonical claims.
+- Hive Core and the UI-tree component registry remain **domain-agnostic**; domain terminology and rules live in Domain Packs.
+- The rendering library (`@json-render/react` today) is an implementation detail; these three contracts stay independent of any specific renderer.
+
+---
+
 ## 10. Open issues and unresolved decisions
 
 **Pack review (carry-forward):**

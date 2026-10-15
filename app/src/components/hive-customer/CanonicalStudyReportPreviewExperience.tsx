@@ -7,7 +7,9 @@ import type {
   CanonicalStudyReportAudience,
   CanonicalStudyReportProjection,
 } from "@hiveforyou/shared/canonical-study-report-projection";
+import type { HiveUiTree } from "@hiveforyou/shared/hive-ui-tree";
 
+import { HiveUiRenderer } from "@/components/hive-ui/HiveUiRenderer";
 import {
   buildHiveCanonicalJsonHref,
   buildHiveReportPreviewHref,
@@ -16,6 +18,10 @@ import {
 import { CanonicalStudyCustomerReportView } from "./CanonicalStudyCustomerReportView";
 import { CanonicalStudyProReportView } from "./CanonicalStudyProReportView";
 import { HiveCustomerShell } from "./HiveCustomerShell";
+
+type CanonicalStudyReportPreviewPayload = CanonicalStudyReportProjection & {
+  hiveUiTree?: HiveUiTree | null;
+};
 
 function AudienceToggle({
   audience,
@@ -95,7 +101,8 @@ export function CanonicalStudyReportPreviewExperience({
   initialAudience: CanonicalStudyReportAudience;
 }) {
   const [audience, setAudience] = useState<CanonicalStudyReportAudience>(initialAudience);
-  const [projection, setProjection] = useState<CanonicalStudyReportProjection | null>(null);
+  const [projection, setProjection] = useState<CanonicalStudyReportPreviewPayload | null>(null);
+  const [hiveUiTree, setHiveUiTree] = useState<HiveUiTree | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -107,6 +114,7 @@ export function CanonicalStudyReportPreviewExperience({
     if (!studyRunId.trim()) {
       setError("studyRunId is required.");
       setProjection(null);
+      setHiveUiTree(null);
       setLoading(false);
       return;
     }
@@ -116,18 +124,21 @@ export function CanonicalStudyReportPreviewExperience({
       const response = await fetch(
         `/api/case/${encodeURIComponent(caseId)}/canonical-report?studyRunId=${encodeURIComponent(studyRunId)}&audience=${encodeURIComponent(audience)}`,
       );
-      const payload = (await response.json()) as CanonicalStudyReportProjection & {
+      const payload = (await response.json()) as CanonicalStudyReportPreviewPayload & {
         error?: string;
         message?: string;
       };
       if (!response.ok) {
         setProjection(null);
+        setHiveUiTree(null);
         setError(payload.message ?? payload.error ?? "Could not load report preview.");
         return;
       }
       setProjection(payload);
+      setHiveUiTree(payload.hiveUiTree ?? null);
     } catch {
       setProjection(null);
+      setHiveUiTree(null);
       setError("Network error while loading report preview.");
     } finally {
       setLoading(false);
@@ -177,7 +188,9 @@ export function CanonicalStudyReportPreviewExperience({
         {projection ? (
           <>
             <InternalPreviewBanner projection={projection} />
-            {projection.audience === "customer" ? (
+            {hiveUiTree ? (
+              <HiveUiRenderer projection={projection} tree={hiveUiTree} />
+            ) : projection.audience === "customer" ? (
               <CanonicalStudyCustomerReportView body={projection.body} />
             ) : (
               <CanonicalStudyProReportView

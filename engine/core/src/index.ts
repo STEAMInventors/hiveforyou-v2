@@ -30,6 +30,8 @@ export * from "./projections/project-customer-view-v3";
 export * from "./projections/project-pro-view-v3";
 export * from "./projections/project-canonical-study-report";
 export * from "./projections/validate-canonical-study-report-projection";
+export * from "./projections/build-deterministic-hive-ui-tree";
+export * from "./projections/validate-hive-ui-tree";
 export * from "./projections/project-case-map-v3";
 export * from "./projections/project-case-view-v1";
 export * from "./projections/project-case-view-v2-minimal";

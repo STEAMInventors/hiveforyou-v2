@@ -26,6 +26,7 @@
     "./canonical-study-foundation": "./src/canonical-study-foundation.ts",
     "./canonical-study-artifact": "./src/canonical-study-artifact.ts",
     "./canonical-study-report-projection": "./src/canonical-study-report-projection.ts",
+    "./hive-ui-tree": "./src/hive-ui-tree.ts",
     "./canonical-study-run-manifest": "./src/canonical-study-run-manifest.ts",
     "./model/call-model": "./src/model/call-model.ts"
   },

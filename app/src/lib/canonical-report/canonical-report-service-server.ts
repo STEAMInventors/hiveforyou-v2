@@ -1,12 +1,17 @@
 import "server-only";
 
-import { projectCanonicalStudyReport } from "@hiveforyou/core";
+import {
+  assertHiveUiTree,
+  buildDeterministicHiveUiTree,
+  projectCanonicalStudyReport,
+} from "@hiveforyou/core";
+import type { CanonicalStudyDebugArtifactMetadata } from "@hiveforyou/core";
 import type { CanonicalStudyReportAudience } from "@hiveforyou/shared/canonical-study-report-projection";
+import type { HiveUiTree } from "@hiveforyou/shared/hive-ui-tree";
 
 import {
   loadDeterministicCanonicalStudyArtifactForSession,
 } from "@/lib/canonical-debug/run-deterministic-canonical-study-server";
-import type { CanonicalStudyDebugArtifactMetadata } from "@hiveforyou/core";
 
 export async function loadCanonicalStudyReportProjectionForSession(input: {
   caseId: string;
@@ -19,10 +24,22 @@ export async function loadCanonicalStudyReportProjectionForSession(input: {
   });
 
   const metadata = artifact as typeof artifact & CanonicalStudyDebugArtifactMetadata;
-  return projectCanonicalStudyReport({
+  const projection = projectCanonicalStudyReport({
     artifact,
     audience: input.audience,
     customerProReportsPermitted: metadata.customerProReportsPermitted,
     packApprovalLabel: metadata.packApprovalLabel,
   });
+
+  let hiveUiTree: HiveUiTree | null = null;
+  const candidate = buildDeterministicHiveUiTree(projection);
+  if (candidate) {
+    try {
+      hiveUiTree = assertHiveUiTree(artifact, projection, candidate);
+    } catch {
+      hiveUiTree = null;
+    }
+  }
+
+  return { ...projection, hiveUiTree };
 }
