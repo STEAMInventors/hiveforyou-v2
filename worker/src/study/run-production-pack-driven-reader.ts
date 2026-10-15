@@ -84,7 +84,7 @@ function auditSnapshotFromResponse(
 export async function runProductionPackDrivenReader(
   input: RunProductionPackDrivenReaderInput,
 ): Promise<RunProductionPackDrivenReaderResult> {
-  const env = { ...(input.env ?? process.env), HIVE_READER_MODE: "pack_driven" };
+  const env = { ...process.env, ...(input.env ?? {}), HIVE_READER_MODE: "pack_driven" };
   const now = input.now ?? (() => new Date().toISOString());
   const attemptId = input.attemptId ?? randomUUID();
   const prompt = loadAgenticReaderQualificationPromptMetadata({ env });

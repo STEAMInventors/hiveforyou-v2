@@ -1,7 +1,10 @@
 import { createHash } from "node:crypto";
+import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { TextEncoder } from "node:util";
 
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import {
   AGENTIC_READER_QUALIFICATION_ANSWER_SNAPSHOT_HASH,
@@ -12,6 +15,8 @@ import {
   L001_QUALIFICATION_SOURCE_SHA256,
   loadEffectiveStudyAgentsPromptMetadata,
   loadReaderExperimentPromptHashes,
+  L001_READER_PACK_CONTENT_SHA256,
+  ReaderProposalPackBindingError,
   resolveAgenticReaderModelIdentity,
 } from "@hiveforyou/core/study";
 import { documentPagesStoragePath, readerAcceptedFactsStoragePath } from "@hiveforyou/shared/hive-artifact-paths";
@@ -19,6 +24,7 @@ import { READER_ACCEPTED_FACTS_SCHEMA_VERSION } from "@hiveforyou/shared/reader-
 import { NESTIEP_EXTRACTOR_VERSION } from "@hiveforyou/shared/intake";
 
 import { DOCUMENT_PAGES_PAYLOAD_SCHEMA_VERSION } from "../intake/document-pages-storage.js";
+import { readWorkerEnv } from "../env.js";
 import type { HiveGateway, HiveRow } from "../persistence/hive-gateway.js";
 import { buildStudyReaderRequestFromTrustedPages } from "./document-pages-to-reader-request.js";
 import {
@@ -32,6 +38,7 @@ import {
   PackDrivenReaderAuditNotPersistedError,
   runProductionPackDrivenReader,
 } from "./run-production-pack-driven-reader.js";
+import type { CanonicalStudyContext } from "@hiveforyou/shared/canonical-study";
 import { READER_DOCUMENT_EXTRACTION_SCHEMA_VERSION } from "@hiveforyou/shared/reader-document-extraction";
 import * as engine1 from "./engine1-reader-context.js";
 import * as loadPages from "./load-trusted-document-pages.js";
@@ -1277,5 +1284,248 @@ describe("runProductionPackDrivenReader ARCH-03 raw extraction", () => {
         readerClient,
       }),
     ).rejects.toBeInstanceOf(PackDrivenReaderAuditNotPersistedError);
+  });
+});
+
+describe("runProductionPackDrivenReader env handoff", () => {
+  const REQUIRED_WORKER_ENV = {
+    NEXT_PUBLIC_SUPABASE_URL: "https://example.supabase.co",
+    SUPABASE_SERVICE_ROLE_KEY: "service-role",
+    HIVE_STORAGE_BUCKET: "case-documents",
+  } as const;
+  const OTHER_SNAPSHOT_HASH = "b".repeat(64);
+  const tempRoots: string[] = [];
+  const envSnapshot = { ...process.env };
+
+  function workerEnvStrings(env: ReturnType<typeof readWorkerEnv>): Record<string, string | undefined> {
+    return env as unknown as Record<string, string | undefined>;
+  }
+
+  function writeSnapshotManifest(brainRoot: string, packContentSha256: string): void {
+    const snapshotsDir = join(brainRoot, "iep", "snapshots");
+    mkdirSync(snapshotsDir, { recursive: true });
+    writeFileSync(
+      join(snapshotsDir, "manifest.json"),
+      JSON.stringify(
+        {
+          schemaVersion: "hive.domain-pack.proposal-snapshots/1",
+          snapshots: [
+            {
+              packId: "iep",
+              packVersion: "0.3.0-proposed",
+              packContentSha256,
+            },
+          ],
+        },
+        null,
+        2,
+      ),
+      "utf8",
+    );
+  }
+
+  function tempBrainRoot(packContentSha256: string): string {
+    const root = mkdtempSync(join(tmpdir(), "hive-brain-packs-"));
+    tempRoots.push(root);
+    writeSnapshotManifest(root, packContentSha256);
+    return root;
+  }
+
+  function envHandoffGateway(): HiveGateway {
+    return {
+      selectWhere: vi.fn(async () => []),
+      uploadObject: vi.fn(async () => undefined),
+      downloadObject: vi.fn(async () => new Uint8Array()),
+    } as unknown as HiveGateway;
+  }
+
+  function packDrivenContext(proposalPackContentSha256: string): CanonicalStudyContext {
+    return {
+      caseId: "case-1",
+      studyRunId: "study-1",
+      domainId: "iep",
+      domainPackId: "hive.domain.iep",
+      domainPackVersion: "0.0.0-scaffold",
+      processingPolicy: {
+        processingMode: "pack_driven_v1",
+        providerId: "pack-driven-reader",
+        providerMode: "reader_delegated",
+        proposalPackContentSha256,
+      },
+    } as CanonicalStudyContext;
+  }
+
+  function stubReaderPipeline(): ReturnType<typeof vi.fn> {
+    vi.spyOn(loadPages, "loadTrustedDocumentPageBundle").mockResolvedValue([
+      {
+        sourceDocumentId: "doc-1",
+        documentPages: { pages: [{ pageNumber: 1, words: [{ seq: 0, text: "x" }] }] },
+      },
+    ] as never);
+    vi.spyOn(engine1, "resolveEngine1ReaderContext").mockResolvedValue({
+      provenance: "persisted_discover_structure_map",
+      resolvedDomainId: "iep",
+      domainPackId: "hive.domain.iep",
+      domainPackVersion: "0.0.0-scaffold",
+      logicalDocuments: [
+        {
+          sourceDocumentId: "doc-1",
+          filename: "doc-1.pdf",
+          pageCount: 1,
+          documentTypeId: "iep.plan",
+        },
+      ],
+    } as never);
+    vi.spyOn(engine1, "serializeEngine1ReaderContext").mockReturnValue("{}");
+    vi.spyOn(coreStudy, "loadAgenticReaderQualificationPromptMetadata").mockReturnValue({
+      promptSha256: L001_READER_PACK_CONTENT_SHA256,
+    } as never);
+
+    return vi.fn(async (request) => ({
+      schemaVersion: "study-reader/1" as const,
+      caseId: request.caseId,
+      domainId: "iep",
+      packVersion: "0.3.0-proposed",
+      candidateFacts: [],
+      acceptedCandidateFacts: [],
+      reasoningSteps: 0,
+      toolCalls: 0,
+      documentExtractions: [
+        {
+          schemaVersion: READER_DOCUMENT_EXTRACTION_SCHEMA_VERSION,
+          studyRunId: request.studyRunId,
+          attemptId: request.attemptId,
+          caseId: request.caseId,
+          userId: request.userId,
+          sourceDocumentId: "doc-1",
+          domainId: "iep",
+          packId: "iep",
+          packVersion: "0.3.0-proposed",
+          packContentSha256: request.packContentSha256,
+          promptVersion: "hive-pack-driven-reader/0.2.0",
+          modelProvider: "anthropic",
+          modelId: "claude-test",
+          status: "SUCCEEDED",
+          occurredAt: "2026-10-12T12:00:00Z",
+          rawAssistantText: '{"documentTypeId":"iep.plan"}',
+          parsedModelJson: { documentTypeId: "iep.plan" },
+        },
+      ],
+      audit: {
+        studyRunId: request.studyRunId,
+        attemptId: request.attemptId,
+        persisted: true,
+        status: "persisted",
+      },
+    }));
+  }
+
+  afterEach(() => {
+    for (const root of tempRoots.splice(0)) {
+      rmSync(root, { recursive: true, force: true });
+    }
+    process.env = { ...envSnapshot };
+  });
+
+  it("keeps HIVE_DOMAIN_PACKS_BRAIN_DIR from process.env when input.env is filtered WorkerEnv", async () => {
+    const brainRoot = tempBrainRoot(L001_READER_PACK_CONTENT_SHA256);
+    process.env.HIVE_DOMAIN_PACKS_BRAIN_DIR = brainRoot;
+
+    const filteredEnv = workerEnvStrings(
+      readWorkerEnv({
+        ...REQUIRED_WORKER_ENV,
+        HIVE_PACK_DRIVEN_READER_PROPOSAL_JSON: "/app/pack/iep-pack.v0.3.proposed.json",
+      }),
+    );
+    expect(filteredEnv.HIVE_DOMAIN_PACKS_BRAIN_DIR).toBeUndefined();
+
+    const bindingSpy = vi.spyOn(coreStudy, "resolveStudyReaderProposalPackBinding");
+    const readerClient = stubReaderPipeline();
+
+    await runProductionPackDrivenReader({
+      gateway: envHandoffGateway(),
+      documentPagesBucket: "document-pages",
+      context: packDrivenContext(L001_READER_PACK_CONTENT_SHA256),
+      userId: USER_A,
+      registeredDocuments: [{ id: "doc-1", sha256: "a".repeat(64) }],
+      env: filteredEnv,
+      readerClient,
+      attemptId: "attempt-env-handoff",
+    });
+
+    expect(bindingSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        env: expect.objectContaining({
+          HIVE_DOMAIN_PACKS_BRAIN_DIR: brainRoot,
+          HIVE_READER_MODE: "pack_driven",
+        }),
+      }),
+    );
+    expect(readerClient.mock.calls[0]?.[0]?.packContentSha256).toBe(L001_READER_PACK_CONTENT_SHA256);
+  });
+
+  it("binds the frozen study hash to the immutable snapshot manifest entry", async () => {
+    const brainRoot = tempBrainRoot(L001_READER_PACK_CONTENT_SHA256);
+    process.env.HIVE_DOMAIN_PACKS_BRAIN_DIR = brainRoot;
+
+    const readerClient = stubReaderPipeline();
+    await runProductionPackDrivenReader({
+      gateway: envHandoffGateway(),
+      documentPagesBucket: "document-pages",
+      context: packDrivenContext(L001_READER_PACK_CONTENT_SHA256),
+      userId: USER_A,
+      registeredDocuments: [{ id: "doc-1", sha256: "a".repeat(64) }],
+      env: workerEnvStrings(readWorkerEnv(REQUIRED_WORKER_ENV)),
+      readerClient,
+      attemptId: "attempt-frozen-hash",
+    });
+
+    expect(readerClient.mock.calls[0]?.[0]?.packId).toBe("iep");
+    expect(readerClient.mock.calls[0]?.[0]?.packVersion).toBe("0.3.0-proposed");
+    expect(readerClient.mock.calls[0]?.[0]?.packContentSha256).toBe(L001_READER_PACK_CONTENT_SHA256);
+  });
+
+  it("lets explicit input.env override container-level HIVE_DOMAIN_PACKS_BRAIN_DIR", async () => {
+    const containerBrain = tempBrainRoot(L001_READER_PACK_CONTENT_SHA256);
+    const overrideBrain = tempBrainRoot(OTHER_SNAPSHOT_HASH);
+    process.env.HIVE_DOMAIN_PACKS_BRAIN_DIR = containerBrain;
+
+    const readerClient = stubReaderPipeline();
+    await runProductionPackDrivenReader({
+      gateway: envHandoffGateway(),
+      documentPagesBucket: "document-pages",
+      context: packDrivenContext(OTHER_SNAPSHOT_HASH),
+      userId: USER_A,
+      registeredDocuments: [{ id: "doc-1", sha256: "a".repeat(64) }],
+      env: {
+        ...workerEnvStrings(readWorkerEnv(REQUIRED_WORKER_ENV)),
+        HIVE_DOMAIN_PACKS_BRAIN_DIR: overrideBrain,
+      },
+      readerClient,
+      attemptId: "attempt-override",
+    });
+
+    expect(readerClient.mock.calls[0]?.[0]?.packContentSha256).toBe(OTHER_SNAPSHOT_HASH);
+  });
+
+  it("rejects a frozen hash that is not registered in the manifest", async () => {
+    const brainRoot = tempBrainRoot(L001_READER_PACK_CONTENT_SHA256);
+    process.env.HIVE_DOMAIN_PACKS_BRAIN_DIR = brainRoot;
+
+    const readerClient = stubReaderPipeline();
+    await expect(
+      runProductionPackDrivenReader({
+        gateway: envHandoffGateway(),
+        documentPagesBucket: "document-pages",
+        context: packDrivenContext(OTHER_SNAPSHOT_HASH),
+        userId: USER_A,
+        registeredDocuments: [{ id: "doc-1", sha256: "a".repeat(64) }],
+        env: workerEnvStrings(readWorkerEnv(REQUIRED_WORKER_ENV)),
+        readerClient,
+        attemptId: "attempt-no-fallback",
+      }),
+    ).rejects.toThrow(ReaderProposalPackBindingError);
+
+    expect(readerClient).not.toHaveBeenCalled();
   });
 });
