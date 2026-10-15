@@ -1,5 +1,13 @@
 import { describe, expect, it } from "vitest";
 
+import { resolveCanonicalStudyReportPresentationMode } from "@hiveforyou/shared/canonical-study-report-projection";
+
+import { projectCanonicalStudyReport } from "../../projections/project-canonical-study-report.js";
+import {
+  assertCanonicalStudyReportProjection,
+  CanonicalStudyReportProjectionValidationError,
+} from "../../projections/validate-canonical-study-report-projection.js";
+import { CANONICAL_STUDY_DEBUG_PACK_APPROVAL } from "../resolve-approved-proposal-domain-pack.js";
 import { buildCanonicalStudy } from "./index.js";
 import {
   buildSyntheticFoundation,
@@ -170,5 +178,162 @@ describe("buildCanonicalStudy", () => {
 
   it("regression: foundation builder remains available", () => {
     expect(typeof buildCanonicalStudyFoundation).toBe("function");
+  });
+});
+
+describe("projectCanonicalStudyReport", () => {
+  function buildSampleArtifact() {
+    const foundation = buildSyntheticFoundation({
+      documents: [
+        {
+          sourceDocumentId: "plan-a",
+          pages: mockPages("plan-a", 1, "reading Read fluently"),
+          parsedModelJson: planGoalDoc("plan-a", "doc.plan", "Read fluently", "2024-01-01"),
+        },
+        {
+          sourceDocumentId: "plan-b",
+          pages: mockPages("plan-b", 1, "reading Read faster"),
+          parsedModelJson: planGoalDoc("plan-b", "doc.plan", "Read faster", "2025-01-01"),
+        },
+      ],
+    });
+    return buildCanonicalStudy({
+      pack: SYNTHETIC_PACK,
+      packContentSha256: PACK_SHA,
+      foundation,
+      studyRunId: "study-run-test",
+      caseId: "case-test",
+    });
+  }
+
+  it("projects customer and pro audiences deterministically", () => {
+    const artifact = buildSampleArtifact();
+    const publication = {
+      customerProReportsPermitted: false,
+      packApprovalLabel: CANONICAL_STUDY_DEBUG_PACK_APPROVAL,
+    };
+
+    const customer = projectCanonicalStudyReport({
+      artifact,
+      audience: "customer",
+      ...publication,
+    });
+    const pro = projectCanonicalStudyReport({
+      artifact,
+      audience: "pro",
+      ...publication,
+    });
+
+    expect(customer.audience).toBe("customer");
+    expect(pro.audience).toBe("pro");
+    expect(customer.presentationMode).toBe("internal_preview");
+    expect(pro.body.entityLedger.length).toBeGreaterThan(0);
+  });
+
+  it("requires evidence-backed claim refs for customer facts", () => {
+    const artifact = buildSampleArtifact();
+    const customer = projectCanonicalStudyReport({
+      artifact,
+      audience: "customer",
+      customerProReportsPermitted: false,
+      packApprovalLabel: CANONICAL_STUDY_DEBUG_PACK_APPROVAL,
+    });
+
+    for (const section of customer.body.storySections) {
+      for (const fact of section.facts) {
+        expect(fact.evidence.length).toBeGreaterThan(0);
+      }
+    }
+  });
+
+  it("labels classified fields without promoting them to verified quotes", () => {
+    const artifact = buildSampleArtifact();
+    const chip = artifact.relations[0]?.left ?? artifact.entities[0]?.recordVersions[0]?.provenanceByFieldKey[
+      artifact.entities[0]!.recordVersions[0]!.fieldKeys[0]!
+    ];
+    expect(chip).toBeTruthy();
+    chip!.provenanceClass = "classified";
+    const fieldKey = chip!.fieldKey;
+
+    const customer = projectCanonicalStudyReport({
+      artifact,
+      audience: "customer",
+      customerProReportsPermitted: false,
+      packApprovalLabel: CANONICAL_STUDY_DEBUG_PACK_APPROVAL,
+    });
+
+    const classifiedFact = customer.body.storySections
+      .flatMap((section) => section.facts)
+      .find((fact) => fact.claimRef.fieldKey === fieldKey);
+    expect(classifiedFact?.assertionKind).toBe("classified");
+  });
+
+  it("omits unsupported flags from open questions", () => {
+    const artifact = buildSampleArtifact();
+    artifact.flags.push({
+      id: "flag-unsupported",
+      checkId: "partial_check",
+      status: "unsupported",
+      question: "Should not appear",
+      operands: [],
+      message: "Primitive operands incomplete",
+    });
+
+    const customer = projectCanonicalStudyReport({
+      artifact,
+      audience: "customer",
+      customerProReportsPermitted: false,
+      packApprovalLabel: CANONICAL_STUDY_DEBUG_PACK_APPROVAL,
+    });
+
+    expect(customer.body.openQuestions.some((item) => item.id === "flag-unsupported")).toBe(false);
+  });
+
+  it("gates publication mode on pack approval metadata", () => {
+    expect(
+      resolveCanonicalStudyReportPresentationMode({
+        customerProReportsPermitted: false,
+        packApprovalLabel: CANONICAL_STUDY_DEBUG_PACK_APPROVAL,
+      }),
+    ).toBe("internal_preview");
+    expect(
+      resolveCanonicalStudyReportPresentationMode({
+        customerProReportsPermitted: true,
+        packApprovalLabel: "APPROVED_PACK",
+      }),
+    ).toBe("approved");
+  });
+
+  it("rejects projections with unknown claim refs", () => {
+    const artifact = buildSampleArtifact();
+    const customer = projectCanonicalStudyReport({
+      artifact,
+      audience: "customer",
+      customerProReportsPermitted: false,
+      packApprovalLabel: CANONICAL_STUDY_DEBUG_PACK_APPROVAL,
+    });
+
+    customer.body.importantFacts.push({
+      claimRef: { fieldKey: "missing-field-key" },
+      entityId: null,
+      recordTypeId: "goal",
+      fieldId: "statement",
+      sourceDocumentId: "plan-a",
+      displayText: "fabricated",
+      assertionKind: "verified_quoted",
+      evidence: [
+        {
+          claimRef: { fieldKey: "missing-field-key" },
+          sourceDocumentId: "plan-a",
+          page: 1,
+          quote: "fabricated",
+          provenanceClass: "quoted",
+        },
+      ],
+    });
+
+    expect(() => assertCanonicalStudyReportProjection(artifact, customer)).toThrow(
+      CanonicalStudyReportProjectionValidationError,
+    );
   });
 });

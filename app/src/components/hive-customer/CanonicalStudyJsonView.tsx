@@ -4,7 +4,10 @@ import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import type { CanonicalStudyArtifact } from "@hiveforyou/shared/canonical-study-artifact";
-import { buildHiveReadyHref } from "@/lib/intake/study-completion-navigation";
+import {
+  buildHiveReadyHref,
+  buildHiveReportPreviewHref,
+} from "@/lib/intake/study-completion-navigation";
 
 import { HiveCustomerShell } from "./HiveCustomerShell";
 
@@ -76,6 +79,7 @@ export function CanonicalStudyJsonView({
 
   const downloadHref = `/api/case/${encodeURIComponent(caseId)}/canonical-debug/download?studyRunId=${encodeURIComponent(studyRunId)}`;
   const backHref = buildHiveReadyHref({ caseId, studyRunId });
+  const reportPreviewHref = buildHiveReportPreviewHref({ caseId, studyRunId, audience: "customer" });
 
   return (
     <HiveCustomerShell intakeRunId={intakeRunId} exploreDisabled={false}>
@@ -102,6 +106,12 @@ export function CanonicalStudyJsonView({
             >
               Download
             </a>
+            <Link
+              href={reportPreviewHref}
+              className="rounded-lg border border-customerHive-border bg-white px-4 py-2 text-sm font-medium"
+            >
+              Report preview
+            </Link>
             <Link
               href={backHref}
               className="rounded-lg bg-customerHive-primary px-4 py-2 text-sm font-medium text-white"

@@ -20,6 +20,15 @@ export function buildHiveCanonicalJsonHref(input: { caseId: string; studyRunId: 
   return `/hives/${encodeURIComponent(input.caseId)}/canonical-json?studyRunId=${encodeURIComponent(input.studyRunId)}`;
 }
 
+export function buildHiveReportPreviewHref(input: {
+  caseId: string;
+  studyRunId: string;
+  audience?: "customer" | "pro";
+}): string {
+  const audience = input.audience ?? "customer";
+  return `/hives/${encodeURIComponent(input.caseId)}/report-preview?studyRunId=${encodeURIComponent(input.studyRunId)}&audience=${encodeURIComponent(audience)}`;
+}
+
 export function buildPostStudyCompletionHref(input: {
   processingMode: StudyProcessingMode;
   caseId: string;
