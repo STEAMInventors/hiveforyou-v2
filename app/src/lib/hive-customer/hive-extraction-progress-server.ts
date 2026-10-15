@@ -20,11 +20,16 @@ import {
 import { createServerSupabaseClient, getAuthenticatedUserId } from "@/lib/supabase/server";
 
 import {
+  mergeInspectorDocumentsWithIntakeInventory,
+  mergeIntakeIntoFallbackSourceDocumentIds,
+  type IntakeSourceDocumentInventoryRow,
+} from "./hive-extraction-intake-inventory";
+import type { HiveExtractionProgressView } from "./hive-extraction-progress-types";
+import {
   isPackDrivenExtractionExploreReady,
   mapInspectorDocumentToCustomerRow,
   resolveReliableSubjectFirstName,
 } from "./map-customer-extraction-ui-state";
-import type { HiveExtractionProgressView } from "./hive-extraction-progress-types";
 
 export type { HiveExtractionProgressView } from "./hive-extraction-progress-types";
 
@@ -54,11 +59,32 @@ export async function loadHiveExtractionProgressForSession(input: {
     input.studyRunId,
   );
 
+  const intakeRunId = context?.intakeRunId ?? run.intakeRunId ?? null;
+  let intakeInventory: IntakeSourceDocumentInventoryRow[] = [];
+  let thingsThatWouldHelp: HiveExtractionProgressView["thingsThatWouldHelp"] = [];
+  if (intakeRunId) {
+    const intakeView = await readIntakeEvidenceWorkspaceView(intakeRunId);
+    if (intakeView) {
+      intakeInventory = intakeView.documents.map((row) => ({
+        sourceDocumentId: row.sourceDocumentId,
+        filename: row.filename,
+      }));
+      thingsThatWouldHelp = intakeView.thingsThatWouldHelp.map((row) => ({
+        customerLabel: row.customerLabel,
+        packExpectationId: row.packExpectationId,
+      }));
+    }
+  }
+
   const logicalDocuments =
     context?.structureMap?.logicalDocuments ?? context?.logicalDocuments ?? [];
-  const fallbackSourceDocumentIds = [
+  const studyContextSourceDocumentIds = [
     ...(context?.sourceDocuments.map((doc) => doc.sourceDocumentId) ?? []),
   ].filter((id): id is string => typeof id === "string" && id.trim().length > 0);
+  const fallbackSourceDocumentIds = mergeIntakeIntoFallbackSourceDocumentIds(
+    studyContextSourceDocumentIds,
+    intakeInventory,
+  );
 
   const preliminary = await loadReaderDocumentExtractionArtifacts({
     gateway,
@@ -96,6 +122,12 @@ export async function loadHiveExtractionProgressForSession(input: {
     logicalDocuments,
   });
 
+  const inspectorDocuments = mergeInspectorDocumentsWithIntakeInventory({
+    inspectorDocuments: bundle.documents,
+    intakeInventory,
+    orderedSourceDocumentIds: artifacts.orderedSourceDocumentIds,
+  });
+
   const documentDateBySourceId = new Map<string, string | undefined>();
   for (const logical of logicalDocuments) {
     if (logical.sourceDocumentId) {
@@ -106,7 +138,7 @@ export async function loadHiveExtractionProgressForSession(input: {
   const failedDocumentIds = artifacts.terminalArtifact?.failedDocumentIds ?? [];
   const succeededDocumentIds = artifacts.terminalArtifact?.succeededDocumentIds ?? [];
 
-  const documents = bundle.documents.map((doc) =>
+  const documents = inspectorDocuments.map((doc) =>
     mapInspectorDocumentToCustomerRow({
       doc,
       studyRunStatus: run.status as StudyRunStatus,
@@ -116,17 +148,6 @@ export async function loadHiveExtractionProgressForSession(input: {
       documentDateBySourceId,
     }),
   );
-
-  const intakeRunId = context?.intakeRunId ?? run.intakeRunId ?? null;
-  let thingsThatWouldHelp: HiveExtractionProgressView["thingsThatWouldHelp"] = [];
-  if (intakeRunId) {
-    const intakeView = await readIntakeEvidenceWorkspaceView(intakeRunId);
-    thingsThatWouldHelp =
-      intakeView?.thingsThatWouldHelp.map((row) => ({
-        customerLabel: row.customerLabel,
-        packExpectationId: row.packExpectationId,
-      })) ?? [];
-  }
 
   const readDocumentCount = documents.filter((row) => row.uiStatus === "read").length;
   const totalDetailCount = documents.reduce(
@@ -148,7 +169,7 @@ export async function loadHiveExtractionProgressForSession(input: {
     rawExtractionOutcome: rawOutcome,
     extractionCompleteForExplore: isPackDrivenExtractionExploreReady(rawOutcome),
     extractionTerminal,
-    subjectFirstName: resolveReliableSubjectFirstName(bundle.documents),
+    subjectFirstName: resolveReliableSubjectFirstName(inspectorDocuments),
     documents,
     thingsThatWouldHelp,
     readDocumentCount,
