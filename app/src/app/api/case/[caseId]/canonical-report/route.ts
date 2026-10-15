@@ -6,7 +6,10 @@ import type { CanonicalStudyReportAudience } from "@hiveforyou/shared/canonical-
 import { CaseNotFoundError } from "@/lib/canonical-study/study-service-server";
 import { StudyRunNotFoundError } from "@/lib/case-map/case-map-bundle-service-server";
 import { CanonicalStudyArtifactsNotFoundError } from "@/lib/canonical-debug/run-deterministic-canonical-study-server";
+import { logRouteUnexpectedError } from "@/lib/log-route-unexpected-error";
 import { loadCanonicalStudyReportProjectionForSession } from "@/lib/canonical-report/canonical-report-service-server";
+
+const ROUTE_NAME = "api/case/canonical-report";
 
 type RouteContext = { params: Promise<{ caseId: string }> };
 
@@ -63,6 +66,7 @@ export async function GET(request: Request, context: RouteContext) {
         { status: 404 },
       );
     }
+    logRouteUnexpectedError(ROUTE_NAME, error, { studyRunId });
     return NextResponse.json(
       { error: "UNEXPECTED", message: "Could not load canonical study report projection." },
       { status: 500 },

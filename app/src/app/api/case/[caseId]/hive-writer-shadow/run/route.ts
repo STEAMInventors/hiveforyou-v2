@@ -6,7 +6,10 @@ import type { CanonicalStudyReportAudience } from "@hiveforyou/shared/canonical-
 import { CaseNotFoundError } from "@/lib/canonical-study/study-service-server";
 import { StudyRunNotFoundError } from "@/lib/case-map/case-map-bundle-service-server";
 import { CanonicalStudyArtifactsNotFoundError } from "@/lib/canonical-debug/run-deterministic-canonical-study-server";
+import { logRouteUnexpectedError } from "@/lib/log-route-unexpected-error";
 import { runHiveWriterShadowForSession } from "@/lib/hive-writer/hive-writer-shadow-service-server";
+
+const ROUTE_NAME = "api/case/hive-writer-shadow/run";
 
 type RouteContext = { params: Promise<{ caseId: string }> };
 
@@ -65,6 +68,7 @@ export async function POST(request: Request, context: RouteContext) {
         { status: 404 },
       );
     }
+    logRouteUnexpectedError(ROUTE_NAME, error, { studyRunId });
     return NextResponse.json(
       { error: "WRITER_SHADOW_FAILED", message: "Hive Writer shadow run failed." },
       { status: 500 },
