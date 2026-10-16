@@ -76,3 +76,13 @@ export function hiveWriterShadowRecordPath(
 ): string {
   return `${userId}/hive-writer-shadow/${studyRunId}/${audience}/${idempotencyKey}.json`;
 }
+
+/** Append-only terminal failure snapshots for a single Writer shadow idempotency key. */
+export function hiveWriterShadowAttemptHistoryPath(
+  userId: string,
+  studyRunId: string,
+  audience: "customer" | "pro",
+  idempotencyKey: string,
+): string {
+  return `${userId}/hive-writer-shadow/${studyRunId}/${audience}/${idempotencyKey}.attempt-history.json`;
+}

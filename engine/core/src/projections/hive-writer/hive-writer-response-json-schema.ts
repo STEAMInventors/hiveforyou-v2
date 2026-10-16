@@ -29,15 +29,37 @@ const claimRefSchema = {
   required: ["fieldKey"],
 } as const;
 
-const elementSchema = {
+/** Superset props surface; per-component typing is enforced in validate-hive-ui-tree. */
+const hiveUiElementPropsSchema = {
   type: "object",
   additionalProperties: false,
   properties: {
+    sectionId: { type: "string" },
+    claimRef: claimRefSchema,
+    relationId: { type: "string" },
+    questionIds: { type: "array", items: { type: "string" } },
+    evidenceIndex: { type: "integer" },
+    seriesId: { type: "string" },
+    storySectionIds: { type: "array", items: { type: "string" } },
+    sectionKey: { type: "string", enum: [...HIVE_UI_PRO_SECTION_KEYS] },
+    fieldKey: { type: "string" },
+    viewId: { type: "string" },
+    requirementId: { type: "string" },
+    flagId: { type: "string" },
+    tableIndex: { type: "integer" },
+  },
+} as const;
+
+const writerUiTreeElementSchema = {
+  type: "object",
+  additionalProperties: false,
+  properties: {
+    id: { type: "string" },
     type: { type: "string", enum: [...HIVE_UI_COMPONENT_TYPES] },
-    props: { type: "object" },
+    props: hiveUiElementPropsSchema,
     children: { type: "array", items: { type: "string" } },
   },
-  required: ["type", "props"],
+  required: ["id", "type", "props"],
 } as const;
 
 const domainBindingSchema = {
@@ -108,8 +130,8 @@ export const HIVE_WRITER_RESPONSE_JSON_SCHEMA = {
         narrativeSource: { type: "string", enum: ["deterministic"] },
         root: { type: "string" },
         elements: {
-          type: "object",
-          additionalProperties: elementSchema,
+          type: "array",
+          items: writerUiTreeElementSchema,
         },
       },
       required: [
@@ -145,4 +167,6 @@ export const HIVE_WRITER_RESPONSE_JSON_SCHEMA = {
 export const HIVE_WRITER_PROP_SCHEMA_FRAGMENTS = {
   claimRefSchema,
   proSectionKeys: HIVE_UI_PRO_SECTION_KEYS,
+  hiveUiElementPropsSchema,
+  writerUiTreeElementSchema,
 } as const;

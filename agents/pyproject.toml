@@ -22,6 +22,9 @@ build-backend = "hatchling.build"
 [tool.hatch.build.targets.wheel]
 packages = ["src/hive_agents"]
 
+[tool.hatch.build.targets.wheel.force-include]
+"src/hive_agents/contracts/hive-writer-anthropic-response-format.json" = "hive_agents/contracts/hive-writer-anthropic-response-format.json"
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["src"]

@@ -1,7 +1,10 @@
 import { resolveCanonicalStudyReportPresentationMode } from "@hiveforyou/shared/canonical-study-report-projection";
 import type { CanonicalStudyReportAudience } from "@hiveforyou/shared/canonical-study-report-projection";
 import type { CanonicalStudyArtifact } from "@hiveforyou/shared/canonical-study-artifact";
-import { hiveWriterShadowRecordPath } from "@hiveforyou/shared/hive-artifact-paths";
+import {
+  hiveWriterShadowAttemptHistoryPath,
+  hiveWriterShadowRecordPath,
+} from "@hiveforyou/shared/hive-artifact-paths";
 import {
   parseHiveWriterShadowRecord,
   type HiveWriterShadowRecord,
@@ -22,6 +25,12 @@ import { buildHiveWriterShadowMarkerRecord } from "./run-hive-writer-shadow.js";
 import { runHiveWriterShadow } from "./run-hive-writer-shadow.js";
 import type { HiveWriterShadowPersistence } from "./run-hive-writer-shadow.js";
 import { resolveHiveWriterDomainBindingForPersistedStudy } from "./resolve-hive-writer-domain-binding.js";
+import {
+  appendTerminalAttemptSnapshot,
+  canRetryTerminalWriterShadowFailure,
+  isRetriableTerminalWriterShadowFailure,
+  type HiveWriterShadowAttemptHistory,
+} from "./writer-shadow-retry.js";
 
 const DOCUMENT_PAGES_BUCKET = "document-pages";
 
@@ -59,6 +68,47 @@ function textField(row: Record<string, unknown>, key: string): string {
   return typeof value === "string" ? value : "";
 }
 
+async function loadWriterShadowAttemptHistory(input: {
+  gateway: WriterShadowObjectGateway;
+  userId: string;
+  studyRunId: string;
+  audience: CanonicalStudyReportAudience;
+  idempotencyKey: string;
+}): Promise<HiveWriterShadowAttemptHistory | null> {
+  const path = hiveWriterShadowAttemptHistoryPath(
+    input.userId,
+    input.studyRunId,
+    input.audience,
+    input.idempotencyKey,
+  );
+  try {
+    const bytes = await input.gateway.downloadObject(DOCUMENT_PAGES_BUCKET, path);
+    return JSON.parse(new TextDecoder().decode(bytes)) as HiveWriterShadowAttemptHistory;
+  } catch {
+    return null;
+  }
+}
+
+async function saveWriterShadowAttemptHistory(input: {
+  gateway: WriterShadowObjectGateway;
+  userId: string;
+  studyRunId: string;
+  audience: CanonicalStudyReportAudience;
+  idempotencyKey: string;
+  history: HiveWriterShadowAttemptHistory;
+}): Promise<void> {
+  const path = hiveWriterShadowAttemptHistoryPath(
+    input.userId,
+    input.studyRunId,
+    input.audience,
+    input.idempotencyKey,
+  );
+  const bytes = new TextEncoder().encode(JSON.stringify(input.history));
+  await input.gateway.uploadObject(DOCUMENT_PAGES_BUCKET, path, bytes, "application/json", {
+    upsert: true,
+  });
+}
+
 function createShadowPersistence(input: {
   gateway: WriterShadowObjectGateway;
   userId: string;
@@ -93,7 +143,26 @@ function createShadowPersistence(input: {
           JSON.parse(new TextDecoder().decode(existingBytes)),
         );
         if (isHiveWriterShadowTerminalStatus(existing.status)) {
-          return;
+          if (existing.status === "failed") {
+            const attemptHistory = await loadWriterShadowAttemptHistory({
+              gateway: input.gateway,
+              userId: input.userId,
+              studyRunId: input.studyRunId,
+              audience: record.audience,
+              idempotencyKey: record.idempotencyKey,
+            });
+            if (
+              attemptHistory &&
+              attemptHistory.attempts.length >= 1 &&
+              isRetriableTerminalWriterShadowFailure(existing)
+            ) {
+              // Prior terminal failure archived — allow one replacement write.
+            } else {
+              return;
+            }
+          } else {
+            return;
+          }
         }
       } catch {
         // Missing object — first write for this idempotency key.
@@ -303,9 +372,20 @@ export async function executeHiveWriterShadowRequest(input: {
     audience: input.audience,
   });
   const existing = await persistence.load(idempotencyKey);
+  const attemptHistory = await loadWriterShadowAttemptHistory({
+    gateway: input.gateway,
+    userId: owner.userId,
+    studyRunId: input.studyRunId,
+    audience: input.audience,
+    idempotencyKey,
+  });
+  const allowTerminalFailedRetry =
+    existing !== null &&
+    canRetryTerminalWriterShadowFailure({ record: existing, attemptHistory });
   const plan = planWriterShadowWorkerExecution({
     presentationMode,
     existingStatus: existing?.status ?? null,
+    allowTerminalFailedRetry,
   });
 
   if (plan === "reuse" && existing) {
@@ -327,6 +407,17 @@ export async function executeHiveWriterShadowRequest(input: {
 
   assertHiveWriterLoopbackHost(input.env);
   const invokeWriter = input.invokeWriter ?? createWriterHttpClient(input.env);
+  if (allowTerminalFailedRetry && existing) {
+    const archived = appendTerminalAttemptSnapshot({ history: attemptHistory, record: existing });
+    await saveWriterShadowAttemptHistory({
+      gateway: input.gateway,
+      userId: owner.userId,
+      studyRunId: input.studyRunId,
+      audience: input.audience,
+      idempotencyKey,
+      history: archived,
+    });
+  }
   await saveUnlessTerminal(
     persistence,
     buildHiveWriterShadowMarkerRecord({

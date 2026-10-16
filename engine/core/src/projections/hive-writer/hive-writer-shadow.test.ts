@@ -381,6 +381,26 @@ describe("hive-writer shadow", () => {
     expect(record.hiveUiTree).toBeNull();
   });
 
+  it("maps hive-agents WRITER_MODEL_JSON_INVALID HTTP 422 to failed shadow record", async () => {
+    const { artifact, projection } = buildCustomerProjection();
+    const record = await runHiveWriterShadow({
+      artifact,
+      projection,
+      invokeWriter: async () => {
+        throw new Error(
+          'WRITER_HTTP_422:{"detail":{"error":{"code":"WRITER_MODEL_JSON_INVALID","message":"WRITER_MODEL_JSON_INVALID"}}}',
+        );
+      },
+      persistence: inMemoryPersistence().persistence,
+    });
+    expect(record.status).toBe("failed");
+    expect(record.proposal).toBeNull();
+    expect(record.hiveUiTree).toBeNull();
+    expect(record.validation.errorCodes).toContain("WRITER_MODEL_JSON_INVALID");
+    expect(record.validation.message).toMatch(/WRITER_HTTP_422/);
+    expect(record.validation.message).toMatch(/WRITER_MODEL_JSON_INVALID/);
+  });
+
   it("does not duplicate paid model calls for identical requests", async () => {
     const { artifact, projection } = buildCustomerProjection();
     const invokeWriter = vi.fn(mockWriterFromDeterministicTree(artifact, projection));

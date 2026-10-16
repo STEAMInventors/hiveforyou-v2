@@ -1,0 +1,317 @@
+{
+  "schemaVersion": "hive-writer-anthropic-contract/1",
+  "schemaName": "hive_writer_proposal_v1",
+  "proposalSchemaVersion": "hive-writer-proposal/1",
+  "sourceModule": "engine/core/src/projections/hive-writer/hive-writer-response-json-schema.ts",
+  "schemaSha256": "ff10a558c3fc68fd0822caea4284910f02b7ad8c0c6ca2a1e921080cc211ee85",
+  "anthropicConstrainedSupported": true,
+  "unsupportedReason": null,
+  "mapTypedAdditionalPropertiesPaths": [],
+  "responseFormat": {
+    "type": "json_schema",
+    "json_schema": {
+      "name": "hive_writer_proposal_v1",
+      "strict": true,
+      "schema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "schemaVersion": {
+            "type": "string",
+            "const": "hive-writer-proposal/1"
+          },
+          "domainBinding": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "domainId": {
+                "type": "string"
+              },
+              "packId": {
+                "type": "string"
+              },
+              "packVersion": {
+                "type": "string"
+              },
+              "packContentSha256": {
+                "type": "string"
+              },
+              "sourceCanonicalSchemaVersion": {
+                "type": "string",
+                "const": "hive.canonical-study/1"
+              },
+              "sourceCanonicalArtifactSha256": {
+                "type": "string"
+              },
+              "reportProjectionSchemaVersion": {
+                "type": "string",
+                "const": "canonical-study-report/1"
+              },
+              "reportProjectionContentSha256": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "domainId",
+              "packId",
+              "packVersion",
+              "packContentSha256",
+              "sourceCanonicalSchemaVersion",
+              "sourceCanonicalArtifactSha256",
+              "reportProjectionSchemaVersion",
+              "reportProjectionContentSha256"
+            ]
+          },
+          "presentationBinding": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "audience": {
+                "type": "string",
+                "enum": [
+                  "customer",
+                  "pro"
+                ]
+              },
+              "catalogId": {
+                "type": "string",
+                "const": "hive-canonical-report"
+              },
+              "catalogVersion": {
+                "type": "string",
+                "const": "1"
+              },
+              "uiTreeSchemaVersion": {
+                "type": "string",
+                "const": "hive-ui-tree/1"
+              },
+              "writerContractVersion": {
+                "type": "string",
+                "const": "1"
+              }
+            },
+            "required": [
+              "audience",
+              "catalogId",
+              "catalogVersion",
+              "uiTreeSchemaVersion",
+              "writerContractVersion"
+            ]
+          },
+          "hiveUiTree": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "schemaVersion": {
+                "type": "string",
+                "const": "hive-ui-tree/1"
+              },
+              "caseId": {
+                "type": "string"
+              },
+              "studyRunId": {
+                "type": "string"
+              },
+              "audience": {
+                "type": "string",
+                "enum": [
+                  "customer",
+                  "pro"
+                ]
+              },
+              "sourceReportArtifactHash": {
+                "type": "string"
+              },
+              "catalogId": {
+                "type": "string",
+                "const": "hive-canonical-report"
+              },
+              "catalogVersion": {
+                "type": "string",
+                "const": "1"
+              },
+              "narrativeSource": {
+                "type": "string",
+                "enum": [
+                  "deterministic"
+                ]
+              },
+              "root": {
+                "type": "string"
+              },
+              "elements": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "ReportRoot",
+                        "StorySection",
+                        "FactRow",
+                        "ChangePair",
+                        "ChangesSection",
+                        "SupportPair",
+                        "SupportsSection",
+                        "OpenQuestions",
+                        "EvidenceChip",
+                        "MeasurementCard",
+                        "Timeline",
+                        "ProSection",
+                        "ProQuotationRow",
+                        "ProRelationRow",
+                        "ProOperativeViewRow",
+                        "ProRequirementRow",
+                        "ProFlagRow",
+                        "ProExportBlock"
+                      ]
+                    },
+                    "props": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "sectionId": {
+                          "type": "string"
+                        },
+                        "claimRef": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "properties": {
+                            "fieldKey": {
+                              "type": "string"
+                            },
+                            "contextId": {
+                              "type": "string"
+                            },
+                            "contextKind": {
+                              "type": "string",
+                              "enum": [
+                                "provenance_chip",
+                                "relation",
+                                "requirement",
+                                "flag",
+                                "series_observation",
+                                "unresolved_item",
+                                "unresolved_comparison"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "fieldKey"
+                          ]
+                        },
+                        "relationId": {
+                          "type": "string"
+                        },
+                        "questionIds": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "evidenceIndex": {
+                          "type": "integer"
+                        },
+                        "seriesId": {
+                          "type": "string"
+                        },
+                        "storySectionIds": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "sectionKey": {
+                          "type": "string",
+                          "enum": [
+                            "export",
+                            "entity_ledger",
+                            "quotations",
+                            "relations",
+                            "operative_views",
+                            "requirements",
+                            "flags",
+                            "measurement_series"
+                          ]
+                        },
+                        "fieldKey": {
+                          "type": "string"
+                        },
+                        "viewId": {
+                          "type": "string"
+                        },
+                        "requirementId": {
+                          "type": "string"
+                        },
+                        "flagId": {
+                          "type": "string"
+                        },
+                        "tableIndex": {
+                          "type": "integer"
+                        }
+                      }
+                    },
+                    "children": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "type",
+                    "props"
+                  ]
+                }
+              }
+            },
+            "required": [
+              "schemaVersion",
+              "caseId",
+              "studyRunId",
+              "audience",
+              "sourceReportArtifactHash",
+              "catalogId",
+              "catalogVersion",
+              "narrativeSource",
+              "root",
+              "elements"
+            ]
+          },
+          "orderingRationale": {
+            "type": "string"
+          },
+          "writerMetadata": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "writerImplementationVersion": {
+                "type": "string",
+                "const": "1"
+              },
+              "modelIdentifier": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "writerImplementationVersion"
+            ]
+          }
+        },
+        "required": [
+          "schemaVersion",
+          "domainBinding",
+          "presentationBinding",
+          "hiveUiTree",
+          "writerMetadata"
+        ]
+      }
+    }
+  }
+}

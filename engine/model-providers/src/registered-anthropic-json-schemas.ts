@@ -6,6 +6,7 @@ import { HIVE_DISCOVER_RESOLUTION_JSON_SCHEMA } from "../../shared/src/discover/
 import { CLIENT_SUMMARY_RESPONSE_JSON_SCHEMA } from "../../core/src/study/client-summary-pass";
 import { CLIENT_WRITER_RESPONSE_JSON_SCHEMA } from "../../core/src/study/client-writer-pass";
 import { STORY_WRITER_JSON_SCHEMA } from "../../core/src/study/story/generateStory";
+import { HIVE_WRITER_RESPONSE_JSON_SCHEMA } from "../../core/src/projections/hive-writer/hive-writer-response-json-schema";
 
 export type RegisteredAnthropicJsonSchema = {
   name: string;
@@ -28,4 +29,8 @@ export const REGISTERED_ANTHROPIC_JSON_SCHEMAS: RegisteredAnthropicJsonSchema[] 
   { name: "story_writer_v1", schema: STORY_WRITER_JSON_SCHEMA as Record<string, unknown> },
   { name: "client_summary_v1", schema: CLIENT_SUMMARY_RESPONSE_JSON_SCHEMA as Record<string, unknown> },
   { name: "client_writer_v2", schema: CLIENT_WRITER_RESPONSE_JSON_SCHEMA as Record<string, unknown> },
+  {
+    name: "hive_writer_proposal_v1",
+    schema: HIVE_WRITER_RESPONSE_JSON_SCHEMA as Record<string, unknown>,
+  },
 ];

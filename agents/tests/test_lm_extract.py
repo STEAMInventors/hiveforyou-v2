@@ -22,3 +22,13 @@ def test_try_parse_json_object_returns_none_for_malformed() -> None:
     assert try_parse_json_object("not json at all") is None
     assert try_parse_json_object("[1,2,3]") is None
     assert try_parse_json_object("") is None
+
+
+def test_try_parse_json_object_accepts_markdown_fence() -> None:
+    payload = {"schemaVersion": "hive-writer-proposal/1"}
+    text = "```json\n" + json.dumps(payload) + "\n```"
+    assert try_parse_json_object(text) == payload
+
+
+def test_try_parse_json_object_returns_none_for_truncated_object() -> None:
+    assert try_parse_json_object('{"schemaVersion": "hive-writer-proposal/1",') is None

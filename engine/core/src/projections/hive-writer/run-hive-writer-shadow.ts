@@ -25,6 +25,10 @@ import {
   HiveWriterProposalValidationError,
   assertWriterProposalEnvelope,
 } from "./validate-hive-writer-proposal.js";
+import {
+  normalizeWriterModelProposalBeforeValidation,
+  WriterModelProposalNormalizationError,
+} from "./normalize-writer-model-proposal.js";
 
 export type HiveWriterShadowPersistence = {
   load: (idempotencyKey: string) => Promise<HiveWriterShadowRecord | null>;
@@ -40,6 +44,38 @@ export type RunHiveWriterShadowInput = {
   now?: () => number;
 };
 
+function writerHttpErrorCode(error: unknown): string | null {
+  if (!(error instanceof Error)) {
+    return null;
+  }
+  const match = error.message.match(/^WRITER_HTTP_(\d{3}):/);
+  if (!match) {
+    return null;
+  }
+  const status = Number(match[1]);
+  const payload = error.message.slice(match[0].length);
+  let detailCode: string | null = null;
+  try {
+    const parsed = JSON.parse(payload) as { detail?: { error?: { code?: string } } };
+    detailCode = parsed.detail?.error?.code ?? null;
+  } catch {
+    detailCode = null;
+  }
+  if (detailCode) {
+    return detailCode;
+  }
+  if (status === 422) {
+    return "WRITER_MODEL_JSON_INVALID";
+  }
+  if (status >= 500) {
+    return "WRITER_PROVIDER_HTTP_5XX";
+  }
+  if (status >= 400) {
+    return "WRITER_PROVIDER_HTTP_4XX";
+  }
+  return "WRITER_VALIDATION_FAILED";
+}
+
 function validationErrorCode(error: unknown): string {
   if (error instanceof HiveUiTreeValidationError) {
     return "HIVE_UI_TREE_INVALID";
@@ -50,8 +86,15 @@ function validationErrorCode(error: unknown): string {
   if (error instanceof HiveWriterDomainBindingError) {
     return error.code;
   }
+  if (error instanceof WriterModelProposalNormalizationError) {
+    return error.code;
+  }
   if (error instanceof Error && error.name === "ZodError") {
     return "WRITER_PROPOSAL_SCHEMA_INVALID";
+  }
+  const httpCode = writerHttpErrorCode(error);
+  if (httpCode) {
+    return httpCode;
   }
   return "WRITER_VALIDATION_FAILED";
 }
@@ -155,7 +198,9 @@ export async function runHiveWriterShadow(
     const response = await input.invokeWriter(modelInput);
     modelIdentifier = response.modelIdentifier;
     tokenUsage = response.tokenUsage;
-    proposal = parseHiveWriterProposal(response.proposal);
+    proposal = parseHiveWriterProposal(
+      normalizeWriterModelProposalBeforeValidation(response.proposal),
+    );
     assertWriterProposalEnvelope({
       proposal,
       domainBinding,

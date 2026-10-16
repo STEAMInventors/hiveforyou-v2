@@ -114,6 +114,23 @@ describe("planWriterShadowWorkerExecution", () => {
       }),
     ).toBe("invoke");
   });
+
+  it("invokes once more when a terminal failed record is eligible for retry", () => {
+    expect(
+      planWriterShadowWorkerExecution({
+        presentationMode: "internal_preview",
+        existingStatus: "failed",
+        allowTerminalFailedRetry: true,
+      }),
+    ).toBe("invoke");
+    expect(
+      planWriterShadowWorkerExecution({
+        presentationMode: "internal_preview",
+        existingStatus: "failed",
+        allowTerminalFailedRetry: false,
+      }),
+    ).toBe("reuse");
+  });
 });
 
 describe("assertWriterShadowOwner", () => {

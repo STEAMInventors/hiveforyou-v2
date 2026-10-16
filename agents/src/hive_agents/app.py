@@ -72,6 +72,7 @@ from hive_agents.verifier_client import (
     reader_verifier_config_from_env,
 )
 from hive_agents.writer import run_hive_writer
+from hive_agents.writer_errors import WriterModelError
 
 
 logger = logging.getLogger(__name__)
@@ -711,6 +712,18 @@ async def study_writer(
         ) from exc
     try:
         result = await run_in_threadpool(run_hive_writer, writer_input=dict(request.input))
+    except WriterModelError as exc:
+        status_code = status.HTTP_422_UNPROCESSABLE_ENTITY
+        if exc.code == "WRITER_PROVIDER_SCHEMA_UNSUPPORTED":
+            status_code = status.HTTP_503_SERVICE_UNAVAILABLE
+        elif exc.http_status is not None and exc.http_status >= 500:
+            status_code = status.HTTP_502_BAD_GATEWAY
+        elif exc.http_status is not None and exc.http_status >= 400:
+            status_code = status.HTTP_422_UNPROCESSABLE_ENTITY
+        detail: dict[str, Any] = _error_body(exc.code, exc.code)
+        if exc.diagnostics is not None:
+            detail["diagnostics"] = exc.diagnostics.as_safe_dict()
+        raise HTTPException(status_code=status_code, detail=detail) from exc
     except ValueError as exc:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,

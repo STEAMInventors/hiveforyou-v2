@@ -41,11 +41,16 @@ export type WriterShadowWorkerPlan = "block_publication" | "reuse" | "invoke";
 export function planWriterShadowWorkerExecution(input: {
   presentationMode: CanonicalStudyReportPresentationMode;
   existingStatus: HiveWriterShadowStatus | null;
+  /** When true, a single retry may invoke Writer after a terminal failed record. */
+  allowTerminalFailedRetry?: boolean;
 }): WriterShadowWorkerPlan {
   if (input.presentationMode !== "internal_preview") {
     return "block_publication";
   }
   if (input.existingStatus && isHiveWriterShadowTerminalStatus(input.existingStatus)) {
+    if (input.existingStatus === "failed" && input.allowTerminalFailedRetry) {
+      return "invoke";
+    }
     return "reuse";
   }
   return "invoke";
