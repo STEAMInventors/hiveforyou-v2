@@ -13,6 +13,7 @@ import { projectCanonicalStudyReport } from "../project-canonical-study-report.j
 import { WriterShadowOwnerError } from "./assert-writer-shadow-owner.js";
 import { buildHiveWriterPresentationBinding } from "./build-hive-writer-model-input.js";
 import {
+  enqueueHiveWriterShadowPreviewRequest,
   executeHiveWriterShadowRequest,
   type WriterShadowObjectGateway,
 } from "./execute-hive-writer-shadow.js";
@@ -258,5 +259,64 @@ describe("executeHiveWriterShadowRequest", () => {
     expect(first.hiveUiTree).toBeNull();
     expect(second.status).toBe("rejected");
     expect(invokeWriter).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("enqueueHiveWriterShadowPreviewRequest", () => {
+  it("persists queued and dispatches without invoking Writer HTTP", async () => {
+    const artifact = sampleArtifact();
+    const gateway = memoryGateway(OWNER);
+    const dispatchRequested = vi.fn(async () => {});
+    const record = await enqueueHiveWriterShadowPreviewRequest({
+      claimedUserId: OWNER,
+      caseId: artifact.caseId,
+      studyRunId: artifact.studyRunId,
+      audience: "customer",
+      env: { HIVE_WRITER_SHADOW_MODE: "true", VERCEL_ENV: "preview" },
+      gateway,
+      loadArtifact: async () => artifact,
+      dispatchRequested,
+    });
+    expect(record.status).toBe("queued");
+    expect(dispatchRequested).toHaveBeenCalledTimes(1);
+    expect(dispatchRequested).toHaveBeenCalledWith(
+      expect.objectContaining({
+        userId: OWNER,
+        caseId: artifact.caseId,
+        studyRunId: artifact.studyRunId,
+        audience: "customer",
+        idempotencyKey: record.idempotencyKey,
+      }),
+    );
+  });
+
+  it("resends Inngest for in-flight rows without rewriting storage", async () => {
+    const artifact = sampleArtifact();
+    const gateway = memoryGateway(OWNER);
+    const dispatchRequested = vi.fn(async () => {});
+    const first = await enqueueHiveWriterShadowPreviewRequest({
+      claimedUserId: OWNER,
+      caseId: artifact.caseId,
+      studyRunId: artifact.studyRunId,
+      audience: "customer",
+      env: { HIVE_WRITER_SHADOW_MODE: "true", VERCEL_ENV: "preview" },
+      gateway,
+      loadArtifact: async () => artifact,
+      dispatchRequested,
+    });
+    const second = await enqueueHiveWriterShadowPreviewRequest({
+      claimedUserId: OWNER,
+      caseId: artifact.caseId,
+      studyRunId: artifact.studyRunId,
+      audience: "customer",
+      env: { HIVE_WRITER_SHADOW_MODE: "true", VERCEL_ENV: "preview" },
+      gateway,
+      loadArtifact: async () => artifact,
+      dispatchRequested,
+    });
+    expect(first.status).toBe("queued");
+    expect(second.status).toBe("queued");
+    expect(second.idempotencyKey).toBe(first.idempotencyKey);
+    expect(dispatchRequested).toHaveBeenCalledTimes(2);
   });
 });

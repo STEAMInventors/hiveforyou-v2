@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { UnauthenticatedError } from "@hiveforyou/core";
+import { UnauthenticatedError, WriterShadowOwnerError } from "@hiveforyou/core";
 import type { CanonicalStudyReportAudience } from "@hiveforyou/shared/canonical-study-report-projection";
 
 import { CaseNotFoundError } from "@/lib/canonical-study/study-service-server";
@@ -56,7 +56,11 @@ export async function POST(request: Request, context: RouteContext) {
         { status: 401 },
       );
     }
-    if (error instanceof CaseNotFoundError || error instanceof StudyRunNotFoundError) {
+    if (
+      error instanceof CaseNotFoundError ||
+      error instanceof StudyRunNotFoundError ||
+      error instanceof WriterShadowOwnerError
+    ) {
       return NextResponse.json(
         { error: "NOT_FOUND", message: "Resource was not found." },
         { status: 404 },

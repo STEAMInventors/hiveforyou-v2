@@ -2,12 +2,12 @@ import "server-only";
 
 import {
   buildHiveWriterShadowIdempotencyKey,
-  createWriterHttpClient,
+  enqueueHiveWriterShadowPreviewRequest,
+  loadDeterministicCanonicalStudyArtifact,
   projectCanonicalStudyReport,
   readHiveWriterShadowModeEnabled,
   resolveHiveWriterDomainBinding,
   resolveWriterHiveUiTreeForPreview,
-  runHiveWriterShadow,
   type HiveWriterShadowPersistence,
   type WriterHiveUiPreviewResolution,
 } from "@hiveforyou/core";
@@ -20,6 +20,9 @@ import {
 } from "@hiveforyou/shared/hive-writer-proposal";
 
 import { loadDeterministicCanonicalStudyArtifactForSession } from "@/lib/canonical-debug/run-deterministic-canonical-study-server";
+import { emitWriterShadowRequestedEvent } from "@/lib/hive-writer/emit-writer-shadow-requested";
+import { SupabaseStudyContextRepository } from "@/lib/persistence/supabase-repositories";
+import { SupabaseStudyArtifactRepository } from "@/lib/persistence/supabase-study-artifacts";
 import { createAuthenticatedHiveGateway, getAuthenticatedUserId } from "@/lib/supabase/server";
 import { requireSessionUserId } from "@hiveforyou/core";
 
@@ -69,39 +72,7 @@ function createShadowPersistence(input: {
   };
 }
 
-export async function runHiveWriterShadowForSession(input: {
-  caseId: string;
-  studyRunId: string;
-  audience: CanonicalStudyReportAudience;
-}): Promise<HiveWriterShadowDiagnostic> {
-  const gateway = await createAuthenticatedHiveGateway();
-  const userId = requireSessionUserId(await getAuthenticatedUserId());
-  const artifact = await loadDeterministicCanonicalStudyArtifactForSession({
-    caseId: input.caseId,
-    studyRunId: input.studyRunId,
-  });
-  const metadata = artifact as typeof artifact & CanonicalStudyDebugArtifactMetadata;
-  const projection = projectCanonicalStudyReport({
-    artifact,
-    audience: input.audience,
-    customerProReportsPermitted: metadata.customerProReportsPermitted,
-    packApprovalLabel: metadata.packApprovalLabel,
-  });
-
-  const record = await runHiveWriterShadow({
-    artifact,
-    projection,
-    shadowModeEnabled: readHiveWriterShadowModeEnabled(process.env),
-    presentationInstructions: null,
-    invokeWriter: createWriterHttpClient(process.env),
-    persistence: createShadowPersistence({
-      userId,
-      studyRunId: input.studyRunId,
-      audience: input.audience,
-      gateway,
-    }),
-  });
-
+function toHiveWriterShadowDiagnostic(record: HiveWriterShadowRecord): HiveWriterShadowDiagnostic {
   return {
     status: record.status,
     idempotencyKey: record.idempotencyKey,
@@ -112,6 +83,37 @@ export async function runHiveWriterShadowForSession(input: {
       projectionHash: record.observability.projectionHash,
     },
   };
+}
+
+export async function runHiveWriterShadowForSession(input: {
+  caseId: string;
+  studyRunId: string;
+  audience: CanonicalStudyReportAudience;
+}): Promise<HiveWriterShadowDiagnostic> {
+  const gateway = await createAuthenticatedHiveGateway();
+  const userId = requireSessionUserId(await getAuthenticatedUserId());
+  const studyArtifactRepo = new SupabaseStudyArtifactRepository(gateway, userId);
+  const contextRepo = new SupabaseStudyContextRepository(gateway, userId);
+
+  const record = await enqueueHiveWriterShadowPreviewRequest({
+    claimedUserId: userId,
+    caseId: input.caseId,
+    studyRunId: input.studyRunId,
+    audience: input.audience,
+    env: process.env,
+    gateway,
+    loadArtifact: (ownerUserId) =>
+      loadDeterministicCanonicalStudyArtifact({
+        userId: ownerUserId,
+        studyRunId: input.studyRunId,
+        storage: gateway,
+        studyArtifactRepo,
+        contextRepo,
+      }),
+    dispatchRequested: emitWriterShadowRequestedEvent,
+  });
+
+  return toHiveWriterShadowDiagnostic(record);
 }
 
 export async function loadHiveWriterShadowDiagnosticForSession(input: {
