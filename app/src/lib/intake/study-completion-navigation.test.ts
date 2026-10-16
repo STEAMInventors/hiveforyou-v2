@@ -10,8 +10,10 @@ import {
   isCanonicalStudyPresentationReady,
   isCaseWorkspaceSectionNavEnabled,
   isPackDrivenStudyAwaitingRawExtraction,
+  parseCaseDocumentsView,
   resolveCaseWorkspaceSectionFromPathname,
   resolveStudyProcessingModeFromStudyPath,
+  withCaseDocumentsView,
 } from "./study-completion-navigation";
 
 describe("study-completion-navigation", () => {
@@ -73,6 +75,14 @@ describe("study-completion-navigation", () => {
 
   it("returns a path-only workspace home href when studyRunId is missing", () => {
     expect(buildCaseWorkspaceHomeHref({ caseId: "case-1" })).toBe("/hives/case-1/ready");
+  });
+
+  it("parses documents sub-view query params for the Documents section", () => {
+    expect(parseCaseDocumentsView(undefined)).toBe("files");
+    expect(parseCaseDocumentsView("raw-extractions")).toBe("raw-extractions");
+    expect(withCaseDocumentsView("/intake/run-1?studyRunId=s1", "raw-extractions")).toContain(
+      "documentsView=raw-extractions",
+    );
   });
 
   it("distinguishes canonical presentation readiness from pack-driven polling", () => {

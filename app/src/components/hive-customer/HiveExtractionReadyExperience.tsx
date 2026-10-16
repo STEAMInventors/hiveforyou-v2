@@ -12,16 +12,26 @@ import {
   buildHiveCanonicalJsonHref,
 } from "@/lib/intake/study-completion-navigation";
 
-import { HiveCustomerDocumentRowsReady } from "./HiveCustomerDocumentRows";
+import { CaseDocumentsSubNav } from "./CaseDocumentsSubNav";
+import { CustomerRawExtractionsPanel } from "./HiveCustomerDocumentRows";
 import { HiveCustomerShell } from "./HiveCustomerShell";
 import { hivePossessiveTitle } from "./hive-customer-copy";
+import {
+  buildHiveDocumentsSectionHref,
+  buildIntakeDocumentsSectionHref,
+  type CaseDocumentsView,
+} from "@/lib/intake/study-completion-navigation";
 
 export function HiveExtractionReadyExperience({
   caseId,
   studyRunId,
+  documentsView = "raw-extractions",
+  workspaceAudience,
 }: {
   caseId: string;
   studyRunId: string;
+  documentsView?: CaseDocumentsView;
+  workspaceAudience?: "customer" | "pro";
 }) {
   const router = useRouter();
   const [progress, setProgress] = useState<HiveExtractionProgressView | null>(null);
@@ -60,9 +70,31 @@ export function HiveExtractionReadyExperience({
   }, [caseId, router, studyRunId]);
 
   const exploreHref = buildHiveCanonicalJsonHref({ caseId, studyRunId });
-  const documentsHref = progress?.intakeRunId
-    ? `/intake/${encodeURIComponent(progress.intakeRunId)}`
+  const intakeRunId = progress?.intakeRunId ?? null;
+  const documentsHref = intakeRunId
+    ? buildIntakeDocumentsSectionHref({
+        intakeRunId,
+        studyRunId,
+        audience: workspaceAudience,
+        view: "files",
+      })
     : null;
+  const filesHref = buildHiveDocumentsSectionHref({
+    caseId,
+    studyRunId,
+    intakeRunId,
+    audience: workspaceAudience,
+    segment: "ready",
+    view: "files",
+  });
+  const rawExtractionsHref = buildHiveDocumentsSectionHref({
+    caseId,
+    studyRunId,
+    intakeRunId,
+    audience: workspaceAudience,
+    segment: "ready",
+    view: "raw-extractions",
+  });
 
   const docCount = progress?.readDocumentCount ?? progress?.documents.length ?? 0;
   const detailCount = progress?.totalDetailCount ?? 0;
@@ -78,9 +110,15 @@ export function HiveExtractionReadyExperience({
         intakeRunId: progress?.intakeRunId,
         caseLabel: progress?.subjectFirstName,
         activeSection: "documents",
+        audience: workspaceAudience,
       }}
     >
       <div className="mx-auto w-full max-w-[1440px] px-6 py-10 lg:px-10">
+        <CaseDocumentsSubNav
+          activeView={documentsView}
+          filesHref={filesHref}
+          rawExtractionsHref={rawExtractionsHref}
+        />
         <div className="grid grid-cols-1 items-start gap-10 lg:grid-cols-12">
           <div className="flex flex-col lg:col-span-7">
             <div className="mb-10 flex flex-col">
@@ -112,13 +150,40 @@ export function HiveExtractionReadyExperience({
               </p>
             </div>
 
-            <h2 className="mb-4 text-[21px] font-semibold leading-7 text-customerHive-on-surface">
-              Your documents
-            </h2>
-            {progress?.documents.length ? (
-              <HiveCustomerDocumentRowsReady documents={progress.documents} />
+            {documentsView === "files" ? (
+              <div className="rounded-xl border border-customerHive-border bg-customerHive-surface-low p-6">
+                <h2 className="text-[21px] font-semibold leading-7 text-customerHive-on-surface">
+                  Your files
+                </h2>
+                <p className="mt-2 text-sm text-customerHive-on-surface-variant">
+                  Upload, remove, or add documents from your intake workspace.
+                </p>
+                {documentsHref ? (
+                  <Link
+                    href={documentsHref}
+                    className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-customerHive-primary hover:underline"
+                  >
+                    <span className="material-symbols-outlined text-[16px]">upload_file</span>
+                    Manage uploaded files
+                  </Link>
+                ) : (
+                  <p className="mt-4 text-sm text-customerHive-on-surface-muted">
+                    File management will appear when an intake run is linked to this case.
+                  </p>
+                )}
+              </div>
             ) : (
-              <p className="text-sm text-customerHive-on-surface-muted">Loading documents…</p>
+              <>
+                <h2 className="mb-4 text-[21px] font-semibold leading-7 text-customerHive-on-surface">
+                  Raw extractions
+                </h2>
+                <CustomerRawExtractionsPanel
+                  caseId={caseId}
+                  studyRunId={studyRunId}
+                  presentation="detailed"
+                  pollWhileProcessing={false}
+                />
+              </>
             )}
 
             {progress && progress.thingsThatWouldHelp.length > 0 ? (

@@ -1,8 +1,9 @@
 import { IntakeEvidenceWorkspace } from "@/components/intake/IntakeEvidenceWorkspace";
+import { parseCaseDocumentsView } from "@/lib/intake/study-completion-navigation";
 
 type PageProps = {
   params: Promise<{ intakeRunId: string }>;
-  searchParams: Promise<{ studyRunId?: string; audience?: string }>;
+  searchParams: Promise<{ studyRunId?: string; audience?: string; documentsView?: string }>;
 };
 
 export default async function IntakeRunPage({ params, searchParams }: PageProps) {
@@ -17,6 +18,7 @@ export default async function IntakeRunPage({ params, searchParams }: PageProps)
       intakeRunId={intakeRunId}
       workspaceStudyRunId={studyRunId}
       workspaceAudience={audience}
+      documentsView={parseCaseDocumentsView(query.documentsView)}
     />
   );
 }

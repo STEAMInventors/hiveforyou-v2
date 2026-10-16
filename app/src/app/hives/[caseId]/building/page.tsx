@@ -1,8 +1,9 @@
 import { HiveBuildingProgressExperience } from "@/components/hive-customer/HiveBuildingProgressExperience";
+import { parseCaseDocumentsView } from "@/lib/intake/study-completion-navigation";
 
 type PageProps = {
   params: Promise<{ caseId: string }>;
-  searchParams: Promise<{ studyRunId?: string }>;
+  searchParams: Promise<{ studyRunId?: string; documentsView?: string }>;
 };
 
 export default async function HiveBuildingPage({ params, searchParams }: PageProps) {
@@ -10,5 +11,11 @@ export default async function HiveBuildingPage({ params, searchParams }: PagePro
   const query = await searchParams;
   const studyRunId = query.studyRunId?.trim() ?? "";
 
-  return <HiveBuildingProgressExperience caseId={caseId} studyRunId={studyRunId} />;
+  return (
+    <HiveBuildingProgressExperience
+      caseId={caseId}
+      studyRunId={studyRunId}
+      documentsView={parseCaseDocumentsView(query.documentsView)}
+    />
+  );
 }

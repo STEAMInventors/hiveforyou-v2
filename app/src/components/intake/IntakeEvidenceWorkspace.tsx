@@ -34,7 +34,13 @@ import {
   type Modal2Phase,
 } from "@/components/hive-lifecycle/stages";
 import { ACCEPTED_UPLOAD_MIME } from "@/lib/upload-constants";
+import { CaseDocumentsSubNav } from "@/components/hive-customer/CaseDocumentsSubNav";
 import { CaseWorkspaceChrome } from "@/components/hive-customer/HiveCaseWorkspaceChrome";
+import { CustomerRawExtractionsPanel } from "@/components/hive-customer/HiveCustomerDocumentRows";
+import {
+  buildIntakeDocumentsSectionHref,
+  type CaseDocumentsView,
+} from "@/lib/intake/study-completion-navigation";
 import type { CaseWorkspaceAudience } from "@/lib/intake/study-completion-navigation";
 import type { IntakeEvidenceWorkspaceView, IntakeSourceFileView } from "@hiveforyou/shared/intake";
 
@@ -320,10 +326,12 @@ export function IntakeEvidenceWorkspace({
   intakeRunId,
   workspaceStudyRunId,
   workspaceAudience,
+  documentsView = "files",
 }: {
   intakeRunId: string;
   workspaceStudyRunId?: string;
   workspaceAudience?: CaseWorkspaceAudience;
+  documentsView?: CaseDocumentsView;
 }) {
   const router = useRouter();
   const { clearDocuments } = useStagedDocuments();
@@ -559,6 +567,19 @@ export function IntakeEvidenceWorkspace({
   const includedCount = files.filter((file) => file.disposition === "PRESENT").length;
   const domainLabel = view.purpose.domainName ?? "General";
   const processingDelayed = isIntakeProcessingDelayed(view.status, view.runStartedAt);
+  const linkedStudyRunId = workspaceStudyRunId?.trim() || studyBuild?.studyRunId?.trim() || "";
+  const filesHref = buildIntakeDocumentsSectionHref({
+    intakeRunId,
+    studyRunId: linkedStudyRunId || undefined,
+    audience: workspaceAudience,
+    view: "files",
+  });
+  const rawExtractionsHref = buildIntakeDocumentsSectionHref({
+    intakeRunId,
+    studyRunId: linkedStudyRunId || undefined,
+    audience: workspaceAudience,
+    view: "raw-extractions",
+  });
 
   return (
     <div className="intake-docs" style={shellStyle} data-testid="intake-evidence-workspace">
@@ -666,6 +687,35 @@ export function IntakeEvidenceWorkspace({
           gap: 28,
         }}
       >
+        <CaseDocumentsSubNav
+          variant="intake"
+          activeView={documentsView}
+          filesHref={filesHref}
+          rawExtractionsHref={rawExtractionsHref}
+          rawExtractionsEnabled={Boolean(linkedStudyRunId)}
+        />
+
+        {documentsView === "raw-extractions" ? (
+          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+            <h1
+              style={{
+                margin: 0,
+                fontWeight: 600,
+                fontSize: "clamp(28px, 5vw, 34px)",
+                letterSpacing: "-0.025em",
+              }}
+            >
+              Raw extractions
+            </h1>
+            <CustomerRawExtractionsPanel
+              caseId={view.caseId}
+              studyRunId={linkedStudyRunId || null}
+              variant="intake"
+              presentation="detailed"
+            />
+          </div>
+        ) : (
+          <>
         <div
           style={{
             display: "flex",
@@ -1020,6 +1070,8 @@ export function IntakeEvidenceWorkspace({
             </button>
           </section>
         ) : null}
+          </>
+        )}
       </main>
       {studyBuild && view?.studyPath !== "DOMAIN_PACK" ? (
         <StudyLifecycleModal

@@ -48,6 +48,76 @@ export function isPackDrivenStudyAwaitingRawExtraction(status: StudyRunStatus): 
   return isStudyRunProcessing(status);
 }
 
+export type CaseDocumentsView = "files" | "raw-extractions";
+
+export const CASE_DOCUMENTS_VIEW_QUERY = "documentsView";
+
+export function parseCaseDocumentsView(raw: string | null | undefined): CaseDocumentsView {
+  return raw === "raw-extractions" ? "raw-extractions" : "files";
+}
+
+export function caseDocumentsViewLabel(view: CaseDocumentsView): string {
+  return view === "raw-extractions" ? "Raw extractions" : "Your files";
+}
+
+export function withCaseDocumentsView(href: string, view: CaseDocumentsView): string {
+  const hashIndex = href.indexOf("#");
+  const hash = hashIndex >= 0 ? href.slice(hashIndex) : "";
+  const withoutHash = hashIndex >= 0 ? href.slice(0, hashIndex) : href;
+  const queryIndex = withoutHash.indexOf("?");
+  const path = queryIndex === -1 ? withoutHash : withoutHash.slice(0, queryIndex);
+  const params = new URLSearchParams(
+    queryIndex === -1 ? "" : withoutHash.slice(queryIndex + 1),
+  );
+  if (view === "raw-extractions") {
+    params.set(CASE_DOCUMENTS_VIEW_QUERY, "raw-extractions");
+  } else {
+    params.delete(CASE_DOCUMENTS_VIEW_QUERY);
+  }
+  const query = params.toString();
+  return `${path}${query ? `?${query}` : ""}${hash}`;
+}
+
+export function buildIntakeDocumentsSectionHref(input: {
+  intakeRunId: string;
+  studyRunId?: string | null;
+  audience?: CaseWorkspaceAudience;
+  view: CaseDocumentsView;
+}): string {
+  const params = new URLSearchParams();
+  const studyRunId = input.studyRunId?.trim();
+  if (studyRunId) {
+    params.set("studyRunId", studyRunId);
+  }
+  if (input.audience) {
+    params.set("audience", input.audience);
+  }
+  const path = `/intake/${encodeURIComponent(input.intakeRunId)}`;
+  const href = params.toString() ? `${path}?${params.toString()}` : path;
+  return withCaseDocumentsView(href, input.view);
+}
+
+export function buildHiveDocumentsSectionHref(input: {
+  caseId: string;
+  studyRunId: string;
+  intakeRunId?: string | null;
+  audience?: CaseWorkspaceAudience;
+  segment: "building" | "ready";
+  view: CaseDocumentsView;
+}): string {
+  const params = new URLSearchParams();
+  params.set("studyRunId", input.studyRunId);
+  const intakeRunId = input.intakeRunId?.trim();
+  if (intakeRunId) {
+    params.set("intakeRunId", intakeRunId);
+  }
+  if (input.audience) {
+    params.set("audience", input.audience);
+  }
+  const href = `/hives/${encodeURIComponent(input.caseId)}/${input.segment}?${params.toString()}`;
+  return withCaseDocumentsView(href, input.view);
+}
+
 export type CaseWorkspaceSection = "case" | "documents" | "canonical-study" | "reports";
 
 export type CaseWorkspaceAudience = "customer" | "pro";

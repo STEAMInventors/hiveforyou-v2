@@ -4,7 +4,9 @@ import type { RawExtractionInspectorDocument } from "@hiveforyou/core";
 
 import {
   customerStatusLabel,
+  humanizeExtractionFieldKey,
   isPackDrivenExtractionExploreReady,
+  mapInspectorDocumentToCustomerExtractedDetails,
   mapInspectorDocumentToCustomerRow,
   resolveReliableSubjectFirstName,
 } from "./map-customer-extraction-ui-state";
@@ -41,6 +43,41 @@ describe("mapInspectorDocumentToCustomerRow", () => {
     expect(row.uiStatus).toBe("read");
     expect(row.detailCount).toBe(1);
     expect(row.dateLabel).toMatch(/2024/);
+    expect(row.extractedDetails).toEqual([]);
+  });
+
+  it("maps readable field values and provenance for customer review", () => {
+    const details = mapInspectorDocumentToCustomerExtractedDetails(
+      doc({
+        displayStatus: "SUCCEEDED",
+        customerLabel: "IEP",
+        records: [
+          {
+            recordTypeId: "student",
+            fields: {
+              firstName: {
+                value: "Maya",
+                evidence: {
+                  sourceDocumentId: "src-1",
+                  fieldPath: "student.firstName",
+                  quote: "Student Name: Maya",
+                  page: 2,
+                },
+              },
+            },
+          },
+        ],
+      }),
+      "IEP",
+    );
+    expect(humanizeExtractionFieldKey("firstName")).toBe("First name");
+    expect(details).toEqual([
+      {
+        label: "First name",
+        value: "Maya",
+        provenance: { text: "Student Name: Maya", chipLabel: "IEP · p.2" },
+      },
+    ]);
   });
 
   it("does not invent reading or next states for missing output while processing", () => {
