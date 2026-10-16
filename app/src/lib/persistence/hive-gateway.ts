@@ -20,6 +20,7 @@ export type HiveGateway = {
     path: string,
     bytes: Uint8Array,
     contentType?: string,
+    options?: { upsert?: boolean },
   ): Promise<void>;
   downloadObject(bucket: string, path: string): Promise<Uint8Array>;
   removeObject(bucket: string, path: string): Promise<void>;
@@ -64,10 +65,10 @@ export function createSupabaseHiveGateway(client: SupabaseClient): HiveGateway {
       assertNoError(error);
       return (data ?? []) as HiveRow[];
     },
-    async uploadObject(bucket, path, bytes, contentType) {
+    async uploadObject(bucket, path, bytes, contentType, options) {
       const { error } = await client.storage.from(bucket).upload(path, bytes, {
         contentType,
-        upsert: false,
+        upsert: options?.upsert ?? false,
       });
       assertNoError(error);
     },

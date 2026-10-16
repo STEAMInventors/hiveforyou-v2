@@ -52,11 +52,15 @@ function sampleArtifact(publication?: { customerProReportsPermitted: boolean; pa
   });
 }
 
-function memoryGateway(ownerUserId: string) {
+function memoryGateway(
+  ownerUserId: string,
+  options?: { rejectDuplicateUploadWithoutUpsert?: boolean },
+) {
   const objects = new Map<string, Uint8Array>();
   const selects: Array<{ table: string; where: Record<string, string | number> }> = [];
   const gateway = {
     selects,
+    objects,
     async insert() {},
     async upsert() {},
     async updateWhere() {},
@@ -77,12 +81,21 @@ function memoryGateway(ownerUserId: string) {
       }
       return bytes;
     },
-    async uploadObject(_bucket: string, path: string, bytes: Uint8Array) {
+    async uploadObject(
+      _bucket: string,
+      path: string,
+      bytes: Uint8Array,
+      _contentType?: string,
+      uploadOptions?: { upsert?: boolean },
+    ) {
+      if (options?.rejectDuplicateUploadWithoutUpsert && objects.has(path) && !uploadOptions?.upsert) {
+        throw new Error("The resource already exists");
+      }
       objects.set(path, bytes);
     },
     async removeObject() {},
   };
-  return gateway as WriterShadowObjectGateway & { selects: typeof selects };
+  return gateway as WriterShadowObjectGateway & { selects: typeof selects; objects: typeof objects };
 }
 
 function writerFromArtifact(
@@ -261,6 +274,48 @@ describe("executeHiveWriterShadowRequest", () => {
     expect(second.status).toBe("rejected");
     expect(invokeWriter).toHaveBeenCalledTimes(1);
   });
+
+  it("does not clobber an accepted storage object when a late worker save runs", async () => {
+    const artifact = sampleArtifact();
+    const gateway = memoryGateway(OWNER, { rejectDuplicateUploadWithoutUpsert: true });
+    let releaseSlowWriter: (() => void) | undefined;
+    const slowWriterGate = new Promise<void>((resolve) => {
+      releaseSlowWriter = resolve;
+    });
+    const sharedInvokeWriter = vi.fn(async () => {
+      if (sharedInvokeWriter.mock.calls.length === 1) {
+        await slowWriterGate;
+      }
+      return writerFromArtifact(artifact)({} as never);
+    });
+    const slowRun = executeHiveWriterShadowRequest({
+      claimedUserId: OWNER,
+      caseId: artifact.caseId,
+      studyRunId: artifact.studyRunId,
+      audience: "customer",
+      env: {},
+      gateway,
+      loadArtifact: async () => artifact,
+      invokeWriter: sharedInvokeWriter,
+    });
+    const fastRun = executeHiveWriterShadowRequest({
+      claimedUserId: OWNER,
+      caseId: artifact.caseId,
+      studyRunId: artifact.studyRunId,
+      audience: "customer",
+      env: {},
+      gateway,
+      loadArtifact: async () => artifact,
+      invokeWriter: sharedInvokeWriter,
+    });
+    const fastResult = await fastRun;
+    expect(fastResult.status).toBe("accepted");
+    releaseSlowWriter!();
+    const slowResult = await slowRun;
+    expect(slowResult.status).toBe("accepted");
+    expect(slowResult.hiveUiTree).toEqual(fastResult.hiveUiTree);
+    expect(sharedInvokeWriter).toHaveBeenCalledTimes(2);
+  });
 });
 
 describe("enqueueHiveWriterShadowPreviewRequest", () => {
@@ -340,7 +395,7 @@ describe("enqueueHiveWriterShadowPreviewRequest", () => {
 
   it("replaces a prior SHADOW_DISABLED skip with a new queued request", async () => {
     const artifact = sampleArtifact();
-    const gateway = memoryGateway(OWNER);
+    const gateway = memoryGateway(OWNER, { rejectDuplicateUploadWithoutUpsert: true });
     const projection = projectCanonicalStudyReport({
       artifact,
       audience: "customer",
@@ -383,6 +438,71 @@ describe("enqueueHiveWriterShadowPreviewRequest", () => {
     expect(record.status).toBe("queued");
     expect(record.validation.errorCodes).toContain("QUEUED");
     expect(dispatchRequested).toHaveBeenCalledTimes(1);
+  });
+
+  it("does not overwrite an accepted terminal record when enqueue is retried", async () => {
+    const artifact = sampleArtifact();
+    const gateway = memoryGateway(OWNER, { rejectDuplicateUploadWithoutUpsert: true });
+    const invokeWriter = vi.fn(writerFromArtifact(artifact));
+    const accepted = await executeHiveWriterShadowRequest({
+      claimedUserId: OWNER,
+      caseId: artifact.caseId,
+      studyRunId: artifact.studyRunId,
+      audience: "customer",
+      env: {},
+      gateway,
+      loadArtifact: async () => artifact,
+      invokeWriter,
+    });
+    expect(accepted.status).toBe("accepted");
+    const dispatchRequested = vi.fn(async () => {});
+    const enqueued = await enqueueHiveWriterShadowPreviewRequest({
+      claimedUserId: OWNER,
+      caseId: artifact.caseId,
+      studyRunId: artifact.studyRunId,
+      audience: "customer",
+      env: { VERCEL_ENV: "production" },
+      gateway,
+      loadArtifact: async () => artifact,
+      dispatchRequested,
+    });
+    expect(enqueued.status).toBe("accepted");
+    expect(enqueued.hiveUiTree).not.toBeNull();
+    expect(dispatchRequested).not.toHaveBeenCalled();
+    expect(invokeWriter).toHaveBeenCalledTimes(1);
+  });
+
+  it("handles concurrent enqueue requests without corrupting a queued record", async () => {
+    const artifact = sampleArtifact();
+    const gateway = memoryGateway(OWNER, { rejectDuplicateUploadWithoutUpsert: true });
+    const dispatchRequested = vi.fn(async () => {});
+    const input = {
+      claimedUserId: OWNER,
+      caseId: artifact.caseId,
+      studyRunId: artifact.studyRunId,
+      audience: "customer" as const,
+      env: { VERCEL_ENV: "production" as const },
+      gateway,
+      loadArtifact: async () => artifact,
+      dispatchRequested,
+    };
+    const [first, second] = await Promise.all([
+      enqueueHiveWriterShadowPreviewRequest(input),
+      enqueueHiveWriterShadowPreviewRequest(input),
+    ]);
+    expect(first.status).toBe("queued");
+    expect(second.status).toBe("queued");
+    expect(second.idempotencyKey).toBe(first.idempotencyKey);
+    expect(dispatchRequested).toHaveBeenCalledTimes(2);
+    const path = hiveWriterShadowRecordPath(
+      OWNER,
+      artifact.studyRunId,
+      "customer",
+      first.idempotencyKey,
+    );
+    const persisted = JSON.parse(new TextDecoder().decode(gateway.objects.get(path)!));
+    expect(persisted.status).toBe("queued");
+    expect(persisted.validation.errorCodes).toContain("QUEUED");
   });
 
   it("rejects a mismatched session user before enqueue", async () => {

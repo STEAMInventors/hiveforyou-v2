@@ -3,6 +3,7 @@ import "server-only";
 import {
   buildHiveWriterShadowIdempotencyKey,
   enqueueHiveWriterShadowPreviewRequest,
+  isHiveWriterShadowTerminalStatus,
   loadDeterministicCanonicalStudyArtifact,
   projectCanonicalStudyReport,
   resolveHiveWriterDomainBinding,
@@ -65,8 +66,21 @@ function createShadowPersistence(input: {
         record.audience,
         record.idempotencyKey,
       );
+      try {
+        const existingBytes = await input.gateway.downloadObject(STORAGE_BUCKET, path);
+        const existing = parseHiveWriterShadowRecord(
+          JSON.parse(new TextDecoder().decode(existingBytes)),
+        );
+        if (isHiveWriterShadowTerminalStatus(existing.status)) {
+          return;
+        }
+      } catch {
+        // Missing object — first write for this idempotency key.
+      }
       const bytes = new TextEncoder().encode(JSON.stringify(record));
-      await input.gateway.uploadObject(STORAGE_BUCKET, path, bytes, "application/json");
+      await input.gateway.uploadObject(STORAGE_BUCKET, path, bytes, "application/json", {
+        upsert: true,
+      });
     },
   };
 }

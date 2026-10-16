@@ -208,6 +208,10 @@ export async function runHiveWriterShadow(
     hiveUiTree,
   };
 
+  const existingBeforeSave = await input.persistence.load(idempotencyKey);
+  if (existingBeforeSave && isTerminalReuseRecord(existingBeforeSave)) {
+    return existingBeforeSave;
+  }
   await input.persistence.save(record);
   return record;
 }
