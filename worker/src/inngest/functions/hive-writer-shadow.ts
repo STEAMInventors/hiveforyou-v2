@@ -17,7 +17,6 @@ import { inngest } from "../client.js";
 
 function workerEnvStrings(env: ReturnType<typeof readWorkerEnv>): Record<string, string | undefined> {
   return {
-    HIVE_WRITER_SHADOW_MODE: env.HIVE_WRITER_SHADOW_MODE,
     HIVE_AGENTS_HOST: env.HIVE_AGENTS_HOST,
     HIVE_AGENTS_PORT: env.HIVE_AGENTS_PORT,
     HIVE_AGENTS_SERVICE_TOKEN: env.HIVE_AGENTS_SERVICE_TOKEN,

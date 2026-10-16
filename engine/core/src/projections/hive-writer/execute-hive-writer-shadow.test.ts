@@ -118,33 +118,13 @@ describe("executeHiveWriterShadowRequest", () => {
         caseId: "case-test",
         studyRunId: "study-test",
         audience: "customer",
-        env: { HIVE_WRITER_SHADOW_MODE: "true" },
+        env: {},
         gateway,
         loadArtifact,
       }),
     ).rejects.toBeInstanceOf(WriterShadowOwnerError);
     expect(loadArtifact).not.toHaveBeenCalled();
     expect(gateway.selects.map((call) => call.where)).toEqual([{ id: "study-test" }, { id: "case-test" }]);
-  });
-
-  it("does not call Writer when shadow mode is disabled", async () => {
-    const artifact = sampleArtifact();
-    const invokeWriter = vi.fn(writerFromArtifact(artifact));
-    const record = await executeHiveWriterShadowRequest({
-      claimedUserId: OWNER,
-      caseId: artifact.caseId,
-      studyRunId: artifact.studyRunId,
-      audience: "customer",
-      env: { HIVE_WRITER_SHADOW_MODE: "false" },
-      gateway: memoryGateway(OWNER),
-      loadArtifact: async (userId) => {
-        expect(userId).toBe(OWNER);
-        return artifact;
-      },
-      invokeWriter,
-    });
-    expect(record.status).toBe("skipped");
-    expect(invokeWriter).not.toHaveBeenCalled();
   });
 
   it("does not call Writer when the persisted study is approved for publication", async () => {
@@ -158,7 +138,7 @@ describe("executeHiveWriterShadowRequest", () => {
       caseId: artifact.caseId,
       studyRunId: artifact.studyRunId,
       audience: "customer",
-      env: { HIVE_WRITER_SHADOW_MODE: "true", HIVE_AGENTS_HOST: "127.0.0.1" },
+      env: { HIVE_AGENTS_HOST: "127.0.0.1" },
       gateway: memoryGateway(OWNER),
       loadArtifact: async () => artifact,
       invokeWriter,
@@ -177,7 +157,7 @@ describe("executeHiveWriterShadowRequest", () => {
         caseId: artifact.caseId,
         studyRunId: artifact.studyRunId,
         audience: "customer",
-        env: { HIVE_WRITER_SHADOW_MODE: "true", HIVE_AGENTS_HOST: "203.0.113.10" },
+        env: { HIVE_AGENTS_HOST: "203.0.113.10" },
         gateway: memoryGateway(OWNER),
         loadArtifact: async () => artifact,
         invokeWriter,
@@ -195,7 +175,7 @@ describe("executeHiveWriterShadowRequest", () => {
       caseId: artifact.caseId,
       studyRunId: artifact.studyRunId,
       audience: "customer",
-      env: { HIVE_WRITER_SHADOW_MODE: "true" },
+      env: {},
       gateway,
       loadArtifact: async () => artifact,
       invokeWriter,
@@ -205,7 +185,7 @@ describe("executeHiveWriterShadowRequest", () => {
       caseId: artifact.caseId,
       studyRunId: artifact.studyRunId,
       audience: "customer",
-      env: { HIVE_WRITER_SHADOW_MODE: "true" },
+      env: {},
       gateway,
       loadArtifact: async () => artifact,
       invokeWriter,
@@ -240,7 +220,7 @@ describe("executeHiveWriterShadowRequest", () => {
       caseId: artifact.caseId,
       studyRunId: artifact.studyRunId,
       audience: "customer",
-      env: { HIVE_WRITER_SHADOW_MODE: "true" },
+      env: {},
       gateway,
       loadArtifact: async () => artifact,
       invokeWriter,
@@ -250,7 +230,7 @@ describe("executeHiveWriterShadowRequest", () => {
       caseId: artifact.caseId,
       studyRunId: artifact.studyRunId,
       audience: "customer",
-      env: { HIVE_WRITER_SHADOW_MODE: "true" },
+      env: {},
       gateway,
       loadArtifact: async () => artifact,
       invokeWriter,
@@ -272,7 +252,7 @@ describe("enqueueHiveWriterShadowPreviewRequest", () => {
       caseId: artifact.caseId,
       studyRunId: artifact.studyRunId,
       audience: "customer",
-      env: { HIVE_WRITER_SHADOW_MODE: "true", VERCEL_ENV: "preview" },
+      env: { VERCEL_ENV: "preview" },
       gateway,
       loadArtifact: async () => artifact,
       dispatchRequested,
@@ -299,7 +279,7 @@ describe("enqueueHiveWriterShadowPreviewRequest", () => {
       caseId: artifact.caseId,
       studyRunId: artifact.studyRunId,
       audience: "customer",
-      env: { HIVE_WRITER_SHADOW_MODE: "true", VERCEL_ENV: "preview" },
+      env: { VERCEL_ENV: "preview" },
       gateway,
       loadArtifact: async () => artifact,
       dispatchRequested,
@@ -309,7 +289,7 @@ describe("enqueueHiveWriterShadowPreviewRequest", () => {
       caseId: artifact.caseId,
       studyRunId: artifact.studyRunId,
       audience: "customer",
-      env: { HIVE_WRITER_SHADOW_MODE: "true", VERCEL_ENV: "preview" },
+      env: { VERCEL_ENV: "preview" },
       gateway,
       loadArtifact: async () => artifact,
       dispatchRequested,
@@ -318,5 +298,44 @@ describe("enqueueHiveWriterShadowPreviewRequest", () => {
     expect(second.status).toBe("queued");
     expect(second.idempotencyKey).toBe(first.idempotencyKey);
     expect(dispatchRequested).toHaveBeenCalledTimes(2);
+  });
+
+  it("skips enqueue on Vercel production without a feature flag", async () => {
+    const artifact = sampleArtifact();
+    const dispatchRequested = vi.fn(async () => {});
+    const record = await enqueueHiveWriterShadowPreviewRequest({
+      claimedUserId: OWNER,
+      caseId: artifact.caseId,
+      studyRunId: artifact.studyRunId,
+      audience: "customer",
+      env: { VERCEL_ENV: "production" },
+      gateway: memoryGateway(OWNER),
+      loadArtifact: async () => artifact,
+      dispatchRequested,
+    });
+    expect(record.status).toBe("skipped");
+    expect(record.validation.errorCodes).toContain("SHADOW_DISABLED");
+    expect(dispatchRequested).not.toHaveBeenCalled();
+  });
+
+  it("blocks approved publication before enqueue", async () => {
+    const artifact = sampleArtifact({
+      customerProReportsPermitted: true,
+      packApprovalLabel: "certified-pack",
+    });
+    const dispatchRequested = vi.fn(async () => {});
+    const record = await enqueueHiveWriterShadowPreviewRequest({
+      claimedUserId: OWNER,
+      caseId: artifact.caseId,
+      studyRunId: artifact.studyRunId,
+      audience: "customer",
+      env: { VERCEL_ENV: "preview" },
+      gateway: memoryGateway(OWNER),
+      loadArtifact: async () => artifact,
+      dispatchRequested,
+    });
+    expect(record.status).toBe("failed");
+    expect(record.validation.errorCodes).toContain("WRITER_SHADOW_PUBLICATION_BLOCKED");
+    expect(dispatchRequested).not.toHaveBeenCalled();
   });
 });

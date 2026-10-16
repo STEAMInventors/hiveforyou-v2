@@ -18,7 +18,6 @@ import {
   planWriterShadowWorkerExecution,
 } from "./plan-writer-shadow-dispatch.js";
 import { projectCanonicalStudyReport } from "../project-canonical-study-report.js";
-import { readHiveWriterShadowModeEnabled } from "./run-hive-writer-shadow.js";
 import { buildHiveWriterShadowMarkerRecord } from "./run-hive-writer-shadow.js";
 import { runHiveWriterShadow } from "./run-hive-writer-shadow.js";
 import type { HiveWriterShadowPersistence } from "./run-hive-writer-shadow.js";
@@ -172,7 +171,6 @@ export async function enqueueHiveWriterShadowPreviewRequest(input: {
   });
   const existing = await persistence.load(idempotencyKey);
   const plan = planWriterShadowPreviewRequest({
-    shadowModeEnabled: readHiveWriterShadowModeEnabled(input.env),
     vercelEnv: input.env.VERCEL_ENV,
     presentationMode,
     existingStatus: existing?.status ?? null,
@@ -292,26 +290,12 @@ export async function executeHiveWriterShadowRequest(input: {
   });
   const existing = await persistence.load(idempotencyKey);
   const plan = planWriterShadowWorkerExecution({
-    shadowModeEnabled: readHiveWriterShadowModeEnabled(input.env),
     presentationMode,
     existingStatus: existing?.status ?? null,
   });
 
   if (plan === "reuse" && existing) {
     return existing;
-  }
-  if (plan === "skip_disabled") {
-    return saveUnlessTerminal(
-      persistence,
-      buildHiveWriterShadowMarkerRecord({
-        status: "skipped",
-        idempotencyKey,
-        projection,
-        projectionHash: domainBinding.reportProjectionContentSha256,
-        errorCodes: ["SHADOW_DISABLED"],
-        message: "Shadow mode disabled.",
-      }),
-    );
   }
   if (plan === "block_publication") {
     return saveUnlessTerminal(
@@ -343,7 +327,6 @@ export async function executeHiveWriterShadowRequest(input: {
   return runHiveWriterShadow({
     artifact,
     projection,
-    shadowModeEnabled: true,
     invokeWriter,
     persistence,
   });

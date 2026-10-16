@@ -36,7 +36,6 @@ type WriterUiTreePreviewPayload = {
   shadowStatus: string;
   idempotencyKey: string;
   validation: { ok: boolean; errorCodes: string[]; message: string | null } | null;
-  writerShadowEnabled: boolean;
 };
 
 type HiveWriterShadowDiagnostic = {

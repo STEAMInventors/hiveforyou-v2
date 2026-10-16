@@ -5,7 +5,6 @@ import {
   enqueueHiveWriterShadowPreviewRequest,
   loadDeterministicCanonicalStudyArtifact,
   projectCanonicalStudyReport,
-  readHiveWriterShadowModeEnabled,
   resolveHiveWriterDomainBinding,
   resolveWriterHiveUiTreeForPreview,
   type HiveWriterShadowPersistence,
@@ -121,14 +120,6 @@ export async function loadHiveWriterShadowDiagnosticForSession(input: {
   studyRunId: string;
   audience: CanonicalStudyReportAudience;
 }): Promise<HiveWriterShadowDiagnostic | null> {
-  if (!readHiveWriterShadowModeEnabled(process.env)) {
-    return {
-      status: "unavailable",
-      idempotencyKey: "",
-      validation: { ok: false, errorCodes: ["SHADOW_DISABLED"], message: null },
-      observability: { durationMs: 0, modelIdentifier: null, projectionHash: "" },
-    };
-  }
   const gateway = await createAuthenticatedHiveGateway();
   const userId = requireSessionUserId(await getAuthenticatedUserId());
   const artifact = await loadDeterministicCanonicalStudyArtifactForSession({
@@ -209,9 +200,7 @@ async function loadShadowRecordForSession(input: {
   return { artifact, projection, record };
 }
 
-export type WriterHiveUiTreePreviewPayload = WriterHiveUiPreviewResolution & {
-  writerShadowEnabled: boolean;
-};
+export type WriterHiveUiTreePreviewPayload = WriterHiveUiPreviewResolution;
 
 /** Read-only: loads persisted shadow record and re-validates; never invokes the Writer model. */
 export async function loadWriterHiveUiTreePreviewForSession(input: {
@@ -219,13 +208,10 @@ export async function loadWriterHiveUiTreePreviewForSession(input: {
   studyRunId: string;
   audience: CanonicalStudyReportAudience;
 }): Promise<WriterHiveUiTreePreviewPayload> {
-  const writerShadowEnabled = readHiveWriterShadowModeEnabled(process.env);
   const { artifact, projection, record } = await loadShadowRecordForSession(input);
-  const resolution = resolveWriterHiveUiTreeForPreview({
+  return resolveWriterHiveUiTreeForPreview({
     artifact,
     projection,
     record,
-    shadowModeEnabled: writerShadowEnabled,
   });
-  return { ...resolution, writerShadowEnabled };
 }

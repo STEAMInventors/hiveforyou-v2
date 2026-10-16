@@ -26,15 +26,6 @@ import {
   assertWriterProposalEnvelope,
 } from "./validate-hive-writer-proposal.js";
 
-export class HiveWriterShadowDisabledError extends Error {
-  readonly code = "HIVE_WRITER_SHADOW_DISABLED" as const;
-
-  constructor() {
-    super("Hive Writer shadow mode is disabled.");
-    this.name = "HiveWriterShadowDisabledError";
-  }
-}
-
 export type HiveWriterShadowPersistence = {
   load: (idempotencyKey: string) => Promise<HiveWriterShadowRecord | null>;
   save: (record: HiveWriterShadowRecord) => Promise<void>;
@@ -43,7 +34,6 @@ export type HiveWriterShadowPersistence = {
 export type RunHiveWriterShadowInput = {
   artifact: CanonicalStudyArtifact;
   projection: CanonicalStudyReportProjection;
-  shadowModeEnabled: boolean;
   presentationInstructions?: string | null;
   invokeWriter: HiveWriterHttpClient;
   persistence: HiveWriterShadowPersistence;
@@ -75,34 +65,6 @@ function validationMessage(error: unknown): string {
 
 function isTerminalReuseRecord(record: HiveWriterShadowRecord): boolean {
   return isHiveWriterShadowTerminalStatus(record.status);
-}
-
-function skippedRecord(input: {
-  idempotencyKey: string;
-  projection: CanonicalStudyReportProjection;
-}): HiveWriterShadowRecord {
-  return {
-    schemaVersion: HIVE_WRITER_SHADOW_RECORD_SCHEMA_VERSION,
-    idempotencyKey: input.idempotencyKey,
-    caseId: input.projection.caseId,
-    studyRunId: input.projection.studyRunId,
-    audience: input.projection.audience,
-    status: "skipped",
-    observability: {
-      studyRunId: input.projection.studyRunId,
-      audience: input.projection.audience,
-      projectionHash: input.projection.sourceArtifactContentSha256,
-      catalogVersion: "1",
-      writerImplementationVersion: "1",
-      proposalSchemaVersion: "hive-writer-proposal/1",
-      modelIdentifier: null,
-      durationMs: 0,
-      tokenUsage: null,
-    },
-    validation: { ok: false, errorCodes: ["SHADOW_DISABLED"], message: "Shadow mode disabled." },
-    proposal: null,
-    hiveUiTree: null,
-  };
 }
 
 export async function runHiveWriterShadow(
@@ -160,10 +122,6 @@ export async function runHiveWriterShadow(
     packContentSha256: domainBinding.packContentSha256,
     reportProjectionContentSha256: domainBinding.reportProjectionContentSha256,
   });
-
-  if (!input.shadowModeEnabled) {
-    return skippedRecord({ idempotencyKey, projection: input.projection });
-  }
 
   const existing = await input.persistence.load(idempotencyKey);
   if (existing && isTerminalReuseRecord(existing)) {
@@ -288,11 +246,4 @@ export function buildHiveWriterShadowMarkerRecord(input: {
     proposal: null,
     hiveUiTree: null,
   };
-}
-
-export function readHiveWriterShadowModeEnabled(
-  env: Record<string, string | undefined> = process.env,
-): boolean {
-  const raw = env.HIVE_WRITER_SHADOW_MODE?.trim().toLowerCase();
-  return raw === "true" || raw === "1" || raw === "yes";
 }

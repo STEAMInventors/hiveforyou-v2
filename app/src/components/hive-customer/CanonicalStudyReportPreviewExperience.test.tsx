@@ -77,7 +77,6 @@ describe("CanonicalStudyReportPreviewExperience", () => {
             shadowStatus: "missing",
             idempotencyKey: "k".repeat(64),
             validation: null,
-            writerShadowEnabled: true,
           }),
           { status: 200 },
         );
