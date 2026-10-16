@@ -45,7 +45,6 @@ export type WorkerEnv = {
   HIVE_AGENTS_HOST?: string;
   HIVE_AGENTS_PORT?: string;
   /** Host-secret opt-in. Committed worker config keeps this false. */
-  HIVE_WRITER_SHADOW_MODE?: string;
   /** Oracle/runtime mount for study agents export (e.g. `/app/pack/agents.json`). */
   HIVE_AGENTS_JSON?: string;
   HIVE_PACK_DRIVEN_READER_PROPOSAL_JSON?: string;
@@ -105,7 +104,6 @@ export function readWorkerEnv(
     HIVE_AGENTS_SERVICE_TOKEN: source.HIVE_AGENTS_SERVICE_TOKEN?.trim() || undefined,
     HIVE_AGENTS_HOST: source.HIVE_AGENTS_HOST?.trim() || undefined,
     HIVE_AGENTS_PORT: source.HIVE_AGENTS_PORT?.trim() || undefined,
-    HIVE_WRITER_SHADOW_MODE: source.HIVE_WRITER_SHADOW_MODE?.trim() || undefined,
     HIVE_AGENTS_JSON: source.HIVE_AGENTS_JSON?.trim() || undefined,
     HIVE_PACK_DRIVEN_READER_PROPOSAL_JSON:
       source.HIVE_PACK_DRIVEN_READER_PROPOSAL_JSON?.trim() || undefined,

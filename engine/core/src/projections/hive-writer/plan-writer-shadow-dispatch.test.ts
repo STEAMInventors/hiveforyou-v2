@@ -44,10 +44,9 @@ function projection() {
 }
 
 describe("planWriterShadowPreviewRequest", () => {
-  it("does not enqueue when production or the shadow flag is off", () => {
+  it("does not enqueue on Vercel production", () => {
     expect(
       planWriterShadowPreviewRequest({
-        shadowModeEnabled: true,
         vercelEnv: "production",
         presentationMode: "internal_preview",
         existingStatus: null,
@@ -55,18 +54,16 @@ describe("planWriterShadowPreviewRequest", () => {
     ).toBe("skip_disabled");
     expect(
       planWriterShadowPreviewRequest({
-        shadowModeEnabled: false,
         vercelEnv: "preview",
         presentationMode: "internal_preview",
         existingStatus: null,
       }).action,
-    ).toBe("skip_disabled");
+    ).toBe("enqueue");
   });
 
   it("reuses an accepted record and resends only while in flight", () => {
     expect(
       planWriterShadowPreviewRequest({
-        shadowModeEnabled: true,
         vercelEnv: "preview",
         presentationMode: "internal_preview",
         existingStatus: "accepted",
@@ -74,7 +71,6 @@ describe("planWriterShadowPreviewRequest", () => {
     ).toEqual({ action: "return_existing", resend: false });
     expect(
       planWriterShadowPreviewRequest({
-        shadowModeEnabled: true,
         vercelEnv: "preview",
         presentationMode: "internal_preview",
         existingStatus: "queued",
@@ -85,7 +81,6 @@ describe("planWriterShadowPreviewRequest", () => {
   it("blocks approved presentation before enqueue", () => {
     expect(
       planWriterShadowPreviewRequest({
-        shadowModeEnabled: true,
         vercelEnv: "preview",
         presentationMode: "approved",
         existingStatus: null,
@@ -95,31 +90,27 @@ describe("planWriterShadowPreviewRequest", () => {
 });
 
 describe("planWriterShadowWorkerExecution", () => {
-  it("reuses terminal records and invokes only for internal preview when enabled", () => {
+  it("reuses terminal records and invokes only for internal preview", () => {
     expect(
       planWriterShadowWorkerExecution({
-        shadowModeEnabled: true,
         presentationMode: "internal_preview",
         existingStatus: "accepted",
       }),
     ).toBe("reuse");
     expect(
       planWriterShadowWorkerExecution({
-        shadowModeEnabled: false,
         presentationMode: "internal_preview",
         existingStatus: null,
       }),
-    ).toBe("skip_disabled");
+    ).toBe("invoke");
     expect(
       planWriterShadowWorkerExecution({
-        shadowModeEnabled: true,
         presentationMode: "approved",
         existingStatus: null,
       }),
     ).toBe("block_publication");
     expect(
       planWriterShadowWorkerExecution({
-        shadowModeEnabled: true,
         presentationMode: "internal_preview",
         existingStatus: "processing",
       }),

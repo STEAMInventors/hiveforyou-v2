@@ -24,7 +24,6 @@ import {
 } from "./build-hive-writer-model-input.js";
 import { resolveHiveWriterDomainBinding } from "./resolve-hive-writer-domain-binding.js";
 import {
-  readHiveWriterShadowModeEnabled,
   runHiveWriterShadow,
   type HiveWriterShadowPersistence,
 } from "./run-hive-writer-shadow.js";
@@ -133,7 +132,6 @@ describe("hive-writer shadow", () => {
       const record = await runHiveWriterShadow({
         artifact,
         projection,
-        shadowModeEnabled: true,
         invokeWriter: mockWriterFromDeterministicTree(artifact, projection),
         persistence: inMemoryPersistence().persistence,
       });
@@ -164,7 +162,6 @@ describe("hive-writer shadow", () => {
     const record = await runHiveWriterShadow({
       artifact,
       projection,
-      shadowModeEnabled: true,
       invokeWriter: async () => ({
         proposal: buildMockProposal(artifact, projection, tree!),
         modelIdentifier: "mock",
@@ -188,7 +185,6 @@ describe("hive-writer shadow", () => {
     const record = await runHiveWriterShadow({
       artifact,
       projection,
-      shadowModeEnabled: true,
       invokeWriter: async () => ({
         proposal: buildMockProposal(artifact, projection, tree!),
         modelIdentifier: "mock",
@@ -211,7 +207,6 @@ describe("hive-writer shadow", () => {
     const badAudience = await runHiveWriterShadow({
       artifact,
       projection,
-      shadowModeEnabled: true,
       invokeWriter: async () => {
         const proposal = buildMockProposal(artifact, projection, tree!);
         return {
@@ -230,7 +225,6 @@ describe("hive-writer shadow", () => {
     const badHash = await runHiveWriterShadow({
       artifact,
       projection,
-      shadowModeEnabled: true,
       invokeWriter: async () => {
         const proposal = buildMockProposal(artifact, projection, tree!);
         return {
@@ -255,7 +249,6 @@ describe("hive-writer shadow", () => {
     const badDomain = await runHiveWriterShadow({
       artifact,
       projection,
-      shadowModeEnabled: true,
       invokeWriter: async () => {
         const proposal = buildMockProposal(artifact, projection, tree!);
         return {
@@ -275,7 +268,6 @@ describe("hive-writer shadow", () => {
     const badPackHash = await runHiveWriterShadow({
       artifact,
       projection,
-      shadowModeEnabled: true,
       invokeWriter: async () => {
         const proposal = buildMockProposal(artifact, projection, tree!);
         return {
@@ -305,7 +297,6 @@ describe("hive-writer shadow", () => {
     const record = await runHiveWriterShadow({
       artifact,
       projection,
-      shadowModeEnabled: true,
       invokeWriter: async () => ({
         proposal: buildMockProposal(artifact, projection, tree!),
         modelIdentifier: "mock",
@@ -322,7 +313,6 @@ describe("hive-writer shadow", () => {
     const record = await runHiveWriterShadow({
       artifact,
       projection,
-      shadowModeEnabled: true,
       invokeWriter: async () => {
         throw new Error("WRITER_HTTP_503:unavailable");
       },
@@ -339,35 +329,18 @@ describe("hive-writer shadow", () => {
     const first = await runHiveWriterShadow({
       artifact,
       projection,
-      shadowModeEnabled: true,
       invokeWriter,
       persistence: store.persistence,
     });
     const second = await runHiveWriterShadow({
       artifact,
       projection,
-      shadowModeEnabled: true,
       invokeWriter,
       persistence: store.persistence,
     });
     expect(first.status).toBe("accepted");
     expect(second.status).toBe("accepted");
     expect(invokeWriter).toHaveBeenCalledTimes(1);
-  });
-
-  it("performs zero model calls when shadow mode is disabled", async () => {
-    const { artifact, projection } = buildCustomerProjection();
-    const invokeWriter = vi.fn(mockWriterFromDeterministicTree(artifact, projection));
-    const record = await runHiveWriterShadow({
-      artifact,
-      projection,
-      shadowModeEnabled: false,
-      invokeWriter,
-      persistence: inMemoryPersistence().persistence,
-    });
-    expect(record.status).toBe("skipped");
-    expect(invokeWriter).not.toHaveBeenCalled();
-    expect(readHiveWriterShadowModeEnabled({ HIVE_WRITER_SHADOW_MODE: "false" })).toBe(false);
   });
 
   it("does not reference canonical-study or reader modules from writer shadow orchestration", async () => {
