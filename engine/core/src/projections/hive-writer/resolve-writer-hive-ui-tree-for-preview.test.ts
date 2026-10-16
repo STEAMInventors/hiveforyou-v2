@@ -88,7 +88,6 @@ async function acceptedRecord() {
   const record = await runHiveWriterShadow({
     artifact,
     projection,
-    shadowModeEnabled: true,
     invokeWriter: async () => {
       const tree = buildDeterministicHiveUiTree(projection);
       if (!tree) {
@@ -114,23 +113,10 @@ describe("resolveWriterHiveUiTreeForPreview", () => {
       artifact,
       projection,
       record,
-      shadowModeEnabled: true,
     });
     expect(resolution.layout).toBe("writer");
     expect(resolution.hiveUiTree).not.toBeNull();
     expect(resolution.fallbackReason).toBeNull();
-  });
-
-  it("falls back when shadow mode is disabled", async () => {
-    const { artifact, projection, record } = await acceptedRecord();
-    const resolution = resolveWriterHiveUiTreeForPreview({
-      artifact,
-      projection,
-      record,
-      shadowModeEnabled: false,
-    });
-    expect(resolution.layout).toBe("deterministic_fallback");
-    expect(resolution.fallbackReason?.code).toBe("SHADOW_DISABLED");
   });
 
   it("does not treat a queued record as a validated writer layout", async () => {
@@ -140,7 +126,6 @@ describe("resolveWriterHiveUiTreeForPreview", () => {
       artifact,
       projection,
       record: queued,
-      shadowModeEnabled: true,
     });
     expect(resolution.layout).toBe("deterministic_fallback");
     expect(resolution.fallbackReason?.code).toBe("WRITER_IN_FLIGHT");
@@ -153,7 +138,6 @@ describe("resolveWriterHiveUiTreeForPreview", () => {
       artifact,
       projection,
       record: null,
-      shadowModeEnabled: true,
     });
     expect(resolution.shadowStatus).toBe("missing");
     expect(resolution.fallbackReason?.code).toBe("WRITER_RECORD_MISSING");
@@ -171,7 +155,6 @@ describe("resolveWriterHiveUiTreeForPreview", () => {
     const record = await runHiveWriterShadow({
       artifact,
       projection,
-      shadowModeEnabled: true,
       invokeWriter: async () => ({
         proposal: buildMockProposal(artifact, projection, tree!),
         modelIdentifier: "mock",
@@ -184,7 +167,6 @@ describe("resolveWriterHiveUiTreeForPreview", () => {
       artifact,
       projection,
       record,
-      shadowModeEnabled: true,
     });
     expect(resolution.layout).toBe("deterministic_fallback");
     expect(resolution.fallbackReason?.code).toBe("WRITER_RECORD_NOT_ACCEPTED");
@@ -206,7 +188,6 @@ describe("resolveWriterHiveUiTreeForPreview", () => {
       artifact,
       projection,
       record: stale,
-      shadowModeEnabled: true,
     });
     expect(resolution.fallbackReason?.code).toBe("WRITER_BINDING_STALE");
   });
@@ -224,7 +205,6 @@ describe("resolveWriterHiveUiTreeForPreview", () => {
       artifact,
       projection,
       record: stale,
-      shadowModeEnabled: true,
     });
     expect(resolution.fallbackReason?.code).toBe("WRITER_PROJECTION_STALE");
   });
@@ -247,7 +227,6 @@ describe("resolveWriterHiveUiTreeForPreview", () => {
       artifact,
       projection,
       record: tampered,
-      shadowModeEnabled: true,
     });
     expect(resolution.layout).toBe("deterministic_fallback");
     expect(resolution.fallbackReason?.errorCodes).toContain("WRITER_BINDING_MISMATCH");
@@ -260,7 +239,6 @@ describe("resolveWriterHiveUiTreeForPreview", () => {
       artifact,
       projection,
       record: wrongAudience,
-      shadowModeEnabled: true,
     });
     expect(resolution.fallbackReason?.code).toBe("WRITER_RECORD_SCOPE_MISMATCH");
   });

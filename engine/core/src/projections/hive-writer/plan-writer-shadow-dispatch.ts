@@ -20,13 +20,11 @@ export type WriterShadowPreviewPlan =
  * Inngest id (deduped) without rewriting storage. Terminal rows are reused as-is.
  */
 export function planWriterShadowPreviewRequest(input: {
-  shadowModeEnabled: boolean;
   vercelEnv: string | undefined;
   presentationMode: CanonicalStudyReportPresentationMode;
   existingStatus: HiveWriterShadowStatus | null;
 }): WriterShadowPreviewPlan {
-  const invocationAllowed = input.shadowModeEnabled && input.vercelEnv !== "production";
-  if (!invocationAllowed) {
+  if (input.vercelEnv === "production") {
     return { action: "skip_disabled" };
   }
   if (input.presentationMode !== "internal_preview") {
@@ -41,17 +39,13 @@ export function planWriterShadowPreviewRequest(input: {
   return { action: "enqueue" };
 }
 
-export type WriterShadowWorkerPlan = "skip_disabled" | "block_publication" | "reuse" | "invoke";
+export type WriterShadowWorkerPlan = "block_publication" | "reuse" | "invoke";
 
-/** Worker decision. The host shadow flag is authoritative; event payloads cannot enable it. */
+/** Worker decision: internal preview only; publication mode is enforced from persisted artifact metadata. */
 export function planWriterShadowWorkerExecution(input: {
-  shadowModeEnabled: boolean;
   presentationMode: CanonicalStudyReportPresentationMode;
   existingStatus: HiveWriterShadowStatus | null;
 }): WriterShadowWorkerPlan {
-  if (!input.shadowModeEnabled) {
-    return "skip_disabled";
-  }
   if (input.presentationMode !== "internal_preview") {
     return "block_publication";
   }

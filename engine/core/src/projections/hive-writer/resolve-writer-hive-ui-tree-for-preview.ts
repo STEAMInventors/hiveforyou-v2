@@ -56,7 +56,6 @@ export function resolveWriterHiveUiTreeForPreview(input: {
   artifact: CanonicalStudyArtifact;
   projection: CanonicalStudyReportProjection;
   record: HiveWriterShadowRecord | null;
-  shadowModeEnabled: boolean;
 }): WriterHiveUiPreviewResolution {
   let domainBinding;
   try {
@@ -89,16 +88,6 @@ export function resolveWriterHiveUiTreeForPreview(input: {
     packContentSha256: domainBinding.packContentSha256,
     reportProjectionContentSha256: domainBinding.reportProjectionContentSha256,
   });
-
-  if (!input.shadowModeEnabled) {
-    return toFallback({
-      code: "SHADOW_DISABLED",
-      message: "Hive Writer shadow mode is disabled.",
-      shadowStatus: "unavailable",
-      idempotencyKey,
-      validation: { ok: false, errorCodes: ["SHADOW_DISABLED"], message: null },
-    });
-  }
 
   const record = input.record;
   if (!record) {

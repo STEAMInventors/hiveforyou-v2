@@ -1,5 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import { UnauthenticatedError } from "@hiveforyou/core";
+
 vi.mock("@/lib/canonical-report/canonical-report-service-server", () => ({
   loadCanonicalStudyReportProjectionForSession: vi.fn(),
 }));
@@ -93,6 +95,21 @@ describe("Phase 8.6 case projection routes — sanitized 500 responses", () => {
         studyRunId: "run-2",
       }),
     );
+  });
+
+  it("hive-writer-shadow run POST returns 401 when the session is missing", async () => {
+    vi.mocked(runHiveWriterShadowForSession).mockRejectedValue(new UnauthenticatedError());
+    const response = await postWriterShadowRun(
+      new Request("http://localhost/api/case/case-1/hive-writer-shadow/run", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ studyRunId: "run-3", audience: "customer" }),
+      }),
+      { params: Promise.resolve({ caseId: "case-1" }) },
+    );
+    expect(response.status).toBe(401);
+    const body = (await response.json()) as { error: string };
+    expect(body.error).toBe("UNAUTHENTICATED");
   });
 
   it("hive-writer-shadow run POST returns generic 500 JSON and logs safe fields only", async () => {

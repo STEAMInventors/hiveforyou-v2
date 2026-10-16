@@ -2,17 +2,20 @@ import "server-only";
 
 import {
   buildHiveWriterShadowIdempotencyKey,
-  createWriterHttpClient,
+  enqueueHiveWriterShadowPreviewRequest,
   projectCanonicalStudyReport,
-  readHiveWriterShadowModeEnabled,
   resolveHiveWriterDomainBinding,
   resolveWriterHiveUiTreeForPreview,
-  runHiveWriterShadow,
   type HiveWriterShadowPersistence,
   type WriterHiveUiPreviewResolution,
 } from "@hiveforyou/core";
 import type { CanonicalStudyDebugArtifactMetadata } from "@hiveforyou/core";
 import type { CanonicalStudyReportAudience } from "@hiveforyou/shared/canonical-study-report-projection";
+import {
+  buildHiveWriterShadowRequestedEventId,
+  HIVE_EVENT_WRITER_SHADOW_REQUESTED,
+  hiveWriterShadowRequestedEventDataSchema,
+} from "@hiveforyou/shared/events";
 import { hiveWriterShadowRecordPath } from "@hiveforyou/shared/hive-artifact-paths";
 import {
   parseHiveWriterShadowRecord,
@@ -20,6 +23,7 @@ import {
 } from "@hiveforyou/shared/hive-writer-proposal";
 
 import { loadDeterministicCanonicalStudyArtifactForSession } from "@/lib/canonical-debug/run-deterministic-canonical-study-server";
+import { inngest } from "@/lib/inngest/client";
 import { createAuthenticatedHiveGateway, getAuthenticatedUserId } from "@/lib/supabase/server";
 import { requireSessionUserId } from "@hiveforyou/core";
 
@@ -69,39 +73,7 @@ function createShadowPersistence(input: {
   };
 }
 
-export async function runHiveWriterShadowForSession(input: {
-  caseId: string;
-  studyRunId: string;
-  audience: CanonicalStudyReportAudience;
-}): Promise<HiveWriterShadowDiagnostic> {
-  const gateway = await createAuthenticatedHiveGateway();
-  const userId = requireSessionUserId(await getAuthenticatedUserId());
-  const artifact = await loadDeterministicCanonicalStudyArtifactForSession({
-    caseId: input.caseId,
-    studyRunId: input.studyRunId,
-  });
-  const metadata = artifact as typeof artifact & CanonicalStudyDebugArtifactMetadata;
-  const projection = projectCanonicalStudyReport({
-    artifact,
-    audience: input.audience,
-    customerProReportsPermitted: metadata.customerProReportsPermitted,
-    packApprovalLabel: metadata.packApprovalLabel,
-  });
-
-  const record = await runHiveWriterShadow({
-    artifact,
-    projection,
-    shadowModeEnabled: readHiveWriterShadowModeEnabled(process.env),
-    presentationInstructions: null,
-    invokeWriter: createWriterHttpClient(process.env),
-    persistence: createShadowPersistence({
-      userId,
-      studyRunId: input.studyRunId,
-      audience: input.audience,
-      gateway,
-    }),
-  });
-
+function toDiagnostic(record: HiveWriterShadowRecord): HiveWriterShadowDiagnostic {
   return {
     status: record.status,
     idempotencyKey: record.idempotencyKey,
@@ -114,19 +86,62 @@ export async function runHiveWriterShadowForSession(input: {
   };
 }
 
+async function sendWriterShadowEvent(input: {
+  userId: string;
+  caseId: string;
+  studyRunId: string;
+  audience: CanonicalStudyReportAudience;
+  idempotencyKey: string;
+}): Promise<void> {
+  const data = hiveWriterShadowRequestedEventDataSchema.parse({
+    userId: input.userId,
+    caseId: input.caseId,
+    studyRunId: input.studyRunId,
+    audience: input.audience,
+  });
+  await inngest.send({
+    id: buildHiveWriterShadowRequestedEventId({
+      studyRunId: input.studyRunId,
+      audience: input.audience,
+      idempotencyKey: input.idempotencyKey,
+    }),
+    name: HIVE_EVENT_WRITER_SHADOW_REQUESTED,
+    data,
+  });
+}
+
+/** Enqueue a Writer shadow run. The Next.js process does not call hive-agents. */
+export async function runHiveWriterShadowForSession(input: {
+  caseId: string;
+  studyRunId: string;
+  audience: CanonicalStudyReportAudience;
+}): Promise<HiveWriterShadowDiagnostic> {
+  const gateway = await createAuthenticatedHiveGateway();
+  const userId = requireSessionUserId(await getAuthenticatedUserId());
+
+  const record = await enqueueHiveWriterShadowPreviewRequest({
+    claimedUserId: userId,
+    caseId: input.caseId,
+    studyRunId: input.studyRunId,
+    audience: input.audience,
+    env: process.env,
+    gateway,
+    loadArtifact: async () =>
+      loadDeterministicCanonicalStudyArtifactForSession({
+        caseId: input.caseId,
+        studyRunId: input.studyRunId,
+      }),
+    dispatchRequested: sendWriterShadowEvent,
+  });
+
+  return toDiagnostic(record);
+}
+
 export async function loadHiveWriterShadowDiagnosticForSession(input: {
   caseId: string;
   studyRunId: string;
   audience: CanonicalStudyReportAudience;
 }): Promise<HiveWriterShadowDiagnostic | null> {
-  if (!readHiveWriterShadowModeEnabled(process.env)) {
-    return {
-      status: "unavailable",
-      idempotencyKey: "",
-      validation: { ok: false, errorCodes: ["SHADOW_DISABLED"], message: null },
-      observability: { durationMs: 0, modelIdentifier: null, projectionHash: "" },
-    };
-  }
   const gateway = await createAuthenticatedHiveGateway();
   const userId = requireSessionUserId(await getAuthenticatedUserId());
   const artifact = await loadDeterministicCanonicalStudyArtifactForSession({
@@ -207,9 +222,7 @@ async function loadShadowRecordForSession(input: {
   return { artifact, projection, record };
 }
 
-export type WriterHiveUiTreePreviewPayload = WriterHiveUiPreviewResolution & {
-  writerShadowEnabled: boolean;
-};
+export type WriterHiveUiTreePreviewPayload = WriterHiveUiPreviewResolution;
 
 /** Read-only: loads persisted shadow record and re-validates; never invokes the Writer model. */
 export async function loadWriterHiveUiTreePreviewForSession(input: {
@@ -217,13 +230,10 @@ export async function loadWriterHiveUiTreePreviewForSession(input: {
   studyRunId: string;
   audience: CanonicalStudyReportAudience;
 }): Promise<WriterHiveUiTreePreviewPayload> {
-  const writerShadowEnabled = readHiveWriterShadowModeEnabled(process.env);
   const { artifact, projection, record } = await loadShadowRecordForSession(input);
-  const resolution = resolveWriterHiveUiTreeForPreview({
+  return resolveWriterHiveUiTreeForPreview({
     artifact,
     projection,
     record,
-    shadowModeEnabled: writerShadowEnabled,
   });
-  return { ...resolution, writerShadowEnabled };
 }
