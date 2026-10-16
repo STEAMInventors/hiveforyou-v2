@@ -1,9 +1,16 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  buildCaseCanonicalStudyHref,
+  buildCaseDocumentsHref,
+  buildCaseReportsHref,
+  buildCaseWorkspaceHomeHref,
+  buildMyCasesHref,
   buildPostStudyCompletionHref,
   isCanonicalStudyPresentationReady,
+  isCaseWorkspaceSectionNavEnabled,
   isPackDrivenStudyAwaitingRawExtraction,
+  resolveCaseWorkspaceSectionFromPathname,
   resolveStudyProcessingModeFromStudyPath,
 } from "./study-completion-navigation";
 
@@ -32,6 +39,40 @@ describe("study-completion-navigation", () => {
         studyRunId: "study-1",
       }),
     ).toBe("/study/study-1/map");
+  });
+
+  it("builds case workspace navigation hrefs", () => {
+    const base = {
+      caseId: "case-1",
+      studyRunId: "study-1",
+      intakeRunId: "intake-1",
+      audience: "customer" as const,
+    };
+    expect(buildMyCasesHref()).toBe("/case");
+    expect(buildCaseWorkspaceHomeHref(base)).toContain("/ready");
+    expect(buildCaseWorkspaceHomeHref(base)).toContain("studyRunId=study-1");
+    expect(buildCaseDocumentsHref(base)).toContain("/intake/intake-1");
+    expect(buildCaseCanonicalStudyHref(base)).toContain("/canonical-json");
+    expect(buildCaseReportsHref(base)).toContain("/report-preview");
+    expect(resolveCaseWorkspaceSectionFromPathname("/hives/case-1/report-preview")).toBe("reports");
+    expect(isCaseWorkspaceSectionNavEnabled("reports", { caseId: "c", studyRunId: "s" })).toBe(true);
+  });
+
+  it("preserves breadcrumb path and merges query params on report preview hrefs", () => {
+    const href = buildCaseReportsHref({
+      caseId: "case-1",
+      studyRunId: "study-1",
+      intakeRunId: "intake-1",
+      audience: "pro",
+    });
+    expect(href.startsWith("/hives/case-1/report-preview?")).toBe(true);
+    expect(href).toContain("studyRunId=study-1");
+    expect(href).toContain("intakeRunId=intake-1");
+    expect(href).toContain("audience=pro");
+  });
+
+  it("returns a path-only workspace home href when studyRunId is missing", () => {
+    expect(buildCaseWorkspaceHomeHref({ caseId: "case-1" })).toBe("/hives/case-1/ready");
   });
 
   it("distinguishes canonical presentation readiness from pack-driven polling", () => {

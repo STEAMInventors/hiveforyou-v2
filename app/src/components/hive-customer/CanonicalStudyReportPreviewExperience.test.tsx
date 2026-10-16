@@ -5,7 +5,22 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { CanonicalStudyReportPreviewExperience } from "./CanonicalStudyReportPreviewExperience";
 
 vi.mock("./HiveCustomerShell", () => ({
-  HiveCustomerShell: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  HiveCustomerShell: ({
+    children,
+    workspace,
+  }: {
+    children: React.ReactNode;
+    workspace?: { activeSection: string };
+  }) => (
+    <div>
+      {workspace ? (
+        <nav data-testid="case-workspace-breadcrumbs">
+          <span aria-current="page">{workspace.activeSection === "reports" ? "Reports" : ""}</span>
+        </nav>
+      ) : null}
+      {children}
+    </div>
+  ),
 }));
 
 vi.mock("@/components/hive-ui/HiveUiRenderer", () => ({
@@ -19,6 +34,8 @@ vi.mock("./CanonicalStudyCustomerReportView", () => ({
 vi.mock("./CanonicalStudyProReportView", () => ({
   CanonicalStudyProReportView: () => <div data-testid="legacy-pro-view" />,
 }));
+
+const WRITER_RUN_ID = "11111111-1111-4111-8111-111111111111";
 
 const baseProjection = {
   schemaVersion: "canonical-study-report/1",
@@ -84,6 +101,7 @@ describe("CanonicalStudyReportPreviewExperience", () => {
       if (url.includes("/hive-writer-shadow/run") && init?.method === "POST") {
         return new Response(
           JSON.stringify({
+            writerRunId: WRITER_RUN_ID,
             status: "accepted",
             idempotencyKey: "k".repeat(64),
             validation: { ok: true, errorCodes: [], message: null },
@@ -110,6 +128,8 @@ describe("CanonicalStudyReportPreviewExperience", () => {
         initialAudience="customer"
       />,
     );
+    expect(screen.getByTestId("case-workspace-breadcrumbs")).toBeInTheDocument();
+    expect(screen.getByText("Reports")).toHaveAttribute("aria-current", "page");
     await waitFor(() => {
       expect(screen.getByTestId("hive-ui-renderer")).toBeInTheDocument();
     });
@@ -171,6 +191,7 @@ describe("CanonicalStudyReportPreviewExperience", () => {
       if (url.includes("/hive-writer-shadow/status")) {
         return new Response(
           JSON.stringify({
+            writerRunId: WRITER_RUN_ID,
             status: "accepted",
             idempotencyKey: "k".repeat(64),
             validation: { ok: true, errorCodes: [], message: null },
@@ -196,6 +217,7 @@ describe("CanonicalStudyReportPreviewExperience", () => {
       if (url.includes("/hive-writer-shadow/run") && init?.method === "POST") {
         return new Response(
           JSON.stringify({
+            writerRunId: WRITER_RUN_ID,
             status: "queued",
             idempotencyKey: "k".repeat(64),
             validation: { ok: false, errorCodes: ["QUEUED"], message: null },
@@ -256,6 +278,7 @@ describe("CanonicalStudyReportPreviewExperience", () => {
       if (url.includes("/hive-writer-shadow/run") && init?.method === "POST") {
         return new Response(
           JSON.stringify({
+            writerRunId: WRITER_RUN_ID,
             status: "rejected",
             idempotencyKey: "k".repeat(64),
             validation: { ok: false, errorCodes: ["HIVE_UI_TREE_INVALID"], message: "invalid" },

@@ -39,6 +39,7 @@ type WriterUiTreePreviewPayload = {
 };
 
 type HiveWriterShadowDiagnostic = {
+  writerRunId: string;
   status: string;
   idempotencyKey: string;
   validation: { ok: boolean; errorCodes: string[]; message: string | null };
@@ -336,14 +337,14 @@ export function CanonicalStudyReportPreviewExperience({
   }, [layoutMode, loadWriterPreview]);
 
   const pollWriterStatus = useCallback(
-    async (serial: number): Promise<HiveWriterShadowDiagnostic | null> => {
+    async (serial: number, writerRunId: string): Promise<HiveWriterShadowDiagnostic | null> => {
       const deadline = Date.now() + WRITER_POLL_TIMEOUT_MS;
       while (Date.now() < deadline) {
         if (requestSerial.current !== serial) {
           return null;
         }
         const response = await fetch(
-          `/api/case/${encodeURIComponent(caseId)}/hive-writer-shadow/status?studyRunId=${encodeURIComponent(studyRunId)}&audience=${encodeURIComponent(audience)}`,
+          `/api/case/${encodeURIComponent(caseId)}/hive-writer-shadow/status?studyRunId=${encodeURIComponent(studyRunId)}&audience=${encodeURIComponent(audience)}&writerRunId=${encodeURIComponent(writerRunId)}`,
         );
         const payload = (await response.json()) as HiveWriterShadowDiagnostic & {
           error?: string;
@@ -397,7 +398,7 @@ export function CanonicalStudyReportPreviewExperience({
       setLayoutMode("writer");
       let terminal = payload;
       if (isWriterInFlight(payload.status)) {
-        const polled = await pollWriterStatus(serial);
+        const polled = await pollWriterStatus(serial, payload.writerRunId);
         if (requestSerial.current !== serial) {
           return;
         }
@@ -450,7 +451,15 @@ export function CanonicalStudyReportPreviewExperience({
     !isWriterInFlight(generation?.status ?? "");
 
   return (
-    <HiveCustomerShell exploreDisabled={false}>
+    <HiveCustomerShell
+      exploreDisabled={false}
+      workspace={{
+        caseId,
+        studyRunId,
+        audience,
+        activeSection: "reports",
+      }}
+    >
       <div className="mx-auto w-full max-w-[1200px] px-6 py-10 lg:px-10">
         <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
           <div>

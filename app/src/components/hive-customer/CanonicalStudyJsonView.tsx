@@ -82,7 +82,16 @@ export function CanonicalStudyJsonView({
   const reportPreviewHref = buildHiveReportPreviewHref({ caseId, studyRunId, audience: "customer" });
 
   return (
-    <HiveCustomerShell intakeRunId={intakeRunId} exploreDisabled={false}>
+    <HiveCustomerShell
+      intakeRunId={intakeRunId}
+      exploreDisabled={false}
+      workspace={{
+        caseId,
+        studyRunId,
+        intakeRunId,
+        activeSection: "canonical-study",
+      }}
+    >
       <div className="mx-auto w-full max-w-[1200px] px-6 py-10 lg:px-10">
         <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
           <div>

@@ -52,6 +52,13 @@ export function HiveBuildingProgressExperience({
     <HiveCustomerShell
       intakeRunId={progress?.intakeRunId}
       exploreDisabled
+      workspace={{
+        caseId,
+        studyRunId,
+        intakeRunId: progress?.intakeRunId,
+        caseLabel: progress?.subjectFirstName,
+        activeSection: "documents",
+      }}
     >
       <div className="mx-auto flex w-full max-w-[680px] flex-1 flex-col items-center px-6 py-[72px] sm:px-0 lg:px-10">
         <header className="mb-10 w-full">

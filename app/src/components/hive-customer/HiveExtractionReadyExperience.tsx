@@ -72,6 +72,13 @@ export function HiveExtractionReadyExperience({
       intakeRunId={progress?.intakeRunId}
       exploreHiveHref={exploreHref}
       exploreDisabled={!progress?.extractionCompleteForExplore}
+      workspace={{
+        caseId,
+        studyRunId,
+        intakeRunId: progress?.intakeRunId,
+        caseLabel: progress?.subjectFirstName,
+        activeSection: "documents",
+      }}
     >
       <div className="mx-auto w-full max-w-[1440px] px-6 py-10 lg:px-10">
         <div className="grid grid-cols-1 items-start gap-10 lg:grid-cols-12">

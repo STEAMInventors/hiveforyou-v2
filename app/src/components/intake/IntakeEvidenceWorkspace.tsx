@@ -34,6 +34,8 @@ import {
   type Modal2Phase,
 } from "@/components/hive-lifecycle/stages";
 import { ACCEPTED_UPLOAD_MIME } from "@/lib/upload-constants";
+import { CaseWorkspaceChrome } from "@/components/hive-customer/HiveCaseWorkspaceChrome";
+import type { CaseWorkspaceAudience } from "@/lib/intake/study-completion-navigation";
 import type { IntakeEvidenceWorkspaceView, IntakeSourceFileView } from "@hiveforyou/shared/intake";
 
 const geist = "'Geist', 'Helvetica Neue', sans-serif";
@@ -314,7 +316,15 @@ function StudyLifecycleModal({
   );
 }
 
-export function IntakeEvidenceWorkspace({ intakeRunId }: { intakeRunId: string }) {
+export function IntakeEvidenceWorkspace({
+  intakeRunId,
+  workspaceStudyRunId,
+  workspaceAudience,
+}: {
+  intakeRunId: string;
+  workspaceStudyRunId?: string;
+  workspaceAudience?: CaseWorkspaceAudience;
+}) {
   const router = useRouter();
   const { clearDocuments } = useStagedDocuments();
   const addFilesInputId = useId();
@@ -618,6 +628,16 @@ export function IntakeEvidenceWorkspace({ intakeRunId }: { intakeRunId: string }
           </button>
         </div>
       </header>
+
+      <CaseWorkspaceChrome
+        variant="intake"
+        caseId={view.caseId}
+        studyRunId={workspaceStudyRunId}
+        intakeRunId={intakeRunId}
+        audience={workspaceAudience}
+        caseLabel={domainLabel}
+        activeSection="documents"
+      />
 
       {processingDelayed ? (
         <p
