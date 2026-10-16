@@ -17,16 +17,22 @@ export type WriterShadowPreviewPlan =
 /**
  * Preview enqueue decision. Internal preview only; Vercel environment does not gate dispatch.
  * In-flight rows resend the same Inngest id (deduped) without rewriting storage. Terminal rows
- * are reused as-is. Non-terminal rows (including prior SHADOW_DISABLED skips) may be enqueued.
+ * are reused as-is except one eligible failed retry. Non-terminal rows (including prior
+ * SHADOW_DISABLED skips) may be enqueued.
  */
 export function planWriterShadowPreviewRequest(input: {
   presentationMode: CanonicalStudyReportPresentationMode;
   existingStatus: HiveWriterShadowStatus | null;
+  /** When true, a single retry may enqueue Writer after a terminal failed record. */
+  allowTerminalFailedRetry?: boolean;
 }): WriterShadowPreviewPlan {
   if (input.presentationMode !== "internal_preview") {
     return { action: "block_publication" };
   }
   if (input.existingStatus && isHiveWriterShadowTerminalStatus(input.existingStatus)) {
+    if (input.existingStatus === "failed" && input.allowTerminalFailedRetry) {
+      return { action: "enqueue" };
+    }
     return { action: "return_existing", resend: false };
   }
   if (input.existingStatus && isHiveWriterShadowInFlightStatus(input.existingStatus)) {

@@ -263,9 +263,20 @@ export async function enqueueHiveWriterShadowPreviewRequest(input: {
     audience: input.audience,
   });
   const existing = await persistence.load(idempotencyKey);
+  const attemptHistory = await loadWriterShadowAttemptHistory({
+    gateway: input.gateway,
+    userId: owner.userId,
+    studyRunId: input.studyRunId,
+    audience: input.audience,
+    idempotencyKey,
+  });
+  const allowTerminalFailedRetry =
+    existing !== null &&
+    canRetryTerminalWriterShadowFailure({ record: existing, attemptHistory });
   const plan = planWriterShadowPreviewRequest({
     presentationMode,
     existingStatus: existing?.status ?? null,
+    allowTerminalFailedRetry,
   });
 
   const dispatchPayload = {
@@ -297,17 +308,33 @@ export async function enqueueHiveWriterShadowPreviewRequest(input: {
     );
   }
 
-  const queued = await saveUnlessTerminal(
-    persistence,
-    buildHiveWriterShadowMarkerRecord({
-      status: "queued",
+  if (allowTerminalFailedRetry && existing) {
+    const archived = appendTerminalAttemptSnapshot({ history: attemptHistory, record: existing });
+    await saveWriterShadowAttemptHistory({
+      gateway: input.gateway,
+      userId: owner.userId,
+      studyRunId: input.studyRunId,
+      audience: input.audience,
       idempotencyKey,
-      projection,
-      projectionHash: domainBinding.reportProjectionContentSha256,
-      errorCodes: ["QUEUED"],
-      message: null,
-    }),
-  );
+      history: archived,
+    });
+  }
+
+  const queuedMarker = buildHiveWriterShadowMarkerRecord({
+    status: "queued",
+    idempotencyKey,
+    projection,
+    projectionHash: domainBinding.reportProjectionContentSha256,
+    errorCodes: ["QUEUED"],
+    message: null,
+  });
+  if (allowTerminalFailedRetry && existing) {
+    await persistence.save(queuedMarker);
+    await input.dispatchRequested(dispatchPayload);
+    return queuedMarker;
+  }
+
+  const queued = await saveUnlessTerminal(persistence, queuedMarker);
   await input.dispatchRequested(dispatchPayload);
   return queued;
 }

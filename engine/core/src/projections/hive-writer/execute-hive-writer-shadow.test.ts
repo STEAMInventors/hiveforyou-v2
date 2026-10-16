@@ -12,7 +12,10 @@ import { buildDeterministicHiveUiTree } from "../build-deterministic-hive-ui-tre
 import { projectCanonicalStudyReport } from "../project-canonical-study-report.js";
 import { WriterShadowOwnerError } from "./assert-writer-shadow-owner.js";
 import { buildHiveWriterPresentationBinding } from "./build-hive-writer-model-input.js";
-import { hiveWriterShadowRecordPath } from "@hiveforyou/shared/hive-artifact-paths";
+import {
+  hiveWriterShadowAttemptHistoryPath,
+  hiveWriterShadowRecordPath,
+} from "@hiveforyou/shared/hive-artifact-paths";
 
 import { buildHiveWriterShadowIdempotencyKey } from "./hive-writer-idempotency.js";
 import {
@@ -521,6 +524,107 @@ describe("enqueueHiveWriterShadowPreviewRequest", () => {
       }),
     ).rejects.toBeInstanceOf(WriterShadowOwnerError);
     expect(dispatchRequested).not.toHaveBeenCalled();
+  });
+
+  it("re-enqueues once after WRITER_MODEL_JSON_INVALID failed record (POST run diagnostic shape)", async () => {
+    const artifact = sampleArtifact();
+    const gateway = memoryGateway(OWNER, { rejectDuplicateUploadWithoutUpsert: true });
+    const projection = projectCanonicalStudyReport({
+      artifact,
+      audience: "customer",
+      customerProReportsPermitted: false,
+      packApprovalLabel: CANONICAL_STUDY_DEBUG_PACK_APPROVAL,
+    });
+    const domainBinding = resolveHiveWriterDomainBinding({ artifact, projection });
+    const idempotencyKey = buildHiveWriterShadowIdempotencyKey({
+      caseId: projection.caseId,
+      studyRunId: projection.studyRunId,
+      audience: projection.audience,
+      packContentSha256: domainBinding.packContentSha256,
+      reportProjectionContentSha256: domainBinding.reportProjectionContentSha256,
+    });
+    const jsonInvalidMessage =
+      'WRITER_HTTP_422:{"detail":{"error":{"code":"WRITER_MODEL_JSON_INVALID","message":"WRITER_MODEL_JSON_INVALID"}}}';
+    const priorFailed = buildHiveWriterShadowMarkerRecord({
+      status: "failed",
+      idempotencyKey,
+      projection,
+      projectionHash: domainBinding.reportProjectionContentSha256,
+      errorCodes: ["WRITER_MODEL_JSON_INVALID"],
+      message: jsonInvalidMessage,
+    });
+    priorFailed.observability = {
+      ...priorFailed.observability,
+      durationMs: 1842,
+      modelIdentifier: "claude-sonnet-4-20250514",
+    };
+    const recordPath = hiveWriterShadowRecordPath(
+      OWNER,
+      artifact.studyRunId,
+      "customer",
+      idempotencyKey,
+    );
+    await gateway.uploadObject(
+      "document-pages",
+      recordPath,
+      new TextEncoder().encode(JSON.stringify(priorFailed)),
+    );
+
+    const dispatchRequested = vi.fn(async () => {});
+    const enqueued = await enqueueHiveWriterShadowPreviewRequest({
+      claimedUserId: OWNER,
+      caseId: artifact.caseId,
+      studyRunId: artifact.studyRunId,
+      audience: "customer",
+      env: { VERCEL_ENV: "production" },
+      gateway,
+      loadArtifact: async () => artifact,
+      dispatchRequested,
+    });
+
+    expect({
+      status: enqueued.status,
+      idempotencyKey: enqueued.idempotencyKey,
+      validation: enqueued.validation,
+      observability: {
+        durationMs: enqueued.observability.durationMs,
+        modelIdentifier: enqueued.observability.modelIdentifier,
+        projectionHash: enqueued.observability.projectionHash,
+      },
+    }).toEqual({
+      status: "queued",
+      idempotencyKey,
+      validation: { ok: false, errorCodes: ["QUEUED"], message: null },
+      observability: {
+        durationMs: 0,
+        modelIdentifier: null,
+        projectionHash: domainBinding.reportProjectionContentSha256,
+      },
+    });
+    expect(dispatchRequested).toHaveBeenCalledTimes(1);
+    const historyPath = hiveWriterShadowAttemptHistoryPath(
+      OWNER,
+      artifact.studyRunId,
+      "customer",
+      idempotencyKey,
+    );
+    const history = JSON.parse(new TextDecoder().decode(gateway.objects.get(historyPath)!));
+    expect(history.attempts).toHaveLength(1);
+    expect(history.attempts[0].errorCodes).toEqual(["WRITER_MODEL_JSON_INVALID"]);
+
+    dispatchRequested.mockClear();
+    const second = await enqueueHiveWriterShadowPreviewRequest({
+      claimedUserId: OWNER,
+      caseId: artifact.caseId,
+      studyRunId: artifact.studyRunId,
+      audience: "customer",
+      env: { VERCEL_ENV: "production" },
+      gateway,
+      loadArtifact: async () => artifact,
+      dispatchRequested,
+    });
+    expect(second.status).toBe("queued");
+    expect(dispatchRequested).toHaveBeenCalledTimes(1);
   });
 
   it("blocks approved publication before enqueue", async () => {

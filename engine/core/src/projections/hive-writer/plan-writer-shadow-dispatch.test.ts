@@ -53,6 +53,23 @@ describe("planWriterShadowPreviewRequest", () => {
     ).toBe("enqueue");
   });
 
+  it("re-enqueues once when a terminal failed record is eligible for retry", () => {
+    expect(
+      planWriterShadowPreviewRequest({
+        presentationMode: "internal_preview",
+        existingStatus: "failed",
+        allowTerminalFailedRetry: true,
+      }).action,
+    ).toBe("enqueue");
+    expect(
+      planWriterShadowPreviewRequest({
+        presentationMode: "internal_preview",
+        existingStatus: "failed",
+        allowTerminalFailedRetry: false,
+      }),
+    ).toEqual({ action: "return_existing", resend: false });
+  });
+
   it("reuses an accepted record and resends only while in flight", () => {
     expect(
       planWriterShadowPreviewRequest({

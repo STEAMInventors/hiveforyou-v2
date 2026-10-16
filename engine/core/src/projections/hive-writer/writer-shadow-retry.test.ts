@@ -42,6 +42,20 @@ describe("writer-shadow-retry", () => {
     expect(canRetryTerminalWriterShadowFailure({ record, attemptHistory: history })).toBe(false);
   });
 
+  it("allows one retry for legacy WRITER_VALIDATION_FAILED rows with HTTP 422 JSON-invalid detail", () => {
+    const record = failedRecord(["WRITER_VALIDATION_FAILED"]);
+    record.validation.message =
+      'WRITER_HTTP_422:{"detail":{"error":{"code":"WRITER_MODEL_JSON_INVALID","message":"WRITER_MODEL_JSON_INVALID"}}}';
+    expect(isRetriableTerminalWriterShadowFailure(record)).toBe(true);
+    expect(canRetryTerminalWriterShadowFailure({ record, attemptHistory: null })).toBe(true);
+  });
+
+  it("does not retry generic WRITER_VALIDATION_FAILED without JSON-invalid HTTP detail", () => {
+    const record = failedRecord(["WRITER_VALIDATION_FAILED"]);
+    record.validation.message = "Writer validation failed.";
+    expect(isRetriableTerminalWriterShadowFailure(record)).toBe(false);
+  });
+
   it("does not retry accepted or non-retriable failures", () => {
     const rejected = { ...failedRecord(["HIVE_UI_TREE_INVALID"]), status: "rejected" as const };
     expect(isRetriableTerminalWriterShadowFailure(rejected)).toBe(false);
