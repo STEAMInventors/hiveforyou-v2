@@ -5,8 +5,9 @@ import { parseHiveWriterShadowRecord } from "@hiveforyou/shared/hive-writer-prop
 import { assertWriterShadowOwner, WriterShadowOwnerError } from "./assert-writer-shadow-owner.js";
 import { assertHiveWriterLoopbackHost } from "./create-writer-http-client.js";
 import {
-  planWriterShadowPreviewRequest,
-  planWriterShadowWorkerExecution,
+  shouldBlockWriterShadowPublication,
+  shouldInvokeWriterRun,
+  shouldReuseWriterRunRecord,
 } from "./plan-writer-shadow-dispatch.js";
 import { buildHiveWriterShadowMarkerRecord } from "./run-hive-writer-shadow.js";
 import { projectCanonicalStudyReport } from "../project-canonical-study-report.js";
@@ -15,6 +16,7 @@ import { buildCanonicalStudy } from "../../study/canonical-study/index.js";
 import { CANONICAL_STUDY_DEBUG_PACK_APPROVAL } from "../../study/resolve-approved-proposal-domain-pack.js";
 
 const PACK_SHA = "a".repeat(64);
+const WRITER_RUN_ID = "11111111-1111-4111-8111-111111111111";
 
 function projection() {
   const foundation = buildSyntheticFoundation({
@@ -43,110 +45,20 @@ function projection() {
   });
 }
 
-describe("planWriterShadowPreviewRequest", () => {
-  it("enqueues internal preview regardless of deployment environment", () => {
-    expect(
-      planWriterShadowPreviewRequest({
-        presentationMode: "internal_preview",
-        existingStatus: null,
-      }).action,
-    ).toBe("enqueue");
-  });
-
-  it("re-enqueues once when a terminal failed record is eligible for retry", () => {
-    expect(
-      planWriterShadowPreviewRequest({
-        presentationMode: "internal_preview",
-        existingStatus: "failed",
-        allowTerminalFailedRetry: true,
-      }).action,
-    ).toBe("enqueue");
-    expect(
-      planWriterShadowPreviewRequest({
-        presentationMode: "internal_preview",
-        existingStatus: "failed",
-        allowTerminalFailedRetry: false,
-      }),
-    ).toEqual({ action: "return_existing", resend: false });
-  });
-
-  it("reuses an accepted record and resends only while in flight", () => {
-    expect(
-      planWriterShadowPreviewRequest({
-        presentationMode: "internal_preview",
-        existingStatus: "accepted",
-      }),
-    ).toEqual({ action: "return_existing", resend: false });
-    expect(
-      planWriterShadowPreviewRequest({
-        presentationMode: "internal_preview",
-        existingStatus: "queued",
-      }),
-    ).toEqual({ action: "return_existing", resend: true });
-  });
-
-  it("re-enqueues after a non-terminal skipped record", () => {
-    expect(
-      planWriterShadowPreviewRequest({
-        presentationMode: "internal_preview",
-        existingStatus: "skipped",
-      }).action,
-    ).toBe("enqueue");
-  });
-
+describe("writer run dispatch helpers", () => {
   it("blocks approved presentation before enqueue", () => {
-    expect(
-      planWriterShadowPreviewRequest({
-        presentationMode: "approved",
-        existingStatus: null,
-      }).action,
-    ).toBe("block_publication");
-  });
-});
-
-describe("planWriterShadowWorkerExecution", () => {
-  it("reuses terminal records and invokes only for internal preview", () => {
-    expect(
-      planWriterShadowWorkerExecution({
-        presentationMode: "internal_preview",
-        existingStatus: "accepted",
-      }),
-    ).toBe("reuse");
-    expect(
-      planWriterShadowWorkerExecution({
-        presentationMode: "internal_preview",
-        existingStatus: null,
-      }),
-    ).toBe("invoke");
-    expect(
-      planWriterShadowWorkerExecution({
-        presentationMode: "approved",
-        existingStatus: null,
-      }),
-    ).toBe("block_publication");
-    expect(
-      planWriterShadowWorkerExecution({
-        presentationMode: "internal_preview",
-        existingStatus: "processing",
-      }),
-    ).toBe("invoke");
+    expect(shouldBlockWriterShadowPublication("approved")).toBe(true);
+    expect(shouldBlockWriterShadowPublication("internal_preview")).toBe(false);
   });
 
-  it("invokes once more when a terminal failed record is eligible for retry", () => {
-    expect(
-      planWriterShadowWorkerExecution({
-        presentationMode: "internal_preview",
-        existingStatus: "failed",
-        allowTerminalFailedRetry: true,
-      }),
-    ).toBe("invoke");
-    expect(
-      planWriterShadowWorkerExecution({
-        presentationMode: "internal_preview",
-        existingStatus: "failed",
-        allowTerminalFailedRetry: false,
-      }),
-    ).toBe("reuse");
+  it("reuses terminal and processing runs but invokes only from queued", () => {
+    expect(shouldReuseWriterRunRecord("accepted")).toBe(true);
+    expect(shouldReuseWriterRunRecord("failed")).toBe(true);
+    expect(shouldReuseWriterRunRecord("processing")).toBe(true);
+    expect(shouldReuseWriterRunRecord("queued")).toBe(false);
+    expect(shouldReuseWriterRunRecord(null)).toBe(false);
+    expect(shouldInvokeWriterRun("queued")).toBe(true);
+    expect(shouldInvokeWriterRun("processing")).toBe(false);
   });
 });
 
@@ -198,6 +110,7 @@ describe("buildHiveWriterShadowMarkerRecord", () => {
   it("round-trips a queued record through the shadow schema", () => {
     const report = projection();
     const record = buildHiveWriterShadowMarkerRecord({
+      writerRunId: WRITER_RUN_ID,
       status: "queued",
       idempotencyKey: "d".repeat(64),
       projection: report,
@@ -206,5 +119,6 @@ describe("buildHiveWriterShadowMarkerRecord", () => {
       message: null,
     });
     expect(parseHiveWriterShadowRecord(record).status).toBe("queued");
+    expect(parseHiveWriterShadowRecord(record).writerRunId).toBe(WRITER_RUN_ID);
   });
 });

@@ -60,23 +60,16 @@ export const hiveWriterShadowRequestedEventDataSchema = z.object({
   caseId: z.string().min(1),
   studyRunId: z.string().min(1),
   audience: z.enum(["customer", "pro"]),
+  writerRunId: z.string().uuid(),
 });
 
 export type HiveWriterShadowRequestedEventData = z.infer<
   typeof hiveWriterShadowRequestedEventDataSchema
 >;
 
-/**
- * Dedupes Writer requests for the same study, audience, and projection/writer binding.
- * The worker recomputes the idempotency key from persisted data; this id only prevents
- * a second Inngest run for the same binding.
- */
-export function buildHiveWriterShadowRequestedEventId(input: {
-  studyRunId: string;
-  audience: "customer" | "pro";
-  idempotencyKey: string;
-}): string {
-  return `writer-shadow:${input.studyRunId.trim()}:${input.audience}:${input.idempotencyKey.trim()}`;
+/** Dedupes duplicate delivery for the same Writer run attempt. */
+export function buildHiveWriterShadowRequestedEventId(writerRunId: string): string {
+  return `writer-run:${writerRunId.trim()}`;
 }
 
 /** Deterministic Inngest event id for intake queueing (dedupes double-clicks). */

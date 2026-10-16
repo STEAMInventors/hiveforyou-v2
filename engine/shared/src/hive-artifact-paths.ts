@@ -67,22 +67,34 @@ export function canonicalStudyArtifactPath(
   return `${userId}/canonical-study/${studyRunId}/${attemptId}.json`;
 }
 
-/** Shadow Writer proposal + validation record (idempotent key in filename). */
+/** One Writer shadow run record (immutable path per writerRunId). */
 export function hiveWriterShadowRecordPath(
   userId: string,
   studyRunId: string,
   audience: "customer" | "pro",
-  idempotencyKey: string,
+  writerRunId: string,
 ): string {
-  return `${userId}/hive-writer-shadow/${studyRunId}/${audience}/${idempotencyKey}.json`;
+  return `${userId}/hive-writer-shadow/${studyRunId}/${audience}/runs/${writerRunId}.json`;
 }
 
-/** Append-only terminal failure snapshots for a single Writer shadow idempotency key. */
-export function hiveWriterShadowAttemptHistoryPath(
+/**
+ * Pre–writer-run architecture: one record per projection binding hash.
+ * @deprecated Read-only migration fallback; new runs use {@link hiveWriterShadowRecordPath}.
+ */
+export function hiveWriterShadowLegacyBindingRecordPath(
   userId: string,
   studyRunId: string,
   audience: "customer" | "pro",
-  idempotencyKey: string,
+  projectionBindingKey: string,
 ): string {
-  return `${userId}/hive-writer-shadow/${studyRunId}/${audience}/${idempotencyKey}.attempt-history.json`;
+  return `${userId}/hive-writer-shadow/${studyRunId}/${audience}/${projectionBindingKey}.json`;
+}
+
+/** Pointer to the latest accepted Writer run for a study run and audience. */
+export function hiveWriterShadowLatestAcceptedPath(
+  userId: string,
+  studyRunId: string,
+  audience: "customer" | "pro",
+): string {
+  return `${userId}/hive-writer-shadow/${studyRunId}/${audience}/latest-accepted.json`;
 }

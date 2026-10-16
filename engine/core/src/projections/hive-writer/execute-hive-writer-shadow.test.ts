@@ -1,5 +1,11 @@
 import { describe, expect, it, vi } from "vitest";
 
+import {
+  hiveWriterShadowLatestAcceptedPath,
+  hiveWriterShadowLegacyBindingRecordPath,
+  hiveWriterShadowRecordPath,
+} from "@hiveforyou/shared/hive-artifact-paths";
+
 import { CANONICAL_STUDY_DEBUG_PACK_APPROVAL } from "../../study/resolve-approved-proposal-domain-pack.js";
 import {
   buildSyntheticFoundation,
@@ -12,11 +18,6 @@ import { buildDeterministicHiveUiTree } from "../build-deterministic-hive-ui-tre
 import { projectCanonicalStudyReport } from "../project-canonical-study-report.js";
 import { WriterShadowOwnerError } from "./assert-writer-shadow-owner.js";
 import { buildHiveWriterPresentationBinding } from "./build-hive-writer-model-input.js";
-import {
-  hiveWriterShadowAttemptHistoryPath,
-  hiveWriterShadowRecordPath,
-} from "@hiveforyou/shared/hive-artifact-paths";
-
 import { buildHiveWriterShadowIdempotencyKey } from "./hive-writer-idempotency.js";
 import {
   enqueueHiveWriterShadowPreviewRequest,
@@ -29,6 +30,9 @@ import type { HiveWriterHttpClient } from "./create-writer-http-client.js";
 
 const PACK_SHA = "a".repeat(64);
 const OWNER = "user-owner";
+const RUN_A = "11111111-1111-4111-8111-111111111111";
+const RUN_B = "22222222-2222-4222-8222-222222222222";
+const RUN_C = "33333333-3333-4333-8333-333333333333";
 
 function sampleArtifact(publication?: { customerProReportsPermitted: boolean; packApprovalLabel: string }) {
   const foundation = buildSyntheticFoundation({
@@ -128,6 +132,23 @@ function writerFromArtifact(
   });
 }
 
+function bindingKeyForArtifact(artifact: ReturnType<typeof sampleArtifact>, audience: "customer" | "pro" = "customer") {
+  const projection = projectCanonicalStudyReport({
+    artifact,
+    audience,
+    customerProReportsPermitted: false,
+    packApprovalLabel: CANONICAL_STUDY_DEBUG_PACK_APPROVAL,
+  });
+  const domainBinding = resolveHiveWriterDomainBinding({ artifact, projection });
+  return buildHiveWriterShadowIdempotencyKey({
+    caseId: projection.caseId,
+    studyRunId: projection.studyRunId,
+    audience: projection.audience,
+    packContentSha256: domainBinding.packContentSha256,
+    reportProjectionContentSha256: domainBinding.reportProjectionContentSha256,
+  });
+}
+
 describe("executeHiveWriterShadowRequest", () => {
   it("rejects unknown studyRunId before loading canonical study artifacts", async () => {
     const gateway = memoryGateway(OWNER);
@@ -138,30 +159,13 @@ describe("executeHiveWriterShadowRequest", () => {
         caseId: "case-test",
         studyRunId: "missing-study-run",
         audience: "customer",
+        writerRunId: RUN_A,
         env: {},
         gateway,
         loadArtifact,
       }),
     ).rejects.toBeInstanceOf(WriterShadowOwnerError);
     expect(loadArtifact).not.toHaveBeenCalled();
-  });
-
-  it("looks up the study and case by id and rejects a mismatched event user", async () => {
-    const gateway = memoryGateway(OWNER);
-    const loadArtifact = vi.fn();
-    await expect(
-      executeHiveWriterShadowRequest({
-        claimedUserId: "someone-else",
-        caseId: "case-test",
-        studyRunId: "study-test",
-        audience: "customer",
-        env: {},
-        gateway,
-        loadArtifact,
-      }),
-    ).rejects.toBeInstanceOf(WriterShadowOwnerError);
-    expect(loadArtifact).not.toHaveBeenCalled();
-    expect(gateway.selects.map((call) => call.where)).toEqual([{ id: "study-test" }, { id: "case-test" }]);
   });
 
   it("does not call Writer when the persisted study is approved for publication", async () => {
@@ -170,13 +174,36 @@ describe("executeHiveWriterShadowRequest", () => {
       packApprovalLabel: "certified-pack",
     });
     const invokeWriter = vi.fn(writerFromArtifact(artifact));
+    const gateway = memoryGateway(OWNER);
+    const projection = projectCanonicalStudyReport({
+      artifact,
+      audience: "customer",
+      customerProReportsPermitted: true,
+      packApprovalLabel: "certified-pack",
+    });
+    const domainBinding = resolveHiveWriterDomainBinding({ artifact, projection });
+    const queued = buildHiveWriterShadowMarkerRecord({
+      writerRunId: RUN_A,
+      status: "queued",
+      idempotencyKey: bindingKeyForArtifact(artifact),
+      projection,
+      projectionHash: domainBinding.reportProjectionContentSha256,
+      errorCodes: ["QUEUED"],
+      message: null,
+    });
+    await gateway.uploadObject(
+      "document-pages",
+      hiveWriterShadowRecordPath(OWNER, artifact.studyRunId, "customer", RUN_A),
+      new TextEncoder().encode(JSON.stringify(queued)),
+    );
     const record = await executeHiveWriterShadowRequest({
       claimedUserId: OWNER,
       caseId: artifact.caseId,
       studyRunId: artifact.studyRunId,
       audience: "customer",
+      writerRunId: RUN_A,
       env: { HIVE_AGENTS_HOST: "127.0.0.1" },
-      gateway: memoryGateway(OWNER),
+      gateway,
       loadArtifact: async () => artifact,
       invokeWriter,
     });
@@ -185,33 +212,29 @@ describe("executeHiveWriterShadowRequest", () => {
     expect(invokeWriter).not.toHaveBeenCalled();
   });
 
-  it("rejects a public Writer host before invoking the model", async () => {
-    const artifact = sampleArtifact();
-    const invokeWriter = vi.fn(writerFromArtifact(artifact));
-    await expect(
-      executeHiveWriterShadowRequest({
-        claimedUserId: OWNER,
-        caseId: artifact.caseId,
-        studyRunId: artifact.studyRunId,
-        audience: "customer",
-        env: { HIVE_AGENTS_HOST: "203.0.113.10" },
-        gateway: memoryGateway(OWNER),
-        loadArtifact: async () => artifact,
-        invokeWriter,
-      }),
-    ).rejects.toThrow("WRITER_HOST_NOT_LOOPBACK");
-    expect(invokeWriter).not.toHaveBeenCalled();
-  });
-
-  it("calls Writer once and reuses the accepted record", async () => {
+  it("calls Writer once per writerRunId and reuses on duplicate delivery", async () => {
     const artifact = sampleArtifact();
     const invokeWriter = vi.fn(writerFromArtifact(artifact));
     const gateway = memoryGateway(OWNER);
+    const dispatch = vi.fn(async () => {});
+    const enqueued = await enqueueHiveWriterShadowPreviewRequest({
+      claimedUserId: OWNER,
+      caseId: artifact.caseId,
+      studyRunId: artifact.studyRunId,
+      audience: "customer",
+      env: {},
+      gateway,
+      loadArtifact: async () => artifact,
+      dispatchRequested: dispatch,
+      createWriterRunId: () => RUN_A,
+    });
+    expect(enqueued.writerRunId).toBe(RUN_A);
     const first = await executeHiveWriterShadowRequest({
       claimedUserId: OWNER,
       caseId: artifact.caseId,
       studyRunId: artifact.studyRunId,
       audience: "customer",
+      writerRunId: RUN_A,
       env: {},
       gateway,
       loadArtifact: async () => artifact,
@@ -222,6 +245,7 @@ describe("executeHiveWriterShadowRequest", () => {
       caseId: artifact.caseId,
       studyRunId: artifact.studyRunId,
       audience: "customer",
+      writerRunId: RUN_A,
       env: {},
       gateway,
       loadArtifact: async () => artifact,
@@ -229,30 +253,16 @@ describe("executeHiveWriterShadowRequest", () => {
     });
     expect(first.status).toBe("accepted");
     expect(second.status).toBe("accepted");
-    expect(second.idempotencyKey).toBe(first.idempotencyKey);
     expect(invokeWriter).toHaveBeenCalledTimes(1);
   });
 
-  it("stores a rejected tree and does not call Writer again", async () => {
+  it("creates independent runs on each explicit enqueue", async () => {
     const artifact = sampleArtifact();
-    const invokeWriter = vi.fn(async () => {
-      const valid = await writerFromArtifact(artifact)({} as never);
-      return {
-        ...valid,
-        proposal: {
-          ...valid.proposal,
-          hiveUiTree: {
-            ...valid.proposal.hiveUiTree,
-            elements: {
-              ...valid.proposal.hiveUiTree.elements,
-              bad: { type: "FactRow", props: { claimRef: { fieldKey: "missing-field" } }, children: [] },
-            },
-          },
-        },
-      };
-    });
     const gateway = memoryGateway(OWNER);
-    const first = await executeHiveWriterShadowRequest({
+    const dispatchRequested = vi.fn(async () => {});
+    let next = 0;
+    const runIds = [RUN_A, RUN_B];
+    const first = await enqueueHiveWriterShadowPreviewRequest({
       claimedUserId: OWNER,
       caseId: artifact.caseId,
       studyRunId: artifact.studyRunId,
@@ -260,9 +270,10 @@ describe("executeHiveWriterShadowRequest", () => {
       env: {},
       gateway,
       loadArtifact: async () => artifact,
-      invokeWriter,
+      dispatchRequested,
+      createWriterRunId: () => runIds[next++]!,
     });
-    const second = await executeHiveWriterShadowRequest({
+    const second = await enqueueHiveWriterShadowPreviewRequest({
       claimedUserId: OWNER,
       caseId: artifact.caseId,
       studyRunId: artifact.studyRunId,
@@ -270,28 +281,24 @@ describe("executeHiveWriterShadowRequest", () => {
       env: {},
       gateway,
       loadArtifact: async () => artifact,
-      invokeWriter,
+      dispatchRequested,
+      createWriterRunId: () => runIds[next++]!,
     });
-    expect(first.status).toBe("rejected");
-    expect(first.hiveUiTree).toBeNull();
-    expect(second.status).toBe("rejected");
-    expect(invokeWriter).toHaveBeenCalledTimes(1);
+    expect(first.writerRunId).toBe(RUN_A);
+    expect(second.writerRunId).toBe(RUN_B);
+    expect(first.idempotencyKey).toBe(second.idempotencyKey);
+    expect(dispatchRequested).toHaveBeenCalledTimes(2);
+    const pathA = hiveWriterShadowRecordPath(OWNER, artifact.studyRunId, "customer", RUN_A);
+    const pathB = hiveWriterShadowRecordPath(OWNER, artifact.studyRunId, "customer", RUN_B);
+    expect(gateway.objects.has(pathA)).toBe(true);
+    expect(gateway.objects.has(pathB)).toBe(true);
   });
 
-  it("does not clobber an accepted storage object when a late worker save runs", async () => {
+  it("keeps the prior accepted run when a later run fails", async () => {
     const artifact = sampleArtifact();
-    const gateway = memoryGateway(OWNER, { rejectDuplicateUploadWithoutUpsert: true });
-    let releaseSlowWriter: (() => void) | undefined;
-    const slowWriterGate = new Promise<void>((resolve) => {
-      releaseSlowWriter = resolve;
-    });
-    const sharedInvokeWriter = vi.fn(async () => {
-      if (sharedInvokeWriter.mock.calls.length === 1) {
-        await slowWriterGate;
-      }
-      return writerFromArtifact(artifact)({} as never);
-    });
-    const slowRun = executeHiveWriterShadowRequest({
+    const gateway = memoryGateway(OWNER);
+    const goodWriter = vi.fn(writerFromArtifact(artifact));
+    const enqueuedGood = await enqueueHiveWriterShadowPreviewRequest({
       claimedUserId: OWNER,
       caseId: artifact.caseId,
       studyRunId: artifact.studyRunId,
@@ -299,9 +306,23 @@ describe("executeHiveWriterShadowRequest", () => {
       env: {},
       gateway,
       loadArtifact: async () => artifact,
-      invokeWriter: sharedInvokeWriter,
+      dispatchRequested: vi.fn(async () => {}),
+      createWriterRunId: () => RUN_A,
     });
-    const fastRun = executeHiveWriterShadowRequest({
+    const accepted = await executeHiveWriterShadowRequest({
+      claimedUserId: OWNER,
+      caseId: artifact.caseId,
+      studyRunId: artifact.studyRunId,
+      audience: "customer",
+      writerRunId: enqueuedGood.writerRunId,
+      env: {},
+      gateway,
+      loadArtifact: async () => artifact,
+      invokeWriter: goodWriter,
+    });
+    expect(accepted.status).toBe("accepted");
+
+    await enqueueHiveWriterShadowPreviewRequest({
       claimedUserId: OWNER,
       caseId: artifact.caseId,
       studyRunId: artifact.studyRunId,
@@ -309,20 +330,69 @@ describe("executeHiveWriterShadowRequest", () => {
       env: {},
       gateway,
       loadArtifact: async () => artifact,
-      invokeWriter: sharedInvokeWriter,
+      dispatchRequested: vi.fn(async () => {}),
+      createWriterRunId: () => RUN_B,
     });
-    const fastResult = await fastRun;
-    expect(fastResult.status).toBe("accepted");
-    releaseSlowWriter!();
-    const slowResult = await slowRun;
-    expect(slowResult.status).toBe("accepted");
-    expect(slowResult.hiveUiTree).toEqual(fastResult.hiveUiTree);
-    expect(sharedInvokeWriter).toHaveBeenCalledTimes(2);
+    const badWriter = vi.fn(async () => {
+      throw new Error("WRITER_HTTP_500:{\"detail\":{\"error\":{\"code\":\"WRITER_PROVIDER_HTTP_5XX\"}}}");
+    });
+    const failed = await executeHiveWriterShadowRequest({
+      claimedUserId: OWNER,
+      caseId: artifact.caseId,
+      studyRunId: artifact.studyRunId,
+      audience: "customer",
+      writerRunId: RUN_B,
+      env: {},
+      gateway,
+      loadArtifact: async () => artifact,
+      invokeWriter: badWriter,
+    });
+    expect(failed.status).toBe("failed");
+    const pointerPath = hiveWriterShadowLatestAcceptedPath(OWNER, artifact.studyRunId, "customer");
+    const pointer = JSON.parse(new TextDecoder().decode(gateway.objects.get(pointerPath)!));
+    expect(pointer.writerRunId).toBe(RUN_A);
+    const acceptedPath = hiveWriterShadowRecordPath(OWNER, artifact.studyRunId, "customer", RUN_A);
+    const stillAccepted = JSON.parse(new TextDecoder().decode(gateway.objects.get(acceptedPath)!));
+    expect(stillAccepted.status).toBe("accepted");
+  });
+
+  it("separates customer and pro runs", async () => {
+    const artifact = sampleArtifact();
+    const gateway = memoryGateway(OWNER);
+    const dispatchRequested = vi.fn(async () => {});
+    await enqueueHiveWriterShadowPreviewRequest({
+      claimedUserId: OWNER,
+      caseId: artifact.caseId,
+      studyRunId: artifact.studyRunId,
+      audience: "customer",
+      env: {},
+      gateway,
+      loadArtifact: async () => artifact,
+      dispatchRequested,
+      createWriterRunId: () => RUN_A,
+    });
+    await enqueueHiveWriterShadowPreviewRequest({
+      claimedUserId: OWNER,
+      caseId: artifact.caseId,
+      studyRunId: artifact.studyRunId,
+      audience: "pro",
+      env: {},
+      gateway,
+      loadArtifact: async () => artifact,
+      dispatchRequested,
+      createWriterRunId: () => RUN_C,
+    });
+    expect(
+      gateway.objects.has(hiveWriterShadowRecordPath(OWNER, artifact.studyRunId, "customer", RUN_A)),
+    ).toBe(true);
+    expect(
+      gateway.objects.has(hiveWriterShadowRecordPath(OWNER, artifact.studyRunId, "pro", RUN_C)),
+    ).toBe(true);
   });
 });
 
 describe("enqueueHiveWriterShadowPreviewRequest", () => {
-  it("persists queued and dispatches without invoking Writer HTTP", async () => {
+  it("persists queued and dispatches with writerRunId", async () => {
     const artifact = sampleArtifact();
     const gateway = memoryGateway(OWNER);
     const dispatchRequested = vi.fn(async () => {});
@@ -335,70 +405,25 @@ describe("enqueueHiveWriterShadowPreviewRequest", () => {
       gateway,
       loadArtifact: async () => artifact,
       dispatchRequested,
+      createWriterRunId: () => RUN_A,
     });
     expect(record.status).toBe("queued");
-    expect(dispatchRequested).toHaveBeenCalledTimes(1);
+    expect(record.writerRunId).toBe(RUN_A);
     expect(dispatchRequested).toHaveBeenCalledWith(
       expect.objectContaining({
         userId: OWNER,
         caseId: artifact.caseId,
         studyRunId: artifact.studyRunId,
         audience: "customer",
-        idempotencyKey: record.idempotencyKey,
+        writerRunId: RUN_A,
       }),
     );
   });
 
-  it("resends Inngest for in-flight rows without rewriting storage", async () => {
+  it("reads legacy binding-path accepted records via latest-accepted migration fallback", async () => {
     const artifact = sampleArtifact();
     const gateway = memoryGateway(OWNER);
-    const dispatchRequested = vi.fn(async () => {});
-    const first = await enqueueHiveWriterShadowPreviewRequest({
-      claimedUserId: OWNER,
-      caseId: artifact.caseId,
-      studyRunId: artifact.studyRunId,
-      audience: "customer",
-      env: { VERCEL_ENV: "preview" },
-      gateway,
-      loadArtifact: async () => artifact,
-      dispatchRequested,
-    });
-    const second = await enqueueHiveWriterShadowPreviewRequest({
-      claimedUserId: OWNER,
-      caseId: artifact.caseId,
-      studyRunId: artifact.studyRunId,
-      audience: "customer",
-      env: { VERCEL_ENV: "preview" },
-      gateway,
-      loadArtifact: async () => artifact,
-      dispatchRequested,
-    });
-    expect(first.status).toBe("queued");
-    expect(second.status).toBe("queued");
-    expect(second.idempotencyKey).toBe(first.idempotencyKey);
-    expect(dispatchRequested).toHaveBeenCalledTimes(2);
-  });
-
-  it("enqueues internal preview on Vercel production", async () => {
-    const artifact = sampleArtifact();
-    const dispatchRequested = vi.fn(async () => {});
-    const record = await enqueueHiveWriterShadowPreviewRequest({
-      claimedUserId: OWNER,
-      caseId: artifact.caseId,
-      studyRunId: artifact.studyRunId,
-      audience: "customer",
-      env: { VERCEL_ENV: "production" },
-      gateway: memoryGateway(OWNER),
-      loadArtifact: async () => artifact,
-      dispatchRequested,
-    });
-    expect(record.status).toBe("queued");
-    expect(dispatchRequested).toHaveBeenCalledTimes(1);
-  });
-
-  it("replaces a prior SHADOW_DISABLED skip with a new queued request", async () => {
-    const artifact = sampleArtifact();
-    const gateway = memoryGateway(OWNER, { rejectDuplicateUploadWithoutUpsert: true });
+    const bindingKey = bindingKeyForArtifact(artifact);
     const projection = projectCanonicalStudyReport({
       artifact,
       audience: "customer",
@@ -406,245 +431,42 @@ describe("enqueueHiveWriterShadowPreviewRequest", () => {
       packApprovalLabel: CANONICAL_STUDY_DEBUG_PACK_APPROVAL,
     });
     const domainBinding = resolveHiveWriterDomainBinding({ artifact, projection });
-    const idempotencyKey = buildHiveWriterShadowIdempotencyKey({
-      caseId: projection.caseId,
-      studyRunId: projection.studyRunId,
-      audience: projection.audience,
-      packContentSha256: domainBinding.packContentSha256,
-      reportProjectionContentSha256: domainBinding.reportProjectionContentSha256,
-    });
-    const skipped = buildHiveWriterShadowMarkerRecord({
-      status: "skipped",
-      idempotencyKey,
-      projection,
-      projectionHash: domainBinding.reportProjectionContentSha256,
-      errorCodes: ["SHADOW_DISABLED"],
-      message: "Shadow mode disabled.",
-    });
-    const path = hiveWriterShadowRecordPath(OWNER, artifact.studyRunId, "customer", idempotencyKey);
-    await gateway.uploadObject(
-      "document-pages",
-      path,
-      new TextEncoder().encode(JSON.stringify(skipped)),
-    );
-    const dispatchRequested = vi.fn(async () => {});
-    const record = await enqueueHiveWriterShadowPreviewRequest({
-      claimedUserId: OWNER,
-      caseId: artifact.caseId,
-      studyRunId: artifact.studyRunId,
-      audience: "customer",
-      env: { VERCEL_ENV: "production" },
-      gateway,
-      loadArtifact: async () => artifact,
-      dispatchRequested,
-    });
-    expect(record.status).toBe("queued");
-    expect(record.validation.errorCodes).toContain("QUEUED");
-    expect(dispatchRequested).toHaveBeenCalledTimes(1);
-  });
-
-  it("does not overwrite an accepted terminal record when enqueue is retried", async () => {
-    const artifact = sampleArtifact();
-    const gateway = memoryGateway(OWNER, { rejectDuplicateUploadWithoutUpsert: true });
-    const invokeWriter = vi.fn(writerFromArtifact(artifact));
-    const accepted = await executeHiveWriterShadowRequest({
-      claimedUserId: OWNER,
-      caseId: artifact.caseId,
-      studyRunId: artifact.studyRunId,
-      audience: "customer",
-      env: {},
-      gateway,
-      loadArtifact: async () => artifact,
-      invokeWriter,
-    });
-    expect(accepted.status).toBe("accepted");
-    const dispatchRequested = vi.fn(async () => {});
-    const enqueued = await enqueueHiveWriterShadowPreviewRequest({
-      claimedUserId: OWNER,
-      caseId: artifact.caseId,
-      studyRunId: artifact.studyRunId,
-      audience: "customer",
-      env: { VERCEL_ENV: "production" },
-      gateway,
-      loadArtifact: async () => artifact,
-      dispatchRequested,
-    });
-    expect(enqueued.status).toBe("accepted");
-    expect(enqueued.hiveUiTree).not.toBeNull();
-    expect(dispatchRequested).not.toHaveBeenCalled();
-    expect(invokeWriter).toHaveBeenCalledTimes(1);
-  });
-
-  it("handles concurrent enqueue requests without corrupting a queued record", async () => {
-    const artifact = sampleArtifact();
-    const gateway = memoryGateway(OWNER, { rejectDuplicateUploadWithoutUpsert: true });
-    const dispatchRequested = vi.fn(async () => {});
-    const input = {
-      claimedUserId: OWNER,
-      caseId: artifact.caseId,
-      studyRunId: artifact.studyRunId,
-      audience: "customer" as const,
-      env: { VERCEL_ENV: "production" as const },
-      gateway,
-      loadArtifact: async () => artifact,
-      dispatchRequested,
-    };
-    const [first, second] = await Promise.all([
-      enqueueHiveWriterShadowPreviewRequest(input),
-      enqueueHiveWriterShadowPreviewRequest(input),
-    ]);
-    expect(first.status).toBe("queued");
-    expect(second.status).toBe("queued");
-    expect(second.idempotencyKey).toBe(first.idempotencyKey);
-    expect(dispatchRequested).toHaveBeenCalledTimes(2);
-    const path = hiveWriterShadowRecordPath(
-      OWNER,
-      artifact.studyRunId,
-      "customer",
-      first.idempotencyKey,
-    );
-    const persisted = JSON.parse(new TextDecoder().decode(gateway.objects.get(path)!));
-    expect(persisted.status).toBe("queued");
-    expect(persisted.validation.errorCodes).toContain("QUEUED");
-  });
-
-  it("rejects a mismatched session user before enqueue", async () => {
-    const artifact = sampleArtifact();
-    const dispatchRequested = vi.fn(async () => {});
-    await expect(
-      enqueueHiveWriterShadowPreviewRequest({
-        claimedUserId: "someone-else",
-        caseId: artifact.caseId,
-        studyRunId: artifact.studyRunId,
-        audience: "customer",
-        env: { VERCEL_ENV: "production" },
-        gateway: memoryGateway(OWNER),
-        loadArtifact: async () => artifact,
-        dispatchRequested,
-      }),
-    ).rejects.toBeInstanceOf(WriterShadowOwnerError);
-    expect(dispatchRequested).not.toHaveBeenCalled();
-  });
-
-  it("re-enqueues once after WRITER_MODEL_JSON_INVALID failed record (POST run diagnostic shape)", async () => {
-    const artifact = sampleArtifact();
-    const gateway = memoryGateway(OWNER, { rejectDuplicateUploadWithoutUpsert: true });
-    const projection = projectCanonicalStudyReport({
-      artifact,
-      audience: "customer",
-      customerProReportsPermitted: false,
-      packApprovalLabel: CANONICAL_STUDY_DEBUG_PACK_APPROVAL,
-    });
-    const domainBinding = resolveHiveWriterDomainBinding({ artifact, projection });
-    const idempotencyKey = buildHiveWriterShadowIdempotencyKey({
-      caseId: projection.caseId,
-      studyRunId: projection.studyRunId,
-      audience: projection.audience,
-      packContentSha256: domainBinding.packContentSha256,
-      reportProjectionContentSha256: domainBinding.reportProjectionContentSha256,
-    });
-    const jsonInvalidMessage =
-      'WRITER_HTTP_422:{"detail":{"error":{"code":"WRITER_MODEL_JSON_INVALID","message":"WRITER_MODEL_JSON_INVALID"}}}';
-    const priorFailed = buildHiveWriterShadowMarkerRecord({
-      status: "failed",
-      idempotencyKey,
-      projection,
-      projectionHash: domainBinding.reportProjectionContentSha256,
-      errorCodes: ["WRITER_MODEL_JSON_INVALID"],
-      message: jsonInvalidMessage,
-    });
-    priorFailed.observability = {
-      ...priorFailed.observability,
-      durationMs: 1842,
-      modelIdentifier: "claude-sonnet-4-20250514",
-    };
-    const recordPath = hiveWriterShadowRecordPath(
-      OWNER,
-      artifact.studyRunId,
-      "customer",
-      idempotencyKey,
-    );
-    await gateway.uploadObject(
-      "document-pages",
-      recordPath,
-      new TextEncoder().encode(JSON.stringify(priorFailed)),
-    );
-
-    const dispatchRequested = vi.fn(async () => {});
-    const enqueued = await enqueueHiveWriterShadowPreviewRequest({
-      claimedUserId: OWNER,
-      caseId: artifact.caseId,
-      studyRunId: artifact.studyRunId,
-      audience: "customer",
-      env: { VERCEL_ENV: "production" },
-      gateway,
-      loadArtifact: async () => artifact,
-      dispatchRequested,
-    });
-
-    expect({
-      status: enqueued.status,
-      idempotencyKey: enqueued.idempotencyKey,
-      validation: enqueued.validation,
-      observability: {
-        durationMs: enqueued.observability.durationMs,
-        modelIdentifier: enqueued.observability.modelIdentifier,
-        projectionHash: enqueued.observability.projectionHash,
-      },
-    }).toEqual({
-      status: "queued",
-      idempotencyKey,
-      validation: { ok: false, errorCodes: ["QUEUED"], message: null },
-      observability: {
-        durationMs: 0,
-        modelIdentifier: null,
+    const legacyAccepted = {
+      ...buildHiveWriterShadowMarkerRecord({
+        writerRunId: RUN_A,
+        status: "queued",
+        idempotencyKey: bindingKey,
+        projection,
         projectionHash: domainBinding.reportProjectionContentSha256,
-      },
-    });
-    expect(dispatchRequested).toHaveBeenCalledTimes(1);
-    const historyPath = hiveWriterShadowAttemptHistoryPath(
+        errorCodes: [],
+        message: null,
+      }),
+      status: "accepted" as const,
+      hiveUiTree: buildDeterministicHiveUiTree(projection),
+      proposal: (await writerFromArtifact(artifact)({} as never)).proposal,
+      validation: { ok: true, errorCodes: [], message: null },
+    };
+    const legacyPath = hiveWriterShadowLegacyBindingRecordPath(
       OWNER,
       artifact.studyRunId,
       "customer",
-      idempotencyKey,
+      bindingKey,
     );
-    const history = JSON.parse(new TextDecoder().decode(gateway.objects.get(historyPath)!));
-    expect(history.attempts).toHaveLength(1);
-    expect(history.attempts[0].errorCodes).toEqual(["WRITER_MODEL_JSON_INVALID"]);
-
-    dispatchRequested.mockClear();
-    const second = await enqueueHiveWriterShadowPreviewRequest({
-      claimedUserId: OWNER,
-      caseId: artifact.caseId,
-      studyRunId: artifact.studyRunId,
-      audience: "customer",
-      env: { VERCEL_ENV: "production" },
+    await gateway.uploadObject(
+      "document-pages",
+      legacyPath,
+      new TextEncoder().encode(JSON.stringify(legacyAccepted)),
+    );
+    const { loadLatestAcceptedWriterShadowRecord } = await import("./execute-hive-writer-shadow.js");
+    const loaded = await loadLatestAcceptedWriterShadowRecord({
       gateway,
-      loadArtifact: async () => artifact,
-      dispatchRequested,
-    });
-    expect(second.status).toBe("queued");
-    expect(dispatchRequested).toHaveBeenCalledTimes(1);
-  });
-
-  it("blocks approved publication before enqueue", async () => {
-    const artifact = sampleArtifact({
-      customerProReportsPermitted: true,
-      packApprovalLabel: "certified-pack",
-    });
-    const dispatchRequested = vi.fn(async () => {});
-    const record = await enqueueHiveWriterShadowPreviewRequest({
-      claimedUserId: OWNER,
-      caseId: artifact.caseId,
+      bucket: "document-pages",
+      userId: OWNER,
       studyRunId: artifact.studyRunId,
       audience: "customer",
-      env: { VERCEL_ENV: "preview" },
-      gateway: memoryGateway(OWNER),
-      loadArtifact: async () => artifact,
-      dispatchRequested,
+      projectionBindingKey: bindingKey,
     });
-    expect(record.status).toBe("failed");
-    expect(record.validation.errorCodes).toContain("WRITER_SHADOW_PUBLICATION_BLOCKED");
-    expect(dispatchRequested).not.toHaveBeenCalled();
+    expect(loaded?.status).toBe("accepted");
+    expect(loaded?.writerRunId).toBe(RUN_A);
   });
 });

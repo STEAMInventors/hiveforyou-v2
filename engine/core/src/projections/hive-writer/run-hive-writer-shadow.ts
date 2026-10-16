@@ -31,11 +31,12 @@ import {
 } from "./normalize-writer-model-proposal.js";
 
 export type HiveWriterShadowPersistence = {
-  load: (idempotencyKey: string) => Promise<HiveWriterShadowRecord | null>;
+  load: (writerRunId: string) => Promise<HiveWriterShadowRecord | null>;
   save: (record: HiveWriterShadowRecord) => Promise<void>;
 };
 
 export type RunHiveWriterShadowInput = {
+  writerRunId: string;
   artifact: CanonicalStudyArtifact;
   projection: CanonicalStudyReportProjection;
   presentationInstructions?: string | null;
@@ -132,6 +133,7 @@ export async function runHiveWriterShadow(
     });
     return {
       schemaVersion: HIVE_WRITER_SHADOW_RECORD_SCHEMA_VERSION,
+      writerRunId: input.writerRunId,
       idempotencyKey,
       caseId: input.projection.caseId,
       studyRunId: input.projection.studyRunId,
@@ -166,7 +168,7 @@ export async function runHiveWriterShadow(
     reportProjectionContentSha256: domainBinding.reportProjectionContentSha256,
   });
 
-  const existing = await input.persistence.load(idempotencyKey);
+  const existing = await input.persistence.load(input.writerRunId);
   if (existing && isTerminalReuseRecord(existing)) {
     return existing;
   }
@@ -232,6 +234,7 @@ export async function runHiveWriterShadow(
 
   const record: HiveWriterShadowRecord = {
     schemaVersion: HIVE_WRITER_SHADOW_RECORD_SCHEMA_VERSION,
+    writerRunId: input.writerRunId,
     idempotencyKey,
     caseId: input.projection.caseId,
     studyRunId: input.projection.studyRunId,
@@ -253,7 +256,7 @@ export async function runHiveWriterShadow(
     hiveUiTree,
   };
 
-  const existingBeforeSave = await input.persistence.load(idempotencyKey);
+  const existingBeforeSave = await input.persistence.load(input.writerRunId);
   if (existingBeforeSave && isTerminalReuseRecord(existingBeforeSave)) {
     return existingBeforeSave;
   }
@@ -262,6 +265,7 @@ export async function runHiveWriterShadow(
 }
 
 export function buildHiveWriterShadowMarkerRecord(input: {
+  writerRunId: string;
   status: "queued" | "processing" | "skipped" | "failed";
   idempotencyKey: string;
   projection: CanonicalStudyReportProjection;
@@ -271,6 +275,7 @@ export function buildHiveWriterShadowMarkerRecord(input: {
 }): HiveWriterShadowRecord {
   return {
     schemaVersion: HIVE_WRITER_SHADOW_RECORD_SCHEMA_VERSION,
+    writerRunId: input.writerRunId,
     idempotencyKey: input.idempotencyKey,
     caseId: input.projection.caseId,
     studyRunId: input.projection.studyRunId,

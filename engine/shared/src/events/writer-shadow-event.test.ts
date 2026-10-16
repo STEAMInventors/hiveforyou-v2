@@ -7,15 +7,17 @@ import {
 } from "./index.js";
 
 describe("hive/writer-shadow.requested", () => {
-  it("names the event and accepts the owner, case, study, and audience payload", () => {
+  it("names the event and accepts the owner, case, study, audience, and writerRunId payload", () => {
     expect(HIVE_EVENT_WRITER_SHADOW_REQUESTED).toBe("hive/writer-shadow.requested");
     const parsed = hiveWriterShadowRequestedEventDataSchema.parse({
       userId: "user-1",
       caseId: "case-1",
       studyRunId: "study-1",
       audience: "customer",
+      writerRunId: "11111111-1111-4111-8111-111111111111",
     });
     expect(parsed.audience).toBe("customer");
+    expect(parsed.writerRunId).toBe("11111111-1111-4111-8111-111111111111");
   });
 
   it("rejects a missing or unknown audience", () => {
@@ -24,6 +26,7 @@ describe("hive/writer-shadow.requested", () => {
         userId: "user-1",
         caseId: "case-1",
         studyRunId: "study-1",
+        writerRunId: "11111111-1111-4111-8111-111111111111",
       }).success,
     ).toBe(false);
     expect(
@@ -32,29 +35,16 @@ describe("hive/writer-shadow.requested", () => {
         caseId: "case-1",
         studyRunId: "study-1",
         audience: "public",
+        writerRunId: "11111111-1111-4111-8111-111111111111",
       }).success,
     ).toBe(false);
   });
 
-  it("dedupes customer and pro separately for the same projection binding", () => {
-    const key = "a".repeat(64);
-    const customer = buildHiveWriterShadowRequestedEventId({
-      studyRunId: "study-1",
-      audience: "customer",
-      idempotencyKey: key,
-    });
-    const pro = buildHiveWriterShadowRequestedEventId({
-      studyRunId: "study-1",
-      audience: "pro",
-      idempotencyKey: key,
-    });
-    expect(customer).not.toBe(pro);
-    expect(
-      buildHiveWriterShadowRequestedEventId({
-        studyRunId: "study-1",
-        audience: "customer",
-        idempotencyKey: key,
-      }),
-    ).toBe(customer);
+  it("dedupes by writerRunId regardless of audience", () => {
+    const runId = "11111111-1111-4111-8111-111111111111";
+    expect(buildHiveWriterShadowRequestedEventId(runId)).toBe(`writer-run:${runId}`);
+    expect(buildHiveWriterShadowRequestedEventId(runId)).toBe(
+      buildHiveWriterShadowRequestedEventId(runId),
+    );
   });
 });

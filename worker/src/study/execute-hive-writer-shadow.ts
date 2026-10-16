@@ -17,6 +17,7 @@ export async function executeHiveWriterShadowRequest(input: {
   caseId: string;
   studyRunId: string;
   audience: CanonicalStudyReportAudience;
+  writerRunId: string;
   env: Record<string, string | undefined>;
   gateway: HiveGateway;
   loadArtifact?: (userId: string) => Promise<CanonicalStudyArtifact>;
@@ -38,6 +39,7 @@ export async function executeHiveWriterShadowRequest(input: {
     caseId: input.caseId,
     studyRunId: input.studyRunId,
     audience: input.audience,
+    writerRunId: input.writerRunId,
     env: input.env,
     gateway: input.gateway,
     loadArtifact,

@@ -72,12 +72,14 @@ function buildMockProposal(
   };
 }
 
+const TEST_WRITER_RUN_ID = "11111111-1111-4111-8111-111111111111";
+
 function inMemoryPersistence(): HiveWriterShadowPersistence {
   const records = new Map<string, Awaited<ReturnType<HiveWriterShadowPersistence["load"]>>>();
   return {
-    load: async (key) => records.get(key) ?? null,
+    load: async (writerRunId) => records.get(writerRunId) ?? null,
     save: async (record) => {
-      records.set(record.idempotencyKey, record);
+      records.set(record.writerRunId, record);
     },
   };
 }
@@ -86,6 +88,7 @@ async function acceptedRecord() {
   const { artifact, projection } = buildCustomerProjection();
   const persistence = inMemoryPersistence();
   const record = await runHiveWriterShadow({
+    writerRunId: TEST_WRITER_RUN_ID,
     artifact,
     projection,
     invokeWriter: async () => {
@@ -153,6 +156,7 @@ describe("resolveWriterHiveUiTreeForPreview", () => {
       props: { claimRef: { fieldKey: "missing-field-key" } },
     };
     const record = await runHiveWriterShadow({
+      writerRunId: TEST_WRITER_RUN_ID,
       artifact,
       projection,
       invokeWriter: async () => ({

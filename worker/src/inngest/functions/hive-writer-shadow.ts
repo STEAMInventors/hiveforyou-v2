@@ -42,12 +42,14 @@ export const hiveWriterShadow = inngest.createFunction(
         caseId: data.caseId,
         studyRunId: data.studyRunId,
         audience: data.audience,
+        writerRunId: data.writerRunId,
         env: workerEnvStrings(env),
         gateway,
       });
       return {
         studyRunId: record.studyRunId,
         audience: record.audience,
+        writerRunId: record.writerRunId,
         status: record.status,
         idempotencyKey: record.idempotencyKey,
       };

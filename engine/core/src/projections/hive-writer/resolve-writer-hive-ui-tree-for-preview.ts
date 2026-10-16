@@ -26,6 +26,7 @@ export type WriterHiveUiPreviewResolution = {
   hiveUiTree: HiveUiTree | null;
   fallbackReason: WriterHiveUiPreviewFallbackReason | null;
   shadowStatus: HiveWriterShadowStatus | "missing" | "unavailable";
+  writerRunId: string | null;
   idempotencyKey: string;
   validation: HiveWriterShadowRecord["validation"] | null;
 };
@@ -35,6 +36,7 @@ function toFallback(input: {
   message: string;
   errorCodes?: string[];
   shadowStatus: WriterHiveUiPreviewResolution["shadowStatus"];
+  writerRunId?: string | null;
   idempotencyKey: string;
   validation: WriterHiveUiPreviewResolution["validation"];
 }): WriterHiveUiPreviewResolution {
@@ -47,9 +49,14 @@ function toFallback(input: {
       errorCodes: input.errorCodes ?? [input.code],
     },
     shadowStatus: input.shadowStatus,
+    writerRunId: input.writerRunId ?? null,
     idempotencyKey: input.idempotencyKey,
     validation: input.validation,
   };
+}
+
+function writerRunIdFromRecord(record: HiveWriterShadowRecord | null): string | null {
+  return record?.writerRunId ?? null;
 }
 
 export function resolveWriterHiveUiTreeForPreview(input: {
@@ -76,6 +83,7 @@ export function resolveWriterHiveUiTreeForPreview(input: {
       message:
         error instanceof Error ? error.message : "Could not resolve Writer domain binding.",
       shadowStatus: "unavailable",
+      writerRunId: null,
       idempotencyKey,
       validation: null,
     });
@@ -95,6 +103,7 @@ export function resolveWriterHiveUiTreeForPreview(input: {
       code: "WRITER_RECORD_MISSING",
       message: "No Writer layout has been generated for this report projection yet.",
       shadowStatus: "missing",
+      writerRunId: null,
       idempotencyKey,
       validation: null,
     });
@@ -109,6 +118,7 @@ export function resolveWriterHiveUiTreeForPreview(input: {
       code: "WRITER_RECORD_SCOPE_MISMATCH",
       message: "Stored Writer proposal does not match this case, study run, or audience.",
       shadowStatus: record.status,
+      writerRunId: writerRunIdFromRecord(record),
       idempotencyKey,
       validation: record.validation,
     });
@@ -120,6 +130,7 @@ export function resolveWriterHiveUiTreeForPreview(input: {
       message:
         "Stored Writer proposal was produced for a different pack version or report projection.",
       shadowStatus: record.status,
+      writerRunId: writerRunIdFromRecord(record),
       idempotencyKey,
       validation: record.validation,
       errorCodes: ["WRITER_BINDING_STALE"],
@@ -131,6 +142,7 @@ export function resolveWriterHiveUiTreeForPreview(input: {
       code: "WRITER_PROJECTION_STALE",
       message: "Stored Writer proposal is stale relative to the current report projection.",
       shadowStatus: record.status,
+      writerRunId: writerRunIdFromRecord(record),
       idempotencyKey,
       validation: record.validation,
       errorCodes: ["WRITER_PROJECTION_STALE"],
@@ -145,6 +157,7 @@ export function resolveWriterHiveUiTreeForPreview(input: {
           ? "Writer layout is queued."
           : "Writer layout is processing.",
       shadowStatus: record.status,
+      writerRunId: writerRunIdFromRecord(record),
       idempotencyKey,
       validation: record.validation,
       errorCodes: record.validation.errorCodes.length
@@ -159,6 +172,7 @@ export function resolveWriterHiveUiTreeForPreview(input: {
       message:
         record.validation.message ?? `Writer layout is not available (status: ${record.status}).`,
       shadowStatus: record.status,
+      writerRunId: writerRunIdFromRecord(record),
       idempotencyKey,
       validation: record.validation,
       errorCodes: record.validation.errorCodes.length
@@ -184,6 +198,7 @@ export function resolveWriterHiveUiTreeForPreview(input: {
       code,
       message: error instanceof Error ? error.message : "Writer proposal validation failed.",
       shadowStatus: record.status,
+      writerRunId: writerRunIdFromRecord(record),
       idempotencyKey,
       validation: record.validation,
       errorCodes: [code],
@@ -197,6 +212,7 @@ export function resolveWriterHiveUiTreeForPreview(input: {
       hiveUiTree: tree,
       fallbackReason: null,
       shadowStatus: record.status,
+      writerRunId: writerRunIdFromRecord(record),
       idempotencyKey,
       validation: record.validation,
     };
@@ -205,6 +221,7 @@ export function resolveWriterHiveUiTreeForPreview(input: {
       code: "HIVE_UI_TREE_INVALID",
       message: error instanceof Error ? error.message : "Writer UI tree validation failed.",
       shadowStatus: record.status,
+      writerRunId: writerRunIdFromRecord(record),
       idempotencyKey,
       validation: record.validation,
       errorCodes: [

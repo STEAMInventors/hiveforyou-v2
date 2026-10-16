@@ -9,55 +9,22 @@ export function isHiveWriterShadowInFlightStatus(status: HiveWriterShadowStatus)
   return status === "queued" || status === "processing";
 }
 
-export type WriterShadowPreviewPlan =
-  | { action: "block_publication" }
-  | { action: "return_existing"; resend: boolean }
-  | { action: "enqueue" };
-
-/**
- * Preview enqueue decision. Internal preview only; Vercel environment does not gate dispatch.
- * In-flight rows resend the same Inngest id (deduped) without rewriting storage. Terminal rows
- * are reused as-is except one eligible failed retry. Non-terminal rows (including prior
- * SHADOW_DISABLED skips) may be enqueued.
- */
-export function planWriterShadowPreviewRequest(input: {
-  presentationMode: CanonicalStudyReportPresentationMode;
-  existingStatus: HiveWriterShadowStatus | null;
-  /** When true, a single retry may enqueue Writer after a terminal failed record. */
-  allowTerminalFailedRetry?: boolean;
-}): WriterShadowPreviewPlan {
-  if (input.presentationMode !== "internal_preview") {
-    return { action: "block_publication" };
-  }
-  if (input.existingStatus && isHiveWriterShadowTerminalStatus(input.existingStatus)) {
-    if (input.existingStatus === "failed" && input.allowTerminalFailedRetry) {
-      return { action: "enqueue" };
-    }
-    return { action: "return_existing", resend: false };
-  }
-  if (input.existingStatus && isHiveWriterShadowInFlightStatus(input.existingStatus)) {
-    return { action: "return_existing", resend: true };
-  }
-  return { action: "enqueue" };
+/** Preview/Vercel path: internal preview only; each Generate creates a new run. */
+export function shouldBlockWriterShadowPublication(
+  presentationMode: CanonicalStudyReportPresentationMode,
+): boolean {
+  return presentationMode !== "internal_preview";
 }
 
-export type WriterShadowWorkerPlan = "block_publication" | "reuse" | "invoke";
+/** Worker: skip model invocation when this run is already finished or in progress. */
+export function shouldReuseWriterRunRecord(existingStatus: HiveWriterShadowStatus | null): boolean {
+  if (!existingStatus) {
+    return false;
+  }
+  return isHiveWriterShadowTerminalStatus(existingStatus) || existingStatus === "processing";
+}
 
-/** Worker decision: internal preview only; publication mode is enforced from persisted artifact metadata. */
-export function planWriterShadowWorkerExecution(input: {
-  presentationMode: CanonicalStudyReportPresentationMode;
-  existingStatus: HiveWriterShadowStatus | null;
-  /** When true, a single retry may invoke Writer after a terminal failed record. */
-  allowTerminalFailedRetry?: boolean;
-}): WriterShadowWorkerPlan {
-  if (input.presentationMode !== "internal_preview") {
-    return "block_publication";
-  }
-  if (input.existingStatus && isHiveWriterShadowTerminalStatus(input.existingStatus)) {
-    if (input.existingStatus === "failed" && input.allowTerminalFailedRetry) {
-      return "invoke";
-    }
-    return "reuse";
-  }
-  return "invoke";
+/** Worker: invoke Writer only while the run is still queued. */
+export function shouldInvokeWriterRun(existingStatus: HiveWriterShadowStatus | null): boolean {
+  return existingStatus === "queued";
 }

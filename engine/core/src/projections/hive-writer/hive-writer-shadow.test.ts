@@ -176,9 +176,9 @@ function inMemoryPersistence(): {
   return {
     records,
     persistence: {
-      load: async (key) => records.get(key) ?? null,
+      load: async (writerRunId) => records.get(writerRunId) ?? null,
       save: async (record) => {
-        records.set(record.idempotencyKey, record);
+        records.set(record.writerRunId, record);
       },
     },
   };
@@ -189,6 +189,7 @@ describe("hive-writer shadow", () => {
     for (const build of [buildCustomerProjection, buildProProjection]) {
       const { artifact, projection } = build();
       const record = await runHiveWriterShadow({
+        writerRunId: "11111111-1111-4111-8111-111111111111",
         artifact,
         projection,
         invokeWriter: mockWriterFromDeterministicTree(artifact, projection),
@@ -219,6 +220,7 @@ describe("hive-writer shadow", () => {
       props: { claimRef: { fieldKey: "missing-field-key" } },
     };
     const record = await runHiveWriterShadow({
+      writerRunId: "11111111-1111-4111-8111-111111111111",
       artifact,
       projection,
       invokeWriter: async () => ({
@@ -242,6 +244,7 @@ describe("hive-writer shadow", () => {
       props: { claimRef: { fieldKey: "x" }, displayText: "fabricated" } as never,
     };
     const record = await runHiveWriterShadow({
+      writerRunId: "11111111-1111-4111-8111-111111111111",
       artifact,
       projection,
       invokeWriter: async () => ({
@@ -264,6 +267,7 @@ describe("hive-writer shadow", () => {
       children: [],
     };
     const badAudience = await runHiveWriterShadow({
+      writerRunId: "11111111-1111-4111-8111-111111111111",
       artifact,
       projection,
       invokeWriter: async () => {
@@ -282,6 +286,7 @@ describe("hive-writer shadow", () => {
     expect(badAudience.status).toBe("rejected");
 
     const badHash = await runHiveWriterShadow({
+      writerRunId: "11111111-1111-4111-8111-111111111111",
       artifact,
       projection,
       invokeWriter: async () => {
@@ -306,6 +311,7 @@ describe("hive-writer shadow", () => {
     expect(tree).not.toBeNull();
 
     const badDomain = await runHiveWriterShadow({
+      writerRunId: "11111111-1111-4111-8111-111111111111",
       artifact,
       projection,
       invokeWriter: async () => {
@@ -325,6 +331,7 @@ describe("hive-writer shadow", () => {
     expect(badDomain.validation.errorCodes).toContain("WRITER_BINDING_MISMATCH");
 
     const badPackHash = await runHiveWriterShadow({
+      writerRunId: "11111111-1111-4111-8111-111111111111",
       artifact,
       projection,
       invokeWriter: async () => {
@@ -354,6 +361,7 @@ describe("hive-writer shadow", () => {
     const tree = buildDeterministicHiveUiTree(projection);
     expect(tree).not.toBeNull();
     const record = await runHiveWriterShadow({
+      writerRunId: "11111111-1111-4111-8111-111111111111",
       artifact,
       projection,
       invokeWriter: async () => ({
@@ -370,6 +378,7 @@ describe("hive-writer shadow", () => {
   it("records failed model requests without a validated tree", async () => {
     const { artifact, projection } = buildCustomerProjection();
     const record = await runHiveWriterShadow({
+      writerRunId: "11111111-1111-4111-8111-111111111111",
       artifact,
       projection,
       invokeWriter: async () => {
@@ -384,6 +393,7 @@ describe("hive-writer shadow", () => {
   it("maps hive-agents WRITER_MODEL_JSON_INVALID HTTP 422 to failed shadow record", async () => {
     const { artifact, projection } = buildCustomerProjection();
     const record = await runHiveWriterShadow({
+      writerRunId: "11111111-1111-4111-8111-111111111111",
       artifact,
       projection,
       invokeWriter: async () => {
@@ -406,12 +416,14 @@ describe("hive-writer shadow", () => {
     const invokeWriter = vi.fn(mockWriterFromDeterministicTree(artifact, projection));
     const store = inMemoryPersistence();
     const first = await runHiveWriterShadow({
+      writerRunId: "11111111-1111-4111-8111-111111111111",
       artifact,
       projection,
       invokeWriter,
       persistence: store.persistence,
     });
     const second = await runHiveWriterShadow({
+      writerRunId: "11111111-1111-4111-8111-111111111111",
       artifact,
       projection,
       invokeWriter,

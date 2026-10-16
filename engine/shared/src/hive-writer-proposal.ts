@@ -165,6 +165,9 @@ export type HiveWriterShadowValidationResult = {
 
 export type HiveWriterShadowRecord = {
   schemaVersion: typeof HIVE_WRITER_SHADOW_RECORD_SCHEMA_VERSION;
+  /** Unique id for this generation attempt. */
+  writerRunId: string;
+  /** Projection/pack binding fingerprint (not a run id). */
   idempotencyKey: string;
   caseId: string;
   studyRunId: string;
@@ -189,6 +192,7 @@ export function parseHiveWriterShadowRecord(value: unknown): HiveWriterShadowRec
   const base = z
     .object({
       schemaVersion: z.literal(HIVE_WRITER_SHADOW_RECORD_SCHEMA_VERSION),
+      writerRunId: z.string().uuid().optional(),
       idempotencyKey: z.string().length(64),
       caseId: z.string().min(1),
       studyRunId: z.string().min(1),
@@ -229,7 +233,11 @@ export function parseHiveWriterShadowRecord(value: unknown): HiveWriterShadowRec
       hiveUiTree: hiveUiTreeSchema.nullable(),
     })
     .strict();
-  return base.parse(value) as HiveWriterShadowRecord;
+  const parsed = base.parse(value);
+  const writerRunId =
+    parsed.writerRunId ??
+    `00000000-0000-4000-8000-${parsed.idempotencyKey.slice(0, 12)}`;
+  return { ...parsed, writerRunId } as HiveWriterShadowRecord;
 }
 
 /** Envelope constants echoed in every Writer-produced UI tree. */

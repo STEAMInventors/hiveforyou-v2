@@ -1,8 +1,11 @@
+import { randomUUID } from "node:crypto";
+
 import { resolveCanonicalStudyReportPresentationMode } from "@hiveforyou/shared/canonical-study-report-projection";
 import type { CanonicalStudyReportAudience } from "@hiveforyou/shared/canonical-study-report-projection";
 import type { CanonicalStudyArtifact } from "@hiveforyou/shared/canonical-study-artifact";
 import {
-  hiveWriterShadowAttemptHistoryPath,
+  hiveWriterShadowLatestAcceptedPath,
+  hiveWriterShadowLegacyBindingRecordPath,
   hiveWriterShadowRecordPath,
 } from "@hiveforyou/shared/hive-artifact-paths";
 import {
@@ -17,20 +20,17 @@ import type { HiveWriterHttpClient } from "./create-writer-http-client.js";
 import { buildHiveWriterShadowIdempotencyKey } from "./hive-writer-idempotency.js";
 import {
   isHiveWriterShadowTerminalStatus,
-  planWriterShadowPreviewRequest,
-  planWriterShadowWorkerExecution,
+  shouldBlockWriterShadowPublication,
+  shouldInvokeWriterRun,
+  shouldReuseWriterRunRecord,
 } from "./plan-writer-shadow-dispatch.js";
 import { projectCanonicalStudyReport } from "../project-canonical-study-report.js";
-import { buildHiveWriterShadowMarkerRecord } from "./run-hive-writer-shadow.js";
-import { runHiveWriterShadow } from "./run-hive-writer-shadow.js";
-import type { HiveWriterShadowPersistence } from "./run-hive-writer-shadow.js";
-import { resolveHiveWriterDomainBindingForPersistedStudy } from "./resolve-hive-writer-domain-binding.js";
 import {
-  appendTerminalAttemptSnapshot,
-  canRetryTerminalWriterShadowFailure,
-  isRetriableTerminalWriterShadowFailure,
-  type HiveWriterShadowAttemptHistory,
-} from "./writer-shadow-retry.js";
+  buildHiveWriterShadowMarkerRecord,
+  runHiveWriterShadow,
+  type HiveWriterShadowPersistence,
+} from "./run-hive-writer-shadow.js";
+import { resolveHiveWriterDomainBindingForPersistedStudy } from "./resolve-hive-writer-domain-binding.js";
 
 const DOCUMENT_PAGES_BUCKET = "document-pages";
 
@@ -39,15 +39,227 @@ export type WriterShadowRequestedDispatch = (input: {
   caseId: string;
   studyRunId: string;
   audience: CanonicalStudyReportAudience;
-  idempotencyKey: string;
+  writerRunId: string;
 }) => Promise<void>;
 
 export type WriterShadowStorageUploadOptions = {
-  /** When true, replace an existing object at the same path (non-terminal shadow transitions). */
   upsert?: boolean;
 };
 
-export type WriterShadowObjectGateway = {
+export function createWriterRunId(createId?: () => string): string {
+  return createId?.() ?? randomUUID();
+}
+
+export const HIVE_WRITER_SHADOW_LATEST_ACCEPTED_SCHEMA_VERSION =
+  "hive-writer-shadow-latest-accepted/1" as const;
+
+export type HiveWriterShadowLatestAcceptedPointer = {
+  schemaVersion: typeof HIVE_WRITER_SHADOW_LATEST_ACCEPTED_SCHEMA_VERSION;
+  writerRunId: string;
+  idempotencyKey: string;
+  updatedAt: string;
+};
+
+export type WriterShadowObjectReader = {
+  downloadObject(bucket: string, path: string): Promise<Uint8Array>;
+};
+
+export type WriterShadowObjectWriter = WriterShadowObjectReader & {
+  uploadObject(
+    bucket: string,
+    path: string,
+    bytes: Uint8Array,
+    contentType?: string,
+    options?: WriterShadowStorageUploadOptions,
+  ): Promise<void>;
+};
+
+function parseLatestAcceptedPointer(value: unknown): HiveWriterShadowLatestAcceptedPointer | null {
+  if (!value || typeof value !== "object") {
+    return null;
+  }
+  const row = value as Record<string, unknown>;
+  if (row.schemaVersion !== HIVE_WRITER_SHADOW_LATEST_ACCEPTED_SCHEMA_VERSION) {
+    return null;
+  }
+  if (typeof row.writerRunId !== "string" || typeof row.idempotencyKey !== "string") {
+    return null;
+  }
+  if (row.idempotencyKey.length !== 64 || typeof row.updatedAt !== "string") {
+    return null;
+  }
+  return {
+    schemaVersion: HIVE_WRITER_SHADOW_LATEST_ACCEPTED_SCHEMA_VERSION,
+    writerRunId: row.writerRunId,
+    idempotencyKey: row.idempotencyKey,
+    updatedAt: row.updatedAt,
+  };
+}
+
+export function createWriterRunPersistence(input: {
+  gateway: WriterShadowObjectWriter;
+  bucket: string;
+  userId: string;
+  studyRunId: string;
+  audience: HiveWriterShadowRecord["audience"];
+}): HiveWriterShadowPersistence {
+  return {
+    load: async (writerRunId) => {
+      const path = hiveWriterShadowRecordPath(
+        input.userId,
+        input.studyRunId,
+        input.audience,
+        writerRunId,
+      );
+      try {
+        const bytes = await input.gateway.downloadObject(input.bucket, path);
+        return parseHiveWriterShadowRecord(JSON.parse(new TextDecoder().decode(bytes)));
+      } catch {
+        return null;
+      }
+    },
+    save: async (record) => {
+      const path = hiveWriterShadowRecordPath(
+        input.userId,
+        input.studyRunId,
+        record.audience,
+        record.writerRunId,
+      );
+      try {
+        const existingBytes = await input.gateway.downloadObject(input.bucket, path);
+        const existing = parseHiveWriterShadowRecord(
+          JSON.parse(new TextDecoder().decode(existingBytes)),
+        );
+        if (isHiveWriterShadowTerminalStatus(existing.status)) {
+          return;
+        }
+      } catch {
+        // First write for this writer run.
+      }
+      const bytes = new TextEncoder().encode(JSON.stringify(record));
+      await input.gateway.uploadObject(input.bucket, path, bytes, "application/json", {
+        upsert: true,
+      });
+    },
+  };
+}
+
+export async function loadWriterShadowRecordByRunId(input: {
+  gateway: WriterShadowObjectReader;
+  bucket: string;
+  userId: string;
+  studyRunId: string;
+  audience: HiveWriterShadowRecord["audience"];
+  writerRunId: string;
+}): Promise<HiveWriterShadowRecord | null> {
+  const persistence = createWriterRunPersistence({
+    gateway: input.gateway as WriterShadowObjectWriter,
+    bucket: input.bucket,
+    userId: input.userId,
+    studyRunId: input.studyRunId,
+    audience: input.audience,
+  });
+  return persistence.load(input.writerRunId);
+}
+
+export async function loadLegacyBindingWriterShadowRecord(input: {
+  gateway: WriterShadowObjectReader;
+  bucket: string;
+  userId: string;
+  studyRunId: string;
+  audience: HiveWriterShadowRecord["audience"];
+  projectionBindingKey: string;
+}): Promise<HiveWriterShadowRecord | null> {
+  const path = hiveWriterShadowLegacyBindingRecordPath(
+    input.userId,
+    input.studyRunId,
+    input.audience,
+    input.projectionBindingKey,
+  );
+  try {
+    const bytes = await input.gateway.downloadObject(input.bucket, path);
+    return parseHiveWriterShadowRecord(JSON.parse(new TextDecoder().decode(bytes)));
+  } catch {
+    return null;
+  }
+}
+
+export async function loadLatestAcceptedWriterShadowRecord(input: {
+  gateway: WriterShadowObjectReader;
+  bucket: string;
+  userId: string;
+  studyRunId: string;
+  audience: HiveWriterShadowRecord["audience"];
+  projectionBindingKey: string;
+}): Promise<HiveWriterShadowRecord | null> {
+  const pointerPath = hiveWriterShadowLatestAcceptedPath(
+    input.userId,
+    input.studyRunId,
+    input.audience,
+  );
+  try {
+    const bytes = await input.gateway.downloadObject(input.bucket, pointerPath);
+    const pointer = parseLatestAcceptedPointer(JSON.parse(new TextDecoder().decode(bytes)));
+    if (!pointer || pointer.idempotencyKey !== input.projectionBindingKey) {
+      return null;
+    }
+    const record = await loadWriterShadowRecordByRunId({
+      gateway: input.gateway,
+      bucket: input.bucket,
+      userId: input.userId,
+      studyRunId: input.studyRunId,
+      audience: input.audience,
+      writerRunId: pointer.writerRunId,
+    });
+    if (record?.status === "accepted") {
+      return record;
+    }
+  } catch {
+    // No pointer or stale pointer — fall through to legacy path.
+  }
+
+  const legacy = await loadLegacyBindingWriterShadowRecord({
+    gateway: input.gateway,
+    bucket: input.bucket,
+    userId: input.userId,
+    studyRunId: input.studyRunId,
+    audience: input.audience,
+    projectionBindingKey: input.projectionBindingKey,
+  });
+  if (legacy?.status === "accepted") {
+    return legacy;
+  }
+  return null;
+}
+
+export async function persistLatestAcceptedWriterShadowPointer(input: {
+  gateway: WriterShadowObjectWriter;
+  bucket: string;
+  userId: string;
+  record: HiveWriterShadowRecord;
+  now?: () => number;
+}): Promise<void> {
+  if (input.record.status !== "accepted") {
+    return;
+  }
+  const pointer: HiveWriterShadowLatestAcceptedPointer = {
+    schemaVersion: HIVE_WRITER_SHADOW_LATEST_ACCEPTED_SCHEMA_VERSION,
+    writerRunId: input.record.writerRunId,
+    idempotencyKey: input.record.idempotencyKey,
+    updatedAt: new Date((input.now ?? (() => Date.now()))()).toISOString(),
+  };
+  const path = hiveWriterShadowLatestAcceptedPath(
+    input.userId,
+    input.record.studyRunId,
+    input.record.audience,
+  );
+  const bytes = new TextEncoder().encode(JSON.stringify(pointer));
+  await input.gateway.uploadObject(input.bucket, path, bytes, "application/json", {
+    upsert: true,
+  });
+}
+
+export type WriterShadowObjectGateway = WriterShadowObjectWriter & {
   selectWhere(
     table: string,
     where: Record<string, string | number>,
@@ -68,125 +280,6 @@ function textField(row: Record<string, unknown>, key: string): string {
   return typeof value === "string" ? value : "";
 }
 
-async function loadWriterShadowAttemptHistory(input: {
-  gateway: WriterShadowObjectGateway;
-  userId: string;
-  studyRunId: string;
-  audience: CanonicalStudyReportAudience;
-  idempotencyKey: string;
-}): Promise<HiveWriterShadowAttemptHistory | null> {
-  const path = hiveWriterShadowAttemptHistoryPath(
-    input.userId,
-    input.studyRunId,
-    input.audience,
-    input.idempotencyKey,
-  );
-  try {
-    const bytes = await input.gateway.downloadObject(DOCUMENT_PAGES_BUCKET, path);
-    return JSON.parse(new TextDecoder().decode(bytes)) as HiveWriterShadowAttemptHistory;
-  } catch {
-    return null;
-  }
-}
-
-async function saveWriterShadowAttemptHistory(input: {
-  gateway: WriterShadowObjectGateway;
-  userId: string;
-  studyRunId: string;
-  audience: CanonicalStudyReportAudience;
-  idempotencyKey: string;
-  history: HiveWriterShadowAttemptHistory;
-}): Promise<void> {
-  const path = hiveWriterShadowAttemptHistoryPath(
-    input.userId,
-    input.studyRunId,
-    input.audience,
-    input.idempotencyKey,
-  );
-  const bytes = new TextEncoder().encode(JSON.stringify(input.history));
-  await input.gateway.uploadObject(DOCUMENT_PAGES_BUCKET, path, bytes, "application/json", {
-    upsert: true,
-  });
-}
-
-function createShadowPersistence(input: {
-  gateway: WriterShadowObjectGateway;
-  userId: string;
-  studyRunId: string;
-  audience: CanonicalStudyReportAudience;
-}): HiveWriterShadowPersistence {
-  return {
-    load: async (idempotencyKey) => {
-      const path = hiveWriterShadowRecordPath(
-        input.userId,
-        input.studyRunId,
-        input.audience,
-        idempotencyKey,
-      );
-      try {
-        const bytes = await input.gateway.downloadObject(DOCUMENT_PAGES_BUCKET, path);
-        return parseHiveWriterShadowRecord(JSON.parse(new TextDecoder().decode(bytes)));
-      } catch {
-        return null;
-      }
-    },
-    save: async (record) => {
-      const path = hiveWriterShadowRecordPath(
-        input.userId,
-        input.studyRunId,
-        record.audience,
-        record.idempotencyKey,
-      );
-      try {
-        const existingBytes = await input.gateway.downloadObject(DOCUMENT_PAGES_BUCKET, path);
-        const existing = parseHiveWriterShadowRecord(
-          JSON.parse(new TextDecoder().decode(existingBytes)),
-        );
-        if (isHiveWriterShadowTerminalStatus(existing.status)) {
-          if (existing.status === "failed") {
-            const attemptHistory = await loadWriterShadowAttemptHistory({
-              gateway: input.gateway,
-              userId: input.userId,
-              studyRunId: input.studyRunId,
-              audience: record.audience,
-              idempotencyKey: record.idempotencyKey,
-            });
-            if (
-              attemptHistory &&
-              attemptHistory.attempts.length >= 1 &&
-              isRetriableTerminalWriterShadowFailure(existing)
-            ) {
-              // Prior terminal failure archived — allow one replacement write.
-            } else {
-              return;
-            }
-          } else {
-            return;
-          }
-        }
-      } catch {
-        // Missing object — first write for this idempotency key.
-      }
-      const bytes = new TextEncoder().encode(JSON.stringify(record));
-      await input.gateway.uploadObject(DOCUMENT_PAGES_BUCKET, path, bytes, "application/json", {
-        upsert: true,
-      });
-    },
-  };
-}
-
-async function saveUnlessTerminal(
-  persistence: HiveWriterShadowPersistence,
-  record: HiveWriterShadowRecord,
-): Promise<HiveWriterShadowRecord> {
-  const existing = await persistence.load(record.idempotencyKey);
-  if (existing && isHiveWriterShadowTerminalStatus(existing.status)) {
-    return existing;
-  }
-  await persistence.save(record);
-  return record;
-}
-
 function readPublication(artifact: CanonicalStudyArtifact): {
   customerProReportsPermitted: boolean;
   packApprovalLabel: string;
@@ -202,6 +295,68 @@ function readPublication(artifact: CanonicalStudyArtifact): {
   };
 }
 
+async function resolveWriterShadowContext(input: {
+  claimedUserId: string;
+  caseId: string;
+  studyRunId: string;
+  audience: CanonicalStudyReportAudience;
+  gateway: WriterShadowObjectGateway;
+  loadArtifact: (userId: string) => Promise<CanonicalStudyArtifact>;
+}) {
+  const studies = await input.gateway.selectWhere(
+    "study_runs",
+    { id: input.studyRunId },
+    { limit: 1 },
+  );
+  const cases = await input.gateway.selectWhere("cases", { id: input.caseId }, { limit: 1 });
+  const studyRow = studies[0];
+  const caseRow = cases[0];
+  const owner = assertWriterShadowOwner({
+    claimedUserId: input.claimedUserId,
+    caseId: input.caseId,
+    persistedStudy: studyRow
+      ? { userId: textField(studyRow, "user_id"), caseId: textField(studyRow, "case_id") }
+      : null,
+    persistedCase: caseRow ? { userId: textField(caseRow, "user_id") } : null,
+  });
+
+  const artifact = await input.loadArtifact(owner.userId);
+  if (artifact.caseId !== input.caseId || artifact.studyRunId !== input.studyRunId) {
+    throw new CanonicalStudyArtifactsNotFoundError();
+  }
+
+  const publication = readPublication(artifact);
+  const presentationMode = resolveCanonicalStudyReportPresentationMode(publication);
+  const projection = projectCanonicalStudyReport({
+    artifact,
+    audience: input.audience,
+    customerProReportsPermitted: publication.customerProReportsPermitted,
+    packApprovalLabel: publication.packApprovalLabel,
+  });
+  const domainBinding = resolveHiveWriterDomainBindingForPersistedStudy({
+    studyRunId: input.studyRunId,
+    audience: input.audience,
+    artifact,
+    projection,
+  });
+  const idempotencyKey = buildHiveWriterShadowIdempotencyKey({
+    caseId: projection.caseId,
+    studyRunId: projection.studyRunId,
+    audience: projection.audience,
+    packContentSha256: domainBinding.packContentSha256,
+    reportProjectionContentSha256: domainBinding.reportProjectionContentSha256,
+  });
+
+  return {
+    owner,
+    artifact,
+    presentationMode,
+    projection,
+    domainBinding,
+    idempotencyKey,
+  };
+}
+
 /** Preview/Vercel path: queue persistence + Inngest dispatch only — never invokes hive-agents Writer HTTP. */
 export async function enqueueHiveWriterShadowPreviewRequest(input: {
   claimedUserId: string;
@@ -212,130 +367,49 @@ export async function enqueueHiveWriterShadowPreviewRequest(input: {
   gateway: WriterShadowObjectGateway;
   loadArtifact: (userId: string) => Promise<CanonicalStudyArtifact>;
   dispatchRequested: WriterShadowRequestedDispatch;
+  createWriterRunId?: () => string;
 }): Promise<HiveWriterShadowRecord> {
-  const studies = await input.gateway.selectWhere(
-    "study_runs",
-    { id: input.studyRunId },
-    { limit: 1 },
-  );
-  const cases = await input.gateway.selectWhere("cases", { id: input.caseId }, { limit: 1 });
-  const studyRow = studies[0];
-  const caseRow = cases[0];
-  const owner = assertWriterShadowOwner({
-    claimedUserId: input.claimedUserId,
-    caseId: input.caseId,
-    persistedStudy: studyRow
-      ? { userId: textField(studyRow, "user_id"), caseId: textField(studyRow, "case_id") }
-      : null,
-    persistedCase: caseRow ? { userId: textField(caseRow, "user_id") } : null,
-  });
-
-  const artifact = await input.loadArtifact(owner.userId);
-  if (artifact.caseId !== input.caseId || artifact.studyRunId !== input.studyRunId) {
-    throw new CanonicalStudyArtifactsNotFoundError();
-  }
-
-  const publication = readPublication(artifact);
-  const presentationMode = resolveCanonicalStudyReportPresentationMode(publication);
-  const projection = projectCanonicalStudyReport({
-    artifact,
-    audience: input.audience,
-    customerProReportsPermitted: publication.customerProReportsPermitted,
-    packApprovalLabel: publication.packApprovalLabel,
-  });
-  const domainBinding = resolveHiveWriterDomainBindingForPersistedStudy({
-    studyRunId: input.studyRunId,
-    audience: input.audience,
-    artifact,
-    projection,
-  });
-  const idempotencyKey = buildHiveWriterShadowIdempotencyKey({
-    caseId: projection.caseId,
-    studyRunId: projection.studyRunId,
-    audience: projection.audience,
-    packContentSha256: domainBinding.packContentSha256,
-    reportProjectionContentSha256: domainBinding.reportProjectionContentSha256,
-  });
-  const persistence = createShadowPersistence({
+  const ctx = await resolveWriterShadowContext(input);
+  const writerRunId = createWriterRunId(input.createWriterRunId);
+  const persistence = createWriterRunPersistence({
     gateway: input.gateway,
-    userId: owner.userId,
+    bucket: DOCUMENT_PAGES_BUCKET,
+    userId: ctx.owner.userId,
     studyRunId: input.studyRunId,
     audience: input.audience,
   });
-  const existing = await persistence.load(idempotencyKey);
-  const attemptHistory = await loadWriterShadowAttemptHistory({
-    gateway: input.gateway,
-    userId: owner.userId,
-    studyRunId: input.studyRunId,
-    audience: input.audience,
-    idempotencyKey,
-  });
-  const allowTerminalFailedRetry =
-    existing !== null &&
-    canRetryTerminalWriterShadowFailure({ record: existing, attemptHistory });
-  const plan = planWriterShadowPreviewRequest({
-    presentationMode,
-    existingStatus: existing?.status ?? null,
-    allowTerminalFailedRetry,
-  });
 
-  const dispatchPayload = {
-    userId: owner.userId,
-    caseId: input.caseId,
-    studyRunId: input.studyRunId,
-    audience: input.audience,
-    idempotencyKey,
-  };
-
-  if (plan.action === "return_existing" && existing) {
-    if (plan.resend) {
-      await input.dispatchRequested(dispatchPayload);
-    }
-    return existing;
-  }
-
-  if (plan.action === "block_publication") {
-    return saveUnlessTerminal(
-      persistence,
-      buildHiveWriterShadowMarkerRecord({
-        status: "failed",
-        idempotencyKey,
-        projection,
-        projectionHash: domainBinding.reportProjectionContentSha256,
-        errorCodes: ["WRITER_SHADOW_PUBLICATION_BLOCKED"],
-        message: "Writer shadow is limited to internal preview.",
-      }),
-    );
-  }
-
-  if (allowTerminalFailedRetry && existing) {
-    const archived = appendTerminalAttemptSnapshot({ history: attemptHistory, record: existing });
-    await saveWriterShadowAttemptHistory({
-      gateway: input.gateway,
-      userId: owner.userId,
-      studyRunId: input.studyRunId,
-      audience: input.audience,
-      idempotencyKey,
-      history: archived,
+  if (shouldBlockWriterShadowPublication(ctx.presentationMode)) {
+    const blocked = buildHiveWriterShadowMarkerRecord({
+      writerRunId,
+      status: "failed",
+      idempotencyKey: ctx.idempotencyKey,
+      projection: ctx.projection,
+      projectionHash: ctx.domainBinding.reportProjectionContentSha256,
+      errorCodes: ["WRITER_SHADOW_PUBLICATION_BLOCKED"],
+      message: "Writer shadow is limited to internal preview.",
     });
+    await persistence.save(blocked);
+    return blocked;
   }
 
-  const queuedMarker = buildHiveWriterShadowMarkerRecord({
+  const queued = buildHiveWriterShadowMarkerRecord({
+    writerRunId,
     status: "queued",
-    idempotencyKey,
-    projection,
-    projectionHash: domainBinding.reportProjectionContentSha256,
+    idempotencyKey: ctx.idempotencyKey,
+    projection: ctx.projection,
+    projectionHash: ctx.domainBinding.reportProjectionContentSha256,
     errorCodes: ["QUEUED"],
     message: null,
   });
-  if (allowTerminalFailedRetry && existing) {
-    await persistence.save(queuedMarker);
-    await input.dispatchRequested(dispatchPayload);
-    return queuedMarker;
-  }
-
-  const queued = await saveUnlessTerminal(persistence, queuedMarker);
-  await input.dispatchRequested(dispatchPayload);
+  await persistence.save(queued);
+  await input.dispatchRequested({
+    userId: ctx.owner.userId,
+    caseId: input.caseId,
+    studyRunId: input.studyRunId,
+    audience: input.audience,
+    writerRunId,
+  });
   return queued;
 }
 
@@ -344,122 +418,97 @@ export async function executeHiveWriterShadowRequest(input: {
   caseId: string;
   studyRunId: string;
   audience: CanonicalStudyReportAudience;
+  writerRunId: string;
   env: Record<string, string | undefined>;
   gateway: WriterShadowObjectGateway;
   loadArtifact: (userId: string) => Promise<CanonicalStudyArtifact>;
   invokeWriter?: HiveWriterHttpClient;
 }): Promise<HiveWriterShadowRecord> {
-  const studies = await input.gateway.selectWhere(
-    "study_runs",
-    { id: input.studyRunId },
-    { limit: 1 },
-  );
-  const cases = await input.gateway.selectWhere("cases", { id: input.caseId }, { limit: 1 });
-  const studyRow = studies[0];
-  const caseRow = cases[0];
-  const owner = assertWriterShadowOwner({
-    claimedUserId: input.claimedUserId,
-    caseId: input.caseId,
-    persistedStudy: studyRow
-      ? { userId: textField(studyRow, "user_id"), caseId: textField(studyRow, "case_id") }
-      : null,
-    persistedCase: caseRow ? { userId: textField(caseRow, "user_id") } : null,
+  const ctx = await resolveWriterShadowContext(input);
+  const persistence = createWriterRunPersistence({
+    gateway: input.gateway,
+    bucket: DOCUMENT_PAGES_BUCKET,
+    userId: ctx.owner.userId,
+    studyRunId: input.studyRunId,
+    audience: input.audience,
   });
 
-  const artifact = await input.loadArtifact(owner.userId);
-  if (artifact.caseId !== input.caseId || artifact.studyRunId !== input.studyRunId) {
-    throw new CanonicalStudyArtifactsNotFoundError();
+  const existing = await loadWriterShadowRecordByRunId({
+    gateway: input.gateway,
+    bucket: DOCUMENT_PAGES_BUCKET,
+    userId: ctx.owner.userId,
+    studyRunId: input.studyRunId,
+    audience: input.audience,
+    writerRunId: input.writerRunId,
+  });
+
+  if (!existing) {
+    const missing = buildHiveWriterShadowMarkerRecord({
+      writerRunId: input.writerRunId,
+      status: "failed",
+      idempotencyKey: ctx.idempotencyKey,
+      projection: ctx.projection,
+      projectionHash: ctx.domainBinding.reportProjectionContentSha256,
+      errorCodes: ["WRITER_RUN_NOT_FOUND"],
+      message: "Writer run record was not found.",
+    });
+    await persistence.save(missing);
+    return missing;
   }
 
-  const publication = readPublication(artifact);
-  const presentationMode = resolveCanonicalStudyReportPresentationMode(publication);
-  const projection = projectCanonicalStudyReport({
-    artifact,
-    audience: input.audience,
-    customerProReportsPermitted: publication.customerProReportsPermitted,
-    packApprovalLabel: publication.packApprovalLabel,
-  });
-  const domainBinding = resolveHiveWriterDomainBindingForPersistedStudy({
-    studyRunId: input.studyRunId,
-    audience: input.audience,
-    artifact,
-    projection,
-  });
-  const idempotencyKey = buildHiveWriterShadowIdempotencyKey({
-    caseId: projection.caseId,
-    studyRunId: projection.studyRunId,
-    audience: projection.audience,
-    packContentSha256: domainBinding.packContentSha256,
-    reportProjectionContentSha256: domainBinding.reportProjectionContentSha256,
-  });
-  const persistence = createShadowPersistence({
-    gateway: input.gateway,
-    userId: owner.userId,
-    studyRunId: input.studyRunId,
-    audience: input.audience,
-  });
-  const existing = await persistence.load(idempotencyKey);
-  const attemptHistory = await loadWriterShadowAttemptHistory({
-    gateway: input.gateway,
-    userId: owner.userId,
-    studyRunId: input.studyRunId,
-    audience: input.audience,
-    idempotencyKey,
-  });
-  const allowTerminalFailedRetry =
-    existing !== null &&
-    canRetryTerminalWriterShadowFailure({ record: existing, attemptHistory });
-  const plan = planWriterShadowWorkerExecution({
-    presentationMode,
-    existingStatus: existing?.status ?? null,
-    allowTerminalFailedRetry,
-  });
-
-  if (plan === "reuse" && existing) {
+  if (shouldReuseWriterRunRecord(existing.status)) {
     return existing;
   }
-  if (plan === "block_publication") {
-    return saveUnlessTerminal(
-      persistence,
-      buildHiveWriterShadowMarkerRecord({
-        status: "failed",
-        idempotencyKey,
-        projection,
-        projectionHash: domainBinding.reportProjectionContentSha256,
-        errorCodes: ["WRITER_SHADOW_PUBLICATION_BLOCKED"],
-        message: "Writer shadow is limited to internal preview.",
-      }),
-    );
+
+  if (shouldBlockWriterShadowPublication(ctx.presentationMode)) {
+    const blocked = buildHiveWriterShadowMarkerRecord({
+      writerRunId: input.writerRunId,
+      status: "failed",
+      idempotencyKey: ctx.idempotencyKey,
+      projection: ctx.projection,
+      projectionHash: ctx.domainBinding.reportProjectionContentSha256,
+      errorCodes: ["WRITER_SHADOW_PUBLICATION_BLOCKED"],
+      message: "Writer shadow is limited to internal preview.",
+    });
+    await persistence.save(blocked);
+    return blocked;
+  }
+
+  if (!shouldInvokeWriterRun(existing.status)) {
+    return existing;
   }
 
   assertHiveWriterLoopbackHost(input.env);
   const invokeWriter = input.invokeWriter ?? createWriterHttpClient(input.env);
-  if (allowTerminalFailedRetry && existing) {
-    const archived = appendTerminalAttemptSnapshot({ history: attemptHistory, record: existing });
-    await saveWriterShadowAttemptHistory({
-      gateway: input.gateway,
-      userId: owner.userId,
-      studyRunId: input.studyRunId,
-      audience: input.audience,
-      idempotencyKey,
-      history: archived,
-    });
-  }
-  await saveUnlessTerminal(
-    persistence,
+
+  await persistence.save(
     buildHiveWriterShadowMarkerRecord({
+      writerRunId: input.writerRunId,
       status: "processing",
-      idempotencyKey,
-      projection,
-      projectionHash: domainBinding.reportProjectionContentSha256,
+      idempotencyKey: ctx.idempotencyKey,
+      projection: ctx.projection,
+      projectionHash: ctx.domainBinding.reportProjectionContentSha256,
       errorCodes: ["PROCESSING"],
       message: null,
     }),
   );
-  return runHiveWriterShadow({
-    artifact,
-    projection,
+
+  const record = await runHiveWriterShadow({
+    writerRunId: input.writerRunId,
+    artifact: ctx.artifact,
+    projection: ctx.projection,
     invokeWriter,
     persistence,
   });
+
+  if (record.status === "accepted") {
+    await persistLatestAcceptedWriterShadowPointer({
+      gateway: input.gateway,
+      bucket: DOCUMENT_PAGES_BUCKET,
+      userId: ctx.owner.userId,
+      record,
+    });
+  }
+
+  return record;
 }
