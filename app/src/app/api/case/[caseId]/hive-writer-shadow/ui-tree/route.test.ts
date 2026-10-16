@@ -38,4 +38,12 @@ describe("hive-writer-shadow ui-tree route wiring", () => {
     expect(source).not.toMatch(/runHiveWriterShadow/);
     expect(source).not.toMatch(/hive-writer-shadow/);
   });
+
+  it("preview enqueue does not open a Writer HTTP client", () => {
+    const source = readFileSync(shadowServicePath, "utf8");
+    expect(source).toMatch(/HIVE_EVENT_WRITER_SHADOW_REQUESTED/);
+    expect(source).toMatch(/planWriterShadowPreviewRequest/);
+    expect(source).not.toMatch(/createWriterHttpClient/);
+    expect(source).not.toMatch(/runHiveWriterShadow\(/);
+  });
 });

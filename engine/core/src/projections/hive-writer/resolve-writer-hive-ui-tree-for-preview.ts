@@ -148,6 +148,22 @@ export function resolveWriterHiveUiTreeForPreview(input: {
     });
   }
 
+  if (record.status === "queued" || record.status === "processing") {
+    return toFallback({
+      code: "WRITER_IN_FLIGHT",
+      message:
+        record.status === "queued"
+          ? "Writer layout is queued."
+          : "Writer layout is processing.",
+      shadowStatus: record.status,
+      idempotencyKey,
+      validation: record.validation,
+      errorCodes: record.validation.errorCodes.length
+        ? record.validation.errorCodes
+        : ["WRITER_IN_FLIGHT"],
+    });
+  }
+
   if (record.status !== "accepted" || !record.hiveUiTree || !record.proposal) {
     return toFallback({
       code: "WRITER_RECORD_NOT_ACCEPTED",

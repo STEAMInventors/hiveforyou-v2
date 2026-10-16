@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import type {
   CanonicalStudyReportAudience,
@@ -45,6 +45,19 @@ type HiveWriterShadowDiagnostic = {
   validation: { ok: boolean; errorCodes: string[]; message: string | null };
   observability: { durationMs: number; modelIdentifier: string | null; projectionHash: string };
 };
+
+const WRITER_POLL_INTERVAL_MS = 2000;
+const WRITER_POLL_TIMEOUT_MS = 180_000;
+
+function isWriterInFlight(status: string): boolean {
+  return status === "queued" || status === "processing";
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
 
 function AudienceToggle({
   audience,
@@ -186,6 +199,11 @@ function WriterStatusPanel({
       data-testid="writer-layout-status"
     >
       <p className="font-medium text-customerHive-on-surface">Writer layout status</p>
+      {isWriterInFlight(status) ? (
+        <p className="mt-1 text-customerHive-on-surface-muted" data-testid="writer-layout-inflight">
+          {status === "queued" ? "Queued for the worker." : "Worker is generating the Writer layout."}
+        </p>
+      ) : null}
       <p className="mt-1 text-customerHive-on-surface-muted">
         Shadow status: <span className="font-mono">{status}</span>
         {writerPreview?.idempotencyKey ? (
@@ -234,12 +252,15 @@ export function CanonicalStudyReportPreviewExperience({
   const [generating, setGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const requestSerial = useRef(0);
+  const generatingRef = useRef(false);
 
   useEffect(() => {
     setAudience(initialAudience);
   }, [initialAudience]);
 
   useEffect(() => {
+    requestSerial.current += 1;
     setWriterPreview(null);
     setGeneration(null);
   }, [audience, studyRunId]);
@@ -315,12 +336,44 @@ export function CanonicalStudyReportPreviewExperience({
     void loadWriterPreview();
   }, [layoutMode, loadWriterPreview]);
 
+  const pollWriterStatus = useCallback(
+    async (serial: number): Promise<HiveWriterShadowDiagnostic | null> => {
+      const deadline = Date.now() + WRITER_POLL_TIMEOUT_MS;
+      while (Date.now() < deadline) {
+        if (requestSerial.current !== serial) {
+          return null;
+        }
+        const response = await fetch(
+          `/api/case/${encodeURIComponent(caseId)}/hive-writer-shadow/status?studyRunId=${encodeURIComponent(studyRunId)}&audience=${encodeURIComponent(audience)}`,
+        );
+        const payload = (await response.json()) as HiveWriterShadowDiagnostic & {
+          error?: string;
+          message?: string;
+        };
+        if (!response.ok) {
+          throw new Error(payload.message ?? payload.error ?? "Writer status failed.");
+        }
+        if (!isWriterInFlight(payload.status)) {
+          return payload;
+        }
+        setGeneration(payload);
+        await sleep(WRITER_POLL_INTERVAL_MS);
+      }
+      return null;
+    },
+    [audience, caseId, studyRunId],
+  );
+
   const generateWriterLayout = useCallback(async () => {
-    if (!studyRunId.trim() || generating) {
+    if (!studyRunId.trim() || generating || generatingRef.current) {
       return;
     }
+    generatingRef.current = true;
+    const serial = requestSerial.current + 1;
+    requestSerial.current = serial;
     setGenerating(true);
     setError(null);
+    setWriterPreview(null);
     try {
       const response = await fetch(
         `/api/case/${encodeURIComponent(caseId)}/hive-writer-shadow/run`,
@@ -334,19 +387,46 @@ export function CanonicalStudyReportPreviewExperience({
         error?: string;
         message?: string;
       };
+      if (requestSerial.current !== serial) {
+        return;
+      }
       if (!response.ok) {
         setError(payload.message ?? payload.error ?? "Writer generation failed.");
         return;
       }
       setGeneration(payload);
       setLayoutMode("writer");
-      await loadWriterPreview();
+      let terminal = payload;
+      if (isWriterInFlight(payload.status)) {
+        const polled = await pollWriterStatus(serial);
+        if (requestSerial.current !== serial) {
+          return;
+        }
+        if (!polled) {
+          setError("Writer layout is still queued. Try again shortly.");
+          return;
+        }
+        terminal = polled;
+        setGeneration(polled);
+      }
+      if (
+        terminal.status === "accepted" ||
+        terminal.status === "rejected" ||
+        terminal.status === "failed" ||
+        terminal.status === "skipped" ||
+        terminal.status === "unavailable"
+      ) {
+        await loadWriterPreview();
+      }
     } catch {
-      setError("Network error while generating Writer layout.");
+      if (requestSerial.current === serial) {
+        setError("Network error while generating Writer layout.");
+      }
     } finally {
+      generatingRef.current = false;
       setGenerating(false);
     }
-  }, [audience, caseId, generating, loadWriterPreview, studyRunId]);
+  }, [audience, caseId, generating, loadWriterPreview, pollWriterStatus, studyRunId]);
 
   const jsonHref = useMemo(
     () => buildHiveCanonicalJsonHref({ caseId, studyRunId }),
@@ -366,7 +446,9 @@ export function CanonicalStudyReportPreviewExperience({
   const showWriterFallback =
     layoutMode === "writer" &&
     writerPreview != null &&
-    writerPreview.layout === "deterministic_fallback";
+    writerPreview.layout === "deterministic_fallback" &&
+    writerPreview.fallbackReason?.code !== "WRITER_IN_FLIGHT" &&
+    !isWriterInFlight(generation?.status ?? "");
 
   return (
     <HiveCustomerShell exploreDisabled={false}>
@@ -390,7 +472,13 @@ export function CanonicalStudyReportPreviewExperience({
               onClick={() => void generateWriterLayout()}
               data-testid="generate-writer-layout"
             >
-              {generating ? "Generating Writer layout…" : "Generate Writer layout"}
+              {generating
+                ? generation?.status === "queued"
+                  ? "Writer layout queued…"
+                  : generation?.status === "processing"
+                    ? "Writer layout processing…"
+                    : "Generating Writer layout…"
+                : "Generate Writer layout"}
             </button>
             <Link
               href={jsonHref}

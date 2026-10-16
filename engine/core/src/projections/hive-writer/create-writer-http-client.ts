@@ -13,9 +13,20 @@ export type HiveWriterHttpResponse = {
 
 export type HiveWriterHttpClient = (input: HiveWriterModelInput) => Promise<HiveWriterHttpResponse>;
 
+const WRITER_LOOPBACK_HOSTS = new Set(["127.0.0.1", "localhost", "::1"]);
+
+/** Writer HTTP stays on the worker loopback. A public host is rejected before any request. */
+export function assertHiveWriterLoopbackHost(env: Record<string, string | undefined>): string {
+  const host = env.HIVE_AGENTS_HOST?.trim() || "127.0.0.1";
+  if (!WRITER_LOOPBACK_HOSTS.has(host)) {
+    throw new Error("WRITER_HOST_NOT_LOOPBACK");
+  }
+  return host;
+}
+
 export function createWriterHttpClient(env: Record<string, string | undefined>): HiveWriterHttpClient {
   const token = env.HIVE_AGENTS_SERVICE_TOKEN?.trim();
-  const host = env.HIVE_AGENTS_HOST?.trim() || "127.0.0.1";
+  const host = assertHiveWriterLoopbackHost(env);
   const port =
     env.HIVE_AGENTS_PORT?.trim() ||
     env.HIVE_AGENTS_BIND_PORT?.trim() ||

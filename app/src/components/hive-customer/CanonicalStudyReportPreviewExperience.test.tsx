@@ -163,6 +163,128 @@ describe("CanonicalStudyReportPreviewExperience", () => {
     });
   });
 
+  it("polls status after a queued Writer request and renders the accepted tree", async () => {
+    fetchMock.mockImplementation(async (input: RequestInfo, init?: RequestInit) => {
+      const url = String(input);
+      if (url.includes("/canonical-report")) {
+        return new Response(JSON.stringify(baseProjection), { status: 200 });
+      }
+      if (url.includes("/hive-writer-shadow/status")) {
+        return new Response(
+          JSON.stringify({
+            status: "accepted",
+            idempotencyKey: "k".repeat(64),
+            validation: { ok: true, errorCodes: [], message: null },
+            observability: { durationMs: 12, modelIdentifier: "mock", projectionHash: "e".repeat(64) },
+          }),
+          { status: 200 },
+        );
+      }
+      if (url.includes("/hive-writer-shadow/ui-tree")) {
+        return new Response(
+          JSON.stringify({
+            layout: "writer",
+            hiveUiTree: baseProjection.hiveUiTree,
+            fallbackReason: null,
+            shadowStatus: "accepted",
+            idempotencyKey: "k".repeat(64),
+            validation: { ok: true, errorCodes: [], message: null },
+            writerShadowEnabled: true,
+          }),
+          { status: 200 },
+        );
+      }
+      if (url.includes("/hive-writer-shadow/run") && init?.method === "POST") {
+        return new Response(
+          JSON.stringify({
+            status: "queued",
+            idempotencyKey: "k".repeat(64),
+            validation: { ok: false, errorCodes: ["QUEUED"], message: null },
+            observability: { durationMs: 0, modelIdentifier: null, projectionHash: "e".repeat(64) },
+          }),
+          { status: 200 },
+        );
+      }
+      return new Response(JSON.stringify({ error: "UNEXPECTED" }), { status: 500 });
+    });
+    const user = userEvent.setup();
+    render(
+      <CanonicalStudyReportPreviewExperience
+        caseId="case-1"
+        studyRunId="study-1"
+        initialAudience="customer"
+      />,
+    );
+    await waitFor(() => expect(screen.getByTestId("hive-ui-renderer")).toBeInTheDocument());
+    await user.click(screen.getByTestId("generate-writer-layout"));
+    await waitFor(() => {
+      expect(screen.getByTestId("writer-layout-status")).toHaveTextContent("accepted");
+    });
+    const statusGets = fetchMock.mock.calls.filter(([url]) =>
+      String(url).includes("/hive-writer-shadow/status"),
+    );
+    const uiTreeGets = fetchMock.mock.calls.filter(([url]) =>
+      String(url).includes("/hive-writer-shadow/ui-tree"),
+    );
+    expect(statusGets.length).toBeGreaterThanOrEqual(1);
+    expect(uiTreeGets.length).toBeGreaterThanOrEqual(1);
+  });
+
+  it("shows the deterministic fallback when Writer generation is rejected", async () => {
+    fetchMock.mockImplementation(async (input: RequestInfo, init?: RequestInit) => {
+      const url = String(input);
+      if (url.includes("/canonical-report")) {
+        return new Response(JSON.stringify(baseProjection), { status: 200 });
+      }
+      if (url.includes("/hive-writer-shadow/ui-tree")) {
+        return new Response(
+          JSON.stringify({
+            layout: "deterministic_fallback",
+            hiveUiTree: null,
+            fallbackReason: {
+              code: "WRITER_RECORD_NOT_ACCEPTED",
+              message: "Writer layout was rejected.",
+              errorCodes: ["HIVE_UI_TREE_INVALID"],
+            },
+            shadowStatus: "rejected",
+            idempotencyKey: "k".repeat(64),
+            validation: { ok: false, errorCodes: ["HIVE_UI_TREE_INVALID"], message: "invalid" },
+            writerShadowEnabled: true,
+          }),
+          { status: 200 },
+        );
+      }
+      if (url.includes("/hive-writer-shadow/run") && init?.method === "POST") {
+        return new Response(
+          JSON.stringify({
+            status: "rejected",
+            idempotencyKey: "k".repeat(64),
+            validation: { ok: false, errorCodes: ["HIVE_UI_TREE_INVALID"], message: "invalid" },
+            observability: { durationMs: 4, modelIdentifier: "mock", projectionHash: "e".repeat(64) },
+          }),
+          { status: 200 },
+        );
+      }
+      return new Response(JSON.stringify({ error: "UNEXPECTED" }), { status: 500 });
+    });
+    const user = userEvent.setup();
+    render(
+      <CanonicalStudyReportPreviewExperience
+        caseId="case-1"
+        studyRunId="study-1"
+        initialAudience="customer"
+      />,
+    );
+    await waitFor(() => expect(screen.getByTestId("hive-ui-renderer")).toBeInTheDocument());
+    await user.click(screen.getByTestId("generate-writer-layout"));
+    await waitFor(() => {
+      expect(screen.getByTestId("writer-layout-fallback-banner")).toHaveTextContent(
+        "Writer layout was rejected.",
+      );
+    });
+    expect(screen.getByTestId("hive-ui-renderer")).toBeInTheDocument();
+  });
+
   it("shows deterministic fallback banner when Writer layout is unavailable", async () => {
     const user = userEvent.setup();
     render(
