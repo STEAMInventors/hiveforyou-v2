@@ -21,7 +21,7 @@ import { projectCanonicalStudyReport } from "../project-canonical-study-report.j
 import { buildHiveWriterShadowMarkerRecord } from "./run-hive-writer-shadow.js";
 import { runHiveWriterShadow } from "./run-hive-writer-shadow.js";
 import type { HiveWriterShadowPersistence } from "./run-hive-writer-shadow.js";
-import { resolveHiveWriterDomainBinding } from "./resolve-hive-writer-domain-binding.js";
+import { resolveHiveWriterDomainBindingForPersistedStudy } from "./resolve-hive-writer-domain-binding.js";
 
 const DOCUMENT_PAGES_BUCKET = "document-pages";
 
@@ -155,7 +155,12 @@ export async function enqueueHiveWriterShadowPreviewRequest(input: {
     customerProReportsPermitted: publication.customerProReportsPermitted,
     packApprovalLabel: publication.packApprovalLabel,
   });
-  const domainBinding = resolveHiveWriterDomainBinding({ artifact, projection });
+  const domainBinding = resolveHiveWriterDomainBindingForPersistedStudy({
+    studyRunId: input.studyRunId,
+    audience: input.audience,
+    artifact,
+    projection,
+  });
   const idempotencyKey = buildHiveWriterShadowIdempotencyKey({
     caseId: projection.caseId,
     studyRunId: projection.studyRunId,
@@ -274,7 +279,12 @@ export async function executeHiveWriterShadowRequest(input: {
     customerProReportsPermitted: publication.customerProReportsPermitted,
     packApprovalLabel: publication.packApprovalLabel,
   });
-  const domainBinding = resolveHiveWriterDomainBinding({ artifact, projection });
+  const domainBinding = resolveHiveWriterDomainBindingForPersistedStudy({
+    studyRunId: input.studyRunId,
+    audience: input.audience,
+    artifact,
+    projection,
+  });
   const idempotencyKey = buildHiveWriterShadowIdempotencyKey({
     caseId: projection.caseId,
     studyRunId: projection.studyRunId,

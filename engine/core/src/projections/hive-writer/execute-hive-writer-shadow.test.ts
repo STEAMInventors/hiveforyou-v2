@@ -109,6 +109,23 @@ function writerFromArtifact(
 }
 
 describe("executeHiveWriterShadowRequest", () => {
+  it("rejects unknown studyRunId before loading canonical study artifacts", async () => {
+    const gateway = memoryGateway(OWNER);
+    const loadArtifact = vi.fn();
+    await expect(
+      executeHiveWriterShadowRequest({
+        claimedUserId: OWNER,
+        caseId: "case-test",
+        studyRunId: "missing-study-run",
+        audience: "customer",
+        env: {},
+        gateway,
+        loadArtifact,
+      }),
+    ).rejects.toBeInstanceOf(WriterShadowOwnerError);
+    expect(loadArtifact).not.toHaveBeenCalled();
+  });
+
   it("looks up the study and case by id and rejects a mismatched event user", async () => {
     const gateway = memoryGateway(OWNER);
     const loadArtifact = vi.fn();

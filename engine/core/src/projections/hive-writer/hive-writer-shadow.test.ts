@@ -22,7 +22,18 @@ import {
   buildHiveWriterModelInput,
   buildHiveWriterPresentationBinding,
 } from "./build-hive-writer-model-input.js";
-import { resolveHiveWriterDomainBinding } from "./resolve-hive-writer-domain-binding.js";
+import { READER_DOCUMENT_EXTRACTION_SCHEMA_VERSION } from "@hiveforyou/shared/reader-document-extraction";
+import { getDomainPackManifest } from "@hiveforyou/domain-packs";
+
+import { buildCanonicalStudyFoundation } from "../../study/canonical-study-foundation/index.js";
+import { L001_READER_PACK_CONTENT_SHA256 } from "../../study/resolve-canonical-study-interpretation.js";
+import { resolveDebugCanonicalStudyDomainPack } from "../../study/resolve-approved-proposal-domain-pack.js";
+import {
+  HiveWriterDomainBindingError,
+  assertHiveWriterPersistedStudyRequest,
+  resolveHiveWriterDomainBinding,
+  resolveHiveWriterDomainBindingForPersistedStudy,
+} from "./resolve-hive-writer-domain-binding.js";
 import {
   runHiveWriterShadow,
   type HiveWriterShadowPersistence,
@@ -31,7 +42,55 @@ import type { HiveWriterHttpClient } from "./create-writer-http-client.js";
 import type { HiveWriterShadowRecord } from "@hiveforyou/shared/hive-writer-proposal";
 
 const PACK_SHA = "a".repeat(64);
+const IEP_STUDY_RUN_ID = "f9e833cc-a0f6-4dae-8b50-e27595003864";
 const here = dirname(fileURLToPath(import.meta.url));
+
+function buildIepHistoricalArtifact(studyRunId = IEP_STUDY_RUN_ID) {
+  const readerPack = resolveDebugCanonicalStudyDomainPack({
+    envelopePackId: "iep",
+    envelopePackVersion: "0.3.0-proposed",
+    envelopePackContentSha256: L001_READER_PACK_CONTENT_SHA256,
+  }).pack;
+  const foundation = buildCanonicalStudyFoundation({
+    pack: readerPack,
+    packContentSha256: L001_READER_PACK_CONTENT_SHA256,
+    caseId: "case-l001",
+    createdAt: "2026-01-01T00:00:00.000Z",
+    documents: [
+      {
+        sourceDocumentId: "plan-a",
+        documentPages: mockPages("plan-a", 1, "2024-01-01 reading goal"),
+        envelope: {
+          schemaVersion: READER_DOCUMENT_EXTRACTION_SCHEMA_VERSION,
+          studyRunId,
+          attemptId: "attempt-l001",
+          caseId: "case-l001",
+          userId: "user-l001",
+          sourceDocumentId: "plan-a",
+          domainId: "iep",
+          packId: "iep",
+          packVersion: "0.3.0-proposed",
+          packContentSha256: L001_READER_PACK_CONTENT_SHA256,
+          promptVersion: "hive-pack-driven-reader/0.2.0",
+          modelProvider: "fixture",
+          modelId: "fixture",
+          status: "SUCCEEDED",
+          occurredAt: "2026-01-01T00:00:00.000Z",
+          parsedModelJson: planGoalDoc("plan-a", "doc.plan", "reading goal", "2024-01-01"),
+        },
+      },
+    ],
+  });
+  return buildCanonicalStudy({
+    pack: readerPack,
+    packContentSha256: L001_READER_PACK_CONTENT_SHA256,
+    interpretationRulesetId: null,
+    interpretationRulesetContentSha256: null,
+    foundation,
+    sourceContext: {},
+    createdAt: "2026-01-01T00:00:00.000Z",
+  });
+}
 
 function buildSampleArtifact() {
   const foundation = buildSyntheticFoundation({
@@ -411,5 +470,96 @@ describe("hive-writer shadow", () => {
       }),
     ).toBe("approved");
     expect(approved.presentationMode).toBe("approved");
+  });
+});
+
+describe("resolveHiveWriterDomainBinding", () => {
+  it("binds IEP historical reader snapshot when live registry scaffold version differs", () => {
+    const artifact = buildIepHistoricalArtifact();
+    const projection = projectCanonicalStudyReport({
+      artifact,
+      audience: "customer",
+      customerProReportsPermitted: false,
+      packApprovalLabel: CANONICAL_STUDY_DEBUG_PACK_APPROVAL,
+    });
+    const binding = resolveHiveWriterDomainBinding({ artifact, projection });
+    expect(binding.domainId).toBe("iep");
+    expect(binding.packVersion).toBe("0.3.0-proposed");
+    expect(binding.packContentSha256).toBe(L001_READER_PACK_CONTENT_SHA256);
+    expect(getDomainPackManifest("iep")?.version).not.toBe("0.3.0-proposed");
+  });
+
+  it("reuses binding for studyRunId f9e833cc when artifact pins the L001 reader snapshot", () => {
+    const artifact = buildIepHistoricalArtifact(IEP_STUDY_RUN_ID);
+    const projection = projectCanonicalStudyReport({
+      artifact,
+      audience: "pro",
+      customerProReportsPermitted: false,
+      packApprovalLabel: CANONICAL_STUDY_DEBUG_PACK_APPROVAL,
+    });
+    const binding = resolveHiveWriterDomainBindingForPersistedStudy({
+      studyRunId: IEP_STUDY_RUN_ID,
+      audience: "pro",
+      artifact,
+      projection,
+    });
+    expect(binding.domainId).toBe("iep");
+    expect(binding.packContentSha256).toBe(L001_READER_PACK_CONTENT_SHA256);
+  });
+
+  it("rejects missing or invalid snapshot hash", () => {
+    const { artifact, projection } = buildCustomerProjection();
+    artifact.packContentSha256 = "not-a-hash";
+    expect(() => resolveHiveWriterDomainBinding({ artifact, projection })).toThrow(
+      HiveWriterDomainBindingError,
+    );
+  });
+
+  it("rejects pack id/version mismatch against verified snapshot manifest", () => {
+    const artifact = buildIepHistoricalArtifact();
+    artifact.packVersion = "9.9.9-wrong";
+    const projection = projectCanonicalStudyReport({
+      artifact,
+      audience: "customer",
+      customerProReportsPermitted: false,
+      packApprovalLabel: CANONICAL_STUDY_DEBUG_PACK_APPROVAL,
+    });
+    expect(() => resolveHiveWriterDomainBinding({ artifact, projection })).toThrow(
+      /snapshot manifest|pack id\/version/i,
+    );
+  });
+
+  it("rejects unknown pack hash for registered domain", () => {
+    const artifact = buildIepHistoricalArtifact();
+    artifact.packContentSha256 = "b".repeat(64);
+    const projection = projectCanonicalStudyReport({
+      artifact,
+      audience: "customer",
+      customerProReportsPermitted: false,
+      packApprovalLabel: CANONICAL_STUDY_DEBUG_PACK_APPROVAL,
+    });
+    expect(() => resolveHiveWriterDomainBinding({ artifact, projection })).toThrow(
+      HiveWriterDomainBindingError,
+    );
+  });
+
+  it("assertHiveWriterPersistedStudyRequest rejects studyRunId and audience drift", () => {
+    const { artifact, projection } = buildCustomerProjection();
+    expect(() =>
+      assertHiveWriterPersistedStudyRequest({
+        studyRunId: "other-run",
+        audience: "customer",
+        artifact,
+        projection,
+      }),
+    ).toThrow(/studyRunId/i);
+    expect(() =>
+      assertHiveWriterPersistedStudyRequest({
+        studyRunId: artifact.studyRunId,
+        audience: "pro",
+        artifact,
+        projection,
+      }),
+    ).toThrow(/audience/i);
   });
 });
