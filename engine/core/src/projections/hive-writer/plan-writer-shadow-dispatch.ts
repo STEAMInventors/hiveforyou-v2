@@ -10,23 +10,19 @@ export function isHiveWriterShadowInFlightStatus(status: HiveWriterShadowStatus)
 }
 
 export type WriterShadowPreviewPlan =
-  | { action: "skip_disabled" }
   | { action: "block_publication" }
   | { action: "return_existing"; resend: boolean }
   | { action: "enqueue" };
 
 /**
- * Preview/Vercel decision. Production never enqueues. In-flight rows resend the same
- * Inngest id (deduped) without rewriting storage. Terminal rows are reused as-is.
+ * Preview enqueue decision. Internal preview only; Vercel environment does not gate dispatch.
+ * In-flight rows resend the same Inngest id (deduped) without rewriting storage. Terminal rows
+ * are reused as-is. Non-terminal rows (including prior SHADOW_DISABLED skips) may be enqueued.
  */
 export function planWriterShadowPreviewRequest(input: {
-  vercelEnv: string | undefined;
   presentationMode: CanonicalStudyReportPresentationMode;
   existingStatus: HiveWriterShadowStatus | null;
 }): WriterShadowPreviewPlan {
-  if (input.vercelEnv === "production") {
-    return { action: "skip_disabled" };
-  }
   if (input.presentationMode !== "internal_preview") {
     return { action: "block_publication" };
   }

@@ -44,17 +44,9 @@ function projection() {
 }
 
 describe("planWriterShadowPreviewRequest", () => {
-  it("does not enqueue on Vercel production", () => {
+  it("enqueues internal preview regardless of deployment environment", () => {
     expect(
       planWriterShadowPreviewRequest({
-        vercelEnv: "production",
-        presentationMode: "internal_preview",
-        existingStatus: null,
-      }).action,
-    ).toBe("skip_disabled");
-    expect(
-      planWriterShadowPreviewRequest({
-        vercelEnv: "preview",
         presentationMode: "internal_preview",
         existingStatus: null,
       }).action,
@@ -64,24 +56,30 @@ describe("planWriterShadowPreviewRequest", () => {
   it("reuses an accepted record and resends only while in flight", () => {
     expect(
       planWriterShadowPreviewRequest({
-        vercelEnv: "preview",
         presentationMode: "internal_preview",
         existingStatus: "accepted",
       }),
     ).toEqual({ action: "return_existing", resend: false });
     expect(
       planWriterShadowPreviewRequest({
-        vercelEnv: "preview",
         presentationMode: "internal_preview",
         existingStatus: "queued",
       }),
     ).toEqual({ action: "return_existing", resend: true });
   });
 
+  it("re-enqueues after a non-terminal skipped record", () => {
+    expect(
+      planWriterShadowPreviewRequest({
+        presentationMode: "internal_preview",
+        existingStatus: "skipped",
+      }).action,
+    ).toBe("enqueue");
+  });
+
   it("blocks approved presentation before enqueue", () => {
     expect(
       planWriterShadowPreviewRequest({
-        vercelEnv: "preview",
         presentationMode: "approved",
         existingStatus: null,
       }).action,

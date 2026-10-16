@@ -12,11 +12,15 @@ import { buildDeterministicHiveUiTree } from "../build-deterministic-hive-ui-tre
 import { projectCanonicalStudyReport } from "../project-canonical-study-report.js";
 import { WriterShadowOwnerError } from "./assert-writer-shadow-owner.js";
 import { buildHiveWriterPresentationBinding } from "./build-hive-writer-model-input.js";
+import { hiveWriterShadowRecordPath } from "@hiveforyou/shared/hive-artifact-paths";
+
+import { buildHiveWriterShadowIdempotencyKey } from "./hive-writer-idempotency.js";
 import {
   enqueueHiveWriterShadowPreviewRequest,
   executeHiveWriterShadowRequest,
   type WriterShadowObjectGateway,
 } from "./execute-hive-writer-shadow.js";
+import { buildHiveWriterShadowMarkerRecord } from "./run-hive-writer-shadow.js";
 import { resolveHiveWriterDomainBinding } from "./resolve-hive-writer-domain-binding.js";
 import type { HiveWriterHttpClient } from "./create-writer-http-client.js";
 
@@ -317,7 +321,7 @@ describe("enqueueHiveWriterShadowPreviewRequest", () => {
     expect(dispatchRequested).toHaveBeenCalledTimes(2);
   });
 
-  it("skips enqueue on Vercel production without a feature flag", async () => {
+  it("enqueues internal preview on Vercel production", async () => {
     const artifact = sampleArtifact();
     const dispatchRequested = vi.fn(async () => {});
     const record = await enqueueHiveWriterShadowPreviewRequest({
@@ -330,8 +334,72 @@ describe("enqueueHiveWriterShadowPreviewRequest", () => {
       loadArtifact: async () => artifact,
       dispatchRequested,
     });
-    expect(record.status).toBe("skipped");
-    expect(record.validation.errorCodes).toContain("SHADOW_DISABLED");
+    expect(record.status).toBe("queued");
+    expect(dispatchRequested).toHaveBeenCalledTimes(1);
+  });
+
+  it("replaces a prior SHADOW_DISABLED skip with a new queued request", async () => {
+    const artifact = sampleArtifact();
+    const gateway = memoryGateway(OWNER);
+    const projection = projectCanonicalStudyReport({
+      artifact,
+      audience: "customer",
+      customerProReportsPermitted: false,
+      packApprovalLabel: CANONICAL_STUDY_DEBUG_PACK_APPROVAL,
+    });
+    const domainBinding = resolveHiveWriterDomainBinding({ artifact, projection });
+    const idempotencyKey = buildHiveWriterShadowIdempotencyKey({
+      caseId: projection.caseId,
+      studyRunId: projection.studyRunId,
+      audience: projection.audience,
+      packContentSha256: domainBinding.packContentSha256,
+      reportProjectionContentSha256: domainBinding.reportProjectionContentSha256,
+    });
+    const skipped = buildHiveWriterShadowMarkerRecord({
+      status: "skipped",
+      idempotencyKey,
+      projection,
+      projectionHash: domainBinding.reportProjectionContentSha256,
+      errorCodes: ["SHADOW_DISABLED"],
+      message: "Shadow mode disabled.",
+    });
+    const path = hiveWriterShadowRecordPath(OWNER, artifact.studyRunId, "customer", idempotencyKey);
+    await gateway.uploadObject(
+      "document-pages",
+      path,
+      new TextEncoder().encode(JSON.stringify(skipped)),
+    );
+    const dispatchRequested = vi.fn(async () => {});
+    const record = await enqueueHiveWriterShadowPreviewRequest({
+      claimedUserId: OWNER,
+      caseId: artifact.caseId,
+      studyRunId: artifact.studyRunId,
+      audience: "customer",
+      env: { VERCEL_ENV: "production" },
+      gateway,
+      loadArtifact: async () => artifact,
+      dispatchRequested,
+    });
+    expect(record.status).toBe("queued");
+    expect(record.validation.errorCodes).toContain("QUEUED");
+    expect(dispatchRequested).toHaveBeenCalledTimes(1);
+  });
+
+  it("rejects a mismatched session user before enqueue", async () => {
+    const artifact = sampleArtifact();
+    const dispatchRequested = vi.fn(async () => {});
+    await expect(
+      enqueueHiveWriterShadowPreviewRequest({
+        claimedUserId: "someone-else",
+        caseId: artifact.caseId,
+        studyRunId: artifact.studyRunId,
+        audience: "customer",
+        env: { VERCEL_ENV: "production" },
+        gateway: memoryGateway(OWNER),
+        loadArtifact: async () => artifact,
+        dispatchRequested,
+      }),
+    ).rejects.toBeInstanceOf(WriterShadowOwnerError);
     expect(dispatchRequested).not.toHaveBeenCalled();
   });
 

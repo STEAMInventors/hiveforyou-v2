@@ -176,7 +176,6 @@ export async function enqueueHiveWriterShadowPreviewRequest(input: {
   });
   const existing = await persistence.load(idempotencyKey);
   const plan = planWriterShadowPreviewRequest({
-    vercelEnv: input.env.VERCEL_ENV,
     presentationMode,
     existingStatus: existing?.status ?? null,
   });
@@ -194,20 +193,6 @@ export async function enqueueHiveWriterShadowPreviewRequest(input: {
       await input.dispatchRequested(dispatchPayload);
     }
     return existing;
-  }
-
-  if (plan.action === "skip_disabled") {
-    return saveUnlessTerminal(
-      persistence,
-      buildHiveWriterShadowMarkerRecord({
-        status: "skipped",
-        idempotencyKey,
-        projection,
-        projectionHash: domainBinding.reportProjectionContentSha256,
-        errorCodes: ["SHADOW_DISABLED"],
-        message: "Shadow mode disabled.",
-      }),
-    );
   }
 
   if (plan.action === "block_publication") {
