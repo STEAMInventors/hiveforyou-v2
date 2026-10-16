@@ -2,7 +2,6 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
 import { hiveMonorepoRoot } from "./resolve-hive-monorepo-root.js";
-import { proposalPackSnapshotsDir } from "./resolve-approved-proposal-domain-pack.js";
 
 export const PROPOSAL_PACK_SNAPSHOT_MANIFEST_SCHEMA =
   "hive.domain-pack.proposal-snapshots/1" as const;
@@ -200,8 +199,18 @@ export function proposalPackSnapshotPathForIdentity(
   identity: ProposalPackIdentity,
   env: Record<string, string | undefined> = process.env,
 ): string {
+  const override = env.HIVE_PROPOSAL_PACK_SNAPSHOTS_DIR?.trim();
+  const fileName = `${identity.packContentSha256.toLowerCase()}.json`;
+  if (override) {
+    return join(override, fileName);
+  }
+  const packId = identity.packId.trim();
   return join(
-    proposalPackSnapshotsDir(env),
-    `${identity.packContentSha256.toLowerCase()}.json`,
+    hiveMonorepoRoot(),
+    "brain",
+    "domain-packs",
+    packId,
+    "snapshots",
+    fileName,
   );
 }

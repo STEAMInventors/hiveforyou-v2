@@ -1,4 +1,4 @@
-import { existsSync } from "node:fs";
+import { existsSync, readdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -10,8 +10,27 @@ export const PROPOSAL_PACK_RELATIVE_PATH = join(
   "iep-pack.v0.3.proposed.json",
 );
 
+function hasProposalPackSnapshotRegistryAtRoot(root: string): boolean {
+  const domainPacksDir = join(root, "brain", "domain-packs");
+  if (!existsSync(domainPacksDir)) {
+    return false;
+  }
+  for (const entry of readdirSync(domainPacksDir, { withFileTypes: true })) {
+    if (!entry.isDirectory() || entry.name.startsWith("_")) {
+      continue;
+    }
+    if (existsSync(join(domainPacksDir, entry.name, "snapshots", "manifest.json"))) {
+      return true;
+    }
+  }
+  return false;
+}
+
 function hasProposalPackAtRoot(root: string): boolean {
-  return existsSync(join(root, PROPOSAL_PACK_RELATIVE_PATH));
+  return (
+    existsSync(join(root, PROPOSAL_PACK_RELATIVE_PATH)) ||
+    hasProposalPackSnapshotRegistryAtRoot(root)
+  );
 }
 
 function walkUpForProposalPack(startDir: string, maxDepth = 16): string | null {

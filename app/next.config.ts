@@ -2,10 +2,17 @@ import type { NextConfig } from "next";
 import path from "path";
 import { fileURLToPath } from "url";
 
+import {
+  collectProposalPackSnapshotBrainRelativePaths,
+  toAppRelativeTracePaths,
+} from "./src/lib/deployment/collect-proposal-pack-snapshot-trace-paths";
+
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 /** Temporary for staging: allow Vercel deploy while shared type debt is cleared. */
 const allowTypeErrors = process.env.HIVE_ALLOW_TYPE_ERRORS === "1";
+
+const REPO_ROOT = path.join(__dirname, "..");
 
 /**
  * Pack-driven study idempotency reads this file at queue time (see queueCanonicalStudyRun).
@@ -21,23 +28,20 @@ const packDrivenProposalPackTracePath = path.posix.join(
   "iep-pack.v0.3.proposed.json",
 );
 
-/** Reader envelope pin for persisted extractions (content-addressed snapshot). */
-const readerHistoricalPackSnapshotHash =
-  "c2baa0439d32496a3110f5388f6048395a9f4c8fdce79b3d0cec36ae6b9a7775";
-
-const readerHistoricalPackSnapshotTracePath = path.posix.join(
-  "..",
-  "brain",
-  "domain-packs",
-  "iep",
-  "snapshots",
-  `${readerHistoricalPackSnapshotHash}.json`,
+const proposalPackSnapshotBrainPaths = collectProposalPackSnapshotBrainRelativePaths(REPO_ROOT);
+const proposalPackSnapshotTracePaths = toAppRelativeTracePaths(
+  __dirname,
+  proposalPackSnapshotBrainPaths,
+  REPO_ROOT,
 );
+
+/** Writer binding reads verified snapshot registries on these routes (server-only). */
+const hiveWriterShadowRouteTracePaths = [...proposalPackSnapshotTracePaths] as const;
 
 /** Canonical Study Inspector resolves envelope pins from snapshots before the live proposed pack. */
 const canonicalStudyRunPackTracePaths = [
   packDrivenProposalPackTracePath,
-  readerHistoricalPackSnapshotTracePath,
+  ...proposalPackSnapshotTracePaths,
 ] as const;
 
 const nextConfig: NextConfig = {
@@ -58,6 +62,9 @@ const nextConfig: NextConfig = {
   outputFileTracingIncludes: {
     "/api/intake/runs/[intakeRunId]/study": [packDrivenProposalPackTracePath],
     "/api/case/[caseId]/canonical-study/run": [...canonicalStudyRunPackTracePaths],
+    "/api/case/[caseId]/hive-writer-shadow/run": [...hiveWriterShadowRouteTracePaths],
+    "/api/case/[caseId]/hive-writer-shadow/status": [...hiveWriterShadowRouteTracePaths],
+    "/api/case/[caseId]/hive-writer-shadow/ui-tree": [...hiveWriterShadowRouteTracePaths],
   },
   transpilePackages: [
     "@hiveforyou/shared",

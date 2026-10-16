@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync, mkdtempSync, rmSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync, mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
@@ -9,7 +9,7 @@ import {
 import { describe, expect, it } from "vitest";
 
 import { SYNTHETIC_PACK } from "./canonical-study/test-fixtures.js";
-import { hiveMonorepoRoot } from "./resolve-hive-monorepo-root.js";
+import { hiveMonorepoRoot, resolveHiveMonorepoRoot } from "./resolve-hive-monorepo-root.js";
 import {
   CANONICAL_STUDY_DEBUG_PACK_APPROVAL,
   PackNotAvailableError,
@@ -183,6 +183,36 @@ describe("resolveDebugCanonicalStudyDomainPack", () => {
       }
     } finally {
       rmSync(dir, { recursive: true, force: true });
+    }
+  });
+});
+
+describe("resolveHiveMonorepoRoot", () => {
+  it("finds monorepo root from a snapshot registry without the live proposed pack file", () => {
+    const tempRoot = mkdtempSync(join(tmpdir(), "hive-monorepo-root-"));
+    try {
+      const manifestDir = join(tempRoot, "brain", "domain-packs", "iep", "snapshots");
+      mkdirSync(manifestDir, { recursive: true });
+      writeFileSync(
+        join(manifestDir, "manifest.json"),
+        JSON.stringify({
+          schemaVersion: "hive.domain-pack.proposal-snapshots/1",
+          snapshots: [],
+        }),
+        "utf8",
+      );
+
+      const nestedCwd = join(tempRoot, "app", "vercel", "path0");
+      mkdirSync(nestedCwd, { recursive: true });
+      const previousCwd = process.cwd();
+      try {
+        process.chdir(nestedCwd);
+        expect(resolveHiveMonorepoRoot()).toBe(tempRoot);
+      } finally {
+        process.chdir(previousCwd);
+      }
+    } finally {
+      rmSync(tempRoot, { recursive: true, force: true });
     }
   });
 });
