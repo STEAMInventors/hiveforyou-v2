@@ -14,20 +14,17 @@ export async function emitWriterShadowRequestedEvent(input: {
   caseId: string;
   studyRunId: string;
   audience: CanonicalStudyReportAudience;
-  idempotencyKey: string;
+  writerRunId: string;
 }): Promise<void> {
   const data = hiveWriterShadowRequestedEventDataSchema.parse({
     userId: input.userId,
     caseId: input.caseId,
     studyRunId: input.studyRunId,
     audience: input.audience,
+    writerRunId: input.writerRunId,
   });
   await inngest.send({
-    id: buildHiveWriterShadowRequestedEventId({
-      studyRunId: input.studyRunId,
-      audience: input.audience,
-      idempotencyKey: input.idempotencyKey,
-    }),
+    id: buildHiveWriterShadowRequestedEventId(input.writerRunId),
     name: HIVE_EVENT_WRITER_SHADOW_REQUESTED,
     data,
   });

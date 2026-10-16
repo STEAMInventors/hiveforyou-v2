@@ -3,32 +3,28 @@ import "server-only";
 import {
   buildHiveWriterShadowIdempotencyKey,
   enqueueHiveWriterShadowPreviewRequest,
-  isHiveWriterShadowTerminalStatus,
-  loadDeterministicCanonicalStudyArtifact,
+  loadLatestAcceptedWriterShadowRecord,
+  loadWriterShadowRecordByRunId,
   projectCanonicalStudyReport,
   resolveHiveWriterDomainBinding,
   resolveWriterHiveUiTreeForPreview,
-  type HiveWriterShadowPersistence,
   type WriterHiveUiPreviewResolution,
 } from "@hiveforyou/core";
 import type { CanonicalStudyDebugArtifactMetadata } from "@hiveforyou/core";
 import type { CanonicalStudyReportAudience } from "@hiveforyou/shared/canonical-study-report-projection";
-import { hiveWriterShadowRecordPath } from "@hiveforyou/shared/hive-artifact-paths";
-import {
-  parseHiveWriterShadowRecord,
-  type HiveWriterShadowRecord,
-} from "@hiveforyou/shared/hive-writer-proposal";
+import type { HiveWriterShadowRecord } from "@hiveforyou/shared/hive-writer-proposal";
 
 import { loadDeterministicCanonicalStudyArtifactForSession } from "@/lib/canonical-debug/run-deterministic-canonical-study-server";
 import { emitWriterShadowRequestedEvent } from "@/lib/hive-writer/emit-writer-shadow-requested";
 import { SupabaseStudyContextRepository } from "@/lib/persistence/supabase-repositories";
 import { SupabaseStudyArtifactRepository } from "@/lib/persistence/supabase-study-artifacts";
 import { createAuthenticatedHiveGateway, getAuthenticatedUserId } from "@/lib/supabase/server";
-import { requireSessionUserId } from "@hiveforyou/core";
+import { loadDeterministicCanonicalStudyArtifact, requireSessionUserId } from "@hiveforyou/core";
 
 const STORAGE_BUCKET = "document-pages";
 
 export type HiveWriterShadowDiagnostic = {
+  writerRunId: string;
   status: HiveWriterShadowRecord["status"];
   idempotencyKey: string;
   validation: HiveWriterShadowRecord["validation"];
@@ -38,55 +34,9 @@ export type HiveWriterShadowDiagnostic = {
   >;
 };
 
-function createShadowPersistence(input: {
-  userId: string;
-  studyRunId: string;
-  audience: CanonicalStudyReportAudience;
-  gateway: Awaited<ReturnType<typeof createAuthenticatedHiveGateway>>;
-}): HiveWriterShadowPersistence {
-  return {
-    load: async (idempotencyKey) => {
-      const path = hiveWriterShadowRecordPath(
-        input.userId,
-        input.studyRunId,
-        input.audience,
-        idempotencyKey,
-      );
-      try {
-        const bytes = await input.gateway.downloadObject(STORAGE_BUCKET, path);
-        return parseHiveWriterShadowRecord(JSON.parse(new TextDecoder().decode(bytes)));
-      } catch {
-        return null;
-      }
-    },
-    save: async (record) => {
-      const path = hiveWriterShadowRecordPath(
-        input.userId,
-        input.studyRunId,
-        record.audience,
-        record.idempotencyKey,
-      );
-      try {
-        const existingBytes = await input.gateway.downloadObject(STORAGE_BUCKET, path);
-        const existing = parseHiveWriterShadowRecord(
-          JSON.parse(new TextDecoder().decode(existingBytes)),
-        );
-        if (isHiveWriterShadowTerminalStatus(existing.status)) {
-          return;
-        }
-      } catch {
-        // Missing object — first write for this idempotency key.
-      }
-      const bytes = new TextEncoder().encode(JSON.stringify(record));
-      await input.gateway.uploadObject(STORAGE_BUCKET, path, bytes, "application/json", {
-        upsert: true,
-      });
-    },
-  };
-}
-
 function toHiveWriterShadowDiagnostic(record: HiveWriterShadowRecord): HiveWriterShadowDiagnostic {
   return {
+    writerRunId: record.writerRunId,
     status: record.status,
     idempotencyKey: record.idempotencyKey,
     validation: record.validation,
@@ -96,6 +46,41 @@ function toHiveWriterShadowDiagnostic(record: HiveWriterShadowRecord): HiveWrite
       projectionHash: record.observability.projectionHash,
     },
   };
+}
+
+async function loadProjectionBindingForSession(input: {
+  caseId: string;
+  studyRunId: string;
+  audience: CanonicalStudyReportAudience;
+}): Promise<{
+  userId: string;
+  gateway: Awaited<ReturnType<typeof createAuthenticatedHiveGateway>>;
+  artifact: Awaited<ReturnType<typeof loadDeterministicCanonicalStudyArtifactForSession>>;
+  projection: ReturnType<typeof projectCanonicalStudyReport>;
+  idempotencyKey: string;
+}> {
+  const gateway = await createAuthenticatedHiveGateway();
+  const userId = requireSessionUserId(await getAuthenticatedUserId());
+  const artifact = await loadDeterministicCanonicalStudyArtifactForSession({
+    caseId: input.caseId,
+    studyRunId: input.studyRunId,
+  });
+  const metadata = artifact as typeof artifact & CanonicalStudyDebugArtifactMetadata;
+  const projection = projectCanonicalStudyReport({
+    artifact,
+    audience: input.audience,
+    customerProReportsPermitted: metadata.customerProReportsPermitted,
+    packApprovalLabel: metadata.packApprovalLabel,
+  });
+  const domainBinding = resolveHiveWriterDomainBinding({ artifact, projection });
+  const idempotencyKey = buildHiveWriterShadowIdempotencyKey({
+    caseId: projection.caseId,
+    studyRunId: projection.studyRunId,
+    audience: projection.audience,
+    packContentSha256: domainBinding.packContentSha256,
+    reportProjectionContentSha256: domainBinding.reportProjectionContentSha256,
+  });
+  return { userId, gateway, artifact, projection, idempotencyKey };
 }
 
 /** Enqueue a Writer shadow run. The Next.js process does not call hive-agents. */
@@ -134,96 +119,38 @@ export async function loadHiveWriterShadowDiagnosticForSession(input: {
   caseId: string;
   studyRunId: string;
   audience: CanonicalStudyReportAudience;
+  writerRunId: string;
 }): Promise<HiveWriterShadowDiagnostic | null> {
-  const gateway = await createAuthenticatedHiveGateway();
-  const userId = requireSessionUserId(await getAuthenticatedUserId());
-  const artifact = await loadDeterministicCanonicalStudyArtifactForSession({
-    caseId: input.caseId,
-    studyRunId: input.studyRunId,
-  });
-  const metadata = artifact as typeof artifact & CanonicalStudyDebugArtifactMetadata;
-  const projection = projectCanonicalStudyReport({
-    artifact,
-    audience: input.audience,
-    customerProReportsPermitted: metadata.customerProReportsPermitted,
-    packApprovalLabel: metadata.packApprovalLabel,
-  });
-  const domainBinding = resolveHiveWriterDomainBinding({ artifact, projection });
-  const idempotencyKey = buildHiveWriterShadowIdempotencyKey({
-    caseId: projection.caseId,
-    studyRunId: projection.studyRunId,
-    audience: projection.audience,
-    packContentSha256: domainBinding.packContentSha256,
-    reportProjectionContentSha256: domainBinding.reportProjectionContentSha256,
-  });
-  const path = hiveWriterShadowRecordPath(userId, input.studyRunId, input.audience, idempotencyKey);
-  try {
-    const bytes = await gateway.downloadObject(STORAGE_BUCKET, path);
-    const record = parseHiveWriterShadowRecord(JSON.parse(new TextDecoder().decode(bytes)));
-    return {
-      status: record.status,
-      idempotencyKey: record.idempotencyKey,
-      validation: record.validation,
-      observability: {
-        durationMs: record.observability.durationMs,
-        modelIdentifier: record.observability.modelIdentifier,
-        projectionHash: record.observability.projectionHash,
-      },
-    };
-  } catch {
-    return null;
-  }
-}
-
-async function loadShadowRecordForSession(input: {
-  caseId: string;
-  studyRunId: string;
-  audience: CanonicalStudyReportAudience;
-}): Promise<{
-  artifact: Awaited<ReturnType<typeof loadDeterministicCanonicalStudyArtifactForSession>>;
-  projection: ReturnType<typeof projectCanonicalStudyReport>;
-  record: HiveWriterShadowRecord | null;
-}> {
-  const gateway = await createAuthenticatedHiveGateway();
-  const userId = requireSessionUserId(await getAuthenticatedUserId());
-  const artifact = await loadDeterministicCanonicalStudyArtifactForSession({
-    caseId: input.caseId,
-    studyRunId: input.studyRunId,
-  });
-  const metadata = artifact as typeof artifact & CanonicalStudyDebugArtifactMetadata;
-  const projection = projectCanonicalStudyReport({
-    artifact,
-    audience: input.audience,
-    customerProReportsPermitted: metadata.customerProReportsPermitted,
-    packApprovalLabel: metadata.packApprovalLabel,
-  });
-  const domainBinding = resolveHiveWriterDomainBinding({ artifact, projection });
-  const idempotencyKey = buildHiveWriterShadowIdempotencyKey({
-    caseId: projection.caseId,
-    studyRunId: projection.studyRunId,
-    audience: projection.audience,
-    packContentSha256: domainBinding.packContentSha256,
-    reportProjectionContentSha256: domainBinding.reportProjectionContentSha256,
-  });
-  const persistence = createShadowPersistence({
+  const { userId, gateway } = await loadProjectionBindingForSession(input);
+  const record = await loadWriterShadowRecordByRunId({
+    gateway,
+    bucket: STORAGE_BUCKET,
     userId,
     studyRunId: input.studyRunId,
     audience: input.audience,
-    gateway,
+    writerRunId: input.writerRunId,
   });
-  const record = await persistence.load(idempotencyKey);
-  return { artifact, projection, record };
+  return record ? toHiveWriterShadowDiagnostic(record) : null;
 }
 
 export type WriterHiveUiTreePreviewPayload = WriterHiveUiPreviewResolution;
 
-/** Read-only: loads persisted shadow record and re-validates; never invokes the Writer model. */
+/** Read-only: latest accepted Writer layout; never invokes the Writer model. */
 export async function loadWriterHiveUiTreePreviewForSession(input: {
   caseId: string;
   studyRunId: string;
   audience: CanonicalStudyReportAudience;
 }): Promise<WriterHiveUiTreePreviewPayload> {
-  const { artifact, projection, record } = await loadShadowRecordForSession(input);
+  const { userId, gateway, artifact, projection, idempotencyKey } =
+    await loadProjectionBindingForSession(input);
+  const record = await loadLatestAcceptedWriterShadowRecord({
+    gateway,
+    bucket: STORAGE_BUCKET,
+    userId,
+    studyRunId: input.studyRunId,
+    audience: input.audience,
+    projectionBindingKey: idempotencyKey,
+  });
   return resolveWriterHiveUiTreeForPreview({
     artifact,
     projection,

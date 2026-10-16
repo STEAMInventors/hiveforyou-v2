@@ -209,8 +209,8 @@ export function HiveExtractionReadyExperience({
                 Explore your hive
               </h3>
               <p className="mb-6 text-[15px] leading-relaxed text-customerHive-on-surface-variant">
-                Run the deterministic canonical study on your extracted documents to view the full
-                JSON artifact.
+                Generate the canonical study from your extracted documents, then create Customer
+                or Pro reports with validated source chips.
               </p>
               {error ? (
                 <p className="mb-4 text-sm text-red-700" role="alert">
@@ -225,10 +225,11 @@ export function HiveExtractionReadyExperience({
                 className="mb-3 flex w-full items-center justify-center gap-2 rounded-xl bg-customerHive-secondary px-6 py-3.5 text-center text-base font-medium text-white shadow-sm transition-opacity hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 <span>
-                  Explore{" "}
-                  {progress?.subjectFirstName
-                    ? `${progress.subjectFirstName}'s hive`
-                    : "your hive"}
+                  {exploreState === "running"
+                    ? "Generating study…"
+                    : `Generate study${
+                        progress?.subjectFirstName ? ` for ${progress.subjectFirstName}` : ""
+                      }`}
                 </span>
                 <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
               </button>

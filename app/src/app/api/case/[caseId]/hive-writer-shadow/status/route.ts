@@ -22,6 +22,7 @@ export async function GET(request: Request, context: RouteContext) {
   const { caseId } = await context.params;
   const url = new URL(request.url);
   const studyRunId = url.searchParams.get("studyRunId")?.trim();
+  const writerRunId = url.searchParams.get("writerRunId")?.trim();
   const audience = parseAudience(url.searchParams.get("audience"));
 
   if (!studyRunId) {
@@ -36,14 +37,21 @@ export async function GET(request: Request, context: RouteContext) {
       { status: 400 },
     );
   }
+  if (!writerRunId) {
+    return NextResponse.json(
+      { error: "WRITER_RUN_ID_REQUIRED", message: "writerRunId query parameter is required." },
+      { status: 400 },
+    );
+  }
 
   try {
     const diagnostic = await loadHiveWriterShadowDiagnosticForSession({
       caseId,
       studyRunId,
       audience,
+      writerRunId,
     });
-    return NextResponse.json(diagnostic ?? { status: "unavailable" });
+    return NextResponse.json(diagnostic ?? { status: "unavailable", writerRunId });
   } catch (error) {
     if (error instanceof UnauthenticatedError) {
       return NextResponse.json(

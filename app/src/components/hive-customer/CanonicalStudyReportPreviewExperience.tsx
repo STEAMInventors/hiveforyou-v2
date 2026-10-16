@@ -464,7 +464,7 @@ export function CanonicalStudyReportPreviewExperience({
         <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl font-semibold text-customerHive-on-surface">
-              {audience === "pro" ? "Pro report preview" : "Customer report preview"}
+              {audience === "pro" ? "Pro report" : "Customer report"}
             </h1>
             <p className="mt-1 font-mono text-xs text-customerHive-on-surface-muted">
               studyRunId={studyRunId || "—"}
@@ -482,11 +482,13 @@ export function CanonicalStudyReportPreviewExperience({
             >
               {generating
                 ? generation?.status === "queued"
-                  ? "Writer layout queued…"
+                  ? "Report queued…"
                   : generation?.status === "processing"
-                    ? "Writer layout processing…"
-                    : "Generating Writer layout…"
-                : "Generate Writer layout"}
+                    ? "Report processing…"
+                    : "Generating report…"
+                : audience === "pro"
+                  ? "Generate Pro report"
+                  : "Generate Customer report"}
             </button>
             <Link
               href={jsonHref}
