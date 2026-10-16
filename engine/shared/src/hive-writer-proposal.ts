@@ -25,7 +25,14 @@ export const HIVE_WRITER_IMPLEMENTATION_VERSION = "1" as const;
 
 export const HIVE_WRITER_SHADOW_RECORD_SCHEMA_VERSION = "hive-writer-shadow-record/1" as const;
 
-export type HiveWriterShadowStatus = "accepted" | "rejected" | "failed" | "skipped" | "unavailable";
+export type HiveWriterShadowStatus =
+  | "queued"
+  | "processing"
+  | "accepted"
+  | "rejected"
+  | "failed"
+  | "skipped"
+  | "unavailable";
 
 const sha256HexSchema = z.string().length(64).regex(/^[a-f0-9]{64}$/);
 
@@ -186,7 +193,15 @@ export function parseHiveWriterShadowRecord(value: unknown): HiveWriterShadowRec
       caseId: z.string().min(1),
       studyRunId: z.string().min(1),
       audience: z.enum(["customer", "pro"]),
-      status: z.enum(["accepted", "rejected", "failed", "skipped", "unavailable"]),
+      status: z.enum([
+        "queued",
+        "processing",
+        "accepted",
+        "rejected",
+        "failed",
+        "skipped",
+        "unavailable",
+      ]),
       observability: z.object({
         studyRunId: z.string().min(1),
         audience: z.enum(["customer", "pro"]),

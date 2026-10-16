@@ -16,6 +16,7 @@ import {
 } from "./build-hive-writer-model-input.js";
 import { buildHiveWriterShadowIdempotencyKey } from "./hive-writer-idempotency.js";
 import type { HiveWriterHttpClient } from "./create-writer-http-client.js";
+import { isHiveWriterShadowTerminalStatus } from "./plan-writer-shadow-dispatch.js";
 import {
   HiveWriterDomainBindingError,
   resolveHiveWriterDomainBinding,
@@ -73,7 +74,7 @@ function validationMessage(error: unknown): string {
 }
 
 function isTerminalReuseRecord(record: HiveWriterShadowRecord): boolean {
-  return record.status === "accepted" || record.status === "rejected" || record.status === "failed";
+  return isHiveWriterShadowTerminalStatus(record.status);
 }
 
 function skippedRecord(input: {
@@ -251,6 +252,42 @@ export async function runHiveWriterShadow(
 
   await input.persistence.save(record);
   return record;
+}
+
+export function buildHiveWriterShadowMarkerRecord(input: {
+  status: "queued" | "processing" | "skipped" | "failed";
+  idempotencyKey: string;
+  projection: CanonicalStudyReportProjection;
+  projectionHash: string;
+  errorCodes: string[];
+  message: string | null;
+}): HiveWriterShadowRecord {
+  return {
+    schemaVersion: HIVE_WRITER_SHADOW_RECORD_SCHEMA_VERSION,
+    idempotencyKey: input.idempotencyKey,
+    caseId: input.projection.caseId,
+    studyRunId: input.projection.studyRunId,
+    audience: input.projection.audience,
+    status: input.status,
+    observability: {
+      studyRunId: input.projection.studyRunId,
+      audience: input.projection.audience,
+      projectionHash: input.projectionHash,
+      catalogVersion: "1",
+      writerImplementationVersion: "1",
+      proposalSchemaVersion: "hive-writer-proposal/1",
+      modelIdentifier: null,
+      durationMs: 0,
+      tokenUsage: null,
+    },
+    validation: {
+      ok: false,
+      errorCodes: input.errorCodes,
+      message: input.message,
+    },
+    proposal: null,
+    hiveUiTree: null,
+  };
 }
 
 export function readHiveWriterShadowModeEnabled(

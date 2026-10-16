@@ -133,6 +133,20 @@ describe("resolveWriterHiveUiTreeForPreview", () => {
     expect(resolution.fallbackReason?.code).toBe("SHADOW_DISABLED");
   });
 
+  it("does not treat a queued record as a validated writer layout", async () => {
+    const { artifact, projection, record } = await acceptedRecord();
+    const queued = { ...record, status: "queued" as const, hiveUiTree: null, proposal: null };
+    const resolution = resolveWriterHiveUiTreeForPreview({
+      artifact,
+      projection,
+      record: queued,
+      shadowModeEnabled: true,
+    });
+    expect(resolution.layout).toBe("deterministic_fallback");
+    expect(resolution.fallbackReason?.code).toBe("WRITER_IN_FLIGHT");
+    expect(resolution.hiveUiTree).toBeNull();
+  });
+
   it("falls back when no record exists", () => {
     const { artifact, projection } = buildCustomerProjection();
     const resolution = resolveWriterHiveUiTreeForPreview({
