@@ -84,6 +84,7 @@ function toHiveWriterShadowDiagnostic(record: HiveWriterShadowRecord): HiveWrite
   };
 }
 
+/** Enqueue a Writer shadow run. The Next.js process does not call hive-agents. */
 export async function runHiveWriterShadowForSession(input: {
   caseId: string;
   studyRunId: string;
