@@ -19,6 +19,7 @@ import {
 import { createAuthenticatedHiveGateway, getAuthenticatedUserId } from "@/lib/supabase/server";
 
 import {
+  intakeFilenameBySourceId,
   mergeInspectorDocumentsWithIntakeInventory,
   mergeIntakeIntoFallbackSourceDocumentIds,
   type IntakeSourceDocumentInventoryRow,
@@ -137,6 +138,8 @@ export async function loadHiveExtractionProgressForSession(input: {
   const failedDocumentIds = artifacts.terminalArtifact?.failedDocumentIds ?? [];
   const succeededDocumentIds = artifacts.terminalArtifact?.succeededDocumentIds ?? [];
 
+  const filenameBySourceId = intakeFilenameBySourceId(intakeInventory);
+
   const documents = inspectorDocuments.map((doc) =>
     mapInspectorDocumentToCustomerRow({
       doc,
@@ -145,6 +148,7 @@ export async function loadHiveExtractionProgressForSession(input: {
       failedDocumentIds,
       succeededDocumentIds,
       documentDateBySourceId,
+      filenameBySourceId,
     }),
   );
 

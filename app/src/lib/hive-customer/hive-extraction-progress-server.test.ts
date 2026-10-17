@@ -154,9 +154,16 @@ describe("loadHiveExtractionProgressForSession", () => {
     expect(view.documents[0]).toMatchObject({
       sourceDocumentId: SRC_1,
       label: "Annual_IEP.pdf",
+      filename: "Annual_IEP.pdf",
+      documentTypeLabel: null,
       uiStatus: "waiting",
       dateLabel: null,
     });
-    expect(view.documents[1]?.label).toBe("Psychoed_Report.pdf");
+    expect(view.documents[1]).toMatchObject({
+      label: "Psychoed_Report.pdf",
+      filename: "Psychoed_Report.pdf",
+      documentTypeLabel: null,
+      uiStatus: "waiting",
+    });
   });
 });
