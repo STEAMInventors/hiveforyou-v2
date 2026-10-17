@@ -10,12 +10,14 @@ type LoginRegisterPlaceholderProps = {
   onBack: () => void;
   onSessionAvailable: () => void;
   sessionRecheckBusy?: boolean;
+  sessionContinueNotice?: string | null;
 };
 
 export function LoginRegisterPlaceholder({
   onBack,
   onSessionAvailable,
   sessionRecheckBusy = false,
+  sessionContinueNotice = null,
 }: LoginRegisterPlaceholderProps) {
   const [tab, setTab] = useState<AuthTab>("login");
 
@@ -172,11 +174,22 @@ export function LoginRegisterPlaceholder({
           type="button"
           data-testid="landing-auth-session-continue"
           disabled={sessionRecheckBusy}
+          aria-busy={sessionRecheckBusy}
           className="h-11 rounded-[10px] border border-[#0D0D0D] bg-white text-sm font-semibold text-[#0D0D0D] transition-colors hover:bg-[#F8F9FA] disabled:cursor-wait disabled:opacity-60"
           onClick={() => onSessionAvailable()}
         >
           {sessionRecheckBusy ? "Checking sign-in…" : "Continue with your account"}
         </button>
+
+        {sessionContinueNotice ? (
+          <p
+            role="alert"
+            data-testid="landing-auth-session-continue-notice"
+            className="m-0 text-sm leading-snug text-[#3C4043]"
+          >
+            {sessionContinueNotice}
+          </p>
+        ) : null}
 
         <button
           type="button"

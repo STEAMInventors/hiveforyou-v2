@@ -241,6 +241,76 @@ describe("UploadExperience", () => {
     expect(commitStagedDocuments).not.toHaveBeenCalled();
   });
 
+  it("shows loading feedback while rechecking session from the auth placeholder", async () => {
+    vi.mocked(readClientSessionStatus)
+      .mockResolvedValueOnce("unauthenticated")
+      .mockImplementation(
+        () =>
+          new Promise((resolve) => {
+            setTimeout(() => resolve("unauthenticated"), 50);
+          }),
+      );
+    const { container } = renderUploadExperience();
+    submitComposerFlow(container);
+
+    await waitFor(() => {
+      expect(screen.getByTestId("landing-auth-placeholder")).toBeInTheDocument();
+    });
+    fireEvent.click(screen.getByTestId("landing-auth-session-continue"));
+
+    expect(screen.getByTestId("landing-auth-session-continue")).toHaveTextContent(
+      /checking sign-in/i,
+    );
+    expect(screen.getByTestId("landing-auth-session-continue")).toBeDisabled();
+
+    await waitFor(() => {
+      expect(screen.getByTestId("landing-auth-session-continue-notice")).toHaveTextContent(
+        /not signed in/i,
+      );
+    });
+    expect(screen.getByTestId("landing-auth-placeholder")).toBeInTheDocument();
+    expect(screen.queryByTestId("landing-hive-handoff")).not.toBeInTheDocument();
+  });
+
+  it("shows an inline notice when Continue is clicked without a session", async () => {
+    vi.mocked(readClientSessionStatus).mockResolvedValue("unauthenticated");
+    const { container } = renderUploadExperience();
+    submitComposerFlow(container);
+
+    await waitFor(() => {
+      expect(screen.getByTestId("landing-auth-placeholder")).toBeInTheDocument();
+    });
+    fireEvent.click(screen.getByTestId("landing-auth-session-continue"));
+
+    await waitFor(() => {
+      expect(screen.getByTestId("landing-auth-session-continue-notice")).toHaveTextContent(
+        "You're not signed in. Login and registration are not connected yet.",
+      );
+    });
+    expect(screen.getByTestId("landing-auth-placeholder")).toBeInTheDocument();
+    expect(screen.queryByTestId("landing-hive-handoff")).not.toBeInTheDocument();
+  });
+
+  it("shows an inline notice when session recheck fails", async () => {
+    vi.mocked(readClientSessionStatus)
+      .mockResolvedValueOnce("unauthenticated")
+      .mockResolvedValueOnce("error");
+    const { container } = renderUploadExperience();
+    submitComposerFlow(container);
+
+    await waitFor(() => {
+      expect(screen.getByTestId("landing-auth-placeholder")).toBeInTheDocument();
+    });
+    fireEvent.click(screen.getByTestId("landing-auth-session-continue"));
+
+    await waitFor(() => {
+      expect(screen.getByTestId("landing-auth-session-continue-notice")).toHaveTextContent(
+        /couldn't check sign-in/i,
+      );
+    });
+    expect(screen.getByTestId("landing-auth-placeholder")).toBeInTheDocument();
+  });
+
   it("starts intake with composer purpose after authenticated handoff Continue", async () => {
     const { container } = renderUploadExperience();
     await submitComposerThroughAuthenticatedHandoff(container);

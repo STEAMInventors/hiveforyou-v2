@@ -32,4 +32,9 @@ describe("readClientSessionStatus", () => {
     });
     await expect(readClientSessionStatus()).resolves.toBe("unauthenticated");
   });
+
+  it("returns error when the session client cannot be read", async () => {
+    getUser.mockRejectedValue(new Error("network"));
+    await expect(readClientSessionStatus()).resolves.toBe("error");
+  });
 });

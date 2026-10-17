@@ -26,6 +26,10 @@ export type ComposerPurpose = {
 
 type LandingHandoffStep = "composer" | "checking-session" | "auth-required" | "hive-handoff";
 
+const SESSION_UNSIGNED_MESSAGE =
+  "You're not signed in. Login and registration are not connected yet.";
+const SESSION_CHECK_ERROR_MESSAGE = "We couldn't check sign-in. Please try again.";
+
 export function UploadExperience({ showTrustMessage = true }: { showTrustMessage?: boolean }) {
   const { addDocuments, clearDocuments } = useStagedDocuments();
   const [handoffStep, setHandoffStep] = useState<LandingHandoffStep>("composer");
@@ -36,6 +40,7 @@ export function UploadExperience({ showTrustMessage = true }: { showTrustMessage
   const [hiveCommit, setHiveCommit] = useState<HiveHandoffSelection | null>(null);
   const pendingSubmitRef = useRef<HiveComposerSubmit | null>(null);
   const [pendingFileCount, setPendingFileCount] = useState(0);
+  const [sessionContinueNotice, setSessionContinueNotice] = useState<string | null>(null);
 
   const processing = started || Boolean(resumeRunId);
   const composerVisible = handoffStep === "composer" || handoffStep === "checking-session";
@@ -89,22 +94,36 @@ export function UploadExperience({ showTrustMessage = true }: { showTrustMessage
   const handleComposerSubmit = async (payload: HiveComposerSubmit) => {
     pendingSubmitRef.current = payload;
     setPendingFileCount(payload.files.length);
+    setSessionContinueNotice(null);
     setHandoffStep("checking-session");
     const session = await readClientSessionStatus();
-    if (session === "unauthenticated") {
-      setHandoffStep("auth-required");
+    if (session === "authenticated") {
+      setHandoffStep("hive-handoff");
       return;
     }
-    setHandoffStep("hive-handoff");
+    if (session === "error") {
+      setSessionContinueNotice(SESSION_CHECK_ERROR_MESSAGE);
+    }
+    setHandoffStep("auth-required");
   };
 
   const handleSessionRecheck = async () => {
     setSessionRecheckBusy(true);
+    setSessionContinueNotice(null);
     try {
       const session = await readClientSessionStatus();
       if (session === "authenticated") {
+        setSessionContinueNotice(null);
         setHandoffStep("hive-handoff");
+        return;
       }
+      if (session === "error") {
+        setSessionContinueNotice(SESSION_CHECK_ERROR_MESSAGE);
+        return;
+      }
+      setSessionContinueNotice(SESSION_UNSIGNED_MESSAGE);
+    } catch {
+      setSessionContinueNotice(SESSION_CHECK_ERROR_MESSAGE);
     } finally {
       setSessionRecheckBusy(false);
     }
@@ -120,6 +139,7 @@ export function UploadExperience({ showTrustMessage = true }: { showTrustMessage
   };
 
   const handleBackToComposer = () => {
+    setSessionContinueNotice(null);
     setHandoffStep("composer");
   };
 
@@ -151,6 +171,7 @@ export function UploadExperience({ showTrustMessage = true }: { showTrustMessage
             void handleSessionRecheck();
           }}
           sessionRecheckBusy={sessionRecheckBusy}
+          sessionContinueNotice={sessionContinueNotice}
         />
       ) : null}
 

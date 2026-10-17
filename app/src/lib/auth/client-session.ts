@@ -2,7 +2,7 @@
 
 import { createBrowserSupabaseClient } from "@/lib/supabase/browser";
 
-export type ClientSessionStatus = "authenticated" | "unauthenticated";
+export type ClientSessionStatus = "authenticated" | "unauthenticated" | "error";
 
 /** Reads the current Supabase browser session without creating or mutating auth state. */
 export async function readClientSessionStatus(): Promise<ClientSessionStatus> {
@@ -14,6 +14,6 @@ export async function readClientSessionStatus(): Promise<ClientSessionStatus> {
     }
     return "authenticated";
   } catch {
-    return "unauthenticated";
+    return "error";
   }
 }
