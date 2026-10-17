@@ -156,14 +156,14 @@ describe("loadHiveExtractionProgressForSession", () => {
       label: "Annual_IEP.pdf",
       filename: "Annual_IEP.pdf",
       documentTypeLabel: null,
-      uiStatus: "waiting",
+      uiStatus: "reading",
       dateLabel: null,
     });
     expect(view.documents[1]).toMatchObject({
       label: "Psychoed_Report.pdf",
       filename: "Psychoed_Report.pdf",
       documentTypeLabel: null,
-      uiStatus: "waiting",
+      uiStatus: "reading",
     });
   });
 });

@@ -16,7 +16,7 @@ import {
 } from "@/lib/intake/study-completion-navigation";
 
 import { CaseDocumentsSubNav } from "./CaseDocumentsSubNav";
-import { CustomerRawExtractionsPanel } from "./HiveCustomerDocumentRows";
+import { CustomerRawExtractionsPanel, CustomerYourFilesPanel } from "./HiveCustomerDocumentRows";
 import { HiveCustomerShell } from "./HiveCustomerShell";
 
 export function HiveExtractionReadyExperience({
@@ -132,20 +132,12 @@ export function HiveExtractionReadyExperience({
                     Upload, remove, or add documents from your intake workspace.
                   </p>
                 </header>
-                <div className="rounded-[18px] border border-customerHive-border bg-white p-6">
-                  {documentsHref ? (
-                    <Link
-                      href={documentsHref}
-                      className="inline-flex items-center gap-2 text-sm font-semibold text-customerHive-secondary hover:underline"
-                    >
-                      Manage uploaded files
-                    </Link>
-                  ) : (
-                    <p className="text-sm text-customerHive-on-surface-muted">
-                      File management will appear when an intake run is linked to this case.
-                    </p>
-                  )}
-                </div>
+                <CustomerYourFilesPanel
+                  caseId={caseId}
+                  studyRunId={studyRunId}
+                  manageFilesHref={documentsHref}
+                  pollWhileProcessing={false}
+                />
               </section>
             ) : (
               <section className="flex min-w-0 flex-col gap-6 pt-2">

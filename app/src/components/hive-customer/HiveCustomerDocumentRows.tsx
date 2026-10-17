@@ -1,10 +1,11 @@
 "use client";
 
-import { isStudyRunProcessing } from "@hiveforyou/shared/canonical-study";
+import Link from "next/link";
 import { useCallback, useEffect, useId, useMemo, useState } from "react";
 
 import { fetchHiveExtractionProgress } from "@/lib/hive-customer/hive-extraction-progress-client";
 import type { HiveExtractionProgressView } from "@/lib/hive-customer/hive-extraction-progress-types";
+import { shouldPollHiveExtractionProgress } from "@/lib/hive-customer/hive-extraction-progress-types";
 import {
   customerStatusLabel,
   type CustomerExtractedDetail,
@@ -89,9 +90,15 @@ function statusPillClasses(status: CustomerExtractionDocumentRow["uiStatus"]): s
       return "bg-[#FDEDEB] text-[#B4352A]";
     case "needs_review":
       return "bg-[#FFF6DC] text-[#7A5200]";
+    case "reading":
+      return "bg-[#FFF8E6] text-[#875700]";
     default:
       return "bg-[#FFF8E6] text-[#875700]";
   }
+}
+
+function showsProcessingSpinner(status: CustomerExtractionDocumentRow["uiStatus"]): boolean {
+  return status === "waiting" || status === "reading";
 }
 
 function groupExtractedDetails(
@@ -168,7 +175,7 @@ function CustomerDocumentExtractionExpandable({
         <span
           className={`inline-flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1 text-[13px] font-semibold ${statusPillClasses(row.uiStatus)}`}
         >
-          {row.uiStatus === "waiting" ? <StatusSpinner /> : null}
+          {showsProcessingSpinner(row.uiStatus) ? <StatusSpinner /> : null}
           {customerStatusLabel(row.uiStatus)}
           {row.uiStatus === "read" && row.detailCount != null ? ` · ${row.detailCount}` : null}
         </span>
@@ -263,7 +270,13 @@ function CustomerDocumentExtractionExpandable({
   );
 }
 
-function CustomerDocumentCardCompact({ row }: { row: CustomerExtractionDocumentRow }) {
+function CustomerDocumentCardCompact({
+  row,
+  showProvenance = true,
+}: {
+  row: CustomerExtractionDocumentRow;
+  showProvenance?: boolean;
+}) {
   return (
     <article
       className="overflow-hidden rounded-2xl border border-customerHive-border bg-white"
@@ -293,13 +306,21 @@ function CustomerDocumentCardCompact({ row }: { row: CustomerExtractionDocumentR
         <span
           className={`inline-flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1 text-[13px] font-semibold ${statusPillClasses(row.uiStatus)}`}
         >
-          {row.uiStatus === "waiting" ? <StatusSpinner /> : null}
+          {showsProcessingSpinner(row.uiStatus) ? <StatusSpinner /> : null}
           {row.uiStatus === "read" && row.detailCount != null
             ? `Read · ${row.detailCount} details`
             : customerStatusLabel(row.uiStatus)}
         </span>
       </div>
-      {row.uiStatus === "read" && row.provenance ? (
+      {row.uiStatus === "failed" || row.uiStatus === "needs_review" ? (
+        <div className="border-t border-[#EEF0F3] px-4 pb-4 pl-[4.75rem] pt-2 text-sm leading-relaxed text-[#B4352A] sm:px-5 sm:pl-[5.5rem]">
+          {row.failureHint ??
+            (row.uiStatus === "needs_review"
+              ? "This document needs review before it can be used."
+              : "This document could not be read successfully.")}
+        </div>
+      ) : null}
+      {showProvenance && row.uiStatus === "read" && row.provenance ? (
         <div className="border-t border-[#EEF0F3] px-4 py-3 pl-[4.75rem] sm:px-5 sm:pl-[5.5rem]">
           <div className="flex flex-wrap items-center gap-2">
             <span className="text-sm text-customerHive-on-surface">{row.provenance.text}</span>
@@ -482,11 +503,7 @@ export function CustomerRawExtractionsPanel({
     if (!pollWhileProcessing || !trimmedStudyRunId) {
       return;
     }
-    const stillProcessing =
-      progress &&
-      (isStudyRunProcessing(progress.studyRunStatus) ||
-        (!progress.extractionTerminal && !progress.extractionCompleteForExplore));
-    if (!stillProcessing) {
+    if (!shouldPollHiveExtractionProgress(progress)) {
       return;
     }
     const timer = window.setInterval(() => {
@@ -505,9 +522,11 @@ export function CustomerRawExtractionsPanel({
   if (!trimmedStudyRunId) {
     return (
       <div data-testid="customer-raw-extractions-panel" className={emptyPanelClass}>
-        <p className="font-medium text-customerHive-on-surface">No extractions yet</p>
+        <p className="font-medium text-customerHive-on-surface">Study link needed</p>
         <p className="mt-1">
-          After you start reading documents, extracted details will appear here for review.
+          Open this page from your hive building flow, or add{" "}
+          <span className="font-mono text-xs">studyRunId</span> to the URL so we can load
+          extraction progress.
         </p>
       </div>
     );
@@ -515,10 +534,7 @@ export function CustomerRawExtractionsPanel({
 
   const terminalFailure =
     progress?.extractionTerminal && !progress.extractionCompleteForExplore;
-  const processing =
-    progress &&
-    (isStudyRunProcessing(progress.studyRunStatus) ||
-      (!progress.extractionTerminal && !progress.extractionCompleteForExplore));
+  const processing = progress && shouldPollHiveExtractionProgress(progress);
   const useExpandableCards =
     presentation === "detailed" && Boolean(progress?.extractionCompleteForExplore);
 
@@ -583,6 +599,134 @@ export function CustomerRawExtractionsPanel({
         </div>
       ) : progress && !loading ? (
         <p className={mutedText}>No documents are linked to this extraction run yet.</p>
+      ) : null}
+    </section>
+  );
+}
+
+export function CustomerYourFilesPanel({
+  caseId,
+  studyRunId,
+  manageFilesHref,
+  pollWhileProcessing = true,
+}: {
+  caseId: string;
+  studyRunId?: string | null;
+  manageFilesHref?: string | null;
+  pollWhileProcessing?: boolean;
+}) {
+  const trimmedStudyRunId = studyRunId?.trim() ?? "";
+  const [progress, setProgress] = useState<HiveExtractionProgressView | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(Boolean(trimmedStudyRunId));
+
+  const refresh = useCallback(async () => {
+    if (!trimmedStudyRunId) {
+      setProgress(null);
+      setLoading(false);
+      setError(null);
+      return;
+    }
+    try {
+      const next = await fetchHiveExtractionProgress(caseId, trimmedStudyRunId);
+      setProgress(next);
+      setError(null);
+    } catch {
+      setError("We couldn't load your uploaded files. Try refreshing this page.");
+    } finally {
+      setLoading(false);
+    }
+  }, [caseId, trimmedStudyRunId]);
+
+  useEffect(() => {
+    void refresh();
+  }, [refresh]);
+
+  useEffect(() => {
+    if (!pollWhileProcessing || !trimmedStudyRunId) {
+      return;
+    }
+    if (!shouldPollHiveExtractionProgress(progress)) {
+      return;
+    }
+    const timer = window.setInterval(() => {
+      void refresh();
+    }, RAW_EXTRACTION_POLL_MS);
+    return () => window.clearInterval(timer);
+  }, [pollWhileProcessing, progress, refresh, trimmedStudyRunId]);
+
+  if (!trimmedStudyRunId) {
+    return (
+      <div
+        data-testid="customer-your-files-panel"
+        className="rounded-2xl border border-customerHive-border bg-white px-5 py-8 text-center text-sm text-customerHive-on-surface-variant"
+        role="alert"
+      >
+        <p className="font-medium text-customerHive-on-surface">Study link needed</p>
+        <p className="mt-1">
+          Return to your hive from My Hives, or open a building link that includes{" "}
+          <span className="font-mono text-xs">studyRunId</span>.
+        </p>
+      </div>
+    );
+  }
+
+  const terminalFailure =
+    progress?.extractionTerminal && !progress.extractionCompleteForExplore;
+  const processing = progress && shouldPollHiveExtractionProgress(progress);
+
+  return (
+    <section
+      data-testid="customer-your-files-panel"
+      aria-label="Your files"
+      className="flex min-w-0 flex-col gap-4"
+    >
+      {error ? (
+        <p className="text-sm text-red-700" role="alert">
+          {error}
+        </p>
+      ) : null}
+
+      {loading && !progress ? (
+        <p className="text-sm text-customerHive-on-surface-variant" aria-busy="true">
+          Loading your files…
+        </p>
+      ) : null}
+
+      {terminalFailure && !processing ? (
+        <div
+          className="rounded-[18px] border border-[#F7D3CF] bg-[#FFF9F8] px-4 py-3 text-sm text-customerHive-on-surface-variant"
+          role="alert"
+        >
+          Document reading did not finish successfully. You can manage files below and try again.
+        </div>
+      ) : null}
+
+      {progress?.documents.length ? (
+        <div className="flex min-w-0 flex-col gap-3">
+          {progress.documents.map((row) => (
+            <CustomerDocumentCardCompact
+              key={row.sourceDocumentId}
+              row={row}
+              showProvenance={false}
+            />
+          ))}
+        </div>
+      ) : progress && !loading ? (
+        <p className="text-sm text-customerHive-on-surface-variant">
+          No uploaded documents are linked to this hive yet.
+        </p>
+      ) : null}
+
+      {manageFilesHref ? (
+        <div className="rounded-[18px] border border-customerHive-border bg-white p-5">
+          <Link
+            href={manageFilesHref}
+            className="inline-flex items-center gap-2 text-sm font-semibold text-customerHive-secondary hover:underline"
+          >
+            Manage uploaded files
+          </Link>
+        </div>
       ) : null}
     </section>
   );

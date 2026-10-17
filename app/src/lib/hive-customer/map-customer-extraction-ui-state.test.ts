@@ -10,6 +10,8 @@ import {
   mapInspectorDocumentToCustomerRow,
   resolveReliableSubjectFirstName,
 } from "./map-customer-extraction-ui-state";
+import type { HiveExtractionProgressView } from "./hive-extraction-progress-types";
+import { shouldPollHiveExtractionProgress } from "./hive-extraction-progress-types";
 
 function doc(partial: Partial<RawExtractionInspectorDocument>): RawExtractionInspectorDocument {
   return {
@@ -28,6 +30,23 @@ function doc(partial: Partial<RawExtractionInspectorDocument>): RawExtractionIns
 }
 
 describe("mapInspectorDocumentToCustomerRow", () => {
+  it("maps persisted SUCCEEDED envelope to Read", () => {
+    const row = mapInspectorDocumentToCustomerRow({
+      doc: doc({
+        displayStatus: "SUCCEEDED",
+        records: [{ recordTypeId: "a", fields: {} }],
+        envelope: { status: "SUCCEEDED" } as never,
+      }),
+      studyRunStatus: "SUCCEEDED",
+      rawExtractionOutcome: "succeeded",
+      failedDocumentIds: [],
+      succeededDocumentIds: ["src-1"],
+      documentDateBySourceId: new Map(),
+    });
+    expect(row.uiStatus).toBe("read");
+    expect(customerStatusLabel(row.uiStatus)).toBe("Read");
+  });
+
   it("maps SUCCEEDED to read with detail count", () => {
     const row = mapInspectorDocumentToCustomerRow({
       doc: doc({
@@ -81,7 +100,7 @@ describe("mapInspectorDocumentToCustomerRow", () => {
     ]);
   });
 
-  it("does not invent reading or next states for missing output while processing", () => {
+  it("shows Reading while RUNNING with missing output", () => {
     const row = mapInspectorDocumentToCustomerRow({
       doc: doc({ displayStatus: "MISSING_OUTPUT" }),
       studyRunStatus: "RUNNING",
@@ -90,8 +109,46 @@ describe("mapInspectorDocumentToCustomerRow", () => {
       succeededDocumentIds: [],
       documentDateBySourceId: new Map(),
     });
+    expect(row.uiStatus).toBe("reading");
+    expect(customerStatusLabel(row.uiStatus)).toBe("Reading");
+  });
+
+  it("shows Waiting while QUEUED with missing output", () => {
+    const row = mapInspectorDocumentToCustomerRow({
+      doc: doc({ displayStatus: "MISSING_OUTPUT" }),
+      studyRunStatus: "QUEUED",
+      rawExtractionOutcome: null,
+      failedDocumentIds: [],
+      succeededDocumentIds: [],
+      documentDateBySourceId: new Map(),
+    });
     expect(row.uiStatus).toBe("waiting");
     expect(customerStatusLabel(row.uiStatus)).toBe("Waiting");
+  });
+
+  it("never shows Waiting for terminal MISSING_OUTPUT without envelope", () => {
+    const row = mapInspectorDocumentToCustomerRow({
+      doc: doc({ displayStatus: "MISSING_OUTPUT" }),
+      studyRunStatus: "SUCCEEDED",
+      rawExtractionOutcome: "succeeded",
+      failedDocumentIds: [],
+      succeededDocumentIds: [],
+      documentDateBySourceId: new Map(),
+    });
+    expect(row.uiStatus).toBe("needs_review");
+    expect(customerStatusLabel(row.uiStatus)).not.toBe("Waiting");
+  });
+
+  it("maps succeeded id with missing envelope to needs_review", () => {
+    const row = mapInspectorDocumentToCustomerRow({
+      doc: doc({ displayStatus: "MISSING_OUTPUT", envelope: null }),
+      studyRunStatus: "SUCCEEDED",
+      rawExtractionOutcome: "partial_failure",
+      failedDocumentIds: [],
+      succeededDocumentIds: ["src-1"],
+      documentDateBySourceId: new Map(),
+    });
+    expect(row.uiStatus).toBe("needs_review");
   });
 
   it("maps failed document ids on partial_failure", () => {
@@ -113,6 +170,41 @@ describe("isPackDrivenExtractionExploreReady", () => {
     expect(isPackDrivenExtractionExploreReady("partial_failure")).toBe(false);
     expect(isPackDrivenExtractionExploreReady("failed")).toBe(false);
     expect(isPackDrivenExtractionExploreReady(null)).toBe(false);
+  });
+});
+
+function progressView(
+  partial: Partial<HiveExtractionProgressView>,
+): HiveExtractionProgressView {
+  return {
+    caseId: "case-1",
+    studyRunId: "study-1",
+    intakeRunId: null,
+    studyRunStatus: "RUNNING",
+    rawExtractionOutcome: null,
+    extractionCompleteForExplore: false,
+    extractionTerminal: false,
+    subjectFirstName: null,
+    documents: [],
+    thingsThatWouldHelp: [],
+    readDocumentCount: 0,
+    totalDetailCount: 0,
+    ...partial,
+  };
+}
+
+describe("shouldPollHiveExtractionProgress", () => {
+  it("stops on terminal failure without explore", () => {
+    expect(
+      shouldPollHiveExtractionProgress(
+        progressView({
+          studyRunStatus: "FAILED",
+          rawExtractionOutcome: "failed",
+          extractionCompleteForExplore: false,
+          extractionTerminal: true,
+        }),
+      ),
+    ).toBe(false);
   });
 });
 

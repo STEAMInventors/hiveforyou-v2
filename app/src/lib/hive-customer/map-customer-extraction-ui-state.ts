@@ -3,7 +3,12 @@ import { isStudyRunProcessing } from "@hiveforyou/shared/canonical-study";
 import type { StudyRunStatus } from "@hiveforyou/shared/canonical-study";
 import type { RawExtractionInspectorDocument } from "@hiveforyou/core";
 
-export type CustomerDocumentUiStatus = "waiting" | "read" | "failed" | "needs_review";
+export type CustomerDocumentUiStatus =
+  | "waiting"
+  | "reading"
+  | "read"
+  | "failed"
+  | "needs_review";
 
 export type CustomerProvenanceSnippet = {
   text: string;
@@ -221,6 +226,8 @@ export function mapInspectorDocumentToCustomerRow(input: {
 
   let uiStatus: CustomerDocumentUiStatus = "waiting";
   const display = input.doc.displayStatus;
+  const sourceDocumentId = input.doc.sourceDocumentId;
+  const processing = isStudyRunProcessing(input.studyRunStatus);
 
   if (display === "SUCCEEDED") {
     uiStatus = "read";
@@ -228,18 +235,31 @@ export function mapInspectorDocumentToCustomerRow(input: {
     uiStatus = "failed";
   } else if (display === "INVALID_JSON") {
     uiStatus = "needs_review";
-  } else if (input.failedDocumentIds.includes(input.doc.sourceDocumentId)) {
+  } else if (input.failedDocumentIds.includes(sourceDocumentId)) {
     uiStatus = "failed";
-  } else if (
-    input.succeededDocumentIds.includes(input.doc.sourceDocumentId) 
-  ) {
-    uiStatus = "read";
-  } else if (isStudyRunProcessing(input.studyRunStatus)) {
-    uiStatus = "waiting";
-  } else if (input.rawExtractionOutcome === "failed") {
+  } else if (input.succeededDocumentIds.includes(sourceDocumentId)) {
+    uiStatus = input.doc.envelope != null ? "read" : "needs_review";
+  } else if (processing) {
+    uiStatus = input.studyRunStatus === "RUNNING" ? "reading" : "waiting";
+  } else if (input.rawExtractionOutcome === "failed" || input.studyRunStatus === "FAILED") {
     uiStatus = "failed";
   } else if (input.rawExtractionOutcome === "partial_failure") {
     uiStatus = "failed";
+  } else if (input.studyRunStatus === "NEEDS_REVIEW" || display === "MISSING_OUTPUT") {
+    uiStatus = "needs_review";
+  } else {
+    uiStatus = "needs_review";
+  }
+
+  if (uiStatus === "waiting" && !processing) {
+    uiStatus =
+      input.studyRunStatus === "NEEDS_REVIEW"
+        ? "needs_review"
+        : input.rawExtractionOutcome === "partial_failure" ||
+            input.rawExtractionOutcome === "failed" ||
+            input.studyRunStatus === "FAILED"
+          ? "failed"
+          : "needs_review";
   }
 
   const detailCount =
@@ -285,6 +305,8 @@ export function customerStatusLabel(status: CustomerDocumentUiStatus): string {
       return "Failed";
     case "needs_review":
       return "Needs review";
+    case "reading":
+      return "Reading";
     default:
       return "Waiting";
   }

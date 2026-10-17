@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
@@ -13,8 +12,10 @@ import {
   type CaseDocumentsView,
 } from "@/lib/intake/study-completion-navigation";
 
+import { shouldPollHiveExtractionProgress } from "@/lib/hive-customer/hive-extraction-progress-types";
+
 import { CaseDocumentsSubNav } from "./CaseDocumentsSubNav";
-import { CustomerRawExtractionsPanel } from "./HiveCustomerDocumentRows";
+import { CustomerRawExtractionsPanel, CustomerYourFilesPanel } from "./HiveCustomerDocumentRows";
 import { HiveCustomerShell } from "./HiveCustomerShell";
 
 const POLL_MS = 2500;
@@ -47,11 +48,20 @@ export function HiveBuildingProgressExperience({
 
   useEffect(() => {
     void refresh();
+  }, [refresh]);
+
+  useEffect(() => {
+    if (!studyRunId.trim()) {
+      return;
+    }
+    if (!shouldPollHiveExtractionProgress(progress)) {
+      return;
+    }
     const timer = window.setInterval(() => {
       void refresh();
     }, POLL_MS);
     return () => window.clearInterval(timer);
-  }, [refresh]);
+  }, [progress, refresh, studyRunId]);
 
   const terminalFailure =
     progress?.extractionTerminal && !progress.extractionCompleteForExplore;
@@ -106,20 +116,11 @@ export function HiveBuildingProgressExperience({
                 While documents are being read, you can still add or adjust files.
               </p>
             </header>
-            <div className="rounded-[18px] border border-customerHive-border bg-white p-6">
-              {manageFilesHref ? (
-                <Link
-                  href={manageFilesHref}
-                  className="inline-flex items-center gap-2 text-sm font-semibold text-customerHive-secondary hover:underline"
-                >
-                  Manage uploaded files
-                </Link>
-              ) : (
-                <p className="text-sm text-customerHive-on-surface-muted">
-                  File management will appear when an intake run is linked to this case.
-                </p>
-              )}
-            </div>
+            <CustomerYourFilesPanel
+              caseId={caseId}
+              studyRunId={studyRunId}
+              manageFilesHref={manageFilesHref}
+            />
           </section>
         ) : (
           <section

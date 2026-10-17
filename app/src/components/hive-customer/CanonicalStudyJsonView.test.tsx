@@ -3,6 +3,10 @@ import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { CanonicalStudyJsonView } from "./CanonicalStudyJsonView";
+import {
+  CustomerRawExtractionsPanel,
+  CustomerYourFilesPanel,
+} from "./HiveCustomerDocumentRows";
 
 vi.mock("./HiveCustomerShell", () => ({
   HiveCustomerShell: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
@@ -135,5 +139,98 @@ describe("CanonicalStudyJsonView", () => {
     await waitFor(() => {
       expect(screen.getByText(/In progress/)).toBeInTheDocument();
     });
+  });
+
+  it("Your files lists committed filenames from extraction progress", async () => {
+    fetchMock.mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        caseId: "case-1",
+        studyRunId: "study-1",
+        intakeRunId: "intake-1",
+        studyRunStatus: "RUNNING",
+        rawExtractionOutcome: null,
+        extractionCompleteForExplore: false,
+        extractionTerminal: false,
+        subjectFirstName: null,
+        documents: [
+          {
+            sourceDocumentId: "src-1",
+            label: "Annual_IEP.pdf",
+            filename: "Annual_IEP.pdf",
+            documentTypeLabel: "IEP",
+            dateLabel: null,
+            uiStatus: "reading",
+            detailCount: null,
+            failureHint: null,
+            provenance: null,
+            extractedDetails: [],
+          },
+        ],
+        thingsThatWouldHelp: [],
+        readDocumentCount: 0,
+        totalDetailCount: 0,
+      }),
+    });
+
+    render(
+      <CustomerYourFilesPanel caseId="case-1" studyRunId="study-1" manageFilesHref={null} />,
+    );
+
+    expect(await screen.findByText("Annual_IEP.pdf")).toBeInTheDocument();
+    expect(screen.getByText("Reading")).toBeInTheDocument();
+    expect(screen.getByText("IEP")).toBeInTheDocument();
+  });
+
+  it("Your files shows recovery when studyRunId is missing", () => {
+    render(<CustomerYourFilesPanel caseId="case-1" studyRunId="" />);
+    expect(screen.getByTestId("customer-your-files-panel")).toHaveTextContent("Study link needed");
+    expect(screen.queryByText("No extractions yet")).not.toBeInTheDocument();
+  });
+
+  it("Raw extractions shows terminal failure state instead of Waiting", async () => {
+    fetchMock.mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        caseId: "case-1",
+        studyRunId: "study-1",
+        intakeRunId: null,
+        studyRunStatus: "FAILED",
+        rawExtractionOutcome: "failed",
+        extractionCompleteForExplore: false,
+        extractionTerminal: true,
+        subjectFirstName: null,
+        documents: [
+          {
+            sourceDocumentId: "src-1",
+            label: "Broken.pdf",
+            filename: "Broken.pdf",
+            documentTypeLabel: null,
+            dateLabel: null,
+            uiStatus: "failed",
+            detailCount: null,
+            failureHint: "Model error",
+            provenance: null,
+            extractedDetails: [],
+          },
+        ],
+        thingsThatWouldHelp: [],
+        readDocumentCount: 0,
+        totalDetailCount: 0,
+      }),
+    });
+
+    render(
+      <CustomerRawExtractionsPanel
+        caseId="case-1"
+        studyRunId="study-1"
+        presentation="summary"
+        pollWhileProcessing={false}
+        showOutcomeBanner
+      />,
+    );
+
+    expect(await screen.findByText("Failed")).toBeInTheDocument();
+    expect(screen.queryByText("Waiting")).not.toBeInTheDocument();
   });
 });
