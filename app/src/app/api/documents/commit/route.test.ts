@@ -33,7 +33,11 @@ vi.mock("@/lib/persistence/hive-gateway", () => ({
 
 vi.mock("@hiveforyou/core", () => ({
   createOrReuseCase: vi.fn(async () => ({ id: "case-1" })),
+  resolveCaseForDocumentCommit: vi.fn(async () => ({ id: "case-existing" })),
   persistSourceDocument: vi.fn(async () => ({ id: "source-1" })),
+  CaseNotAccessibleError: class CaseNotAccessibleError extends Error {
+    name = "CaseNotAccessibleError";
+  },
   UnauthenticatedError: class UnauthenticatedError extends Error {
     constructor() {
       super("unauthenticated");
@@ -42,7 +46,12 @@ vi.mock("@hiveforyou/core", () => ({
   },
 }));
 
-import { createOrReuseCase, persistSourceDocument } from "@hiveforyou/core";
+import {
+  createOrReuseCase,
+  persistSourceDocument,
+  resolveCaseForDocumentCommit,
+  CaseNotAccessibleError,
+} from "@hiveforyou/core";
 
 import { POST } from "./route";
 
@@ -61,13 +70,24 @@ function basic(user: string, password: string): string {
   return `Basic ${Buffer.from(`${user}:${password}`, "utf8").toString("base64")}`;
 }
 
-function commitRequest(): Request {
+function commitRequest(options?: {
+  caseId?: string;
+  hiveSelectionIntent?: "new" | "existing";
+}): Request {
   const boundary = "----hivepreview";
   const body = [
     `--${boundary}`,
     'Content-Disposition: form-data; name="caseId"',
     "",
-    "",
+    options?.caseId ?? "",
+    ...(options?.hiveSelectionIntent
+      ? [
+          `--${boundary}`,
+          'Content-Disposition: form-data; name="hiveSelectionIntent"',
+          "",
+          options.hiveSelectionIntent,
+        ]
+      : []),
     `--${boundary}`,
     'Content-Disposition: form-data; name="stagedDocumentId"',
     "",
@@ -94,6 +114,7 @@ describe("POST /api/documents/commit preview auth", () => {
     signedIn = false;
     requestHeaders.delete("authorization");
     vi.mocked(createOrReuseCase).mockClear();
+    vi.mocked(resolveCaseForDocumentCommit).mockClear();
     vi.mocked(persistSourceDocument).mockClear();
     auth.getUser.mockReset();
     auth.signInWithPassword.mockReset();
@@ -187,6 +208,50 @@ describe("POST /api/documents/commit preview auth", () => {
       expect.anything(),
       expect.objectContaining({ userId: TEST_OWNER_ID }),
     );
+  });
+
+  it("uses resolveCaseForDocumentCommit when hiveSelectionIntent is present", async () => {
+    process.env.HIVE_PREVIEW_PASSWORD = "gate-secret";
+    process.env.HIVE_PREVIEW_AUTH_EMAIL = "preview@example.com";
+    process.env.HIVE_PREVIEW_AUTH_PASSWORD = "preview-secret";
+    requestHeaders.set("authorization", basic("ignored", "gate-secret"));
+    signedIn = true;
+
+    const response = await POST(
+      commitRequest({
+        caseId: "33333333-3333-4333-8333-333333333333",
+        hiveSelectionIntent: "existing",
+      }),
+    );
+
+    expect(response.status).toBe(200);
+    expect(resolveCaseForDocumentCommit).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({
+        requestedCaseId: "33333333-3333-4333-8333-333333333333",
+        selectionIntent: "existing",
+      }),
+    );
+    expect(createOrReuseCase).not.toHaveBeenCalled();
+  });
+
+  it("returns 404 when existing hive selection is not accessible", async () => {
+    process.env.HIVE_PREVIEW_PASSWORD = "gate-secret";
+    process.env.HIVE_PREVIEW_AUTH_EMAIL = "preview@example.com";
+    process.env.HIVE_PREVIEW_AUTH_PASSWORD = "preview-secret";
+    requestHeaders.set("authorization", basic("ignored", "gate-secret"));
+    signedIn = true;
+    vi.mocked(resolveCaseForDocumentCommit).mockRejectedValueOnce(new CaseNotAccessibleError());
+
+    const response = await POST(
+      commitRequest({
+        caseId: "33333333-3333-4333-8333-333333333333",
+        hiveSelectionIntent: "existing",
+      }),
+    );
+
+    expect(response.status).toBe(404);
+    await expect(response.json()).resolves.toMatchObject({ error: "CASE_NOT_FOUND" });
   });
 
   it("fail-closes when controlled test mode is missing the test owner", async () => {

@@ -4,6 +4,7 @@ import { isIntakeRunProcessing } from "@hiveforyou/shared/intake";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
+import type { HiveHandoffSelection } from "@/components/landing/LandingHiveHandoff";
 import { commitStagedDocuments } from "@/lib/documents/commit-client";
 import {
   clearStoredIntakeRun,
@@ -21,7 +22,7 @@ const POLL_INTERVAL_MS = 1000;
 
 function customerErrorMessage(error: unknown): string {
   const code = error instanceof Error ? error.message : "";
-  if (code === "DOCUMENT_COMMIT_FAILED") {
+  if (code === "DOCUMENT_COMMIT_FAILED" || code === "CASE_NOT_FOUND") {
     return "We couldn't save your documents. Please try again.";
   }
   if (code === "INTAKE_START_FAILED") {
@@ -36,14 +37,16 @@ function customerErrorMessage(error: unknown): string {
 export function IntakeUnderstanding({
   resumeRunId,
   composerPurpose,
+  hiveCommit,
   onDismiss,
 }: {
   resumeRunId?: string | null;
   composerPurpose?: ComposerPurpose | null;
+  hiveCommit?: HiveHandoffSelection | null;
   onDismiss?: () => void;
 }) {
   const router = useRouter();
-  const { documents } = useStagedDocuments();
+  const { documents, adoptPersistedDocuments } = useStagedDocuments();
   const documentsRef = useRef(documents);
   documentsRef.current = documents;
   const [view, setView] = useState<Awaited<ReturnType<typeof fetchIntakeRun>> | null>(null);
@@ -92,7 +95,19 @@ export function IntakeUnderstanding({
         const stagedDocuments = documentsRef.current;
         if (stagedDocuments.length > 0) {
           setPreRunPhase("committing");
-          const committed = await commitStagedDocuments(stagedDocuments);
+          const committed = await commitStagedDocuments(
+            stagedDocuments,
+            hiveCommit
+              ? {
+                  caseId: hiveCommit.caseId,
+                  selectionIntent: hiveCommit.selectionIntent,
+                }
+              : undefined,
+          );
+          if (cancelled) {
+            return;
+          }
+          adoptPersistedDocuments(committed);
           if (cancelled) {
             return;
           }
@@ -130,7 +145,7 @@ export function IntakeUnderstanding({
     return () => {
       cancelled = true;
     };
-  }, [composerPurpose, resumeRunId, stagedKey]);
+  }, [adoptPersistedDocuments, composerPurpose, hiveCommit, resumeRunId, stagedKey]);
 
   return (
     <section data-testid="intake-understanding" aria-busy={!errorMessage}>

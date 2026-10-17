@@ -29,6 +29,22 @@ vi.mock("@hiveforyou/domain-packs", () => ({
   listDomainPacksByCapability: () => [{ id: "iep", name: "Special Education / IEP" }],
 }));
 
+vi.mock("@/lib/auth/client-session", () => ({
+  readClientSessionStatus: vi.fn(),
+}));
+
+vi.mock("@/lib/cases/cases-client", () => ({
+  fetchOwnedHives: vi.fn(async () => ({ cases: [] })),
+  fetchOwnedHive: vi.fn(),
+  OwnedHivesFetchError: class OwnedHivesFetchError extends Error {
+    code: string;
+    constructor(code: string, message: string) {
+      super(message);
+      this.code = code;
+    }
+  },
+}));
+
 vi.mock("@/lib/documents/commit-client", () => ({
   commitStagedDocuments: vi.fn(async (docs: { id: string; file: File }[]) => ({
     caseId: "00000000-0000-4000-8000-000000000001",
@@ -58,6 +74,7 @@ vi.mock("@/lib/intake/intake-client", async () => {
   };
 });
 
+import { readClientSessionStatus } from "@/lib/auth/client-session";
 import { commitStagedDocuments } from "@/lib/documents/commit-client";
 import { runDiscoverForStagedDocuments } from "@/lib/document-discovery/run-discover-client";
 import { fetchIntakeRun, startIntakeRun } from "@/lib/intake/intake-client";
@@ -116,6 +133,18 @@ function submitComposerFlow(container: HTMLElement) {
   fireEvent.click(screen.getByTestId("hive-composer-submit"));
 }
 
+async function submitComposerThroughAuthenticatedHandoff(container: HTMLElement) {
+  submitComposerFlow(container);
+  await waitFor(() => {
+    expect(screen.getByTestId("landing-hive-handoff")).toBeInTheDocument();
+    expect(screen.getByTestId("landing-hive-handoff-continue")).toBeEnabled();
+  });
+  fireEvent.click(screen.getByTestId("landing-hive-handoff-continue"));
+  await waitFor(() => {
+    expect(screen.getByTestId("intake-processing-modal")).toBeInTheDocument();
+  });
+}
+
 describe("UploadExperience", () => {
   beforeEach(() => {
     mockMatchMedia(false);
@@ -125,6 +154,8 @@ describe("UploadExperience", () => {
     vi.mocked(startIntakeRun).mockClear();
     vi.mocked(commitStagedDocuments).mockClear();
     vi.mocked(fetchIntakeRun).mockReset();
+    vi.mocked(readClientSessionStatus).mockReset();
+    vi.mocked(readClientSessionStatus).mockResolvedValue("authenticated");
     vi.mocked(fetchIntakeRun).mockResolvedValue({
       intakeRunId: "run-1",
       caseId: "00000000-0000-4000-8000-000000000001",
@@ -162,24 +193,78 @@ describe("UploadExperience", () => {
     expect(screen.getByTestId("hive-composer-intent")).toBeInTheDocument();
   });
 
-  it("starts intake with composer purpose after Continue", async () => {
+  it("shows the login placeholder and skips protected APIs when signed out", async () => {
+    vi.mocked(readClientSessionStatus).mockResolvedValue("unauthenticated");
     const { container } = renderUploadExperience();
     submitComposerFlow(container);
 
-    expect(screen.getByTestId("hive-home-composer")).toBeInTheDocument();
-    expect(screen.getByTestId("intake-processing-modal")).toBeInTheDocument();
-    expect(screen.getByTestId("intake-processing-panel")).toBeInTheDocument();
-    expect(screen.getByTestId("intake-heading")).toHaveTextContent("Hiving");
-    expect(screen.getByTestId("intake-processing-stage-current")).toHaveTextContent(
-      "Reading your documents",
+    await waitFor(() => {
+      expect(screen.getByTestId("landing-auth-placeholder")).toBeInTheDocument();
+    });
+    expect(screen.getByTestId("landing-auth-not-connected-notice")).toHaveTextContent(
+      /not connected/i,
     );
+    expect(commitStagedDocuments).not.toHaveBeenCalled();
+    expect(startIntakeRun).not.toHaveBeenCalled();
+  });
+
+  it("returns to the composer with preserved intent and files after Back from auth", async () => {
+    vi.mocked(readClientSessionStatus).mockResolvedValue("unauthenticated");
+    const { container } = renderUploadExperience();
+    submitComposerFlow(container);
+
+    await waitFor(() => {
+      expect(screen.getByTestId("landing-auth-placeholder")).toBeInTheDocument();
+    });
+    fireEvent.click(screen.getByTestId("landing-auth-back"));
+
+    expect(screen.getByTestId("hive-composer-intent")).toHaveValue("Preparing for an IEP meeting");
+    expect(screen.getAllByTestId("hive-composer-attachment-chip")).toHaveLength(1);
+    expect(commitStagedDocuments).not.toHaveBeenCalled();
+  });
+
+  it("advances to the hive handoff when a real session appears from the auth placeholder", async () => {
+    vi.mocked(readClientSessionStatus)
+      .mockResolvedValueOnce("unauthenticated")
+      .mockResolvedValueOnce("authenticated");
+    const { container } = renderUploadExperience();
+    submitComposerFlow(container);
+
+    await waitFor(() => {
+      expect(screen.getByTestId("landing-auth-placeholder")).toBeInTheDocument();
+    });
+    fireEvent.click(screen.getByTestId("landing-auth-session-continue"));
+
+    await waitFor(() => {
+      expect(screen.getByTestId("landing-hive-handoff")).toBeInTheDocument();
+    });
+    expect(commitStagedDocuments).not.toHaveBeenCalled();
+  });
+
+  it("starts intake with composer purpose after authenticated handoff Continue", async () => {
+    const { container } = renderUploadExperience();
+    await submitComposerThroughAuthenticatedHandoff(container);
+
+    expect(screen.getByTestId("intake-processing-panel")).toBeInTheDocument();
+    expect(screen.getByTestId("intake-heading")).toHaveTextContent("Reading your documents");
 
     await waitFor(() => {
       expect(commitStagedDocuments).toHaveBeenCalledOnce();
+    expect(commitStagedDocuments).toHaveBeenCalledWith(
+      expect.any(Array),
+      expect.objectContaining({
+        selectionIntent: "new",
+        caseId: expect.stringMatching(
+          /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i,
+        ),
+      }),
+    );
     });
 
     expect(startIntakeRun).toHaveBeenCalledWith(
-      "00000000-0000-4000-8000-000000000001",
+      expect.stringMatching(
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i,
+      ),
       ["src-report.pdf"],
       {
         rawIntent: "Preparing for an IEP meeting",
@@ -192,11 +277,14 @@ describe("UploadExperience", () => {
   it("navigates to the evidence workspace when intake finishes with persisted artifacts", async () => {
     vi.mocked(fetchIntakeRun).mockResolvedValue(terminalView());
     const { container } = renderUploadExperience();
-    submitComposerFlow(container);
+    await submitComposerThroughAuthenticatedHandoff(container);
 
-    await waitFor(() => {
-      expect(screen.getByTestId("intake-heading")).toHaveTextContent("Your hive is ready");
-    });
+    await waitFor(
+      () => {
+        expect(screen.getByTestId("intake-heading")).toHaveTextContent("Your documents are read");
+      },
+      { timeout: 5000 },
+    );
     fireEvent.click(screen.getByTestId("intake-open-hive"));
     expect(mockReplace).toHaveBeenCalledWith("/intake/run-1");
     expect(window.sessionStorage.getItem(HIVE_INTAKE_RUN_STORAGE_KEY)).toBeNull();

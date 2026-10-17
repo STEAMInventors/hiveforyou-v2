@@ -22,8 +22,20 @@ export class CaseIdConflictError extends Error {
   }
 }
 
+export class CaseNotAccessibleError extends Error {
+  readonly code = "CASE_NOT_ACCESSIBLE";
+
+  constructor() {
+    super("Case is not accessible for this account.");
+    this.name = "CaseNotAccessibleError";
+  }
+}
+
+export type HiveDocumentCommitSelectionIntent = "new" | "existing";
+
 export interface CaseRepository {
   getById(userId: string, caseId: string): Promise<CaseRecord | null>;
+  listByUserId(userId: string): Promise<CaseRecord[]>;
   create(input: {
     id: string;
     userId: string;
@@ -41,6 +53,13 @@ export class InMemoryCaseRepository implements CaseRepository {
       return null;
     }
     return structuredClone(row);
+  }
+
+  async listByUserId(userId: string): Promise<CaseRecord[]> {
+    return [...this.byId.values()]
+      .filter((row) => row.userId === userId)
+      .sort((left, right) => right.updatedAt.localeCompare(left.updatedAt))
+      .map((row) => structuredClone(row));
   }
 
   async create(input: {
@@ -75,6 +94,43 @@ export class InMemoryCaseRepository implements CaseRepository {
 
 export function isUuid(value: string): boolean {
   return UUID_RE.test(value);
+}
+
+export async function resolveCaseForDocumentCommit(
+  repo: CaseRepository,
+  input: {
+    sessionUserId: string | null | undefined;
+    requestedCaseId: string;
+    selectionIntent: HiveDocumentCommitSelectionIntent;
+    createId?: () => string;
+  },
+): Promise<CaseRecord> {
+  const userId = requireSessionUserId(input.sessionUserId);
+  const requested = input.requestedCaseId.trim();
+  if (!isUuid(requested)) {
+    throw new Error("INVALID_CASE_ID");
+  }
+
+  const existing = await repo.getById(userId, requested);
+  if (input.selectionIntent === "existing") {
+    if (!existing) {
+      throw new CaseNotAccessibleError();
+    }
+    return existing;
+  }
+
+  if (existing) {
+    return existing;
+  }
+
+  try {
+    return await repo.create({ id: requested, userId, domainId: null });
+  } catch (error) {
+    if (error instanceof CaseIdConflictError) {
+      throw new CaseNotAccessibleError();
+    }
+    throw error;
+  }
 }
 
 export async function createOrReuseCase(

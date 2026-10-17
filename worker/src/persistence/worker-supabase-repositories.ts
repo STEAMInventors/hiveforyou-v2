@@ -69,6 +69,24 @@ export class SupabaseCaseRepository implements CaseRepository {
     };
   }
 
+  async listByUserId(userId: string): Promise<CaseRecord[]> {
+    if (userId !== this.userId) {
+      return [];
+    }
+    const rows = await this.gateway.selectWhere(
+      "cases",
+      { user_id: this.userId },
+      { orderBy: "updated_at", ascending: false },
+    );
+    return rows.map((row) => ({
+      id: text(row, "id"),
+      userId: text(row, "user_id"),
+      domainId: nullableText(row, "domain_id"),
+      createdAt: text(row, "created_at"),
+      updatedAt: text(row, "updated_at"),
+    }));
+  }
+
   async create(input: {
     id: string;
     userId: string;

@@ -3,7 +3,9 @@ import { describe, expect, it, vi } from "vitest";
 import {
   InMemoryCaseRepository,
   CaseIdConflictError,
+  CaseNotAccessibleError,
   createOrReuseCase,
+  resolveCaseForDocumentCommit,
 } from "./case-repository";
 import { persistSourceDocument } from "./persist-source-document";
 import { requireSessionUserId, withSessionOwner } from "./session-user";
@@ -268,6 +270,30 @@ describe("ownership", () => {
     await expect(
       cases.create({ id: CASE_A, userId: USER_B, domainId: null }),
     ).rejects.toBeInstanceOf(CaseIdConflictError);
+  });
+
+  it("resolveCaseForDocumentCommit fails closed for existing intent when case is not owned", async () => {
+    const cases = new InMemoryCaseRepository();
+    await cases.create({ id: CASE_A, userId: USER_A, domainId: null });
+    await expect(
+      resolveCaseForDocumentCommit(cases, {
+        sessionUserId: USER_B,
+        requestedCaseId: CASE_A,
+        selectionIntent: "existing",
+      }),
+    ).rejects.toBeInstanceOf(CaseNotAccessibleError);
+  });
+
+  it("resolveCaseForDocumentCommit creates a new hive id for new intent", async () => {
+    const cases = new InMemoryCaseRepository();
+    const newId = "55555555-5555-4555-8555-555555555555";
+    const created = await resolveCaseForDocumentCommit(cases, {
+      sessionUserId: USER_A,
+      requestedCaseId: newId,
+      selectionIntent: "new",
+    });
+    expect(created.id).toBe(newId);
+    expect(created.userId).toBe(USER_A);
   });
 });
 

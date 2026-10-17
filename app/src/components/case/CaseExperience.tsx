@@ -3,7 +3,11 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 
-import { getOrCreateClientCaseId } from "@/lib/canonical-study/map-start-request";
+import { fetchOwnedHives, OwnedHivesFetchError } from "@/lib/cases/cases-client";
+import {
+  readClientCaseId,
+  rememberClientCaseId,
+} from "@/lib/canonical-study/map-start-request";
 import { fetchCaseViewBundle } from "@/lib/case/case-client";
 import type { CaseViewBundle } from "@/lib/case/case-view-bundle";
 import { buildProvenanceIndex } from "@/lib/case/provenance-index";
@@ -16,8 +20,9 @@ import { EvidenceDrawer } from "./EvidenceDrawer";
 import { ProCaseView } from "./ProCaseView";
 import { SourcesDirectory, SourceInspector, buildSourceList } from "./SourcesDirectory";
 import { ViewSwitcher, type CaseViewMode } from "./ViewSwitcher";
+import { CaseHiveList } from "./CaseHiveList";
 
-export function CaseExperience() {
+function SingleCaseExperience({ caseId }: { caseId: string }) {
   const [bundle, setBundle] = useState<CaseViewBundle | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -29,7 +34,9 @@ export function CaseExperience() {
 
   useEffect(() => {
     let cancelled = false;
-    const caseId = getOrCreateClientCaseId();
+    setLoading(true);
+    setError(null);
+    setBundle(null);
     void fetchCaseViewBundle({ caseId })
       .then((loaded) => {
         if (!cancelled) {
@@ -49,7 +56,7 @@ export function CaseExperience() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [caseId]);
 
   const provenance = useMemo(
     () => (bundle ? buildProvenanceIndex(bundle.provenance) : null),
@@ -240,6 +247,89 @@ export function CaseExperience() {
           <SourceInspector item={selectedSource} onClose={() => setSelectedSourceId(null)} />
         ) : null}
       </div>
+    </div>
+  );
+}
+
+export function CaseExperience() {
+  const [hivesLoading, setHivesLoading] = useState(true);
+  const [hivesError, setHivesError] = useState<string | null>(null);
+  const [ownedHives, setOwnedHives] = useState<
+    import("@hiveforyou/shared/cases").OwnedHiveSummary[]
+  >([]);
+  const [activeCaseId, setActiveCaseId] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    async function load() {
+      setHivesLoading(true);
+      setHivesError(null);
+      try {
+        const payload = await fetchOwnedHives();
+        if (cancelled) {
+          return;
+        }
+        setOwnedHives(payload.cases);
+        const remembered = readClientCaseId();
+        const initial =
+          (remembered && payload.cases.some((hive) => hive.caseId === remembered)
+            ? remembered
+            : payload.cases[0]?.caseId) ?? null;
+        setActiveCaseId(initial);
+        if (initial) {
+          rememberClientCaseId(initial);
+        }
+      } catch (error) {
+        if (!cancelled) {
+          const code = error instanceof OwnedHivesFetchError ? error.code : "UNEXPECTED";
+          setHivesError(
+            code === "UNAUTHENTICATED"
+              ? "Sign in to see your Hives."
+              : "Could not load your Hives.",
+          );
+        }
+      } finally {
+        if (!cancelled) {
+          setHivesLoading(false);
+        }
+      }
+    }
+    void load();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  if (hivesLoading) {
+    return (
+      <p className="font-sans text-sm text-hive-text-muted" role="status" data-testid="case-hives-loading">
+        Loading your Hives…
+      </p>
+    );
+  }
+
+  if (hivesError) {
+    return (
+      <div
+        className="rounded-hive-xl border border-hive-border bg-hive-surface p-8 text-center"
+        data-testid="case-hives-error"
+      >
+        <p className="font-sans text-sm text-hive-text-muted">{hivesError}</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-8" data-testid="case-hives-shell">
+      <CaseHiveList
+        hives={ownedHives}
+        selectedCaseId={activeCaseId}
+        onSelect={(caseId) => {
+          rememberClientCaseId(caseId);
+          setActiveCaseId(caseId);
+        }}
+      />
+      {activeCaseId ? <SingleCaseExperience caseId={activeCaseId} /> : null}
     </div>
   );
 }

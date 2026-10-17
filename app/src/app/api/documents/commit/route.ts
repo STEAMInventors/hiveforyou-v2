@@ -1,9 +1,12 @@
 import { NextResponse } from "next/server";
 
 import {
+  CaseNotAccessibleError,
   createOrReuseCase,
   persistSourceDocument,
+  resolveCaseForDocumentCommit,
   UnauthenticatedError,
+  type HiveDocumentCommitSelectionIntent,
 } from "@hiveforyou/core";
 
 import { serverMisconfiguredResponse } from "@/lib/env/server-misconfigured";
@@ -188,6 +191,11 @@ export async function POST(request: Request) {
     }
 
     const requestedCaseId = String(form.get("caseId") ?? "");
+    const selectionIntentRaw = String(form.get("hiveSelectionIntent") ?? "").trim();
+    const selectionIntent: HiveDocumentCommitSelectionIntent | null =
+      selectionIntentRaw === "new" || selectionIntentRaw === "existing"
+        ? selectionIntentRaw
+        : null;
     const files = form.getAll("file");
     const stagedIds = form.getAll("stagedDocumentId").map((value) => String(value));
     if (!files.length || files.length !== stagedIds.length) {
@@ -201,10 +209,17 @@ export async function POST(request: Request) {
     try {
       const gateway = await createAuthenticatedHiveGateway();
       const cases = new SupabaseCaseRepository(gateway, sessionUserId);
-      const caseRecord = await createOrReuseCase(cases, {
-        sessionUserId,
-        requestedCaseId,
-      });
+      const caseRecord =
+        selectionIntent && requestedCaseId.trim()
+          ? await resolveCaseForDocumentCommit(cases, {
+              sessionUserId,
+              requestedCaseId,
+              selectionIntent,
+            })
+          : await createOrReuseCase(cases, {
+              sessionUserId,
+              requestedCaseId,
+            });
       const documents = new SupabaseSourceDocumentRepository(gateway, sessionUserId);
       const storage = new SupabaseSourceDocumentStorage(
         gateway,
@@ -261,6 +276,13 @@ export async function POST(request: Request) {
         return NextResponse.json(
           { error: "UNAUTHENTICATED", message: "Sign in is required." },
           { status: 401 },
+        );
+      }
+      if (error instanceof CaseNotAccessibleError) {
+        logDocumentCommitNonSuccess(404, "CASE_NOT_FOUND");
+        return NextResponse.json(
+          { error: "CASE_NOT_FOUND", message: "Hive was not found for your account." },
+          { status: 404 },
         );
       }
       logDocumentCommitFailure(error);

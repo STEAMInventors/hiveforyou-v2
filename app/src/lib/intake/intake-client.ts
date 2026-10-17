@@ -4,6 +4,11 @@ import type { IntakeEvidenceWorkspaceView, IntakeRunStatus } from "@hiveforyou/s
 
 export const HIVE_INTAKE_RUN_STORAGE_KEY = "hive-intake-run-id";
 
+/** Clears in-flight intake run state without dropping the selected Hive case id. */
+export function clearIntakeRunForNewUpload(): void {
+  clearStoredIntakeRun();
+}
+
 /** Clears client intake session keys so the home composer starts a new case/run. */
 export function resetIntakeHomeSession(): void {
   clearStoredIntakeRun();

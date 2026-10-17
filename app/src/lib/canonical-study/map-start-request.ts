@@ -5,6 +5,14 @@ import type { QuestionSet, QuestionsAnswerSnapshot } from "@/lib/questions/types
 
 const CLIENT_CASE_ID_KEY = "hive-client-case-id";
 
+export function readClientCaseId(): string | null {
+  if (typeof window === "undefined") {
+    return null;
+  }
+  const existing = window.sessionStorage.getItem(CLIENT_CASE_ID_KEY);
+  return existing?.trim() ? existing : null;
+}
+
 export function rememberClientCaseId(caseId: string): void {
   if (typeof window === "undefined") {
     return;
@@ -27,8 +35,15 @@ export function getOrCreateClientCaseId(): string {
   if (existing) {
     return existing;
   }
+  return createFreshClientCaseId();
+}
+
+/** Allocates a new Hive case id without reading session storage. */
+export function createFreshClientCaseId(): string {
   const created = crypto.randomUUID();
-  window.sessionStorage.setItem(CLIENT_CASE_ID_KEY, created);
+  if (typeof window !== "undefined") {
+    window.sessionStorage.setItem(CLIENT_CASE_ID_KEY, created);
+  }
   return created;
 }
 
