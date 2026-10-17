@@ -36,21 +36,20 @@ describe("LandingHiveHandoff", () => {
     vi.mocked(fetchOwnedHive).mockReset();
   });
 
-  it("does not call owned-hive APIs in preview mode", async () => {
+  it("does not call owned-hive APIs during create handoff", async () => {
     const onContinue = vi.fn();
     render(
       <LandingHiveHandoff
         fileCount={2}
         composerExplicitDomainId="iep"
         explicitDomainLabel="Special Education / IEP"
-        previewMode
         draftCaseId={DRAFT_CASE_ID}
         onBack={() => undefined}
         onContinue={onContinue}
       />,
     );
 
-    expect(screen.getByTestId("landing-hive-handoff-preview-mode-banner")).toBeInTheDocument();
+    expect(screen.queryByTestId("landing-hive-handoff-preview-mode-banner")).toBeNull();
     expect(screen.queryByTestId("landing-hive-handoff-mode-existing")).toBeNull();
     expect(fetchOwnedHives).not.toHaveBeenCalled();
 
@@ -70,7 +69,6 @@ describe("LandingHiveHandoff", () => {
         fileCount={1}
         composerExplicitDomainId="iep"
         explicitDomainLabel="Special Education / IEP"
-        previewMode
         draftCaseId={DRAFT_CASE_ID}
         onBack={() => undefined}
         onContinue={onContinue}
@@ -95,7 +93,6 @@ describe("LandingHiveHandoff", () => {
         fileCount={1}
         composerExplicitDomainId="iep"
         explicitDomainLabel="Special Education / IEP"
-        previewMode
         draftCaseId={DRAFT_CASE_ID}
         initialDraft={{
           caseId: DRAFT_CASE_ID,

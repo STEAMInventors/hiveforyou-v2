@@ -9,7 +9,6 @@ describe("CreateYourHiveModal", () => {
     render(
       <CreateYourHiveModal
         open
-        previewMode
         domainId="iep"
         domainLabel="Special Education / IEP"
         hiveName=""

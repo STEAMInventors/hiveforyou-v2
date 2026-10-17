@@ -30,7 +30,9 @@ vi.mock("@hiveforyou/domain-packs", () => ({
 }));
 
 vi.mock("@/lib/auth/client-session", () => ({
-  readClientSessionStatus: vi.fn(),
+  resolveWorkflowSessionStatus: vi.fn(),
+  WORKFLOW_SESSION_UNAVAILABLE_MESSAGE:
+    "No authorized session is available. In local development, enable HIVE_DEV_AUTO_AUTH with HIVE_DEV_AUTH_EMAIL and HIVE_DEV_AUTH_PASSWORD, or sign in with a real Supabase session.",
 }));
 
 vi.mock("@/lib/cases/cases-client", () => ({
@@ -74,7 +76,7 @@ vi.mock("@/lib/intake/intake-client", async () => {
   };
 });
 
-import { readClientSessionStatus } from "@/lib/auth/client-session";
+import { resolveWorkflowSessionStatus } from "@/lib/auth/client-session";
 import { commitStagedDocuments } from "@/lib/documents/commit-client";
 import { runDiscoverForStagedDocuments } from "@/lib/document-discovery/run-discover-client";
 import { fetchOwnedHive, fetchOwnedHives } from "@/lib/cases/cases-client";
@@ -168,8 +170,8 @@ describe("UploadExperience", () => {
     vi.mocked(startIntakeRun).mockClear();
     vi.mocked(commitStagedDocuments).mockClear();
     vi.mocked(fetchIntakeRun).mockReset();
-    vi.mocked(readClientSessionStatus).mockReset();
-    vi.mocked(readClientSessionStatus).mockResolvedValue("authenticated");
+    vi.mocked(resolveWorkflowSessionStatus).mockReset();
+    vi.mocked(resolveWorkflowSessionStatus).mockResolvedValue("authenticated");
     vi.mocked(fetchOwnedHives).mockClear();
     vi.mocked(fetchOwnedHive).mockClear();
     vi.mocked(fetchIntakeRun).mockResolvedValue({
@@ -210,7 +212,7 @@ describe("UploadExperience", () => {
   });
 
   it("shows the login placeholder and skips protected APIs when signed out", async () => {
-    vi.mocked(readClientSessionStatus).mockResolvedValue("unauthenticated");
+    vi.mocked(resolveWorkflowSessionStatus).mockResolvedValue("unauthenticated");
     const { container } = renderUploadExperience();
     submitComposerFlow(container);
 
@@ -218,14 +220,14 @@ describe("UploadExperience", () => {
       expect(screen.getByTestId("landing-auth-placeholder")).toBeInTheDocument();
     });
     expect(screen.getByTestId("landing-auth-not-connected-notice")).toHaveTextContent(
-      /not connected/i,
+      /placeholders/i,
     );
     expect(commitStagedDocuments).not.toHaveBeenCalled();
     expect(startIntakeRun).not.toHaveBeenCalled();
   });
 
   it("returns to the composer with preserved intent and files after Back from auth", async () => {
-    vi.mocked(readClientSessionStatus).mockResolvedValue("unauthenticated");
+    vi.mocked(resolveWorkflowSessionStatus).mockResolvedValue("unauthenticated");
     const { container } = renderUploadExperience();
     submitComposerFlow(container);
 
@@ -240,7 +242,7 @@ describe("UploadExperience", () => {
   });
 
   it("advances to the hive handoff when a real session appears from the auth placeholder", async () => {
-    vi.mocked(readClientSessionStatus)
+    vi.mocked(resolveWorkflowSessionStatus)
       .mockResolvedValueOnce("unauthenticated")
       .mockResolvedValueOnce("authenticated");
     const { container } = renderUploadExperience();
@@ -258,7 +260,7 @@ describe("UploadExperience", () => {
   });
 
   it("shows loading feedback while rechecking session from the auth placeholder", async () => {
-    vi.mocked(readClientSessionStatus)
+    vi.mocked(resolveWorkflowSessionStatus)
       .mockResolvedValueOnce("unauthenticated")
       .mockImplementation(
         () =>
@@ -280,15 +282,17 @@ describe("UploadExperience", () => {
     expect(screen.getByTestId("landing-auth-session-continue")).toBeDisabled();
 
     await waitFor(() => {
-      expect(screen.getByTestId("landing-hive-handoff-preview-mode-banner")).toBeInTheDocument();
+      expect(screen.getByTestId("landing-auth-session-continue-notice")).toHaveTextContent(
+        /HIVE_DEV_AUTO_AUTH/i,
+      );
     });
-    expect(screen.queryByTestId("landing-auth-placeholder")).not.toBeInTheDocument();
+    expect(screen.getByTestId("landing-auth-placeholder")).toBeInTheDocument();
     expect(fetchOwnedHives).not.toHaveBeenCalled();
     expect(commitStagedDocuments).not.toHaveBeenCalled();
   });
 
-  it("advances to preview hive handoff when Continue is clicked without a session", async () => {
-    vi.mocked(readClientSessionStatus).mockResolvedValue("unauthenticated");
+  it("blocks onboarding when Continue is clicked without an authorized session", async () => {
+    vi.mocked(resolveWorkflowSessionStatus).mockResolvedValue("unauthenticated");
     const { container } = renderUploadExperience();
     submitComposerFlow(container);
 
@@ -298,16 +302,20 @@ describe("UploadExperience", () => {
     fireEvent.click(screen.getByTestId("landing-auth-session-continue"));
 
     await waitFor(() => {
-      expect(screen.getByTestId("landing-hive-handoff-preview-mode-banner")).toBeInTheDocument();
+      expect(screen.getByTestId("landing-auth-session-continue-notice")).toHaveTextContent(
+        /HIVE_DEV_AUTO_AUTH/i,
+      );
     });
-    expect(screen.queryByTestId("landing-auth-placeholder")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("landing-hive-handoff")).not.toBeInTheDocument();
     expect(fetchOwnedHives).not.toHaveBeenCalled();
     expect(commitStagedDocuments).not.toHaveBeenCalled();
     expect(startIntakeRun).not.toHaveBeenCalled();
   });
 
-  it("walks preview onboarding through documents without protected APIs", async () => {
-    vi.mocked(readClientSessionStatus).mockResolvedValue("unauthenticated");
+  it("starts real intake after auth placeholder when session resolves on Continue", async () => {
+    vi.mocked(resolveWorkflowSessionStatus)
+      .mockResolvedValueOnce("unauthenticated")
+      .mockResolvedValueOnce("authenticated");
     const { container } = renderUploadExperience();
     submitComposerFlow(container);
 
@@ -317,66 +325,19 @@ describe("UploadExperience", () => {
     fireEvent.click(screen.getByTestId("landing-auth-session-continue"));
 
     await waitFor(() => {
-      expect(screen.getByTestId("landing-hive-handoff-preview-mode-banner")).toBeInTheDocument();
+      expect(screen.getByTestId("landing-hive-handoff")).toBeInTheDocument();
     });
-    await completeCreateHiveModal("Preview Hive Name");
+    await completeCreateHiveModal("Dev Hive");
 
     await waitFor(() => {
-      expect(screen.getByTestId("landing-upload-documents-preview")).toBeInTheDocument();
+      expect(screen.getByTestId("intake-processing-modal")).toBeInTheDocument();
     });
-    expect(screen.getByTestId("landing-upload-preview-mode-banner")).toHaveTextContent(
-      /Preview Mode/i,
-    );
-    expect(screen.getByTestId("landing-upload-preview-file-report.pdf")).toHaveTextContent(
-      "report.pdf",
-    );
-    expect(screen.getByTestId("landing-upload-documents-preview")).toHaveTextContent(
-      /not uploaded yet/i,
-    );
-    expect(screen.getByTestId("landing-upload-preview-hive-name")).toHaveTextContent(
-      "Preview Hive Name (Preview)",
-    );
-    expect(screen.getByTestId("landing-upload-preview-intent")).toHaveTextContent(
-      "Preparing for an IEP meeting",
-    );
-    expect(commitStagedDocuments).not.toHaveBeenCalled();
-    expect(startIntakeRun).not.toHaveBeenCalled();
-    expect(runDiscoverForStagedDocuments).not.toHaveBeenCalled();
-
-    fireEvent.click(screen.getByTestId("landing-upload-preview-back"));
-    expect(screen.getByTestId("landing-hive-handoff-preview-mode-banner")).toBeInTheDocument();
-
-    fireEvent.click(screen.getByTestId("landing-hive-handoff-create"));
-    await waitFor(() => {
-      expect(screen.getByTestId("landing-create-hive-name")).toHaveValue("Preview Hive Name");
-    });
-  });
-
-  it("does not call protected APIs when create hive validation fails in preview", async () => {
-    vi.mocked(readClientSessionStatus).mockResolvedValue("unauthenticated");
-    const { container } = renderUploadExperience();
-    submitComposerFlow(container);
-
-    await waitFor(() => {
-      expect(screen.getByTestId("landing-auth-placeholder")).toBeInTheDocument();
-    });
-    fireEvent.click(screen.getByTestId("landing-auth-session-continue"));
-
-    await waitFor(() => {
-      expect(screen.getByTestId("landing-hive-handoff-create")).toBeInTheDocument();
-    });
-    fireEvent.click(screen.getByTestId("landing-hive-handoff-create"));
-    await waitFor(() => {
-      expect(screen.getByTestId("landing-create-hive-modal")).toBeInTheDocument();
-    });
-    fireEvent.click(screen.getByTestId("landing-create-hive-submit"));
-    expect(screen.getByTestId("landing-create-hive-name-error")).toBeInTheDocument();
-    expect(commitStagedDocuments).not.toHaveBeenCalled();
-    expect(startIntakeRun).not.toHaveBeenCalled();
+    expect(commitStagedDocuments).toHaveBeenCalledOnce();
+    expect(startIntakeRun).toHaveBeenCalledOnce();
   });
 
   it("shows an inline notice when session recheck fails", async () => {
-    vi.mocked(readClientSessionStatus)
+    vi.mocked(resolveWorkflowSessionStatus)
       .mockResolvedValueOnce("unauthenticated")
       .mockResolvedValueOnce("error");
     const { container } = renderUploadExperience();

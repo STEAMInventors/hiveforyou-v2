@@ -7,12 +7,14 @@ import {
   type HiveHandoffDraft,
   type HiveHandoffSelection,
 } from "@/components/landing/LandingHiveHandoff";
-import { LandingUploadDocumentsPreview } from "@/components/landing/LandingUploadDocumentsPreview";
 import { LoginRegisterPlaceholder } from "@/components/landing/LoginRegisterPlaceholder";
 import { HiveHomeComposer, type HiveComposerSubmit } from "@/components/intake/HiveHomeComposer";
 import { IntakeUnderstanding } from "@/components/intake/IntakeUnderstanding";
 import { TrustMessage } from "@/components/TrustMessage";
-import { readClientSessionStatus } from "@/lib/auth/client-session";
+import {
+  resolveWorkflowSessionStatus,
+  WORKFLOW_SESSION_UNAVAILABLE_MESSAGE,
+} from "@/lib/auth/client-session";
 import {
   clearStoredIntakeRun,
   fetchIntakeRun,
@@ -30,8 +32,7 @@ type LandingHandoffStep =
   | "composer"
   | "checking-session"
   | "auth-required"
-  | "hive-handoff"
-  | "upload-documents-preview";
+  | "hive-handoff";
 
 const SESSION_CHECK_ERROR_MESSAGE = "We couldn't check sign-in. Please try again.";
 
@@ -52,8 +53,6 @@ export function UploadExperience({ showTrustMessage = true }: { showTrustMessage
   const [hiveHandoffDraft, setHiveHandoffDraft] = useState<HiveHandoffDraft | null>(null);
   const [pendingFileCount, setPendingFileCount] = useState(0);
   const [sessionContinueNotice, setSessionContinueNotice] = useState<string | null>(null);
-  const [onboardingPreviewMode, setOnboardingPreviewMode] = useState(false);
-  const [previewHiveCommit, setPreviewHiveCommit] = useState<HiveHandoffSelection | null>(null);
 
   const processing = started || Boolean(resumeRunId);
   const composerVisible = handoffStep === "composer" || handoffStep === "checking-session";
@@ -109,7 +108,7 @@ export function UploadExperience({ showTrustMessage = true }: { showTrustMessage
     setPendingFileCount(payload.files.length);
     setSessionContinueNotice(null);
     setHandoffStep("checking-session");
-    const session = await readClientSessionStatus();
+    const session = await resolveWorkflowSessionStatus();
     if (session === "authenticated") {
       setHandoffStep("hive-handoff");
       return;
@@ -124,9 +123,8 @@ export function UploadExperience({ showTrustMessage = true }: { showTrustMessage
     setSessionRecheckBusy(true);
     setSessionContinueNotice(null);
     try {
-      const session = await readClientSessionStatus();
+      const session = await resolveWorkflowSessionStatus();
       if (session === "authenticated") {
-        setOnboardingPreviewMode(false);
         setHandoffStep("hive-handoff");
         return;
       }
@@ -134,27 +132,12 @@ export function UploadExperience({ showTrustMessage = true }: { showTrustMessage
         setSessionContinueNotice(SESSION_CHECK_ERROR_MESSAGE);
         return;
       }
-      setOnboardingPreviewMode(true);
-      setHandoffStep("hive-handoff");
+      setSessionContinueNotice(WORKFLOW_SESSION_UNAVAILABLE_MESSAGE);
     } catch {
       setSessionContinueNotice(SESSION_CHECK_ERROR_MESSAGE);
     } finally {
       setSessionRecheckBusy(false);
     }
-  };
-
-  const beginPreviewUploadStep = (payload: HiveComposerSubmit, selection: HiveHandoffSelection) => {
-    setPreviewHiveCommit(selection);
-    setHiveHandoffDraft({
-      caseId: selection.caseId,
-      hiveName: selection.hiveName,
-      hiveDescription: selection.hiveDescription ?? "",
-    });
-    setComposerPurpose({
-      rawIntent: payload.rawIntent,
-      explicitDomainId: payload.explicitDomainId,
-    });
-    setHandoffStep("upload-documents-preview");
   };
 
   const handleHiveHandoffContinue = (selection: HiveHandoffSelection) => {
@@ -163,24 +146,14 @@ export function UploadExperience({ showTrustMessage = true }: { showTrustMessage
       setHandoffStep("composer");
       return;
     }
-    if (onboardingPreviewMode) {
-      beginPreviewUploadStep(payload, selection);
-      return;
-    }
     beginAuthorizedIntake(payload, selection);
   };
 
   const handleBackToComposer = () => {
     setSessionContinueNotice(null);
-    setOnboardingPreviewMode(false);
-    setPreviewHiveCommit(null);
     setHiveHandoffDraft(null);
     onboardingHiveCaseIdRef.current = crypto.randomUUID();
     setHandoffStep("composer");
-  };
-
-  const handleBackToPreviewHiveHandoff = () => {
-    setHandoffStep("hive-handoff");
   };
 
   return (
@@ -204,7 +177,7 @@ export function UploadExperience({ showTrustMessage = true }: { showTrustMessage
         {showTrustMessage && composerVisible ? <TrustMessage /> : null}
       </div>
 
-      {handoffStep === "auth-required" && !onboardingPreviewMode ? (
+      {handoffStep === "auth-required" ? (
         <LoginRegisterPlaceholder
           onBack={handleBackToComposer}
           onSessionAvailable={() => {
@@ -224,42 +197,10 @@ export function UploadExperience({ showTrustMessage = true }: { showTrustMessage
               ? DOMAIN_LABELS[pendingSubmitRef.current.explicitDomainId] ?? null
               : null
           }
-          previewMode={onboardingPreviewMode}
-          draftCaseId={
-            hiveHandoffDraft?.caseId ??
-            previewHiveCommit?.caseId ??
-            onboardingHiveCaseIdRef.current
-          }
+          draftCaseId={hiveHandoffDraft?.caseId ?? onboardingHiveCaseIdRef.current}
           initialDraft={hiveHandoffDraft}
           onBack={handleBackToComposer}
           onContinue={handleHiveHandoffContinue}
-        />
-      ) : null}
-
-      {handoffStep === "upload-documents-preview" && pendingSubmitRef.current && previewHiveCommit ? (
-        <LandingUploadDocumentsPreview
-          fileCount={pendingFileCount}
-          files={pendingSubmitRef.current.files.map((file) => ({
-            name: file.name,
-            sizeBytes: file.size,
-          }))}
-          rawIntent={composerPurpose?.rawIntent ?? pendingSubmitRef.current.rawIntent}
-          explicitDomainId={
-            composerPurpose?.explicitDomainId ?? pendingSubmitRef.current.explicitDomainId
-          }
-          explicitDomainLabel={
-            (composerPurpose?.explicitDomainId ?? pendingSubmitRef.current.explicitDomainId)
-              ? DOMAIN_LABELS[
-                  composerPurpose?.explicitDomainId ??
-                    pendingSubmitRef.current.explicitDomainId ??
-                    ""
-                ] ?? null
-              : null
-          }
-          hiveName={previewHiveCommit.hiveName}
-          hiveDescription={previewHiveCommit.hiveDescription}
-          previewHive
-          onBack={handleBackToPreviewHiveHandoff}
         />
       ) : null}
 

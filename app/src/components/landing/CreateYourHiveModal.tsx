@@ -10,7 +10,6 @@ import {
 
 export type CreateYourHiveModalProps = {
   open: boolean;
-  previewMode?: boolean;
   domainId: string | null;
   domainLabel: string | null;
   hiveName: string;
@@ -26,7 +25,6 @@ export type CreateYourHiveModalProps = {
 
 export function CreateYourHiveModal({
   open,
-  previewMode = false,
   domainId,
   domainLabel,
   hiveName,
@@ -90,16 +88,6 @@ export function CreateYourHiveModal({
             A private space for one situation. You can rename it later.
           </p>
         </div>
-
-        {previewMode ? (
-          <p
-            className="mt-4 rounded-[10px] border border-[#EBDDB4] bg-[#FBF4E2] px-3.5 py-2.5 text-sm leading-snug text-[#3D3000]"
-            data-testid="landing-create-hive-preview-notice"
-          >
-            <span className="font-semibold">Preview Hive.</span> This draft stays on your device
-            until you sign in. Nothing is saved on the server here.
-          </p>
-        ) : null}
 
         <div className="mt-5 flex flex-col gap-4">
           <label className="flex flex-col gap-1.5 text-sm font-semibold text-[#0D0D0D]">

@@ -40,8 +40,8 @@ export function LoginRegisterPlaceholder({
           className="rounded-[10px] border border-[#EBDDB4] bg-[#FBF4E2] px-3.5 py-2.5 text-sm leading-snug text-[#3D3000]"
           data-testid="landing-auth-not-connected-notice"
         >
-          Preview only — sign-in and registration are not connected yet. Your files and
-          description stay on this device until you return to upload.
+          Sign-in and registration UI are placeholders. Continue uses your development test session
+          when configured, or an existing Supabase session.
         </div>
 
         <div className="flex gap-1 rounded-full border border-[#E3E3E3] bg-[#F8F9FA] p-1">
@@ -181,8 +181,8 @@ export function LoginRegisterPlaceholder({
           {sessionRecheckBusy ? "Checking sign-in…" : "Continue with your account"}
         </button>
         <p className="m-0 text-center text-xs leading-snug text-[#5F6368]">
-          Signed in elsewhere? We&apos;ll use your real Hive. Otherwise you&apos;ll continue in
-          Preview Mode — no upload or reading until sign-in is connected.
+          Signed in elsewhere? We&apos;ll use that session. Local development can auto-sign in via
+          HIVE_DEV_AUTO_AUTH.
         </p>
 
         {sessionContinueNotice ? (

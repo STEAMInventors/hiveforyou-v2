@@ -24,7 +24,6 @@ type LandingHiveHandoffProps = {
   fileCount: number;
   composerExplicitDomainId: string | null;
   explicitDomainLabel: string | null;
-  previewMode?: boolean;
   draftCaseId: string;
   initialDraft?: HiveHandoffDraft | null;
   onBack: () => void;
@@ -36,7 +35,6 @@ export function LandingHiveHandoff({
   fileCount,
   composerExplicitDomainId,
   explicitDomainLabel,
-  previewMode = false,
   draftCaseId,
   initialDraft = null,
   onBack,
@@ -80,24 +78,13 @@ export function LandingHiveHandoff({
         data-testid="landing-hive-handoff"
         aria-label="Create your Hive"
       >
-        {previewMode ? (
-          <div
-            className="rounded-[10px] border border-[#EBDDB4] bg-[#FBF4E2] px-3.5 py-2.5 text-sm leading-snug text-[#3D3000]"
-            data-testid="landing-hive-handoff-preview-mode-banner"
-          >
-            <span className="font-semibold">Preview Mode.</span> Name your Hive to preview the next
-            step. Nothing is created on the server until you sign in.
-          </div>
-        ) : null}
-
         <div className="flex flex-col gap-2 text-center">
           <h2 className="m-0 text-[1.5rem] font-semibold tracking-tight text-[#0D0D0D]">
             Create your Hive
           </h2>
           <p className="m-0 text-sm leading-relaxed text-[#5F6368]">
-            {previewMode
-              ? `Preview attaching ${fileCount} document${fileCount === 1 ? "" : "s"} to a new Hive. Reading starts only after sign-in and upload.`
-              : `Attach your ${fileCount} selected document${fileCount === 1 ? "" : "s"} to a new Hive. Reading starts only after you continue.`}
+            Attach your {fileCount} selected document{fileCount === 1 ? "" : "s"} to a new Hive.
+            Reading starts when you continue.
           </p>
         </div>
 
@@ -136,7 +123,6 @@ export function LandingHiveHandoff({
 
       <CreateYourHiveModal
         open={modalOpen}
-        previewMode={previewMode}
         domainId={composerExplicitDomainId}
         domainLabel={explicitDomainLabel}
         hiveName={hiveName}
