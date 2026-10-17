@@ -73,20 +73,12 @@ function AudienceToggle({
   const proHref = buildHiveReportPreviewHref({ ...base, audience: "pro" });
 
   return (
-    <div
-      className="inline-flex rounded-lg border border-customerHive-border bg-white p-1"
-      role="tablist"
-      aria-label="Report audience"
-    >
+    <div className="hir-reports-seg" role="tablist" aria-label="Report audience">
       <Link
         href={customerHref}
         role="tab"
         aria-selected={audience === "customer"}
-        className={`rounded-md px-4 py-2 text-sm font-medium ${
-          audience === "customer"
-            ? "bg-customerHive-primary text-white"
-            : "text-customerHive-on-surface"
-        }`}
+        className="hir-reports-seg__option"
       >
         Customer
       </Link>
@@ -94,9 +86,7 @@ function AudienceToggle({
         href={proHref}
         role="tab"
         aria-selected={audience === "pro"}
-        className={`rounded-md px-4 py-2 text-sm font-medium ${
-          audience === "pro" ? "bg-customerHive-primary text-white" : "text-customerHive-on-surface"
-        }`}
+        className="hir-reports-seg__option"
       >
         Pro
       </Link>
@@ -112,36 +102,24 @@ function LayoutToggle({
   onChange: (mode: ReportLayoutMode) => void;
 }) {
   return (
-    <div
-      className="inline-flex rounded-lg border border-customerHive-border bg-white p-1"
-      role="tablist"
-      aria-label="Report layout source"
-    >
-      <button
-        type="button"
-        role="tab"
-        aria-selected={layoutMode === "deterministic"}
-        className={`rounded-md px-4 py-2 text-sm font-medium ${
-          layoutMode === "deterministic"
-            ? "bg-customerHive-primary text-white"
-            : "text-customerHive-on-surface"
-        }`}
-        onClick={() => onChange("deterministic")}
-      >
-        Deterministic
-      </button>
+    <div className="hir-reports-seg" role="tablist" aria-label="Report layout source">
       <button
         type="button"
         role="tab"
         aria-selected={layoutMode === "writer"}
-        className={`rounded-md px-4 py-2 text-sm font-medium ${
-          layoutMode === "writer"
-            ? "bg-customerHive-primary text-white"
-            : "text-customerHive-on-surface"
-        }`}
+        className="hir-reports-seg__option"
         onClick={() => onChange("writer")}
       >
-        Writer
+        Report layout
+      </button>
+      <button
+        type="button"
+        role="tab"
+        aria-selected={layoutMode === "deterministic"}
+        className="hir-reports-seg__option"
+        onClick={() => onChange("deterministic")}
+      >
+        Code-built layout
       </button>
     </div>
   );
@@ -178,7 +156,7 @@ function WriterFallbackBanner({ message }: { message: string }) {
       role="status"
       data-testid="writer-layout-fallback-banner"
     >
-      <p className="font-semibold">Showing deterministic layout (Writer fallback)</p>
+      <p className="font-semibold">Showing code-built layout (Writer fallback)</p>
       <p className="mt-1">{message}</p>
     </div>
   );
@@ -193,12 +171,13 @@ function WriterStatusPanel({
 }) {
   const status = generation?.status ?? writerPreview?.shadowStatus ?? "—";
   const validation = generation?.validation ?? writerPreview?.validation;
+  const inflight = isWriterInFlight(status);
   return (
     <div
-      className="mb-4 rounded-xl border border-customerHive-border bg-white px-4 py-3 text-sm"
+      className={`hir-writer-status mb-6 ${inflight ? "hir-writer-status--inflight" : ""}`}
       data-testid="writer-layout-status"
     >
-      <p className="font-medium text-customerHive-on-surface">Writer layout status</p>
+      <p className="font-semibold text-[var(--hir-text)]">Report generation</p>
       {isWriterInFlight(status) ? (
         <p className="mt-1 text-customerHive-on-surface-muted" data-testid="writer-layout-inflight">
           {status === "queued" ? "Queued for the worker." : "Worker is generating the Writer layout."}
@@ -243,7 +222,7 @@ export function CanonicalStudyReportPreviewExperience({
   initialAudience: CanonicalStudyReportAudience;
 }) {
   const [audience, setAudience] = useState<CanonicalStudyReportAudience>(initialAudience);
-  const [layoutMode, setLayoutMode] = useState<ReportLayoutMode>("deterministic");
+  const [layoutMode, setLayoutMode] = useState<ReportLayoutMode>("writer");
   const [projection, setProjection] = useState<CanonicalStudyReportPreviewPayload | null>(null);
   const [deterministicHiveUiTree, setDeterministicHiveUiTree] = useState<HiveUiTree | null>(null);
   const [writerPreview, setWriterPreview] = useState<WriterUiTreePreviewPayload | null>(null);
@@ -330,11 +309,8 @@ export function CanonicalStudyReportPreviewExperience({
   }, [loadReport]);
 
   useEffect(() => {
-    if (layoutMode !== "writer") {
-      return;
-    }
     void loadWriterPreview();
-  }, [layoutMode, loadWriterPreview]);
+  }, [loadWriterPreview]);
 
   const pollWriterStatus = useCallback(
     async (serial: number, writerRunId: string): Promise<HiveWriterShadowDiagnostic | null> => {
@@ -460,22 +436,28 @@ export function CanonicalStudyReportPreviewExperience({
         activeSection: "reports",
       }}
     >
-      <div className="mx-auto w-full max-w-[1200px] px-6 py-10 lg:px-10">
-        <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
-          <div>
-            <h1 className="text-2xl font-semibold text-customerHive-on-surface">
-              {audience === "pro" ? "Pro report" : "Customer report"}
+      <div className="mx-auto w-full max-w-[1160px] px-4 py-8 md:px-8 md:py-10">
+        <header className="mb-8 flex flex-col gap-6">
+          <div className="flex flex-col gap-2">
+            <h1
+              className="m-0 font-[family-name:var(--font-outfit)] text-[1.75rem] font-semibold leading-tight tracking-[-0.02em] text-customerHive-on-surface md:text-[2rem]"
+              style={{ fontFamily: "var(--font-outfit), system-ui, sans-serif" }}
+            >
+              Reports come from your study
             </h1>
-            <p className="mt-1 font-mono text-xs text-customerHive-on-surface-muted">
-              studyRunId={studyRunId || "—"}
+            <p className="m-0 max-w-[640px] text-base leading-relaxed text-customerHive-on-surface-variant">
+              Each report is composed from your accepted Canonical Study. Opening a report never
+              changes it; generating creates a new Writer run with its own layout.
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-3">
             <AudienceToggle audience={audience} caseId={caseId} studyRunId={studyRunId} />
-            <LayoutToggle layoutMode={layoutMode} onChange={setLayoutMode} />
+            {projection && projection.presentationMode !== "approved" ? (
+              <LayoutToggle layoutMode={layoutMode} onChange={setLayoutMode} />
+            ) : null}
             <button
               type="button"
-              className="rounded-lg border border-customerHive-border bg-white px-4 py-2 text-sm font-medium disabled:opacity-50"
+              className="hir-btn-primary"
               disabled={generating || !studyRunId.trim()}
               onClick={() => void generateWriterLayout()}
               data-testid="generate-writer-layout"
@@ -490,14 +472,14 @@ export function CanonicalStudyReportPreviewExperience({
                   ? "Generate Pro report"
                   : "Generate Customer report"}
             </button>
-            <Link
-              href={jsonHref}
-              className="rounded-lg border border-customerHive-border bg-white px-4 py-2 text-sm font-medium"
-            >
+            <Link href={jsonHref} className="hir-btn-secondary">
               Canonical JSON
             </Link>
           </div>
-        </div>
+          <p className="m-0 font-mono text-xs text-customerHive-on-surface-muted">
+            studyRunId={studyRunId || "—"}
+          </p>
+        </header>
 
         {loading ? (
           <p className="text-sm text-customerHive-on-surface-muted">Loading report preview…</p>
@@ -513,7 +495,10 @@ export function CanonicalStudyReportPreviewExperience({
         {projection ? (
           <>
             <InternalPreviewBanner projection={projection} />
-            {layoutMode === "writer" ? (
+            {layoutMode === "writer" &&
+            (writerPreviewLoading ||
+              generation ||
+              (writerPreview && writerPreview.shadowStatus !== "missing")) ? (
               <WriterStatusPanel writerPreview={writerPreview} generation={generation} />
             ) : null}
             {showWriterFallback && writerPreview?.fallbackReason ? (

@@ -75,6 +75,7 @@ describe("mapInspectorDocumentToCustomerRow", () => {
       {
         label: "First name",
         value: "Maya",
+        groupLabel: "Student",
         provenance: { text: "Student Name: Maya", chipLabel: "IEP · p.2" },
       },
     ]);

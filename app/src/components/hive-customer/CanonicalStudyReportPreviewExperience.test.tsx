@@ -120,7 +120,7 @@ describe("CanonicalStudyReportPreviewExperience", () => {
     fetchMock.mockReset();
   });
 
-  it("loads deterministic layout on mount without Writer generation", async () => {
+  it("loads inverted report on mount with read-only Writer preview, without generation POST", async () => {
     render(
       <CanonicalStudyReportPreviewExperience
         caseId="case-1"
@@ -133,13 +133,17 @@ describe("CanonicalStudyReportPreviewExperience", () => {
     await waitFor(() => {
       expect(screen.getByTestId("hive-ui-renderer")).toBeInTheDocument();
     });
-    const writerCalls = fetchMock.mock.calls.filter(([url]) =>
-      String(url).includes("hive-writer-shadow"),
+    const uiTreeGets = fetchMock.mock.calls.filter(([url]) =>
+      String(url).includes("/hive-writer-shadow/ui-tree"),
     );
-    expect(writerCalls).toHaveLength(0);
+    expect(uiTreeGets.length).toBeGreaterThanOrEqual(1);
+    const runPosts = fetchMock.mock.calls.filter(
+      ([url, init]) => String(url).includes("/hive-writer-shadow/run") && init?.method === "POST",
+    );
+    expect(runPosts).toHaveLength(0);
   });
 
-  it("fetches Writer ui-tree only when Writer layout is selected", async () => {
+  it("switches to code-built layout without triggering Writer generation", async () => {
     const user = userEvent.setup();
     render(
       <CanonicalStudyReportPreviewExperience
@@ -149,14 +153,10 @@ describe("CanonicalStudyReportPreviewExperience", () => {
       />,
     );
     await waitFor(() => expect(screen.getByTestId("hive-ui-renderer")).toBeInTheDocument());
-    await user.click(screen.getByRole("tab", { name: "Writer" }));
+    await user.click(screen.getByRole("tab", { name: "Code-built layout" }));
     await waitFor(() => {
-      expect(screen.getByTestId("writer-layout-status")).toBeInTheDocument();
+      expect(screen.getByTestId("hive-ui-renderer")).toBeInTheDocument();
     });
-    const uiTreeGets = fetchMock.mock.calls.filter(([url]) =>
-      String(url).includes("/hive-writer-shadow/ui-tree"),
-    );
-    expect(uiTreeGets.length).toBeGreaterThanOrEqual(1);
     const runPosts = fetchMock.mock.calls.filter(
       ([url, init]) => String(url).includes("/hive-writer-shadow/run") && init?.method === "POST",
     );
@@ -317,7 +317,7 @@ describe("CanonicalStudyReportPreviewExperience", () => {
       />,
     );
     await waitFor(() => expect(screen.getByTestId("hive-ui-renderer")).toBeInTheDocument());
-    await user.click(screen.getByRole("tab", { name: "Writer" }));
+    await user.click(screen.getByRole("tab", { name: "Report layout" }));
     await waitFor(() => {
       expect(screen.getByTestId("writer-layout-fallback-banner")).toBeInTheDocument();
     });

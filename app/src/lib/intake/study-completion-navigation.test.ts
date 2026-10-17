@@ -1,4 +1,8 @@
+import { createElement } from "react";
+import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
+
+import { CaseWorkspaceChrome } from "@/components/hive-customer/HiveCaseWorkspaceChrome";
 
 import {
   buildCaseCanonicalStudyHref,
@@ -82,6 +86,27 @@ describe("study-completion-navigation", () => {
     expect(parseCaseDocumentsView("raw-extractions")).toBe("raw-extractions");
     expect(withCaseDocumentsView("/intake/run-1?studyRunId=s1", "raw-extractions")).toContain(
       "documentsView=raw-extractions",
+    );
+  });
+
+  it("renders compact workspace chrome breadcrumbs and underline section tabs", () => {
+    render(
+      createElement(CaseWorkspaceChrome, {
+        caseId: "case-1",
+        studyRunId: "study-1",
+        intakeRunId: "intake-1",
+        caseLabel: "Maya",
+        activeSection: "documents",
+      }),
+    );
+
+    const breadcrumbs = screen.getByTestId("case-workspace-breadcrumbs");
+    expect(breadcrumbs).toHaveTextContent("My Hives");
+    expect(breadcrumbs).toHaveTextContent("Maya");
+    expect(breadcrumbs).not.toHaveTextContent("Canonical Study");
+
+    expect(screen.getByTestId("case-workspace-section-nav").querySelector('[aria-current="page"]')).toHaveTextContent(
+      "Documents",
     );
   });
 

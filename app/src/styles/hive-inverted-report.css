@@ -1,0 +1,291 @@
+/**
+ * HiveForYou inverted report — layout shell for Writer-validated UI trees.
+ * Tokens aligned with design-reference/claude-prototype (Modernist / case workspace).
+ */
+
+.hive-inverted-report {
+  --hir-bg-page: #f7f8fa;
+  --hir-bg-article: #ffffff;
+  --hir-border: #e7e9ed;
+  --hir-text: #1f2328;
+  --hir-text-variant: #4a525c;
+  --hir-text-muted: #6b7280;
+  --hir-accent: #2f6fe4;
+  --hir-accent-hover: #2659c2;
+  --hir-radius-article: 24px;
+  --hir-radius-card: 14px;
+  --hir-font-display: var(--font-outfit), system-ui, sans-serif;
+  --hir-font-body: var(--font-dm-sans), system-ui, sans-serif;
+}
+
+.hive-inverted-report--customer {
+  max-width: 720px;
+  margin-inline: auto;
+  padding: 48px 28px 64px;
+}
+
+.hive-inverted-report--pro {
+  max-width: 960px;
+  margin-inline: auto;
+  padding: 40px 32px 56px;
+}
+
+.hive-inverted-report__article {
+  background: var(--hir-bg-article);
+  border: 1px solid var(--hir-border);
+  border-radius: var(--hir-radius-article);
+  box-shadow: 0 1px 2px rgb(31 35 40 / 0.04);
+}
+
+.hive-inverted-report--customer .hive-inverted-report__article {
+  padding: 56px 32px 72px;
+}
+
+.hive-inverted-report--pro .hive-inverted-report__article {
+  padding: 40px 36px 48px;
+}
+
+.hive-inverted-report__body {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+  font-family: var(--hir-font-body);
+  color: var(--hir-text);
+}
+
+.hir-section-title {
+  font-family: var(--hir-font-display);
+  font-weight: 600;
+  font-size: 1.375rem;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+  color: var(--hir-text);
+  margin: 0 0 1rem;
+}
+
+.hir-section-title--group {
+  font-size: 1.125rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--hir-text-muted);
+  font-weight: 600;
+}
+
+.hir-card {
+  border: 1px solid var(--hir-border);
+  border-radius: var(--hir-radius-card);
+  background: var(--hir-bg-page);
+  padding: 1rem 1.125rem;
+}
+
+.hir-card--flat {
+  background: var(--hir-bg-article);
+}
+
+.hir-fact-text {
+  font-size: 1.0625rem;
+  line-height: 1.65;
+  color: var(--hir-text-variant);
+  margin: 0;
+}
+
+.hir-fact-meta {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--hir-text-muted);
+  margin: 0 0 0.35rem;
+}
+
+.hir-evidence-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.hir-evidence-chip {
+  display: inline-flex;
+  max-width: 100%;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  line-height: 1.3;
+  border: 1px solid var(--hir-border);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--hir-text);
+}
+
+.hir-evidence-chip__page {
+  font-weight: 600;
+  color: var(--hir-accent);
+  flex-shrink: 0;
+}
+
+.hir-timeline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.hir-timeline__item {
+  font-size: 0.8125rem;
+  padding: 0.35rem 0.75rem;
+  border: 1px solid var(--hir-border);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--hir-text);
+}
+
+.hir-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--hir-border);
+  border-radius: var(--hir-radius-card);
+}
+
+.hir-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8125rem;
+  text-align: left;
+}
+
+.hir-table thead {
+  background: var(--hir-bg-page);
+}
+
+.hir-table th {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--hir-text-muted);
+  border-bottom: 2px solid var(--hir-border);
+}
+
+.hir-table td {
+  padding: 0.5rem 0.75rem;
+  border-top: 1px solid var(--hir-border);
+  vertical-align: top;
+}
+
+.hir-callout {
+  border-radius: var(--hir-radius-card);
+  padding: 0.875rem 1rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.hir-callout--question {
+  border: 1px solid #fcd34d;
+  background: #fffbeb;
+  color: #78350f;
+}
+
+.hir-reports-seg {
+  display: inline-flex;
+  overflow: hidden;
+  border: 1px solid var(--hir-border);
+  border-radius: 10px;
+  background: #fff;
+}
+
+.hir-reports-seg__option {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.45rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  font-family: var(--hir-font-body);
+  color: var(--hir-text);
+  text-decoration: none;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.hir-reports-seg__option + .hir-reports-seg__option {
+  border-left: 1px solid var(--hir-border);
+}
+
+.hir-reports-seg__option[aria-selected="true"] {
+  background: var(--hir-accent);
+  color: #fff;
+}
+
+.hir-reports-seg__option:not([aria-selected="true"]):hover {
+  background: rgb(31 35 40 / 0.04);
+}
+
+.hir-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  padding: 0 1.125rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  font-family: var(--hir-font-body);
+  color: #fff;
+  background: var(--hir-accent);
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.hir-btn-primary:hover:not(:disabled) {
+  background: var(--hir-accent-hover);
+}
+
+.hir-btn-primary:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.hir-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  padding: 0 1rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  font-family: var(--hir-font-body);
+  color: var(--hir-text);
+  background: #fff;
+  border: 1px solid #d9dde3;
+  border-radius: 10px;
+  text-decoration: none;
+}
+
+.hir-btn-secondary:hover {
+  background: #f4f6f8;
+}
+
+.hir-writer-status {
+  border: 1px solid var(--hir-border);
+  border-radius: var(--hir-radius-card);
+  background: #fff;
+  padding: 1rem 1.125rem;
+  font-size: 0.875rem;
+}
+
+.hir-writer-status--inflight {
+  border-color: #bfdbfe;
+  background: #eff6ff;
+}
+
+@media (max-width: 640px) {
+  .hive-inverted-report--customer .hive-inverted-report__article,
+  .hive-inverted-report--pro .hive-inverted-report__article {
+    padding: 28px 20px 40px;
+    border-radius: 16px;
+  }
+}

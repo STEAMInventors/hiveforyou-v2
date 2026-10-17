@@ -4,7 +4,6 @@ import {
   buildCaseCanonicalStudyHref,
   buildCaseDocumentsHref,
   buildCaseReportsHref,
-  buildCaseWorkspaceHomeHref,
   buildMyCasesHref,
   caseWorkspaceSectionLabel,
   isCaseWorkspaceSectionNavEnabled,
@@ -12,43 +11,15 @@ import {
   type CaseWorkspaceSection,
 } from "@/lib/intake/study-completion-navigation";
 
-type Crumb = {
-  id: CaseWorkspaceSection | "my-cases";
-  label: string;
-  href: string | null;
-};
-
-function buildCrumbs(input: CaseWorkspaceNavInput): Crumb[] {
-  const caseLabel = input.caseLabel?.trim() || "Case";
-
-  return [
-    { id: "my-cases", label: "My Cases", href: buildMyCasesHref() },
-    { id: "case", label: caseLabel, href: buildCaseWorkspaceHomeHref(input) },
-    {
-      id: "documents",
-      label: caseWorkspaceSectionLabel("documents"),
-      href: buildCaseDocumentsHref(input),
-    },
-    {
-      id: "canonical-study",
-      label: caseWorkspaceSectionLabel("canonical-study"),
-      href: buildCaseCanonicalStudyHref(input),
-    },
-    {
-      id: "reports",
-      label: caseWorkspaceSectionLabel("reports"),
-      href: buildCaseReportsHref(input),
-    },
-  ];
-}
-
 function CaseWorkspaceBreadcrumbs({
-  activeSection,
+  caseLabel,
   variant = "customer",
-  ...navInput
-}: CaseWorkspaceNavInput & { activeSection: CaseWorkspaceSection; variant?: "customer" | "intake" }) {
-  const crumbs = buildCrumbs(navInput);
+}: {
+  caseLabel: string;
+  variant?: "customer" | "intake";
+}) {
   const isIntake = variant === "intake";
+  const label = caseLabel.trim() || "Case";
 
   return (
     <nav
@@ -56,52 +27,31 @@ function CaseWorkspaceBreadcrumbs({
       data-testid="case-workspace-breadcrumbs"
       className={
         isIntake
-          ? "flex flex-wrap items-center gap-1.5 px-5 py-2.5 text-[13px] text-[#5F6368]"
-          : "flex flex-wrap items-center gap-1.5 text-sm text-customerHive-on-surface-variant"
+          ? "flex flex-wrap items-center gap-2 px-5 py-2.5 text-[13px] text-[#6B7280]"
+          : "flex flex-wrap items-center gap-2 text-sm font-medium text-customerHive-on-surface-muted"
       }
     >
-      {crumbs.map((crumb, index) => {
-        const isCurrent = crumb.id === activeSection;
-        return (
-          <span key={crumb.id} className="inline-flex items-center gap-1.5">
-            {index > 0 ? (
-              <span
-                className={isIntake ? "text-[#DADCE0]" : "text-customerHive-on-surface-muted"}
-                aria-hidden
-              >
-                /
-              </span>
-            ) : null}
-            {isCurrent || !crumb.href ? (
-              <span
-                aria-current={isCurrent ? "page" : undefined}
-                className={
-                  isCurrent
-                    ? isIntake
-                      ? "font-semibold text-[#0D0D0D]"
-                      : "font-medium text-customerHive-on-surface"
-                    : isIntake
-                      ? "text-[#5F6368]"
-                      : "text-customerHive-on-surface-variant"
-                }
-              >
-                {crumb.label}
-              </span>
-            ) : (
-              <Link
-                href={crumb.href}
-                className={
-                  isIntake
-                    ? "font-medium text-[#1A56C4] hover:underline"
-                    : "font-medium text-customerHive-primary hover:underline"
-                }
-              >
-                {crumb.label}
-              </Link>
-            )}
-          </span>
-        );
-      })}
+      <Link
+        href={buildMyCasesHref()}
+        className={
+          isIntake
+            ? "text-[#6B7280] hover:text-[#1F2328] hover:underline"
+            : "text-customerHive-on-surface-muted hover:text-customerHive-on-surface hover:underline"
+        }
+      >
+        My Hives
+      </Link>
+      <span aria-hidden className={isIntake ? "text-[#DADCE0]" : "text-customerHive-border"}>
+        /
+      </span>
+      <span
+        aria-current="page"
+        className={
+          isIntake ? "font-semibold text-[#1F2328]" : "font-medium text-customerHive-on-surface"
+        }
+      >
+        {label}
+      </span>
     </nav>
   );
 }
@@ -139,25 +89,23 @@ function CaseWorkspaceSectionNav({
       data-testid="case-workspace-section-nav"
       className={
         isIntake
-          ? "flex flex-wrap gap-2 border-b border-[#F1F3F4] px-5 pb-3"
-          : "flex flex-wrap gap-2 border-b border-customerHive-border pb-3"
+          ? "flex gap-7 overflow-x-auto border-b border-[#E3E6EA] px-5 scrollbar-none [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:gap-7"
+          : "flex gap-7 overflow-x-auto border-b border-customerHive-border scrollbar-none [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       }
     >
       {SECTIONS.map((section) => {
         const enabled = isCaseWorkspaceSectionNavEnabled(section, navInput);
         const isActive = activeSection === section;
         const label = caseWorkspaceSectionLabel(section);
-        const baseClass = isIntake
-          ? "rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors"
-          : "rounded-lg px-4 py-1.5 text-sm font-medium transition-colors";
+        const tabClass = isIntake
+          ? "shrink-0 border-b-2 pb-3 pt-1 text-[15px] font-semibold transition-colors"
+          : "shrink-0 border-b-2 pb-3 pt-1 text-[15px] font-semibold transition-colors";
 
         if (!enabled) {
           return (
             <span
               key={section}
-              className={`${baseClass} cursor-not-allowed opacity-50 ${
-                isIntake ? "text-[#9AA0A6]" : "text-customerHive-on-surface-muted"
-              }`}
+              className={`${tabClass} cursor-not-allowed border-transparent text-customerHive-on-surface-muted opacity-50`}
               aria-disabled
             >
               {label}
@@ -170,11 +118,7 @@ function CaseWorkspaceSectionNav({
             <span
               key={section}
               aria-current="page"
-              className={`${baseClass} ${
-                isIntake
-                  ? "bg-[#E8F0FE] text-[#1A56C4]"
-                  : "bg-customerHive-primary text-white"
-              }`}
+              className={`${tabClass} border-customerHive-secondary text-customerHive-on-surface`}
             >
               {label}
             </span>
@@ -185,10 +129,8 @@ function CaseWorkspaceSectionNav({
           <Link
             key={section}
             href={sectionHref(section, navInput)}
-            className={`${baseClass} ${
-              isIntake
-                ? "text-[#5F6368] hover:bg-[#F8F9FA] hover:text-[#0D0D0D]"
-                : "text-customerHive-on-surface-variant hover:bg-customerHive-surface-container hover:text-customerHive-on-surface"
+            className={`${tabClass} border-transparent text-customerHive-on-surface-muted hover:border-customerHive-border hover:text-customerHive-on-surface ${
+              isIntake ? "text-[#6B7280] hover:text-[#1F2328]" : ""
             }`}
           >
             {label}
@@ -202,20 +144,37 @@ function CaseWorkspaceSectionNav({
 export function CaseWorkspaceChrome({
   activeSection,
   variant = "customer",
+  caseLabel,
   ...navInput
 }: CaseWorkspaceNavInput & { activeSection: CaseWorkspaceSection; variant?: "customer" | "intake" }) {
+  const resolvedLabel = caseLabel?.trim() || "Case";
+  const showSectionNav = activeSection !== "case";
+
   return (
     <div
       data-testid="case-workspace-chrome"
       className={
         variant === "intake"
           ? "border-b border-[#F1F3F4] bg-white"
-          : "border-b border-customerHive-border bg-customerHive-surface-low"
+          : "border-b border-customerHive-border bg-[#F7F8FA]"
       }
     >
-      <div className={variant === "intake" ? "" : "mx-auto w-full max-w-[1440px] px-6 lg:px-10"}>
-        <CaseWorkspaceBreadcrumbs activeSection={activeSection} variant={variant} {...navInput} />
-        <CaseWorkspaceSectionNav activeSection={activeSection} variant={variant} {...navInput} />
+      <div
+        className={
+          variant === "intake"
+            ? "space-y-0"
+            : "mx-auto w-full max-w-[1160px] space-y-3 px-4 pb-0 pt-3 md:px-8"
+        }
+      >
+        <CaseWorkspaceBreadcrumbs caseLabel={resolvedLabel} variant={variant} />
+        {showSectionNav ? (
+          <CaseWorkspaceSectionNav
+            activeSection={activeSection}
+            variant={variant}
+            caseLabel={caseLabel}
+            {...navInput}
+          />
+        ) : null}
       </div>
     </div>
   );

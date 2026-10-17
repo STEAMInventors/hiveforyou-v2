@@ -13,15 +13,19 @@ export type CustomerProvenanceSnippet = {
 export type CustomerExtractedDetail = {
   label: string;
   value: string;
+  groupLabel: string;
   provenance: CustomerProvenanceSnippet | null;
 };
 
 export type CustomerExtractionDocumentRow = {
   sourceDocumentId: string;
   label: string;
+  filename: string | null;
+  documentTypeLabel: string | null;
   dateLabel: string | null;
   uiStatus: CustomerDocumentUiStatus;
   detailCount: number | null;
+  failureHint: string | null;
   provenance: CustomerProvenanceSnippet | null;
   extractedDetails: CustomerExtractedDetail[];
 };
@@ -82,6 +86,7 @@ export function mapInspectorDocumentToCustomerExtractedDetails(
       details.push({
         label: humanizeExtractionFieldKey(fieldKey),
         value,
+        groupLabel: humanizeExtractionFieldKey(record.recordTypeId),
         provenance,
       });
       if (details.length >= MAX_CUSTOMER_EXTRACTED_DETAILS) {
@@ -197,11 +202,19 @@ export function mapInspectorDocumentToCustomerRow(input: {
   failedDocumentIds: readonly string[];
   succeededDocumentIds: readonly string[];
   documentDateBySourceId: ReadonlyMap<string, string | undefined>;
+  filenameBySourceId?: ReadonlyMap<string, string>;
 }): CustomerExtractionDocumentRow {
-  const label =
-    input.doc.customerLabel?.trim() ||
-    input.doc.modelDocumentClassification?.trim() ||
-    "Document";
+  const filename =
+    input.filenameBySourceId?.get(input.doc.sourceDocumentId)?.trim() || null;
+  const classification = input.doc.modelDocumentClassification?.trim() || null;
+  const customerLabel = input.doc.customerLabel?.trim() || null;
+  const label = customerLabel || classification || filename || "Document";
+  const documentTypeLabel =
+    classification && classification !== filename
+      ? classification
+      : customerLabel && customerLabel !== filename
+        ? customerLabel
+        : null;
   const dateLabel = formatCustomerDocumentDate(
     input.documentDateBySourceId.get(input.doc.sourceDocumentId),
   );
@@ -239,12 +252,20 @@ export function mapInspectorDocumentToCustomerRow(input: {
       ? (pickProvenance(input.doc, label) ?? extractedDetails.find((d) => d.provenance)?.provenance ?? null)
       : null;
 
+  const failureHint =
+    uiStatus === "failed" || uiStatus === "needs_review"
+      ? input.doc.parseDiagnostics.find((line) => line.trim().length > 0)?.trim() ?? null
+      : null;
+
   return {
     sourceDocumentId: input.doc.sourceDocumentId,
     label,
+    filename,
+    documentTypeLabel,
     dateLabel,
     uiStatus,
     detailCount,
+    failureHint,
     provenance,
     extractedDetails,
   };

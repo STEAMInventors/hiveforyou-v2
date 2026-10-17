@@ -727,22 +727,11 @@ export function IntakeEvidenceWorkspace({
         >
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-              <span
-                style={{
-                  fontSize: 13,
-                  fontWeight: 500,
-                  padding: "6px 12px",
-                  borderRadius: 999,
-                  background: "#E8F0FE",
-                  color: "#1A56C4",
-                }}
-              >
-                {domainLabel}
-              </span>
               <button
                 type="button"
                 className="chg"
                 data-testid="intake-purpose-change"
+                aria-label={`Change domain (${domainLabel})`}
                 onClick={() => {
                   resetIntakeHomeSession();
                   clearDocuments();

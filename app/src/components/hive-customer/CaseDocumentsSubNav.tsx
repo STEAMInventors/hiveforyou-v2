@@ -21,7 +21,7 @@ export function CaseDocumentsSubNav({
   const isIntake = variant === "intake";
   const baseClass = isIntake
     ? "rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors"
-    : "rounded-lg px-4 py-1.5 text-sm font-medium transition-colors";
+    : "-mb-px border-b-2 border-transparent px-0 pb-3 pt-1 text-[15px] font-semibold transition-colors";
 
   const tabs: Array<{ id: CaseDocumentsView; href: string; enabled: boolean }> = [
     { id: "files", href: filesHref, enabled: true },
@@ -36,7 +36,11 @@ export function CaseDocumentsSubNav({
     <nav
       aria-label="Documents views"
       data-testid="case-documents-sub-nav"
-      className={isIntake ? "flex flex-wrap gap-2" : "mb-8 flex flex-wrap gap-2"}
+      className={
+        isIntake
+          ? "flex flex-wrap gap-2"
+          : "mb-6 flex min-w-0 flex-wrap gap-7 overflow-x-auto border-b border-customerHive-border scrollbar-none [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      }
     >
       {tabs.map((tab) => {
         const isActive = activeView === tab.id;
@@ -64,7 +68,7 @@ export function CaseDocumentsSubNav({
               className={`${baseClass} ${
                 isIntake
                   ? "bg-[#E8F0FE] text-[#1A56C4]"
-                  : "bg-customerHive-primary text-white"
+                  : "border-customerHive-secondary text-customerHive-on-surface"
               }`}
             >
               {label}
@@ -79,7 +83,7 @@ export function CaseDocumentsSubNav({
             className={`${baseClass} ${
               isIntake
                 ? "text-[#5F6368] hover:bg-[#F8F9FA] hover:text-[#0D0D0D]"
-                : "text-customerHive-on-surface-variant hover:bg-customerHive-surface-container hover:text-customerHive-on-surface"
+                : "text-customerHive-on-surface-muted hover:border-customerHive-border hover:text-customerHive-on-surface"
             }`}
           >
             {label}

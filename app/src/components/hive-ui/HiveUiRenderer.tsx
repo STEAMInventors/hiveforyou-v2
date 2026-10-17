@@ -35,9 +35,24 @@ export function HiveUiRenderer({
   tree: HiveUiTree;
 }) {
   const spec = hiveUiTreeToSpec(tree);
+  const audienceClass =
+    projection.audience === "pro"
+      ? "hive-inverted-report--pro"
+      : "hive-inverted-report--customer";
   return (
     <HiveUiReportProjectionProvider projection={projection}>
-      <HiveUiReportRenderer spec={spec} />
+      <div
+        className={`hive-inverted-report ${audienceClass}`}
+        data-testid="hive-inverted-report"
+        data-audience={projection.audience}
+        data-narrative-source={tree.narrativeSource}
+      >
+        <article className="hive-inverted-report__article">
+          <div className="hive-inverted-report__body">
+            <HiveUiReportRenderer spec={spec} />
+          </div>
+        </article>
+      </div>
     </HiveUiReportProjectionProvider>
   );
 }

@@ -5,32 +5,56 @@ import type { CanonicalStudyReportEvidenceChip as EvidenceChipModel } from "@hiv
 export function CanonicalStudyReportEvidenceChip({
   chip,
   onSelect,
+  variant = "default",
 }: {
   chip: EvidenceChipModel;
   onSelect?: (chip: EvidenceChipModel) => void;
+  variant?: "default" | "inverted";
 }) {
   const label = `p.${chip.page}`;
   const title = chip.quote;
+  const snippet = `${chip.quote.slice(0, 48)}${chip.quote.length > 48 ? "…" : ""}`;
+  const defaultClass =
+    "inline-flex max-w-full items-center gap-1 rounded-md border border-customerHive-border bg-customerHive-surface-low px-2 py-0.5 text-xs text-customerHive-on-surface";
+  const invertedClass = "hir-evidence-chip";
+  const className = variant === "inverted" ? invertedClass : defaultClass;
+
   if (onSelect) {
     return (
       <button
         type="button"
-        className="inline-flex max-w-full items-center gap-1 rounded-md border border-customerHive-border bg-customerHive-surface-low px-2 py-0.5 text-xs text-customerHive-on-surface"
+        className={className}
         title={title}
+        data-testid="hive-ui-evidence-chip"
         onClick={() => onSelect(chip)}
       >
-        <span className="font-medium text-customerHive-primary">{label}</span>
-        <span className="truncate">{chip.quote.slice(0, 48)}{chip.quote.length > 48 ? "…" : ""}</span>
+        {variant === "inverted" ? (
+          <>
+            <span className="hir-evidence-chip__page">{label}</span>
+            <span className="truncate">{snippet}</span>
+          </>
+        ) : (
+          <>
+            <span className="font-medium text-customerHive-primary">{label}</span>
+            <span className="truncate">{snippet}</span>
+          </>
+        )}
       </button>
     );
   }
   return (
-    <span
-      className="inline-flex max-w-full items-center gap-1 rounded-md border border-customerHive-border bg-customerHive-surface-low px-2 py-0.5 text-xs text-customerHive-on-surface"
-      title={title}
-    >
-      <span className="font-medium text-customerHive-primary">{label}</span>
-      <span className="truncate">{chip.quote.slice(0, 48)}{chip.quote.length > 48 ? "…" : ""}</span>
+    <span className={className} title={title} data-testid="hive-ui-evidence-chip">
+      {variant === "inverted" ? (
+        <>
+          <span className="hir-evidence-chip__page">{label}</span>
+          <span className="truncate">{snippet}</span>
+        </>
+      ) : (
+        <>
+          <span className="font-medium text-customerHive-primary">{label}</span>
+          <span className="truncate">{snippet}</span>
+        </>
+      )}
     </span>
   );
 }

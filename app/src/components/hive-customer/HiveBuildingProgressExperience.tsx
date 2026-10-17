@@ -1,16 +1,14 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
 import { fetchHiveExtractionProgress } from "@/lib/hive-customer/hive-extraction-progress-client";
 import type { HiveExtractionProgressView } from "@/lib/hive-customer/hive-extraction-progress-types";
-import { buildHiveReadyHref } from "@/lib/intake/study-completion-navigation";
-
-import Link from "next/link";
-
 import {
   buildHiveDocumentsSectionHref,
+  buildHiveReadyHref,
   buildIntakeDocumentsSectionHref,
   type CaseDocumentsView,
 } from "@/lib/intake/study-completion-navigation";
@@ -18,7 +16,6 @@ import {
 import { CaseDocumentsSubNav } from "./CaseDocumentsSubNav";
 import { CustomerRawExtractionsPanel } from "./HiveCustomerDocumentRows";
 import { HiveCustomerShell } from "./HiveCustomerShell";
-import { hiveBuildingHeadline } from "./hive-customer-copy";
 
 const POLL_MS = 2500;
 
@@ -89,68 +86,80 @@ export function HiveBuildingProgressExperience({
         activeSection: "documents",
       }}
     >
-      <div className="mx-auto flex w-full max-w-[680px] flex-1 flex-col items-center px-6 py-[72px] sm:px-0 lg:px-10">
-        <div className="mb-8 w-full">
-          <CaseDocumentsSubNav
-            activeView={documentsView}
-            filesHref={filesHref}
-            rawExtractionsHref={rawExtractionsHref}
-          />
-        </div>
-        <header className="mb-10 w-full">
-          <h1
-            className="text-[30px] font-semibold leading-[38px] tracking-[-0.015em] text-customerHive-on-surface"
-            style={{ fontFamily: "var(--font-outfit), sans-serif" }}
-          >
-            {hiveBuildingHeadline(progress?.subjectFirstName ?? null)}
-          </h1>
-          <p className="mt-2 text-base font-normal leading-6 text-customerHive-on-surface-variant">
-            Reading your documents.
-          </p>
-        </header>
-
-        {error ? (
-          <p className="mb-6 w-full text-sm text-red-700" role="alert">
-            {error}
-          </p>
-        ) : null}
-
-        {terminalFailure ? (
-          <div
-            className="mb-8 w-full rounded-xl border border-customerHive-border bg-customerHive-surface-low p-4 text-sm text-customerHive-on-surface-variant"
-            role="alert"
-          >
-            Extraction did not finish successfully. You can return to Documents to try again or add
-            more files.
-          </div>
-        ) : null}
+      <div className="mx-auto flex w-full min-w-0 max-w-[1160px] flex-1 flex-col px-5 py-8 sm:px-8 sm:py-9 lg:px-8">
+        <CaseDocumentsSubNav
+          activeView={documentsView}
+          filesHref={filesHref}
+          rawExtractionsHref={rawExtractionsHref}
+        />
 
         {documentsView === "files" ? (
-          <section className="w-full rounded-xl border border-customerHive-border bg-customerHive-surface-low p-5">
-            <h2 className="text-[21px] font-medium leading-7 text-customerHive-on-surface">
-              Your files
-            </h2>
-            <p className="mt-2 text-sm text-customerHive-on-surface-variant">
-              While documents are being read, you can still add or adjust files.
-            </p>
-            {manageFilesHref ? (
-              <Link
-                href={manageFilesHref}
-                className="mt-4 inline-flex text-sm font-medium text-customerHive-primary hover:underline"
+          <section className="flex min-w-0 flex-col gap-6 pt-2">
+            <header className="flex flex-col gap-1">
+              <h1
+                className="text-[26px] font-semibold leading-tight tracking-[-0.02em] text-customerHive-on-surface sm:text-[28px]"
+                style={{ fontFamily: "var(--font-outfit), sans-serif" }}
               >
-                Manage uploaded files
-              </Link>
-            ) : null}
+                Your files
+              </h1>
+              <p className="text-base text-customerHive-on-surface-variant">
+                While documents are being read, you can still add or adjust files.
+              </p>
+            </header>
+            <div className="rounded-[18px] border border-customerHive-border bg-white p-6">
+              {manageFilesHref ? (
+                <Link
+                  href={manageFilesHref}
+                  className="inline-flex items-center gap-2 text-sm font-semibold text-customerHive-secondary hover:underline"
+                >
+                  Manage uploaded files
+                </Link>
+              ) : (
+                <p className="text-sm text-customerHive-on-surface-muted">
+                  File management will appear when an intake run is linked to this case.
+                </p>
+              )}
+            </div>
           </section>
         ) : (
-          <section aria-label="Document ingestion status" className="w-full">
-            <h2 className="mb-4 text-[21px] font-medium leading-7 tracking-[-0.01em] text-customerHive-on-surface">
-              Raw extractions
-            </h2>
+          <section
+            aria-label="Document ingestion status"
+            className="flex min-w-0 flex-col gap-6 pt-2"
+          >
+            <header className="flex flex-col gap-1">
+              <h1
+                className="text-[26px] font-semibold leading-tight tracking-[-0.02em] text-customerHive-on-surface sm:text-[28px]"
+                style={{ fontFamily: "var(--font-outfit), sans-serif" }}
+              >
+                Raw extractions
+              </h1>
+              <p className="text-[15px] text-customerHive-on-surface-muted">
+                Live status while your documents are being read.
+              </p>
+            </header>
+
+            {error ? (
+              <p className="text-sm text-red-700" role="alert">
+                {error}
+              </p>
+            ) : null}
+
+            {terminalFailure && !progress?.documents.length ? (
+              <div
+                className="rounded-[18px] border border-[#F7D3CF] bg-[#FFF9F8] px-5 py-4 text-sm text-customerHive-on-surface-variant"
+                role="alert"
+              >
+                Extraction did not finish successfully. You can return to Documents to try again or
+                add more files.
+              </div>
+            ) : null}
+
             <CustomerRawExtractionsPanel
               caseId={caseId}
               studyRunId={studyRunId}
               presentation="summary"
+              showProcessingBanner
+              showOutcomeBanner={Boolean(terminalFailure && progress?.documents.length)}
             />
           </section>
         )}

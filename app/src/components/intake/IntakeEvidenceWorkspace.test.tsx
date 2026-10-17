@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 
 
 
@@ -382,7 +382,7 @@ describe("IntakeEvidenceWorkspace", () => {
 
 
 
-  it("renders artifact layout with domain pill and file rows", async () => {
+  it("renders artifact layout with workspace domain label and file rows", async () => {
 
     render(<IntakeEvidenceWorkspace intakeRunId="run-1" />);
 
@@ -396,7 +396,9 @@ describe("IntakeEvidenceWorkspace", () => {
 
 
 
-    expect(screen.getByText("Special Education / IEP")).toBeInTheDocument();
+    const breadcrumbs = screen.getByTestId("case-workspace-breadcrumbs");
+    expect(within(breadcrumbs).getByText("Special Education / IEP")).toBeInTheDocument();
+    expect(screen.getAllByText("Special Education / IEP")).toHaveLength(1);
 
     expect(screen.getByText("01_prior_iep.pdf")).toBeInTheDocument();
 
