@@ -77,6 +77,7 @@ vi.mock("@/lib/intake/intake-client", async () => {
 import { readClientSessionStatus } from "@/lib/auth/client-session";
 import { commitStagedDocuments } from "@/lib/documents/commit-client";
 import { runDiscoverForStagedDocuments } from "@/lib/document-discovery/run-discover-client";
+import { fetchOwnedHive, fetchOwnedHives } from "@/lib/cases/cases-client";
 import { fetchIntakeRun, startIntakeRun } from "@/lib/intake/intake-client";
 
 function renderUploadExperience() {
@@ -156,6 +157,8 @@ describe("UploadExperience", () => {
     vi.mocked(fetchIntakeRun).mockReset();
     vi.mocked(readClientSessionStatus).mockReset();
     vi.mocked(readClientSessionStatus).mockResolvedValue("authenticated");
+    vi.mocked(fetchOwnedHives).mockClear();
+    vi.mocked(fetchOwnedHive).mockClear();
     vi.mocked(fetchIntakeRun).mockResolvedValue({
       intakeRunId: "run-1",
       caseId: "00000000-0000-4000-8000-000000000001",
@@ -264,15 +267,14 @@ describe("UploadExperience", () => {
     expect(screen.getByTestId("landing-auth-session-continue")).toBeDisabled();
 
     await waitFor(() => {
-      expect(screen.getByTestId("landing-auth-session-continue-notice")).toHaveTextContent(
-        /not signed in/i,
-      );
+      expect(screen.getByTestId("landing-hive-handoff-preview-mode-banner")).toBeInTheDocument();
     });
-    expect(screen.getByTestId("landing-auth-placeholder")).toBeInTheDocument();
-    expect(screen.queryByTestId("landing-hive-handoff")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("landing-auth-placeholder")).not.toBeInTheDocument();
+    expect(fetchOwnedHives).not.toHaveBeenCalled();
+    expect(commitStagedDocuments).not.toHaveBeenCalled();
   });
 
-  it("shows an inline notice when Continue is clicked without a session", async () => {
+  it("advances to preview hive handoff when Continue is clicked without a session", async () => {
     vi.mocked(readClientSessionStatus).mockResolvedValue("unauthenticated");
     const { container } = renderUploadExperience();
     submitComposerFlow(container);
@@ -283,12 +285,50 @@ describe("UploadExperience", () => {
     fireEvent.click(screen.getByTestId("landing-auth-session-continue"));
 
     await waitFor(() => {
-      expect(screen.getByTestId("landing-auth-session-continue-notice")).toHaveTextContent(
-        "You're not signed in. Login and registration are not connected yet.",
-      );
+      expect(screen.getByTestId("landing-hive-handoff-preview-mode-banner")).toBeInTheDocument();
     });
-    expect(screen.getByTestId("landing-auth-placeholder")).toBeInTheDocument();
-    expect(screen.queryByTestId("landing-hive-handoff")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("landing-auth-placeholder")).not.toBeInTheDocument();
+    expect(fetchOwnedHives).not.toHaveBeenCalled();
+    expect(commitStagedDocuments).not.toHaveBeenCalled();
+    expect(startIntakeRun).not.toHaveBeenCalled();
+  });
+
+  it("walks preview onboarding through documents without protected APIs", async () => {
+    vi.mocked(readClientSessionStatus).mockResolvedValue("unauthenticated");
+    const { container } = renderUploadExperience();
+    submitComposerFlow(container);
+
+    await waitFor(() => {
+      expect(screen.getByTestId("landing-auth-placeholder")).toBeInTheDocument();
+    });
+    fireEvent.click(screen.getByTestId("landing-auth-session-continue"));
+
+    await waitFor(() => {
+      expect(screen.getByTestId("landing-hive-handoff-continue")).toBeEnabled();
+    });
+    fireEvent.click(screen.getByTestId("landing-hive-handoff-continue"));
+
+    await waitFor(() => {
+      expect(screen.getByTestId("landing-upload-documents-preview")).toBeInTheDocument();
+    });
+    expect(screen.getByTestId("landing-upload-preview-mode-banner")).toHaveTextContent(
+      /Preview Mode/i,
+    );
+    expect(screen.getByTestId("landing-upload-preview-file-report.pdf")).toHaveTextContent(
+      "report.pdf",
+    );
+    expect(screen.getByTestId("landing-upload-documents-preview")).toHaveTextContent(
+      /not uploaded yet/i,
+    );
+    expect(screen.getByTestId("landing-upload-preview-intent")).toHaveTextContent(
+      "Preparing for an IEP meeting",
+    );
+    expect(commitStagedDocuments).not.toHaveBeenCalled();
+    expect(startIntakeRun).not.toHaveBeenCalled();
+    expect(runDiscoverForStagedDocuments).not.toHaveBeenCalled();
+
+    fireEvent.click(screen.getByTestId("landing-upload-preview-back"));
+    expect(screen.getByTestId("landing-hive-handoff-preview-mode-banner")).toBeInTheDocument();
   });
 
   it("shows an inline notice when session recheck fails", async () => {

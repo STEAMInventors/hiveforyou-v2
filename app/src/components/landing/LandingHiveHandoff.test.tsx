@@ -52,6 +52,28 @@ describe("LandingHiveHandoff", () => {
     expect(screen.queryByTestId(`landing-hive-handoff-option-${EXISTING_CASE}`)).toBeNull();
   });
 
+  it("skips owned-hive APIs in preview mode", async () => {
+    const onContinue = vi.fn();
+    render(
+      <LandingHiveHandoff
+        fileCount={2}
+        composerExplicitDomainId="iep"
+        previewMode
+        onBack={() => undefined}
+        onContinue={onContinue}
+      />,
+    );
+
+    expect(screen.getByTestId("landing-hive-handoff-preview-mode-banner")).toBeInTheDocument();
+    expect(screen.getByTestId("landing-hive-handoff-continue")).toBeEnabled();
+    expect(fetchOwnedHives).not.toHaveBeenCalled();
+
+    fireEvent.click(screen.getByTestId("landing-hive-handoff-continue"));
+    expect(onContinue).toHaveBeenCalledWith(
+      expect.objectContaining({ selectionIntent: "new", caseId: expect.any(String) }),
+    );
+  });
+
   it("confirms ownership before continuing with an existing hive", async () => {
     vi.mocked(fetchOwnedHives).mockResolvedValue({
       cases: [

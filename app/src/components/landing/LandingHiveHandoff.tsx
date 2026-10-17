@@ -18,6 +18,7 @@ export type HiveHandoffSelection = {
 type LandingHiveHandoffProps = {
   fileCount: number;
   composerExplicitDomainId: string | null;
+  previewMode?: boolean;
   onBack: () => void;
   onContinue: (selection: HiveHandoffSelection) => void;
   continueBusy?: boolean;
@@ -38,11 +39,14 @@ function formatHiveDate(iso: string): string {
 export function LandingHiveHandoff({
   fileCount,
   composerExplicitDomainId,
+  previewMode = false,
   onBack,
   onContinue,
   continueBusy = false,
 }: LandingHiveHandoffProps) {
-  const [loadState, setLoadState] = useState<"loading" | "ready" | "error">("loading");
+  const [loadState, setLoadState] = useState<"loading" | "ready" | "error">(
+    previewMode ? "ready" : "loading",
+  );
   const [loadError, setLoadError] = useState<string | null>(null);
   const [ownedHives, setOwnedHives] = useState<OwnedHiveSummary[]>([]);
   const [mode, setMode] = useState<"new" | "existing">("new");
@@ -52,6 +56,9 @@ export function LandingHiveHandoff({
   const [confirmError, setConfirmError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (previewMode) {
+      return;
+    }
     let cancelled = false;
     async function load() {
       setLoadState("loading");
@@ -80,7 +87,7 @@ export function LandingHiveHandoff({
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [previewMode]);
 
   const selectableHives = useMemo(
     () =>
@@ -110,6 +117,11 @@ export function LandingHiveHandoff({
     if (mode === "new") {
       rememberClientCaseId(newCaseId);
       onContinue({ caseId: newCaseId, selectionIntent: "new" });
+      return;
+    }
+
+    if (previewMode) {
+      setConfirmError("Sign in to attach documents to an existing Hive.");
       return;
     }
 
@@ -152,13 +164,24 @@ export function LandingHiveHandoff({
       data-testid="landing-hive-handoff"
       aria-label="Create or choose a Hive"
     >
+      {previewMode ? (
+        <div
+          className="rounded-[10px] border border-[#EBDDB4] bg-[#FBF4E2] px-3.5 py-2.5 text-sm leading-snug text-[#3D3000]"
+          data-testid="landing-hive-handoff-preview-mode-banner"
+        >
+          <span className="font-semibold">Preview Mode.</span> Pick a name for a new Hive to see
+          the next step. Nothing is created on the server until you sign in.
+        </div>
+      ) : null}
+
       <div className="flex flex-col gap-2 text-center">
         <h2 className="m-0 text-[1.5rem] font-semibold tracking-tight text-[#0D0D0D]">
           Create or choose your Hive
         </h2>
         <p className="m-0 text-sm leading-relaxed text-[#5F6368]">
-          Attach your {fileCount} selected document{fileCount === 1 ? "" : "s"} to a Hive. Reading
-          starts only after you continue.
+          {previewMode
+            ? `Preview attaching ${fileCount} document${fileCount === 1 ? "" : "s"} to a new Hive. Reading starts only after sign-in and upload.`
+            : `Attach your ${fileCount} selected document${fileCount === 1 ? "" : "s"} to a Hive. Reading starts only after you continue.`}
         </p>
       </div>
 
@@ -204,7 +227,7 @@ export function LandingHiveHandoff({
             <button
               type="button"
               data-testid="landing-hive-handoff-mode-existing"
-              disabled={ownedHives.length === 0}
+              disabled={previewMode || ownedHives.length === 0}
               className={
                 mode === "existing"
                   ? "min-h-11 rounded-[14px] border-2 border-[#0D0D0D] bg-[#F8F9FA] px-4 text-left text-sm font-medium text-[#0D0D0D] disabled:opacity-50"
@@ -221,7 +244,9 @@ export function LandingHiveHandoff({
 
           {mode === "new" ? (
             <p className="m-0 text-sm text-[#5F6368]" data-testid="landing-hive-handoff-new-copy">
-              A new Hive will be created when your documents are saved. Id{" "}
+              {previewMode
+                ? "Preview Hive id "
+                : "A new Hive will be created when your documents are saved. Id "}
               <span className="font-mono text-xs text-[#3C4043]">{shortHiveLabel(newCaseId)}…</span>
             </p>
           ) : null}
@@ -306,7 +331,7 @@ export function LandingHiveHandoff({
             void handleContinue();
           }}
         >
-          {busy ? "Starting…" : "Continue to upload"}
+          {busy ? "Starting…" : previewMode ? "Continue to documents preview" : "Continue to upload"}
         </button>
       </div>
     </section>

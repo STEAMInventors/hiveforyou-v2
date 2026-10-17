@@ -180,6 +180,10 @@ export function LoginRegisterPlaceholder({
         >
           {sessionRecheckBusy ? "Checking sign-in…" : "Continue with your account"}
         </button>
+        <p className="m-0 text-center text-xs leading-snug text-[#5F6368]">
+          Signed in elsewhere? We&apos;ll use your real Hive. Otherwise you&apos;ll continue in
+          Preview Mode — no upload or reading until sign-in is connected.
+        </p>
 
         {sessionContinueNotice ? (
           <p
