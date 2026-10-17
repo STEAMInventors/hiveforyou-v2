@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 
 import {
   LandingHiveHandoff,
+  type HiveHandoffDraft,
   type HiveHandoffSelection,
 } from "@/components/landing/LandingHiveHandoff";
 import { LandingUploadDocumentsPreview } from "@/components/landing/LandingUploadDocumentsPreview";
@@ -47,6 +48,8 @@ export function UploadExperience({ showTrustMessage = true }: { showTrustMessage
   const [composerPurpose, setComposerPurpose] = useState<ComposerPurpose | null>(null);
   const [hiveCommit, setHiveCommit] = useState<HiveHandoffSelection | null>(null);
   const pendingSubmitRef = useRef<HiveComposerSubmit | null>(null);
+  const onboardingHiveCaseIdRef = useRef<string>(crypto.randomUUID());
+  const [hiveHandoffDraft, setHiveHandoffDraft] = useState<HiveHandoffDraft | null>(null);
   const [pendingFileCount, setPendingFileCount] = useState(0);
   const [sessionContinueNotice, setSessionContinueNotice] = useState<string | null>(null);
   const [onboardingPreviewMode, setOnboardingPreviewMode] = useState(false);
@@ -142,6 +145,11 @@ export function UploadExperience({ showTrustMessage = true }: { showTrustMessage
 
   const beginPreviewUploadStep = (payload: HiveComposerSubmit, selection: HiveHandoffSelection) => {
     setPreviewHiveCommit(selection);
+    setHiveHandoffDraft({
+      caseId: selection.caseId,
+      hiveName: selection.hiveName,
+      hiveDescription: selection.hiveDescription ?? "",
+    });
     setComposerPurpose({
       rawIntent: payload.rawIntent,
       explicitDomainId: payload.explicitDomainId,
@@ -166,6 +174,8 @@ export function UploadExperience({ showTrustMessage = true }: { showTrustMessage
     setSessionContinueNotice(null);
     setOnboardingPreviewMode(false);
     setPreviewHiveCommit(null);
+    setHiveHandoffDraft(null);
+    onboardingHiveCaseIdRef.current = crypto.randomUUID();
     setHandoffStep("composer");
   };
 
@@ -209,7 +219,18 @@ export function UploadExperience({ showTrustMessage = true }: { showTrustMessage
         <LandingHiveHandoff
           fileCount={pendingFileCount}
           composerExplicitDomainId={pendingSubmitRef.current?.explicitDomainId ?? null}
+          explicitDomainLabel={
+            pendingSubmitRef.current?.explicitDomainId
+              ? DOMAIN_LABELS[pendingSubmitRef.current.explicitDomainId] ?? null
+              : null
+          }
           previewMode={onboardingPreviewMode}
+          draftCaseId={
+            hiveHandoffDraft?.caseId ??
+            previewHiveCommit?.caseId ??
+            onboardingHiveCaseIdRef.current
+          }
+          initialDraft={hiveHandoffDraft}
           onBack={handleBackToComposer}
           onContinue={handleHiveHandoffContinue}
         />
@@ -235,7 +256,9 @@ export function UploadExperience({ showTrustMessage = true }: { showTrustMessage
                 ] ?? null
               : null
           }
-          hiveCaseId={previewHiveCommit.caseId}
+          hiveName={previewHiveCommit.hiveName}
+          hiveDescription={previewHiveCommit.hiveDescription}
+          previewHive
           onBack={handleBackToPreviewHiveHandoff}
         />
       ) : null}

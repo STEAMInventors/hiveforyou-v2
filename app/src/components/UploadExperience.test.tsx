@@ -134,13 +134,26 @@ function submitComposerFlow(container: HTMLElement) {
   fireEvent.click(screen.getByTestId("hive-composer-submit"));
 }
 
+async function completeCreateHiveModal(hiveName = "Maya's IEP 2025-26") {
+  await waitFor(() => {
+    expect(screen.getByTestId("landing-hive-handoff-create")).toBeInTheDocument();
+  });
+  fireEvent.click(screen.getByTestId("landing-hive-handoff-create"));
+  await waitFor(() => {
+    expect(screen.getByTestId("landing-create-hive-modal")).toBeInTheDocument();
+  });
+  fireEvent.change(screen.getByTestId("landing-create-hive-name"), {
+    target: { value: hiveName },
+  });
+  fireEvent.click(screen.getByTestId("landing-create-hive-submit"));
+}
+
 async function submitComposerThroughAuthenticatedHandoff(container: HTMLElement) {
   submitComposerFlow(container);
   await waitFor(() => {
     expect(screen.getByTestId("landing-hive-handoff")).toBeInTheDocument();
-    expect(screen.getByTestId("landing-hive-handoff-continue")).toBeEnabled();
   });
-  fireEvent.click(screen.getByTestId("landing-hive-handoff-continue"));
+  await completeCreateHiveModal();
   await waitFor(() => {
     expect(screen.getByTestId("intake-processing-modal")).toBeInTheDocument();
   });
@@ -304,9 +317,9 @@ describe("UploadExperience", () => {
     fireEvent.click(screen.getByTestId("landing-auth-session-continue"));
 
     await waitFor(() => {
-      expect(screen.getByTestId("landing-hive-handoff-continue")).toBeEnabled();
+      expect(screen.getByTestId("landing-hive-handoff-preview-mode-banner")).toBeInTheDocument();
     });
-    fireEvent.click(screen.getByTestId("landing-hive-handoff-continue"));
+    await completeCreateHiveModal("Preview Hive Name");
 
     await waitFor(() => {
       expect(screen.getByTestId("landing-upload-documents-preview")).toBeInTheDocument();
@@ -320,6 +333,9 @@ describe("UploadExperience", () => {
     expect(screen.getByTestId("landing-upload-documents-preview")).toHaveTextContent(
       /not uploaded yet/i,
     );
+    expect(screen.getByTestId("landing-upload-preview-hive-name")).toHaveTextContent(
+      "Preview Hive Name (Preview)",
+    );
     expect(screen.getByTestId("landing-upload-preview-intent")).toHaveTextContent(
       "Preparing for an IEP meeting",
     );
@@ -329,6 +345,34 @@ describe("UploadExperience", () => {
 
     fireEvent.click(screen.getByTestId("landing-upload-preview-back"));
     expect(screen.getByTestId("landing-hive-handoff-preview-mode-banner")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByTestId("landing-hive-handoff-create"));
+    await waitFor(() => {
+      expect(screen.getByTestId("landing-create-hive-name")).toHaveValue("Preview Hive Name");
+    });
+  });
+
+  it("does not call protected APIs when create hive validation fails in preview", async () => {
+    vi.mocked(readClientSessionStatus).mockResolvedValue("unauthenticated");
+    const { container } = renderUploadExperience();
+    submitComposerFlow(container);
+
+    await waitFor(() => {
+      expect(screen.getByTestId("landing-auth-placeholder")).toBeInTheDocument();
+    });
+    fireEvent.click(screen.getByTestId("landing-auth-session-continue"));
+
+    await waitFor(() => {
+      expect(screen.getByTestId("landing-hive-handoff-create")).toBeInTheDocument();
+    });
+    fireEvent.click(screen.getByTestId("landing-hive-handoff-create"));
+    await waitFor(() => {
+      expect(screen.getByTestId("landing-create-hive-modal")).toBeInTheDocument();
+    });
+    fireEvent.click(screen.getByTestId("landing-create-hive-submit"));
+    expect(screen.getByTestId("landing-create-hive-name-error")).toBeInTheDocument();
+    expect(commitStagedDocuments).not.toHaveBeenCalled();
+    expect(startIntakeRun).not.toHaveBeenCalled();
   });
 
   it("shows an inline notice when session recheck fails", async () => {

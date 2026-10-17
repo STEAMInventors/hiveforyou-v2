@@ -13,13 +13,11 @@ type LandingUploadDocumentsPreviewProps = {
   rawIntent: string;
   explicitDomainId: string | null;
   explicitDomainLabel: string | null;
-  hiveCaseId: string;
+  hiveName: string;
+  hiveDescription: string | null;
+  previewHive?: boolean;
   onBack: () => void;
 };
-
-function shortHiveLabel(caseId: string): string {
-  return caseId.slice(0, 8);
-}
 
 export function LandingUploadDocumentsPreview({
   fileCount,
@@ -27,9 +25,13 @@ export function LandingUploadDocumentsPreview({
   rawIntent,
   explicitDomainId,
   explicitDomainLabel,
-  hiveCaseId,
+  hiveName,
+  hiveDescription,
+  previewHive = true,
   onBack,
 }: LandingUploadDocumentsPreviewProps) {
+  const hiveTitle = previewHive ? `${hiveName} (Preview)` : hiveName;
+
   return (
     <section
       className="mx-auto flex w-full max-w-[560px] flex-col gap-5"
@@ -49,9 +51,11 @@ export function LandingUploadDocumentsPreview({
           Your documents
         </h2>
         <p className="m-0 text-sm leading-relaxed text-[#5F6368]">
-          {fileCount} file{fileCount === 1 ? "" : "s"} staged on this device for Hive{" "}
-          <span className="font-mono text-xs text-[#3C4043]">{shortHiveLabel(hiveCaseId)}…</span>.
-          They are not uploaded yet.
+          {fileCount} file{fileCount === 1 ? "" : "s"} staged on this device for{" "}
+          <span className="font-medium text-[#0D0D0D]" data-testid="landing-upload-preview-hive-name">
+            {hiveTitle}
+          </span>
+          . They are not uploaded yet.
         </p>
       </div>
 
@@ -63,6 +67,11 @@ export function LandingUploadDocumentsPreview({
           What you&apos;re working on
         </p>
         <p className="m-0 text-sm text-[#0D0D0D]">{rawIntent}</p>
+        {hiveDescription ? (
+          <p className="m-0 text-sm text-[#5F6368]" data-testid="landing-upload-preview-hive-description">
+            {hiveDescription}
+          </p>
+        ) : null}
         {explicitDomainId ? (
           <p className="m-0 text-sm text-[#5F6368]">
             Domain:{" "}

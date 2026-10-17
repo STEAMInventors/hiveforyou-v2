@@ -17,7 +17,18 @@ vi.mock("@/lib/cases/cases-client", () => ({
 
 import { fetchOwnedHive, fetchOwnedHives } from "@/lib/cases/cases-client";
 
-const EXISTING_CASE = "33333333-3333-4333-8333-333333333333";
+const DRAFT_CASE_ID = "11111111-1111-4111-8111-111111111111";
+
+async function fillAndCreateHive(name: string) {
+  fireEvent.click(screen.getByTestId("landing-hive-handoff-create"));
+  await waitFor(() => {
+    expect(screen.getByTestId("landing-create-hive-modal")).toBeInTheDocument();
+  });
+  fireEvent.change(screen.getByTestId("landing-create-hive-name"), {
+    target: { value: name },
+  });
+  fireEvent.click(screen.getByTestId("landing-create-hive-submit"));
+}
 
 describe("LandingHiveHandoff", () => {
   beforeEach(() => {
@@ -25,96 +36,112 @@ describe("LandingHiveHandoff", () => {
     vi.mocked(fetchOwnedHive).mockReset();
   });
 
-  it("blocks domain-mismatched hives from selection", async () => {
-    vi.mocked(fetchOwnedHives).mockResolvedValue({
-      cases: [
-        {
-          caseId: EXISTING_CASE,
-          domainId: "medicaid",
-          createdAt: "2026-01-01T00:00:00.000Z",
-          updatedAt: "2026-01-02T00:00:00.000Z",
-        },
-      ],
-    });
-
-    render(
-      <LandingHiveHandoff
-        fileCount={1}
-        composerExplicitDomainId="iep"
-        onBack={() => undefined}
-        onContinue={() => undefined}
-      />,
-    );
-
-    await waitFor(() => {
-      expect(screen.getByTestId("landing-hive-handoff-domain-blocked")).toBeInTheDocument();
-    });
-    expect(screen.queryByTestId(`landing-hive-handoff-option-${EXISTING_CASE}`)).toBeNull();
-  });
-
-  it("skips owned-hive APIs in preview mode", async () => {
+  it("does not call owned-hive APIs in preview mode", async () => {
     const onContinue = vi.fn();
     render(
       <LandingHiveHandoff
         fileCount={2}
         composerExplicitDomainId="iep"
+        explicitDomainLabel="Special Education / IEP"
         previewMode
+        draftCaseId={DRAFT_CASE_ID}
         onBack={() => undefined}
         onContinue={onContinue}
       />,
     );
 
     expect(screen.getByTestId("landing-hive-handoff-preview-mode-banner")).toBeInTheDocument();
-    expect(screen.getByTestId("landing-hive-handoff-continue")).toBeEnabled();
+    expect(screen.queryByTestId("landing-hive-handoff-mode-existing")).toBeNull();
     expect(fetchOwnedHives).not.toHaveBeenCalled();
 
-    fireEvent.click(screen.getByTestId("landing-hive-handoff-continue"));
-    expect(onContinue).toHaveBeenCalledWith(
-      expect.objectContaining({ selectionIntent: "new", caseId: expect.any(String) }),
-    );
+    await fillAndCreateHive("Maya's IEP 2025-26");
+    expect(onContinue).toHaveBeenCalledWith({
+      caseId: DRAFT_CASE_ID,
+      selectionIntent: "new",
+      hiveName: "Maya's IEP 2025-26",
+      hiveDescription: null,
+    });
   });
 
-  it("confirms ownership before continuing with an existing hive", async () => {
-    vi.mocked(fetchOwnedHives).mockResolvedValue({
-      cases: [
-        {
-          caseId: EXISTING_CASE,
-          domainId: "iep",
-          createdAt: "2026-01-01T00:00:00.000Z",
-          updatedAt: "2026-01-02T00:00:00.000Z",
-        },
-      ],
-    });
-    vi.mocked(fetchOwnedHive).mockResolvedValue({
-      caseId: EXISTING_CASE,
-      domainId: "iep",
-      createdAt: "2026-01-01T00:00:00.000Z",
-      updatedAt: "2026-01-02T00:00:00.000Z",
-    });
+  it("blocks submit when the hive name is blank", async () => {
     const onContinue = vi.fn();
-
     render(
       <LandingHiveHandoff
         fileCount={1}
         composerExplicitDomainId="iep"
+        explicitDomainLabel="Special Education / IEP"
+        previewMode
+        draftCaseId={DRAFT_CASE_ID}
         onBack={() => undefined}
         onContinue={onContinue}
       />,
     );
 
+    fireEvent.click(screen.getByTestId("landing-hive-handoff-create"));
     await waitFor(() => {
-      expect(screen.getByTestId("landing-hive-handoff-mode-existing")).toBeEnabled();
+      expect(screen.getByTestId("landing-create-hive-modal")).toBeInTheDocument();
     });
-    fireEvent.click(screen.getByTestId("landing-hive-handoff-mode-existing"));
-    fireEvent.click(screen.getByTestId(`landing-hive-handoff-option-${EXISTING_CASE}`));
-    fireEvent.click(screen.getByTestId("landing-hive-handoff-continue"));
+    fireEvent.click(screen.getByTestId("landing-create-hive-submit"));
 
+    expect(screen.getByTestId("landing-create-hive-name-error")).toHaveTextContent(
+      /give your hive a name/i,
+    );
+    expect(onContinue).not.toHaveBeenCalled();
+  });
+
+  it("preserves draft fields from initialDraft when reopening the modal", async () => {
+    render(
+      <LandingHiveHandoff
+        fileCount={1}
+        composerExplicitDomainId="iep"
+        explicitDomainLabel="Special Education / IEP"
+        previewMode
+        draftCaseId={DRAFT_CASE_ID}
+        initialDraft={{
+          caseId: DRAFT_CASE_ID,
+          hiveName: "Saved draft name",
+          hiveDescription: "Saved draft description",
+        }}
+        onBack={() => undefined}
+        onContinue={() => undefined}
+      />,
+    );
+
+    fireEvent.click(screen.getByTestId("landing-hive-handoff-create"));
     await waitFor(() => {
-      expect(fetchOwnedHive).toHaveBeenCalledWith(EXISTING_CASE);
+      expect(screen.getByTestId("landing-create-hive-name")).toHaveValue("Saved draft name");
     });
-    expect(onContinue).toHaveBeenCalledWith({
-      caseId: EXISTING_CASE,
-      selectionIntent: "existing",
+    expect(screen.getByTestId("landing-create-hive-description")).toHaveValue(
+      "Saved draft description",
+    );
+  });
+
+  it("keeps the same case id after a validation failure", async () => {
+    const onContinue = vi.fn();
+    render(
+      <LandingHiveHandoff
+        fileCount={1}
+        composerExplicitDomainId="iep"
+        explicitDomainLabel="Special Education / IEP"
+        draftCaseId={DRAFT_CASE_ID}
+        onBack={() => undefined}
+        onContinue={onContinue}
+      />,
+    );
+
+    fireEvent.click(screen.getByTestId("landing-hive-handoff-create"));
+    await waitFor(() => {
+      expect(screen.getByTestId("landing-create-hive-modal")).toBeInTheDocument();
     });
+    fireEvent.click(screen.getByTestId("landing-create-hive-submit"));
+    expect(onContinue).not.toHaveBeenCalled();
+
+    fireEvent.change(screen.getByTestId("landing-create-hive-name"), {
+      target: { value: "Annual review prep" },
+    });
+    fireEvent.click(screen.getByTestId("landing-create-hive-submit"));
+    expect(onContinue).toHaveBeenCalledWith(
+      expect.objectContaining({ caseId: DRAFT_CASE_ID, hiveName: "Annual review prep" }),
+    );
   });
 });
