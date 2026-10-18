@@ -1,0 +1,49 @@
+{
+  "version": "0.2.0",
+  "personas": [
+    {
+      "id": "customer",
+      "label": "Parent or guardian",
+      "readingLevel": "plain",
+      "requiredViews": [
+        "story",
+        "important_facts",
+        "questions",
+        "sources"
+      ],
+      "priorities": [
+        "current_plan",
+        "needs",
+        "goals",
+        "services",
+        "progress",
+        "gaps"
+      ]
+    },
+    {
+      "id": "pro",
+      "label": "Advocate or attorney",
+      "readingLevel": "professional",
+      "requiredViews": [
+        "evidence_ledger",
+        "relationship_graph",
+        "comparisons",
+        "gaps",
+        "export"
+      ],
+      "priorities": [
+        "verified_facts",
+        "source_trace",
+        "temporal_state",
+        "conflicts",
+        "coverage"
+      ]
+    }
+  ],
+  "controls": {
+    "onlyValidatedIdsInNarrative": true,
+    "factCitationsAlwaysVisible": true,
+    "neutralQuestionsOnly": true,
+    "userIntentMayReorderButNotSuppressExtraction": true
+  }
+}

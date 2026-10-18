@@ -1,0 +1,128 @@
+{
+  "version": "0.2.0",
+  "relationships": [
+    {
+      "id": "restates",
+      "from": [
+        "present_level.statement",
+        "measurement.value",
+        "goal.baseline_value"
+      ],
+      "to": [
+        "measurement.value",
+        "assessment.result"
+      ],
+      "primitive": "matches",
+      "require": [
+        "same_subject",
+        "compatible_measure",
+        "same_observation",
+        "traceable_evidence"
+      ],
+      "onUncertain": "possiblySame"
+    },
+    {
+      "id": "baseline_for",
+      "from": [
+        "measurement.value",
+        "goal.baseline_value"
+      ],
+      "to": [
+        "goal.statement"
+      ],
+      "primitive": "matches",
+      "require": [
+        "same_subject",
+        "compatible_measure",
+        "plan_scope",
+        "explicit_or_supported_link"
+      ],
+      "onUncertain": "unresolved"
+    },
+    {
+      "id": "addresses",
+      "from": [
+        "goal.statement",
+        "service.type"
+      ],
+      "to": [
+        "assessment.identified_need",
+        "present_level.area"
+      ],
+      "primitive": "matches",
+      "require": [
+        "same_subject",
+        "compatible_area",
+        "supported_link"
+      ],
+      "onUncertain": "unresolved"
+    },
+    {
+      "id": "reports_progress_on",
+      "from": [
+        "progress.observation",
+        "measurement.value"
+      ],
+      "to": [
+        "goal.statement"
+      ],
+      "primitive": "matches",
+      "require": [
+        "same_subject",
+        "goal_reference_or_verified_match",
+        "compatible_measure"
+      ],
+      "onUncertain": "unresolved"
+    },
+    {
+      "id": "amends",
+      "from": [
+        "document.reference"
+      ],
+      "to": [
+        "document.title"
+      ],
+      "primitive": "compose",
+      "require": [
+        "explicit_target",
+        "scoped_change",
+        "effective_dates_when_available"
+      ],
+      "onUncertain": "unresolved"
+    },
+    {
+      "id": "supersedes",
+      "from": [
+        "document.reference"
+      ],
+      "to": [
+        "document.title"
+      ],
+      "primitive": "compose",
+      "require": [
+        "explicit_or_supported_lineage",
+        "nonoverlapping_or_scoped_effective_period"
+      ],
+      "onUncertain": "unresolved"
+    },
+    {
+      "id": "supports",
+      "from": [
+        "assessment.finding",
+        "assessment.result"
+      ],
+      "to": [
+        "eligibility.basis",
+        "present_level.statement"
+      ],
+      "primitive": "matches",
+      "require": [
+        "same_subject",
+        "source_relationship"
+      ],
+      "onUncertain": "unresolved"
+    }
+  ],
+  "sameNumericValueNeverEnough": true,
+  "preserveIndependentOccurrences": true
+}

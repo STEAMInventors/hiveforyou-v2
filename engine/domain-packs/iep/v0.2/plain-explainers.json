@@ -1,0 +1,30 @@
+{
+  "version": "0.2.0",
+  "explainers": [
+    {
+      "term": "IEP",
+      "customer": "A written plan describing a student’s special education goals and supports.",
+      "pro": "Individualized Education Program"
+    },
+    {
+      "term": "WCPM",
+      "customer": "Words read correctly in one minute.",
+      "pro": "Words correct per minute"
+    },
+    {
+      "term": "present levels",
+      "customer": "What the school records say the student can do now and how needs affect learning.",
+      "pro": "Present levels of academic achievement and functional performance"
+    },
+    {
+      "term": "goal baseline",
+      "customer": "The starting measurement stated for a goal.",
+      "pro": "Baseline measurement supporting an annual goal"
+    },
+    {
+      "term": "evaluation finding",
+      "customer": "What an evaluator reported after assessing an area.",
+      "pro": "Assessment conclusion, distinct from an explicit educational need"
+    }
+  ]
+}

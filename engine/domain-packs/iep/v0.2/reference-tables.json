@@ -1,0 +1,15 @@
+{
+  "version": "0.2.0",
+  "references": [
+    {
+      "id": "idea_part300",
+      "authority": "34 CFR Part 300",
+      "jurisdiction": "US federal",
+      "role": "reference_only",
+      "url": "https://www.ecfr.gov/current/title-34/subtitle-B/chapter-III/part-300",
+      "requiresVersionAndEffectiveDateBeforeUseInChecks": true
+    }
+  ],
+  "thresholds": [],
+  "noAssumedThreeYearFindingWithoutDatesAndExceptionReview": true
+}

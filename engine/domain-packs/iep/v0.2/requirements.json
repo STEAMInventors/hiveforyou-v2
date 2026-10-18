@@ -1,0 +1,42 @@
+{
+  "version": "0.2.0",
+  "requirements": [],
+  "policy": {
+    "noUniversalUploadRequirements": true,
+    "requirementsMustHaveAuthorityReference": true,
+    "applicabilityMustBeEvaluated": true,
+    "notFoundMeansNotFoundInSuppliedRecordsOnly": true,
+    "notApplicableDistinctFromAbsent": true,
+    "emptyFieldDistinctFromAbsentDocument": true
+  },
+  "proposedConditionalRequirementCandidates": [
+    {
+      "topic": "annual_goal_components",
+      "state": "requires_source_and_jurisdiction_review_before_activation"
+    },
+    {
+      "topic": "iep_services_start_frequency_duration_location",
+      "state": "requires_source_and_jurisdiction_review_before_activation"
+    },
+    {
+      "topic": "progress_reporting_description",
+      "state": "requires_source_and_jurisdiction_review_before_activation"
+    },
+    {
+      "topic": "transition_applicable_age",
+      "state": "requires_source_and_jurisdiction_review_before_activation"
+    },
+    {
+      "topic": "reevaluation_review",
+      "state": "requires_source_and_jurisdiction_review_before_activation"
+    },
+    {
+      "topic": "assessment_participation",
+      "state": "requires_source_and_jurisdiction_review_before_activation"
+    },
+    {
+      "topic": "prior_written_notice_trigger",
+      "state": "requires_source_and_jurisdiction_review_before_activation"
+    }
+  ]
+}
