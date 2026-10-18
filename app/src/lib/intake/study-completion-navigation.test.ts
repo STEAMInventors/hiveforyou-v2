@@ -9,6 +9,7 @@ import {
   buildCaseDocumentsHref,
   buildCaseReportsHref,
   buildCaseWorkspaceHomeHref,
+  buildHiveBuildingHref,
   buildMyCasesHref,
   buildPostStudyCompletionHref,
   isCanonicalStudyPresentationReady,
@@ -27,14 +28,23 @@ describe("study-completion-navigation", () => {
     expect(resolveStudyProcessingModeFromStudyPath(undefined)).toBe("canonical_openai_v4");
   });
 
-  it("routes pack_driven completion to the customer ready screen", () => {
+  it("routes pack_driven completion to raw extractions on the customer ready screen", () => {
     expect(
       buildPostStudyCompletionHref({
         processingMode: "pack_driven_v1",
         caseId: "case-1",
         studyRunId: "study-1",
       }),
-    ).toBe("/hives/case-1/ready?studyRunId=study-1");
+    ).toBe("/hives/case-1/ready?studyRunId=study-1&documentsView=raw-extractions");
+  });
+
+  it("opens hive building on raw extractions by default", () => {
+    expect(
+      buildHiveBuildingHref({
+        caseId: "case-1",
+        studyRunId: "study-1",
+      }),
+    ).toBe("/hives/case-1/building?studyRunId=study-1&documentsView=raw-extractions");
   });
 
   it("routes canonical completion to the study map", () => {

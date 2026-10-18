@@ -227,8 +227,8 @@ export function HiveExtractionReadyExperience({
               >
                 <span>
                   {exploreState === "running"
-                    ? "Generating study…"
-                    : "Generate study"}
+                    ? "Continuing…"
+                    : "Continue to Canonical Study"}
                 </span>
                 <svg
                   aria-hidden

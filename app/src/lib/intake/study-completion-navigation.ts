@@ -2,6 +2,10 @@ import type { StudyProcessingMode, StudyRunStatus } from "@hiveforyou/shared/can
 import { isStudyRunProcessing } from "@hiveforyou/shared/canonical-study";
 import type { IntakeStudyPath } from "@hiveforyou/shared/intake";
 
+export type CaseDocumentsView = "files" | "raw-extractions";
+
+export const CASE_DOCUMENTS_VIEW_QUERY = "documentsView";
+
 export function resolveStudyProcessingModeFromStudyPath(
   studyPath: IntakeStudyPath | undefined,
 ): StudyProcessingMode {
@@ -9,11 +13,17 @@ export function resolveStudyProcessingModeFromStudyPath(
 }
 
 export function buildHiveBuildingHref(input: { caseId: string; studyRunId: string }): string {
-  return `/hives/${encodeURIComponent(input.caseId)}/building?studyRunId=${encodeURIComponent(input.studyRunId)}`;
+  const params = new URLSearchParams();
+  params.set("studyRunId", input.studyRunId);
+  params.set(CASE_DOCUMENTS_VIEW_QUERY, "raw-extractions");
+  return `/hives/${encodeURIComponent(input.caseId)}/building?${params.toString()}`;
 }
 
 export function buildHiveReadyHref(input: { caseId: string; studyRunId: string }): string {
-  return `/hives/${encodeURIComponent(input.caseId)}/ready?studyRunId=${encodeURIComponent(input.studyRunId)}`;
+  const params = new URLSearchParams();
+  params.set("studyRunId", input.studyRunId);
+  params.set(CASE_DOCUMENTS_VIEW_QUERY, "raw-extractions");
+  return `/hives/${encodeURIComponent(input.caseId)}/ready?${params.toString()}`;
 }
 
 export function buildHiveCanonicalJsonHref(input: { caseId: string; studyRunId: string }): string {
@@ -47,10 +57,6 @@ export function isCanonicalStudyPresentationReady(status: StudyRunStatus): boole
 export function isPackDrivenStudyAwaitingRawExtraction(status: StudyRunStatus): boolean {
   return isStudyRunProcessing(status);
 }
-
-export type CaseDocumentsView = "files" | "raw-extractions";
-
-export const CASE_DOCUMENTS_VIEW_QUERY = "documentsView";
 
 export function parseCaseDocumentsView(raw: string | null | undefined): CaseDocumentsView {
   return raw === "raw-extractions" ? "raw-extractions" : "files";

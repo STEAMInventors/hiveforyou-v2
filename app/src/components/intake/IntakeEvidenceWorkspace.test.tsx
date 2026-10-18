@@ -313,7 +313,7 @@ describe("IntakeEvidenceWorkspace", () => {
     await waitFor(() => {
 
       expect(mockPush).toHaveBeenCalledWith(
-        "/hives/case-1/building?studyRunId=study-1",
+        "/hives/case-1/building?studyRunId=study-1&documentsView=raw-extractions",
       );
 
     });

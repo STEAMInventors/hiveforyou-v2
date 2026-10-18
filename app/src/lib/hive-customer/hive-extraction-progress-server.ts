@@ -5,7 +5,6 @@ import {
   requireSessionUserId,
 } from "@hiveforyou/core";
 import type { StudyRunStatus } from "@hiveforyou/shared/canonical-study";
-import { isStudyRunProcessing } from "@hiveforyou/shared/canonical-study";
 
 import { CaseNotFoundError } from "@/lib/canonical-study/study-service-server";
 import { StudyRunNotFoundError } from "@/lib/case-map/case-map-bundle-service-server";
@@ -26,10 +25,14 @@ import {
 } from "./hive-extraction-intake-inventory";
 import type { HiveExtractionProgressView } from "./hive-extraction-progress-types";
 import {
-  isPackDrivenExtractionExploreReady,
   mapInspectorDocumentToCustomerRow,
   resolveReliableSubjectFirstName,
 } from "./map-customer-extraction-ui-state";
+import {
+  resolveEffectiveRawExtractionOutcome,
+  resolveExtractionCompleteForExplore,
+  resolveExtractionTerminal,
+} from "./hive-extraction-progress-types";
 
 export type { HiveExtractionProgressView } from "./hive-extraction-progress-types";
 
@@ -158,19 +161,29 @@ export async function loadHiveExtractionProgressForSession(input: {
     0,
   );
 
-  const rawOutcome = bundle.rawExtractionOutcome;
-  const extractionTerminal =
-    rawOutcome !== null ||
-    (!isStudyRunProcessing(run.status as StudyRunStatus) &&
-      (run.status === "FAILED" || run.status === "SUCCEEDED" || run.status === "NEEDS_REVIEW"));
+  const studyRunStatus = run.status as StudyRunStatus;
+  const rawOutcome = resolveEffectiveRawExtractionOutcome({
+    artifactOutcome: bundle.rawExtractionOutcome,
+    documents,
+    studyRunStatus,
+  });
+  const extractionTerminal = resolveExtractionTerminal({
+    rawExtractionOutcome: rawOutcome,
+    studyRunStatus,
+    documents,
+  });
+  const extractionCompleteForExplore = resolveExtractionCompleteForExplore({
+    rawExtractionOutcome: rawOutcome,
+    documents,
+  });
 
   return {
     caseId: input.caseId,
     studyRunId: input.studyRunId,
     intakeRunId,
-    studyRunStatus: run.status as StudyRunStatus,
+    studyRunStatus,
     rawExtractionOutcome: rawOutcome,
-    extractionCompleteForExplore: isPackDrivenExtractionExploreReady(rawOutcome),
+    extractionCompleteForExplore,
     extractionTerminal,
     subjectFirstName: resolveReliableSubjectFirstName(inspectorDocuments),
     documents,

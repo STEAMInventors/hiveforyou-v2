@@ -293,8 +293,28 @@ export function mapInspectorDocumentToCustomerRow(input: {
 
 export function isPackDrivenExtractionExploreReady(
   outcome: StudyRawExtractionOutcome | null | undefined,
+  documents?: readonly Pick<CustomerExtractionDocumentRow, "uiStatus">[],
 ): boolean {
-  return outcome === "succeeded";
+  if (outcome === "succeeded") {
+    return true;
+  }
+  if (!documents || documents.length === 0) {
+    return false;
+  }
+  const readCount = documents.filter((row) => row.uiStatus === "read").length;
+  if (readCount === 0) {
+    return false;
+  }
+  const stillProcessing = documents.some(
+    (row) => row.uiStatus === "waiting" || row.uiStatus === "reading",
+  );
+  if (stillProcessing) {
+    return false;
+  }
+  if (outcome === "partial_failure" || outcome === null) {
+    return true;
+  }
+  return false;
 }
 
 export function customerStatusLabel(status: CustomerDocumentUiStatus): string {

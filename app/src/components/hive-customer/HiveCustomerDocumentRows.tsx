@@ -5,7 +5,10 @@ import { useCallback, useEffect, useId, useMemo, useState } from "react";
 
 import { fetchHiveExtractionProgress } from "@/lib/hive-customer/hive-extraction-progress-client";
 import type { HiveExtractionProgressView } from "@/lib/hive-customer/hive-extraction-progress-types";
-import { shouldPollHiveExtractionProgress } from "@/lib/hive-customer/hive-extraction-progress-types";
+import {
+  customerExtractionShowsGenericFailure,
+  shouldPollHiveExtractionProgress,
+} from "@/lib/hive-customer/hive-extraction-progress-types";
 import {
   customerStatusLabel,
   type CustomerExtractedDetail,
@@ -419,7 +422,7 @@ export function HiveExtractionOutcomeBanner({
             All {readCount} document{readCount === 1 ? "" : "s"} are ready
           </p>
           <p className="mt-0.5 text-[15px] text-customerHive-on-surface-variant">
-            Next, build your study to connect what they say across documents.
+            Continue to Canonical Study to connect what they say across documents.
           </p>
         </div>
       </div>
@@ -532,11 +535,14 @@ export function CustomerRawExtractionsPanel({
     );
   }
 
-  const terminalFailure =
-    progress?.extractionTerminal && !progress.extractionCompleteForExplore;
+  const showGenericFailure = customerExtractionShowsGenericFailure(progress);
   const processing = progress && shouldPollHiveExtractionProgress(progress);
   const useExpandableCards =
-    presentation === "detailed" && Boolean(progress?.extractionCompleteForExplore);
+    presentation === "detailed" &&
+    Boolean(
+      progress?.documents.some((row) => row.uiStatus === "read") ||
+        progress?.extractionCompleteForExplore,
+    );
 
   return (
     <section
@@ -561,7 +567,7 @@ export function CustomerRawExtractionsPanel({
         </p>
       ) : null}
 
-      {showProcessingBanner && processing && !terminalFailure ? (
+      {showProcessingBanner && processing && !showGenericFailure ? (
         <HiveExtractionProcessingBanner />
       ) : null}
 
@@ -569,11 +575,11 @@ export function CustomerRawExtractionsPanel({
         <HiveExtractionOutcomeBanner
           documents={progress.documents}
           extractionComplete={progress.extractionCompleteForExplore}
-          terminalFailure={Boolean(terminalFailure)}
+          terminalFailure={Boolean(progress.extractionTerminal && !progress.extractionCompleteForExplore)}
         />
       ) : null}
 
-      {terminalFailure && !showOutcomeBanner ? (
+      {showGenericFailure && !showOutcomeBanner ? (
         <div
           className={
             variant === "intake"
@@ -671,8 +677,7 @@ export function CustomerYourFilesPanel({
     );
   }
 
-  const terminalFailure =
-    progress?.extractionTerminal && !progress.extractionCompleteForExplore;
+  const showGenericFailure = customerExtractionShowsGenericFailure(progress);
   const processing = progress && shouldPollHiveExtractionProgress(progress);
 
   return (
@@ -693,7 +698,7 @@ export function CustomerYourFilesPanel({
         </p>
       ) : null}
 
-      {terminalFailure && !processing ? (
+      {showGenericFailure && !processing ? (
         <div
           className="rounded-[18px] border border-[#F7D3CF] bg-[#FFF9F8] px-4 py-3 text-sm text-customerHive-on-surface-variant"
           role="alert"

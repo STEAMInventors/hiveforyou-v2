@@ -12,7 +12,10 @@ import {
   type CaseDocumentsView,
 } from "@/lib/intake/study-completion-navigation";
 
-import { shouldPollHiveExtractionProgress } from "@/lib/hive-customer/hive-extraction-progress-types";
+import {
+  customerExtractionShowsGenericFailure,
+  shouldPollHiveExtractionProgress,
+} from "@/lib/hive-customer/hive-extraction-progress-types";
 
 import { CaseDocumentsSubNav } from "./CaseDocumentsSubNav";
 import { CustomerRawExtractionsPanel, CustomerYourFilesPanel } from "./HiveCustomerDocumentRows";
@@ -63,8 +66,7 @@ export function HiveBuildingProgressExperience({
     return () => window.clearInterval(timer);
   }, [progress, refresh, studyRunId]);
 
-  const terminalFailure =
-    progress?.extractionTerminal && !progress.extractionCompleteForExplore;
+  const showGenericFailure = customerExtractionShowsGenericFailure(progress);
   const intakeRunId = progress?.intakeRunId ?? null;
   const filesHref = buildHiveDocumentsSectionHref({
     caseId,
@@ -145,7 +147,7 @@ export function HiveBuildingProgressExperience({
               </p>
             ) : null}
 
-            {terminalFailure && !progress?.documents.length ? (
+            {showGenericFailure && !progress?.documents.length ? (
               <div
                 className="rounded-[18px] border border-[#F7D3CF] bg-[#FFF9F8] px-5 py-4 text-sm text-customerHive-on-surface-variant"
                 role="alert"
@@ -158,9 +160,11 @@ export function HiveBuildingProgressExperience({
             <CustomerRawExtractionsPanel
               caseId={caseId}
               studyRunId={studyRunId}
-              presentation="summary"
+              presentation="detailed"
               showProcessingBanner
-              showOutcomeBanner={Boolean(terminalFailure && progress?.documents.length)}
+              showOutcomeBanner={Boolean(
+                progress?.extractionTerminal && progress.documents.length > 0,
+              )}
             />
           </section>
         )}

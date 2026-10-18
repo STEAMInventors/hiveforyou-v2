@@ -10,8 +10,13 @@ import {
   mapInspectorDocumentToCustomerRow,
   resolveReliableSubjectFirstName,
 } from "./map-customer-extraction-ui-state";
+import type { CustomerExtractionDocumentRow } from "./map-customer-extraction-ui-state";
 import type { HiveExtractionProgressView } from "./hive-extraction-progress-types";
-import { shouldPollHiveExtractionProgress } from "./hive-extraction-progress-types";
+import {
+  customerExtractionShowsGenericFailure,
+  inferRawExtractionOutcomeFromDocuments,
+  shouldPollHiveExtractionProgress,
+} from "./hive-extraction-progress-types";
 
 function doc(partial: Partial<RawExtractionInspectorDocument>): RawExtractionInspectorDocument {
   return {
@@ -165,11 +170,28 @@ describe("mapInspectorDocumentToCustomerRow", () => {
 });
 
 describe("isPackDrivenExtractionExploreReady", () => {
-  it("allows explore only on succeeded outcome", () => {
+  it("allows explore on succeeded outcome", () => {
     expect(isPackDrivenExtractionExploreReady("succeeded")).toBe(true);
-    expect(isPackDrivenExtractionExploreReady("partial_failure")).toBe(false);
-    expect(isPackDrivenExtractionExploreReady("failed")).toBe(false);
+  });
+
+  it("allows explore on partial failure when at least one document was read", () => {
+    expect(
+      isPackDrivenExtractionExploreReady("partial_failure", [{ uiStatus: "read" }]),
+    ).toBe(true);
+    expect(
+      isPackDrivenExtractionExploreReady("partial_failure", [{ uiStatus: "failed" }]),
+    ).toBe(false);
+  });
+
+  it("allows explore when outcome is missing but every document finished as read", () => {
+    expect(
+      isPackDrivenExtractionExploreReady(null, [
+        { uiStatus: "read" },
+        { uiStatus: "read" },
+      ]),
+    ).toBe(true);
     expect(isPackDrivenExtractionExploreReady(null)).toBe(false);
+    expect(isPackDrivenExtractionExploreReady("failed")).toBe(false);
   });
 });
 
@@ -192,6 +214,58 @@ function progressView(
     ...partial,
   };
 }
+
+describe("extraction progress resolution", () => {
+  it("infers succeeded when all documents are read and the study run succeeded", () => {
+    expect(
+      inferRawExtractionOutcomeFromDocuments({
+        studyRunStatus: "SUCCEEDED",
+        documents: [{ uiStatus: "read" }, { uiStatus: "read" }],
+      }),
+    ).toBe("succeeded");
+  });
+
+  it("does not show generic failure when documents were read successfully", () => {
+    expect(
+      customerExtractionShowsGenericFailure({
+        caseId: "c",
+        studyRunId: "s",
+        intakeRunId: null,
+        studyRunStatus: "SUCCEEDED",
+        rawExtractionOutcome: null,
+        extractionCompleteForExplore: true,
+        extractionTerminal: true,
+        subjectFirstName: null,
+        documents: [
+          { uiStatus: "read" } as CustomerExtractionDocumentRow,
+          { uiStatus: "read" } as CustomerExtractionDocumentRow,
+        ],
+        thingsThatWouldHelp: [],
+        readDocumentCount: 2,
+        totalDetailCount: 2,
+      }),
+    ).toBe(false);
+  });
+
+  it("shows generic failure when terminal with no successful reads", () => {
+    expect(
+      customerExtractionShowsGenericFailure({
+        caseId: "c",
+        studyRunId: "s",
+        intakeRunId: null,
+        studyRunStatus: "FAILED",
+        rawExtractionOutcome: "failed",
+        extractionCompleteForExplore: false,
+        extractionTerminal: true,
+        subjectFirstName: null,
+        documents: [{ uiStatus: "failed" } as CustomerExtractionDocumentRow],
+        thingsThatWouldHelp: [],
+        readDocumentCount: 0,
+        totalDetailCount: 0,
+      }),
+    ).toBe(true);
+  });
+});
 
 describe("shouldPollHiveExtractionProgress", () => {
   it("stops on terminal failure without explore", () => {
