@@ -12,6 +12,7 @@ import { fetchCaseMapViewBundle } from "@/lib/case-map/case-map-client";
 import {
   appendIntakeSources,
   fetchIntakeRun,
+  processIntakeRun,
   resetIntakeHomeSession,
   setIntakeSourceDisposition,
   startIntakeStudy,
@@ -414,6 +415,28 @@ export function IntakeEvidenceWorkspace({
     return next;
   }, [intakeRunId]);
 
+  const waitForIntakeWorkspaceReady = useCallback(async (): Promise<IntakeEvidenceWorkspaceView> => {
+    let current = await reload();
+    if (current.workspaceReady) {
+      return current;
+    }
+    await processIntakeRun(intakeRunId);
+    for (let attempt = 0; attempt < 600; attempt += 1) {
+      current = await reload();
+      if (current.status === "FAILED") {
+        throw new Error("INTAKE_PROCESS_FAILED");
+      }
+      if (current.workspaceReady) {
+        return current;
+      }
+      if (!isIntakeRunProcessing(current.status) && !current.workspaceReady) {
+        throw new Error("INTAKE_PROCESS_FAILED");
+      }
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+    }
+    throw new Error("INTAKE_PROCESS_TIMEOUT");
+  }, [intakeRunId, reload]);
+
   useEffect(() => {
     let cancelled = false;
 
@@ -453,15 +476,7 @@ export function IntakeEvidenceWorkspace({
           intakeRunId,
           committed.documents.map((document) => document.sourceDocumentId),
         );
-        let attempts = 0;
-        while (attempts < 120) {
-          const next = await reload();
-          if (!isIntakeRunProcessing(next.status) && next.workspaceReady) {
-            break;
-          }
-          await new Promise((resolve) => setTimeout(resolve, 1000));
-          attempts += 1;
-        }
+        await reload();
       } catch {
         setErrorMessage("We couldn't add those files. Please try again.");
       } finally {
@@ -928,7 +943,7 @@ export function IntakeEvidenceWorkspace({
           </section>
         ) : null}
 
-        {view.workspaceReady ? (
+        {includedCount > 0 ? (
           <section
             aria-label="Build your hive"
             data-testid="intake-build-study"
@@ -972,11 +987,20 @@ export function IntakeEvidenceWorkspace({
                 const session = Date.now();
                 setStudyBuild({ session, target: "migration" });
                 setErrorMessage(null);
-                const processingMode = resolveStudyProcessingModeFromStudyPath(view?.studyPath);
-                void startIntakeStudy(intakeRunId, { processingMode })
-                  .then((outcome) => {
+                void waitForIntakeWorkspaceReady()
+                  .then((readyView) => {
+                    const processingMode = resolveStudyProcessingModeFromStudyPath(
+                      readyView.studyPath,
+                    );
+                    return startIntakeStudy(intakeRunId, { processingMode }).then((outcome) => ({
+                      outcome,
+                      processingMode,
+                      readyView,
+                    }));
+                  })
+                  .then(({ outcome, processingMode, readyView }) => {
                     if (processingMode === "pack_driven_v1") {
-                      if (!view?.caseId) {
+                      if (!readyView.caseId) {
                         studyStartInFlight.current = false;
                         setStudyBuild(null);
                         setErrorMessage("We couldn't start the study. Please try again.");
@@ -986,7 +1010,7 @@ export function IntakeEvidenceWorkspace({
                       setStudyBuild(null);
                       router.push(
                         buildHiveBuildingHref({
-                          caseId: view.caseId,
+                          caseId: readyView.caseId,
                           studyRunId: outcome.run.studyRunId,
                         }),
                       );
@@ -1022,10 +1046,15 @@ export function IntakeEvidenceWorkspace({
                         : "We couldn't complete the study. Please try again in a moment.",
                     );
                   })
-                  .catch(() => {
+                  .catch((error: unknown) => {
                     studyStartInFlight.current = false;
                     setStudyBuild(null);
-                    setErrorMessage("We couldn't start the study. Please try again in a moment.");
+                    const code = error instanceof Error ? error.message : "";
+                    setErrorMessage(
+                      code === "INTAKE_PROCESS_FAILED" || code === "INTAKE_PROCESS_TIMEOUT"
+                        ? "We couldn't read your documents. Please try again in a moment."
+                        : "We couldn't start the study. Please try again in a moment.",
+                    );
                   });
               }}
               style={{

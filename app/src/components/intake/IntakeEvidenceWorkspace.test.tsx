@@ -60,6 +60,8 @@ vi.mock("@/lib/intake/intake-client", () => ({
 
   startIntakeStudy: vi.fn(),
 
+  processIntakeRun: vi.fn(),
+
 }));
 
 
@@ -79,6 +81,8 @@ import {
   resetIntakeHomeSession,
 
   setIntakeSourceDisposition,
+
+  processIntakeRun,
 
   startIntakeStudy,
 
@@ -233,6 +237,10 @@ describe("IntakeEvidenceWorkspace", () => {
     vi.mocked(resetIntakeHomeSession).mockReset();
 
     vi.mocked(startIntakeStudy).mockReset();
+
+    vi.mocked(processIntakeRun).mockReset();
+
+    vi.mocked(processIntakeRun).mockResolvedValue({ status: "RUNNING" });
 
     vi.mocked(fetchIntakeRun).mockResolvedValue(workspaceView);
 

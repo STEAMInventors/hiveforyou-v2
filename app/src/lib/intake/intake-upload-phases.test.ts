@@ -8,6 +8,6 @@ describe("intakePreRunSubtitle", () => {
   });
 
   it("describes start phase", () => {
-    expect(intakePreRunSubtitle("starting-intake", 2)).toMatch(/Starting read across/);
+    expect(intakePreRunSubtitle("starting-intake", 2)).toMatch(/Registering your files/);
   });
 });

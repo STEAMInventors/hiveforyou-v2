@@ -13,8 +13,8 @@ export function intakePreRunSubtitle(
       : "Saving your document to secure storage…";
   }
   return documentCount > 1
-    ? "Starting read across your files…"
-    : "Starting read on your document…";
+    ? "Registering your files with this hive…"
+    : "Registering your file with this hive…";
 }
 
 /** Keep progress on the first intake stage while commit / start requests run. */

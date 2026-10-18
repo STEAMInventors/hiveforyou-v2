@@ -12,6 +12,7 @@ import { commitStagedDocuments } from "@/lib/documents/commit-client";
 import {
   clearStoredIntakeRun,
   fetchIntakeRun,
+  isUnrecoverableIntakeStatusError,
   readStoredIntakeRunId,
   startIntakeRun,
 } from "@/lib/intake/intake-client";
@@ -43,12 +44,22 @@ function customerErrorMessage(error: unknown): string {
     return "We couldn't save your documents. Please try again.";
   }
   if (code === "INTAKE_START_FAILED") {
-    return "We couldn't start reading your documents. Please try again later.";
+    return "We couldn't register your documents. Please try again later.";
   }
   if (code === "UNAUTHENTICATED") {
     return "Please sign in again.";
   }
-  return "We couldn't start reading your documents.";
+  return "We couldn't save your documents.";
+}
+
+function intakeStatusErrorMessage(code: string): string {
+  if (code === "UNAUTHENTICATED") {
+    return "Please sign in again.";
+  }
+  if (code === "INTAKE_NOT_FOUND") {
+    return "We couldn't find that upload. Please try again.";
+  }
+  return "We couldn't load your documents. Please try again.";
 }
 
 function intakeRunFailureMessage(): string {
@@ -66,6 +77,16 @@ function buildSubmissionScopeKey(input: {
   const casePart = input.hiveCaseId?.trim() || "no-case";
   const docsPart = [...input.stagedDocumentIds].sort().join("|");
   return `submit:${casePart}:${docsPart}`;
+}
+
+function isUploadRegisteredOnly(
+  view: Awaited<ReturnType<typeof fetchIntakeRun>>,
+): boolean {
+  return (
+    !view.workspaceReady &&
+    view.documents.length > 0 &&
+    view.documents.every((document) => document.processingStatus === "UPLOADED")
+  );
 }
 
 export function IntakeUnderstanding({
@@ -101,41 +122,49 @@ export function IntakeUnderstanding({
 
   const stagedCount = documents.length;
 
-  const openHive = () => {
-    const id = view?.intakeRunId ?? intakeRunId;
-    if (!id) {
-      return;
-    }
+  const openYourFiles = (runId: string) => {
     clearStoredIntakeRun();
-    router.replace(`/intake/${id}`);
+    router.replace(`/intake/${runId}`);
   };
 
   useEffect(() => {
     let cancelled = false;
 
-    async function poll(runId: string) {
+    async function pollLegacyProcessing(runId: string) {
       while (!cancelled) {
-        const next = await fetchIntakeRun(runId);
-        if (cancelled) {
+        try {
+          const next = await fetchIntakeRun(runId);
+          if (cancelled) {
+            return;
+          }
+          setView(next);
+          setIntakeRunId(next.intakeRunId);
+          if (next.status === "FAILED") {
+            setErrorMessage(intakeRunFailureMessage());
+            return;
+          }
+          if (isTerminalIntakeRunStatus(next.status) && next.workspaceReady) {
+            return;
+          }
+          if (!isIntakeRunProcessing(next.status) && next.workspaceReady) {
+            return;
+          }
+          await new Promise((resolve) => setTimeout(resolve, POLL_INTERVAL_MS));
+        } catch (error) {
+          if (cancelled) {
+            return;
+          }
+          const code = error instanceof Error ? error.message : "INTAKE_STATUS_FAILED";
+          setErrorMessage(intakeStatusErrorMessage(code));
+          if (isUnrecoverableIntakeStatusError(code)) {
+            clearStoredIntakeRun();
+          }
           return;
         }
-        setView(next);
-        setIntakeRunId(next.intakeRunId);
-        if (next.status === "FAILED") {
-          setErrorMessage(intakeRunFailureMessage());
-          return;
-        }
-        if (isTerminalIntakeRunStatus(next.status)) {
-          return;
-        }
-        if (!isIntakeRunProcessing(next.status) && next.workspaceReady) {
-          return;
-        }
-        await new Promise((resolve) => setTimeout(resolve, POLL_INTERVAL_MS));
       }
     }
 
-    async function commitAndStartIntake(): Promise<string> {
+    async function commitAndRegisterIntake(): Promise<string> {
       const stagedDocuments = documentsRef.current;
       const commit = hiveCommitRef.current;
       const purpose = composerPurposeRef.current;
@@ -165,23 +194,37 @@ export function IntakeUnderstanding({
       return started.intakeRunId;
     }
 
+    async function resumeExistingRun(runId: string) {
+      setErrorMessage(null);
+      setPreRunPhase(null);
+      setIntakeRunId(runId);
+      const snapshot = await fetchIntakeRun(runId);
+      if (cancelled) {
+        return;
+      }
+      if (isUploadRegisteredOnly(snapshot)) {
+        openYourFiles(runId);
+        return;
+      }
+      if (snapshot.workspaceReady) {
+        openYourFiles(runId);
+        return;
+      }
+      setView(snapshot);
+      await pollLegacyProcessing(runId);
+    }
+
     async function begin() {
       try {
         const resumeId = resumeRunId?.trim() || null;
         if (resumeId) {
-          setErrorMessage(null);
-          setPreRunPhase(null);
-          setIntakeRunId(resumeId);
-          await poll(resumeId);
+          await resumeExistingRun(resumeId);
           return;
         }
 
         const storedRunId = readStoredIntakeRunId();
         if (storedRunId) {
-          setErrorMessage(null);
-          setPreRunPhase(null);
-          setIntakeRunId(storedRunId);
-          await poll(storedRunId);
+          await resumeExistingRun(storedRunId);
           return;
         }
 
@@ -193,8 +236,7 @@ export function IntakeUnderstanding({
         if (submitStartedRef.current) {
           const existingRunId = readStoredIntakeRunId();
           if (existingRunId) {
-            setIntakeRunId(existingRunId);
-            await poll(existingRunId);
+            openYourFiles(existingRunId);
           }
           return;
         }
@@ -216,7 +258,7 @@ export function IntakeUnderstanding({
         if (inFlight) {
           runId = await inFlight;
         } else {
-          const promise = commitAndStartIntake();
+          const promise = commitAndRegisterIntake();
           activeOrchestrationFlight = { key: scopeKey, promise };
           try {
             runId = await promise;
@@ -230,8 +272,11 @@ export function IntakeUnderstanding({
         if (cancelled) {
           return;
         }
-        setIntakeRunId(runId);
-        await poll(runId);
+        await fetchIntakeRun(runId);
+        if (cancelled) {
+          return;
+        }
+        openYourFiles(runId);
       } catch (error) {
         submitStartedRef.current = false;
         if (!cancelled) {
@@ -245,7 +290,7 @@ export function IntakeUnderstanding({
     return () => {
       cancelled = true;
     };
-  }, [adoptPersistedDocuments, composerPurpose, hiveCommit, resumeRunId, submissionStagedKey]);
+  }, [adoptPersistedDocuments, composerPurpose, hiveCommit, resumeRunId, router, submissionStagedKey]);
 
   return (
     <section data-testid="intake-understanding" aria-busy={!errorMessage}>
@@ -255,9 +300,15 @@ export function IntakeUnderstanding({
         composerPurpose={composerPurpose}
         preRunPhase={preRunPhase}
         documentCount={stagedCount}
+        uploadMode
         onClose={onDismiss}
         onAddMoreFiles={onDismiss}
-        onOpenHive={openHive}
+        onOpenHive={() => {
+          const id = view?.intakeRunId ?? intakeRunId;
+          if (id) {
+            openYourFiles(id);
+          }
+        }}
       />
     </section>
   );

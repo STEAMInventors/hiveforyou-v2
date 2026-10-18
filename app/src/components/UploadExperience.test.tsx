@@ -361,7 +361,7 @@ describe("UploadExperience", () => {
     await submitComposerThroughAuthenticatedHandoff(container);
 
     expect(screen.getByTestId("intake-processing-panel")).toBeInTheDocument();
-    expect(screen.getByTestId("intake-heading")).toHaveTextContent("Reading your documents");
+    expect(screen.getByTestId("intake-heading")).toHaveTextContent("Saving your documents");
 
     await waitFor(() => {
       expect(commitStagedDocuments).toHaveBeenCalledOnce();
@@ -389,19 +389,31 @@ describe("UploadExperience", () => {
     expect(runDiscoverForStagedDocuments).not.toHaveBeenCalled();
   });
 
-  it("navigates to the evidence workspace when intake finishes with persisted artifacts", async () => {
-    vi.mocked(fetchIntakeRun).mockResolvedValue(terminalView());
+  it("navigates to Your Files after upload registration completes", async () => {
+    vi.mocked(fetchIntakeRun).mockResolvedValue(
+      terminalView({
+        status: "RUNNING",
+        workspaceReady: false,
+        documents: [
+          {
+            sourceDocumentId: "src-report.pdf",
+            processingStatus: "UPLOADED",
+            label: null,
+            filename: "report.pdf",
+            sizeBytes: 1024,
+          },
+        ],
+      }),
+    );
     const { container } = renderUploadExperience();
     await submitComposerThroughAuthenticatedHandoff(container);
 
     await waitFor(
       () => {
-        expect(screen.getByTestId("intake-heading")).toHaveTextContent("Your documents are read");
+        expect(mockReplace).toHaveBeenCalledWith("/intake/run-1");
       },
       { timeout: 5000 },
     );
-    fireEvent.click(screen.getByTestId("intake-open-hive"));
-    expect(mockReplace).toHaveBeenCalledWith("/intake/run-1");
     expect(window.sessionStorage.getItem(HIVE_INTAKE_RUN_STORAGE_KEY)).toBeNull();
     expect(runDiscoverForStagedDocuments).not.toHaveBeenCalled();
   });

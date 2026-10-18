@@ -346,9 +346,9 @@ export function toIntakeEvidenceWorkspaceView(input: {
 
   const thingsThatWouldHelp =
 
-    input.packExecution?.completeness.expectations
+    input.packExecution?.completeness?.expectations
 
-      .filter((row) => row.state === "OPEN")
+      ?.filter((row) => row.state === "OPEN")
 
       .map((row) => ({
 

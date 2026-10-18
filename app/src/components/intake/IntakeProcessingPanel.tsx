@@ -15,7 +15,10 @@ import {
   type Modal1Phase,
 } from "@/components/hive-lifecycle/stages";
 import type { ComposerPurpose } from "@/components/UploadExperience";
-import type { IntakePreRunPhase } from "@/lib/intake/intake-upload-phases";
+import {
+  intakePreRunSubtitle,
+  type IntakePreRunPhase,
+} from "@/lib/intake/intake-upload-phases";
 
 type IntakeProcessingPanelProps = {
   view: IntakeEvidenceWorkspaceView | null;
@@ -26,6 +29,8 @@ type IntakeProcessingPanelProps = {
   onOpenHive?: () => void;
   preRunPhase?: IntakePreRunPhase;
   documentCount?: number;
+  /** Upload-only flow: saving/registering copy instead of document reading stages. */
+  uploadMode?: boolean;
 };
 
 const PRESENTATION: Record<
@@ -164,13 +169,89 @@ function IntakeLifecycleCard({
   );
 }
 
+function UploadRegisterCard({
+  preRunPhase,
+  documentCount,
+  errorMessage,
+  onClose,
+}: {
+  preRunPhase: IntakePreRunPhase;
+  documentCount: number;
+  errorMessage: string | null;
+  onClose?: () => void;
+}) {
+  const subtitle =
+    intakePreRunSubtitle(preRunPhase, documentCount) ??
+    "Opening your files…";
+
+  if (errorMessage) {
+    return (
+      <div
+        className="card"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="intake-lifecycle-title"
+        data-testid="intake-processing-panel"
+      >
+        <h2 id="intake-lifecycle-title" data-testid="intake-heading">
+          We need your help
+        </h2>
+        <p className="sub" role="alert">
+          {errorMessage}
+        </p>
+        {onClose ? (
+          <div className="actions">
+            <button type="button" className="btn" onClick={onClose}>
+              Close
+            </button>
+          </div>
+        ) : null}
+      </div>
+    );
+  }
+
+  return (
+    <div
+      className="card p-trigger"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="intake-lifecycle-title"
+      aria-busy="true"
+      data-testid="intake-processing-panel"
+    >
+      <ReadingHiveSvg />
+      <div>
+        <h2 id="intake-lifecycle-title" data-testid="intake-heading">
+          Saving your documents
+        </h2>
+        <p className="sub">{subtitle}</p>
+      </div>
+    </div>
+  );
+}
+
 export function IntakeProcessingPanel({
   view,
   errorMessage = null,
   onClose,
   onOpenHive,
   preRunPhase = null,
+  documentCount = 0,
+  uploadMode = false,
 }: IntakeProcessingPanelProps) {
+  if (uploadMode && !view) {
+    return (
+      <div className="hive-lifecycle overlay" data-testid="intake-processing-modal">
+        <UploadRegisterCard
+          preRunPhase={preRunPhase}
+          documentCount={documentCount}
+          errorMessage={errorMessage}
+          onClose={onClose}
+        />
+      </div>
+    );
+  }
+
   const statuses = view?.documents.map((document) => document.processingStatus) ?? [];
   const runStatus = view?.status ?? (preRunPhase ? "RUNNING" : null);
   const target = intakeLifecycleTarget({

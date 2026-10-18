@@ -33,7 +33,8 @@ export async function POST(request: Request) {
 
   try {
     const opened = await startIntakeFromRequest(body);
-    if (!isInngestIntakePipeline()) {
+    const processDocuments = body.processDocuments === true;
+    if (processDocuments && !isInngestIntakePipeline()) {
       void opened.begin().catch((error: unknown) => {
         if (process.env.NODE_ENV === "development") {
           console.error("[api/intake/run] background intake failed", error);

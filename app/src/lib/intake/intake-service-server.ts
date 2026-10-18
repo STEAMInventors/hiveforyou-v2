@@ -15,6 +15,7 @@ import {
   type IntakeSourceDocument,
   type OpenedIntakeRun,
 } from "@hiveforyou/intake";
+import { isTerminalIntakeRunStatus, type IntakeRunStatus } from "@hiveforyou/shared/intake";
 import { recoverNormalizedDocument } from "@hiveforyou/intake/server-extraction";
 import {
   NORMALIZED_EXTRACTION_SCHEMA_VERSION,
@@ -59,7 +60,26 @@ export type StartIntakeBody = {
   sourceDocumentIds?: string[];
   rawIntent?: string | null;
   explicitDomainId?: string | null;
+  /** When true, document extract/classify runs immediately (legacy). Upload flow leaves this false. */
+  processDocuments?: boolean;
 };
+
+function parsePackExecutionSnapshot(
+  packExecutionJson: string | null,
+): IntakePackExecutionSnapshot | null {
+  if (!packExecutionJson?.trim()) {
+    return null;
+  }
+  try {
+    const parsed = JSON.parse(packExecutionJson) as Partial<IntakePackExecutionSnapshot>;
+    if (!parsed || !Array.isArray(parsed.logicalDocuments)) {
+      return null;
+    }
+    return parsed as IntakePackExecutionSnapshot;
+  } catch {
+    return null;
+  }
+}
 
 async function intakePersistence(userId: string) {
   const env = readServerEnv();
@@ -158,6 +178,7 @@ export async function startIntakeFromRequest(body: StartIntakeBody): Promise<Ope
     }
   }
 
+  const processDocuments = body.processDocuments === true;
   const pipeline = isInngestIntakePipeline() ? "inngest" : "inline";
   const opened = await openIntakeRun(deps, {
     userId: sessionUserId,
@@ -165,12 +186,52 @@ export async function startIntakeFromRequest(body: StartIntakeBody): Promise<Ope
     sourceDocumentIds,
     rawIntent: body.rawIntent ?? null,
     explicitDomainId: body.explicitDomainId ?? null,
-    initialRunStatus: pipeline === "inngest" ? "QUEUED" : "RUNNING",
+    initialRunStatus: pipeline === "inngest" && processDocuments ? "QUEUED" : "RUNNING",
   });
-  if (pipeline === "inngest") {
+  if (pipeline === "inngest" && processDocuments) {
     await emitIntakeRequestedEvent(opened.run);
   }
   return opened;
+}
+
+export async function processIntakeRunFromRequest(
+  intakeRunId: string,
+): Promise<{ intakeRunId: string; status: IntakeRunStatus }> {
+  readServerEnv();
+  const sessionUserId = requireSessionUserId(await getAuthenticatedUserId());
+  const { deps, intake } = await buildIntakeExecutionDeps(sessionUserId);
+  const run = await intake.getById(sessionUserId, intakeRunId);
+  if (!run) {
+    throw new Error("INTAKE_RUN_NOT_FOUND");
+  }
+  if (isTerminalIntakeRunStatus(run.status)) {
+    return { intakeRunId: run.id, status: run.status };
+  }
+
+  const identities = await intake.listByRun(sessionUserId, intakeRunId);
+  const sourceDocumentIds = identities.map((identity) => identity.sourceDocumentId);
+  const opened = await openIntakeRun(deps, {
+    userId: sessionUserId,
+    caseId: run.caseId,
+    sourceDocumentIds,
+    rawIntent: run.rawIntent,
+    explicitDomainId: run.explicitDomainId,
+    initialRunStatus: run.status,
+  });
+
+  const pipeline = isInngestIntakePipeline();
+  if (pipeline) {
+    await emitIntakeRequestedEvent(opened.run);
+    return { intakeRunId: opened.run.id, status: opened.run.status };
+  }
+
+  void opened.begin().catch((error: unknown) => {
+    if (process.env.NODE_ENV === "development") {
+      console.error("[intake/process] background intake failed", error);
+    }
+  });
+
+  return { intakeRunId: opened.run.id, status: "RUNNING" };
 }
 
 export async function readIntakeEvidenceWorkspaceView(
@@ -212,9 +273,7 @@ export async function readIntakeEvidenceWorkspaceView(
       };
     }),
   );
-  const packExecution: IntakePackExecutionSnapshot | null = run.packExecutionJson
-    ? (JSON.parse(run.packExecutionJson) as IntakePackExecutionSnapshot)
-    : null;
+  const packExecution = parsePackExecutionSnapshot(run.packExecutionJson);
   const domainManifest = run.resolvedDomainId
     ? getDomainPackManifest(run.resolvedDomainId)
     : null;

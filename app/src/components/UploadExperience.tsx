@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 import {
@@ -41,6 +42,7 @@ const DOMAIN_LABELS: Record<string, string> = {
 };
 
 export function UploadExperience({ showTrustMessage = true }: { showTrustMessage?: boolean }) {
+  const router = useRouter();
   const { addDocuments, clearDocuments } = useStagedDocuments();
   const [handoffStep, setHandoffStep] = useState<LandingHandoffStep>("composer");
   const [sessionRecheckBusy, setSessionRecheckBusy] = useState(false);
@@ -66,15 +68,11 @@ export function UploadExperience({ showTrustMessage = true }: { showTrustMessage
         return;
       }
       try {
-        const view = await fetchIntakeRun(existing);
+        await fetchIntakeRun(existing);
         if (cancelled) {
           return;
         }
-        if (view.status === "RUNNING") {
-          setResumeRunId(existing);
-          return;
-        }
-        clearStoredIntakeRun();
+        router.replace(`/intake/${existing}`);
       } catch {
         if (!cancelled) {
           clearStoredIntakeRun();
@@ -86,7 +84,7 @@ export function UploadExperience({ showTrustMessage = true }: { showTrustMessage
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [router]);
 
   const beginAuthorizedIntake = (payload: HiveComposerSubmit, selection: HiveHandoffSelection) => {
     clearIntakeRunForNewUpload();
