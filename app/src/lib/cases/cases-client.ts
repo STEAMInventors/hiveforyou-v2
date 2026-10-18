@@ -45,3 +45,5 @@ export type DocumentCommitOptions = {
   caseId: string;
   selectionIntent: HiveSelectionIntent;
 };
+
+export { buildOwnedHiveDocumentsHref, ownedHiveWorkspaceNavInput } from "@/lib/intake/study-completion-navigation";

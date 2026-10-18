@@ -29,7 +29,9 @@ vi.mock("@supabase/supabase-js", () => ({
 }));
 
 vi.mock("@/lib/persistence/hive-gateway", () => ({
-  createSupabaseHiveGateway: vi.fn(() => ({})),
+  createSupabaseHiveGateway: vi.fn(() => ({
+    selectWhere: vi.fn(async () => []),
+  })),
 }));
 
 vi.mock("@/lib/persistence/supabase-repositories", () => ({
@@ -86,8 +88,13 @@ describe("GET /api/cases/[caseId]", () => {
       params: Promise.resolve({ caseId: CASE_ID }),
     });
     expect(response.status).toBe(200);
-    const body = (await response.json()) as { caseId: string; domainId: string };
+    const body = (await response.json()) as {
+      caseId: string;
+      domainId: string;
+      workspace: { intakeRunId: string | null };
+    };
     expect(body.caseId).toBe(CASE_ID);
     expect(body.domainId).toBe("iep");
+    expect(body.workspace.intakeRunId).toBeNull();
   });
 });

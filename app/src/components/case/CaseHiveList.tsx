@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 
+import { rememberClientCaseId } from "@/lib/canonical-study/map-start-request";
+import { buildOwnedHiveDocumentsHref } from "@/lib/intake/study-completion-navigation";
 import type { OwnedHiveSummary } from "@hiveforyou/shared/cases";
 
 function shortHiveLabel(caseId: string): string {
@@ -16,15 +18,7 @@ function formatHiveDate(iso: string): string {
   return new Intl.DateTimeFormat(undefined, { dateStyle: "medium" }).format(parsed);
 }
 
-export function CaseHiveList({
-  hives,
-  selectedCaseId,
-  onSelect,
-}: {
-  hives: OwnedHiveSummary[];
-  selectedCaseId: string | null;
-  onSelect: (caseId: string) => void;
-}) {
+export function CaseHiveList({ hives }: { hives: OwnedHiveSummary[] }) {
   if (!hives.length) {
     return (
       <div
@@ -44,18 +38,14 @@ export function CaseHiveList({
   return (
     <ul className="m-0 grid list-none gap-3 p-0 sm:grid-cols-2" data-testid="case-hive-list">
       {hives.map((hive) => {
-        const selected = hive.caseId === selectedCaseId;
+        const href = buildOwnedHiveDocumentsHref(hive);
         return (
           <li key={hive.caseId}>
-            <button
-              type="button"
+            <Link
+              href={href}
               data-testid={`case-hive-list-item-${hive.caseId}`}
-              className={
-                selected
-                  ? "flex w-full flex-col gap-1 rounded-hive-xl border-2 border-hive-sage bg-hive-surface px-5 py-4 text-left shadow-sm"
-                  : "flex w-full flex-col gap-1 rounded-hive-xl border border-hive-border bg-hive-surface px-5 py-4 text-left hover:border-hive-sage/60"
-              }
-              onClick={() => onSelect(hive.caseId)}
+              className="flex w-full flex-col gap-1 rounded-hive-xl border border-hive-border bg-hive-surface px-5 py-4 text-left hover:border-hive-sage/60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-hive-sage"
+              onClick={() => rememberClientCaseId(hive.caseId)}
             >
               <span className="font-serif text-lg font-bold text-hive-navy">
                 Hive {shortHiveLabel(hive.caseId)}
@@ -64,7 +54,7 @@ export function CaseHiveList({
                 Updated {formatHiveDate(hive.updatedAt)}
                 {hive.domainId ? ` · ${hive.domainId}` : ""}
               </span>
-            </button>
+            </Link>
           </li>
         );
       })}

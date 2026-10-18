@@ -11,6 +11,8 @@ import {
   buildCaseWorkspaceHomeHref,
   buildHiveBuildingHref,
   buildMyCasesHref,
+  buildOwnedHiveDocumentsHref,
+  ownedHiveWorkspaceNavInput,
   buildPostStudyCompletionHref,
   isCanonicalStudyPresentationReady,
   isCaseWorkspaceSectionNavEnabled,
@@ -55,6 +57,39 @@ describe("study-completion-navigation", () => {
         studyRunId: "study-1",
       }),
     ).toBe("/study/study-1/map");
+  });
+
+  it("builds My Hives card hrefs from owned hive workspace data", () => {
+    const hiveWithRuns = {
+      caseId: "case-1",
+      domainId: null,
+      createdAt: "2026-01-01T00:00:00.000Z",
+      updatedAt: "2026-01-02T00:00:00.000Z",
+      workspace: {
+        intakeRunId: "intake-1",
+        studyRunId: "study-1",
+        studyRunStatus: "SUCCEEDED" as const,
+      },
+    };
+    const hiveEmpty = {
+      ...hiveWithRuns,
+      caseId: "case-2",
+      workspace: {
+        intakeRunId: null,
+        studyRunId: null,
+        studyRunStatus: null,
+      },
+    };
+
+    expect(buildOwnedHiveDocumentsHref(hiveWithRuns)).toContain("/hives/case-1/ready");
+    expect(buildOwnedHiveDocumentsHref(hiveWithRuns)).toContain("studyRunId=study-1");
+    expect(buildOwnedHiveDocumentsHref(hiveWithRuns)).toContain("intakeRunId=intake-1");
+    expect(buildOwnedHiveDocumentsHref(hiveEmpty)).toBe("/hives/case-2/ready");
+    expect(ownedHiveWorkspaceNavInput(hiveWithRuns)).toEqual({
+      caseId: "case-1",
+      studyRunId: "study-1",
+      intakeRunId: "intake-1",
+    });
   });
 
   it("builds case workspace navigation hrefs", () => {

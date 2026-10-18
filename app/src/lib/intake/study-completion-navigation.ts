@@ -1,5 +1,6 @@
 import type { StudyProcessingMode, StudyRunStatus } from "@hiveforyou/shared/canonical-study";
 import { isStudyRunProcessing } from "@hiveforyou/shared/canonical-study";
+import type { OwnedHiveSummary } from "@hiveforyou/shared/cases";
 import type { IntakeStudyPath } from "@hiveforyou/shared/intake";
 
 export type CaseDocumentsView = "files" | "raw-extractions";
@@ -138,6 +139,28 @@ export type CaseWorkspaceNavInput = {
 
 export function buildMyCasesHref(): string {
   return "/case";
+}
+
+/** Documents workspace entry from My Hives — never allocates a new case id. */
+export function buildOwnedHiveDocumentsHref(hive: OwnedHiveSummary): string {
+  const studyRunId = hive.workspace.studyRunId?.trim() || undefined;
+  const intakeRunId = hive.workspace.intakeRunId?.trim() || undefined;
+  return buildCaseDocumentsHref({
+    caseId: hive.caseId,
+    studyRunId,
+    intakeRunId,
+    documentsView: "files",
+  });
+}
+
+export function ownedHiveWorkspaceNavInput(hive: OwnedHiveSummary): CaseWorkspaceNavInput {
+  const studyRunId = hive.workspace.studyRunId?.trim() || undefined;
+  const intakeRunId = hive.workspace.intakeRunId?.trim() || undefined;
+  return {
+    caseId: hive.caseId,
+    studyRunId,
+    intakeRunId,
+  };
 }
 
 function appendWorkspaceQueryParams(pathname: string, input: CaseWorkspaceNavInput): string {
