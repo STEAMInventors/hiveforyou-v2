@@ -1,7 +1,7 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
-import { listSharingAudienceRoles } from "@hiveforyou/domain-packs";
+import { listSharingAudienceRoles } from "@hiveforyou/domain-packs/client";
 import type { DiscoverCollectionUnderstanding, DiscoverQuestion } from "@hiveforyou/shared/discover";
 
 import { DiscoveryObjectiveIntakeContent } from "./DiscoveryObjectiveIntakeContent";

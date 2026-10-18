@@ -26,7 +26,7 @@ import type { StagedDocument } from "@/lib/staged-documents";
 import {
   audienceResolutionFromDiscovery,
   listSharingAudienceRoles,
-} from "@hiveforyou/domain-packs";
+} from "@hiveforyou/domain-packs/client";
 import type { CaseCustomerContextIntake } from "@hiveforyou/shared/case-customer-context";
 import type { CustomerDiscoveryAnswer, HiveDiscoverResult } from "@hiveforyou/shared/discover";
 

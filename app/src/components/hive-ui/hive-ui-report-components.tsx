@@ -388,13 +388,13 @@ export const hiveUiReportComponentMap = {
     element: { props: { claimRef: CanonicalStudyReportClaimRef; evidenceIndex?: number } };
   }) => {
     const projection = useHiveUiReportProjection();
+    const evidenceContext = useOptionalHiveUiReportEvidence();
     const fact = resolveFact(projection, element.props.claimRef);
     const chip = fact?.evidence[element.props.evidenceIndex ?? 0];
+    const citationNumber = chip ? evidenceContext?.citationNumberForChip(chip) : undefined;
     if (!chip || fact?.assertionKind === "classified") {
       return null;
     }
-    const evidenceContext = useOptionalHiveUiReportEvidence();
-    const citationNumber = evidenceContext?.citationNumberForChip(chip);
     return (
       <CanonicalStudyReportEvidenceChip
         chip={chip}
@@ -423,11 +423,11 @@ export const hiveUiReportComponentMap = {
   },
   Timeline: ({ element }: { element: { props: { storySectionIds: string[] } } }) => {
     const projection = useHiveUiReportProjection();
+    const [expandedId, setExpandedId] = useState<string | null>(null);
     const sections = resolveTimelineSections(projection, element.props.storySectionIds);
     if (sections.length === 0) {
       return null;
     }
-    const [expandedId, setExpandedId] = useState<string | null>(null);
     return (
       <section
         className="hir-timeline-section"

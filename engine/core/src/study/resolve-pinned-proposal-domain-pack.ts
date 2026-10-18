@@ -9,7 +9,7 @@ import {
 import {
   defaultDeclarativePackRepoRoot,
   resolveDeclarativePackByContentDigest,
-} from "@hiveforyou/domain-packs";
+} from "@hiveforyou/domain-packs/declarative";
 import type { CanonicalStudyContext } from "@hiveforyou/shared/canonical-study";
 
 import {

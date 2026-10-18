@@ -412,7 +412,11 @@ export function CanonicalStudyExperiencePanel({
           {detailsOpen && projection ? (
             <div className="border-t border-customerHive-border pt-8">
               {projection.hiveUiTree ? (
-                <HiveUiRenderer projection={projection} tree={projection.hiveUiTree} />
+                <HiveUiRenderer
+                  projection={projection}
+                  tree={projection.hiveUiTree}
+                  studyRunId={projection.studyRunId}
+                />
               ) : projection.audience === "customer" ? (
                 <CanonicalStudyCustomerReportView body={projection.body} />
               ) : null}

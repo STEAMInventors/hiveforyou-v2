@@ -4,7 +4,7 @@ import { DiscoveryCustomerInputContent } from "@/components/document-structure/D
 import { DiscoveryObjectiveIntakeContent } from "@/components/document-structure/DiscoveryObjectiveIntakeContent";
 import { HiveBuildingModal } from "@/components/hive/HiveBuildingModal";
 import type { StagedDocument } from "@/lib/staged-documents";
-import type { SharingAudienceRoleOption } from "@hiveforyou/domain-packs";
+import type { SharingAudienceRoleOption } from "@hiveforyou/domain-packs/client";
 import type { CaseCustomerContextIntake } from "@hiveforyou/shared/case-customer-context";
 import type { DiscoverCollectionUnderstanding, DiscoverQuestion } from "@hiveforyou/shared/discover";
 

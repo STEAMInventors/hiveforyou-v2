@@ -5,6 +5,7 @@
   "type": "module",
   "exports": {
     ".": "./index.ts",
+    "./client": "./client.ts",
     "./packs-v2/types": "./packs-v2/types.ts",
     "./packs-v2/primitive-map": "./packs-v2/primitive-map.ts",
     "./packs-v2/load": "./packs-v2/load.ts",

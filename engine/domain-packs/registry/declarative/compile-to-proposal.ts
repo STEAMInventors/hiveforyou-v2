@@ -1,4 +1,9 @@
-import type { ProposalDomainPack, ProposalRecordType } from "@hiveforyou/domain-pack/pack-driven-reader";
+import type {
+  ProposalDomainPack,
+  ProposalMatchingPolicy,
+  ProposalMatchingPolicyDimension,
+  ProposalRecordType,
+} from "@hiveforyou/domain-pack/pack-driven-reader";
 
 import type { DeclarativeFactType, DeclarativePackRaw, DeclarativeRelationship } from "./types.js";
 
@@ -39,10 +44,10 @@ function mapSources(fact: DeclarativeFactType): string[] {
   return unique.length > 0 ? unique : ["quoted"];
 }
 
-function buildMatchingPolicy(raw: DeclarativePackRaw): Record<string, { requiredDimensions: string[] }> {
-  const byField = new Map<string, Set<string>>();
-  const add = (fieldId: string, dimension: string) => {
-    const set = byField.get(fieldId) ?? new Set<string>();
+function buildMatchingPolicy(raw: DeclarativePackRaw): Record<string, ProposalMatchingPolicy> {
+  const byField = new Map<string, Set<ProposalMatchingPolicyDimension>>();
+  const add = (fieldId: string, dimension: ProposalMatchingPolicyDimension) => {
+    const set = byField.get(fieldId) ?? new Set<ProposalMatchingPolicyDimension>();
     set.add(dimension);
     byField.set(fieldId, set);
   };
@@ -70,9 +75,11 @@ function buildMatchingPolicy(raw: DeclarativePackRaw): Record<string, { required
     }
   }
 
-  const output: Record<string, { requiredDimensions: string[] }> = {};
+  const output: Record<string, ProposalMatchingPolicy> = {};
   for (const [fieldId, dimensions] of byField) {
-    output[fieldId] = { requiredDimensions: [...dimensions].sort() };
+    output[fieldId] = {
+      requiredDimensions: [...dimensions].sort() as ProposalMatchingPolicyDimension[],
+    };
   }
   return output;
 }

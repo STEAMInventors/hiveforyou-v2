@@ -2,7 +2,10 @@
 
 import { useId, useMemo, useState } from "react";
 
-import { listSharingAudienceRoles, type SharingAudienceRoleOption } from "@hiveforyou/domain-packs";
+import {
+  listSharingAudienceRoles,
+  type SharingAudienceRoleOption,
+} from "@hiveforyou/domain-packs/client";
 import type { CaseCustomerContextIntake } from "@hiveforyou/shared/case-customer-context";
 import {
   uniqueDomainIds,

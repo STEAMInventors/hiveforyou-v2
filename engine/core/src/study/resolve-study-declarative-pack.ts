@@ -4,7 +4,7 @@
   resolveDeclarativePackByContentDigest,
   resolveLatestEligibleDeclarativePackFromEnv,
   type ResolvedDeclarativePackSelection,
-} from "@hiveforyou/domain-packs";
+} from "@hiveforyou/domain-packs/declarative";
 
 import { isDeclarativeStudyPackResolverEnabled } from "./declarative-pack-activation.js";
 

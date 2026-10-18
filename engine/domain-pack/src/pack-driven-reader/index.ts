@@ -36,5 +36,8 @@ export type {
   PackDrivenDocumentPage,
   PackDrivenSingleDocumentInput,
   ProposalDomainPack,
+  ProposalMatchingPolicy,
+  ProposalMatchingPolicyDimension,
+  ProposalRecordType,
 } from "./types.js";
 export { renderPackDrivenReaderPreviewReport } from "./preview.js";
