@@ -37,6 +37,7 @@ export type FreezeContextParams = {
   readerCompilerVersion?: string;
   readerPreflight?: ReaderPreflightSnapshot;
   customerContext?: CaseCustomerContextSnapshot | null;
+  declarativePackBinding?: import("./resolve-study-declarative-pack.js").StudyDeclarativePackBinding;
 };
 
 export function buildIdempotencyKeyFromRequest(
@@ -135,6 +136,7 @@ export function freezeCanonicalStudyContext(
       proposalPackContentSha256: params.proposalPackContentSha256,
       readerCompilerVersion: params.readerCompilerVersion,
       readerPreflight: params.readerPreflight,
+      declarativePackBinding: params.declarativePackBinding,
     },
   };
 }

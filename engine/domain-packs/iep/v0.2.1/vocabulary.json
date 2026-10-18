@@ -1,0 +1,82 @@
+{
+  "version": "0.2.1",
+  "terms": [
+    {
+      "id": "iep",
+      "label": "Individualized Education Program",
+      "aliases": [
+        "IEP"
+      ],
+      "expansion": "Individualized Education Program",
+      "contextRequired": true
+    },
+    {
+      "id": "plaafp",
+      "label": "Present levels",
+      "aliases": [
+        "PLAAFP",
+        "present levels"
+      ],
+      "expansion": "Present levels of academic achievement and functional performance",
+      "contextRequired": true
+    },
+    {
+      "id": "wcpm",
+      "label": "Words correct per minute",
+      "aliases": [
+        "WCPM",
+        "words correct per minute"
+      ],
+      "expansion": "Words correct per minute",
+      "contextRequired": true
+    },
+    {
+      "id": "sld",
+      "label": "Specific learning disability",
+      "aliases": [
+        "SLD"
+      ],
+      "expansion": "Specific learning disability",
+      "contextRequired": true
+    },
+    {
+      "id": "lre",
+      "label": "Least restrictive environment",
+      "aliases": [
+        "LRE"
+      ],
+      "expansion": "Least restrictive environment",
+      "contextRequired": true
+    },
+    {
+      "id": "fba",
+      "label": "Functional behavioral assessment",
+      "aliases": [
+        "FBA"
+      ],
+      "expansion": "Functional behavioral assessment",
+      "contextRequired": true
+    },
+    {
+      "id": "bip",
+      "label": "Behavior intervention plan",
+      "aliases": [
+        "BIP"
+      ],
+      "expansion": "Behavior intervention plan",
+      "contextRequired": true
+    }
+  ],
+  "unitAliases": {
+    "WCPM": "words_correct_per_minute",
+    "words correct per minute": "words_correct_per_minute",
+    "%": "percent",
+    "minutes weekly": "minutes_per_week",
+    "minutes per week": "minutes_per_week"
+  },
+  "normalization": {
+    "preserveOriginalText": true,
+    "requireQuantityForRate": true,
+    "doNotConflateAccuracyAndFluency": true
+  }
+}

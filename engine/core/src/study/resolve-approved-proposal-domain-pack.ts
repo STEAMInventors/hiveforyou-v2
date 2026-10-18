@@ -37,6 +37,17 @@ export function proposalPackSnapshotPathForHash(
   return join(proposalPackSnapshotsDir(env), `${contentSha256.toLowerCase()}.json`);
 }
 
+export function proposalPackSnapshotsDirForPackId(
+  packId: string,
+  env: Record<string, string | undefined> = process.env,
+): string {
+  const override = env.HIVE_PROPOSAL_PACK_SNAPSHOTS_DIR?.trim();
+  if (override) {
+    return override;
+  }
+  return join(hiveMonorepoRoot(), "brain", "domain-packs", packId.trim(), "snapshots");
+}
+
 export function collectProposalPackSnapshotCandidatePaths(input: {
   envelopePackId: string;
   envelopePackVersion: string;
@@ -47,9 +58,12 @@ export function collectProposalPackSnapshotCandidatePaths(input: {
   const hash = input.envelopeHash.toLowerCase();
   const paths = new Set<string>();
 
+  paths.add(
+    join(proposalPackSnapshotsDirForPackId(input.envelopePackId, env), `${hash}.json`),
+  );
   paths.add(proposalPackSnapshotPathForHash(hash, env));
 
-  const snapshotsDir = proposalPackSnapshotsDir(env);
+  const snapshotsDir = proposalPackSnapshotsDirForPackId(input.envelopePackId, env);
   if (existsSync(snapshotsDir)) {
     const versionedName = `${input.envelopePackId}@${input.envelopePackVersion}.${hash}.json`;
     paths.add(join(snapshotsDir, versionedName));

@@ -31,6 +31,26 @@ export const hiveUiReportCatalog = schema.createCatalog({
       slots: ["default"],
       description: "Root container for a canonical study report UI tree.",
     },
+    LivingCaseChapter: {
+      props: hiveUiComponentPropsSchemas.LivingCaseChapter,
+      slots: ["default"],
+      description: "Living Case chapter (understand, discover, act, verify).",
+    },
+    ReportHeader: {
+      props: hiveUiComponentPropsSchemas.ReportHeader,
+      slots: [],
+      description: "Editorial report header derived from the canonical projection.",
+    },
+    BriefInsights: {
+      props: hiveUiComponentPropsSchemas.BriefInsights,
+      slots: [],
+      description: "In-brief insight bullets keyed by canonical claim references.",
+    },
+    ExpandableFacts: {
+      props: hiveUiComponentPropsSchemas.ExpandableFacts,
+      slots: ["default"],
+      description: "Collapsible supporting facts block with child fact rows.",
+    },
     StorySection: {
       props: hiveUiComponentPropsSchemas.StorySection,
       slots: ["default"],

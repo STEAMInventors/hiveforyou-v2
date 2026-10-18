@@ -4,6 +4,7 @@ import {
   HIVE_UI_CATALOG_VERSION,
   HIVE_UI_TREE_SCHEMA_VERSION,
   type HiveUiElementMap,
+  type HiveUiLivingCaseChapterKey,
   type HiveUiProSectionKey,
   type HiveUiTree,
 } from "@hiveforyou/shared/hive-ui-tree";
@@ -57,6 +58,25 @@ function appendProSection(
   rootChildren.push(sectionKeyId);
 }
 
+function appendLivingCaseChapter(
+  elements: HiveUiElementMap,
+  rootChildren: string[],
+  chapter: HiveUiLivingCaseChapterKey,
+  childKeys: string[],
+  chapterIndex: number,
+): void {
+  if (childKeys.length === 0) {
+    return;
+  }
+  const chapterKey = `living-chapter-${chapter}-${chapterIndex}`;
+  elements[chapterKey] = {
+    type: "LivingCaseChapter",
+    props: { chapter },
+    children: childKeys,
+  };
+  rootChildren.push(chapterKey);
+}
+
 function buildCustomerTree(
   projection: Extract<CanonicalStudyReportProjection, { audience: "customer" }>,
 ): HiveUiTree {
@@ -64,13 +84,27 @@ function buildCustomerTree(
   const elements: HiveUiElementMap = {};
   const rootChildren: string[] = [];
 
-  const timelineKey = "timeline";
-  elements[timelineKey] = {
-    type: "Timeline",
-    props: { storySectionIds: body.storySections.map((section) => section.id) },
-  };
-  rootChildren.push(timelineKey);
+  const understandChildren: string[] = [];
+  const discoverChildren: string[] = [];
+  const actChildren: string[] = [];
+  const verifyChildren: string[] = [];
 
+  const headerKey = "report-header";
+  elements[headerKey] = { type: "ReportHeader", props: {} };
+  understandChildren.push(headerKey);
+
+  if (body.importantFacts.length > 0) {
+    const briefKey = "brief-insights";
+    elements[briefKey] = {
+      type: "BriefInsights",
+      props: {
+        claimRefs: body.importantFacts.slice(0, 8).map((fact) => fact.claimRef),
+      },
+    };
+    understandChildren.push(briefKey);
+  }
+
+  const storySplit = Math.max(1, Math.ceil(body.storySections.length / 2));
   body.storySections.forEach((section, sectionIndex) => {
     const sectionKey = nextKey("story-section", sectionIndex);
     const factKeys: string[] = [];
@@ -87,24 +121,12 @@ function buildCustomerTree(
       props: { sectionId: section.id },
       children: factKeys,
     };
-    rootChildren.push(sectionKey);
+    if (sectionIndex < storySplit) {
+      understandChildren.push(sectionKey);
+    } else {
+      discoverChildren.push(sectionKey);
+    }
   });
-
-  if (body.importantFacts.length > 0) {
-    const importantKeys: string[] = [];
-    body.importantFacts.forEach((fact, index) => {
-      const key = nextKey("important-fact", index);
-      elements[key] = { type: "FactRow", props: { claimRef: fact.claimRef } };
-      importantKeys.push(key);
-    });
-    const wrapperKey = "important-facts";
-    elements[wrapperKey] = {
-      type: "StorySection",
-      props: { sectionId: "__important_facts__" },
-      children: importantKeys,
-    };
-    rootChildren.push(wrapperKey);
-  }
 
   if (body.changes.length > 0) {
     const changeKeys: string[] = [];
@@ -122,7 +144,7 @@ function buildCustomerTree(
       props: {},
       children: changeKeys,
     };
-    rootChildren.push(wrapperKey);
+    discoverChildren.push(wrapperKey);
   }
 
   if (body.supports.length > 0) {
@@ -141,7 +163,7 @@ function buildCustomerTree(
       props: {},
       children: supportKeys,
     };
-    rootChildren.push(wrapperKey);
+    discoverChildren.push(wrapperKey);
   }
 
   if (body.openQuestions.length > 0) {
@@ -150,8 +172,23 @@ function buildCustomerTree(
       type: "OpenQuestions",
       props: { questionIds: body.openQuestions.map((question) => question.id) },
     };
-    rootChildren.push(key);
+    actChildren.push(key);
   }
+
+  if (body.storySections.length > 0) {
+    const timelineKey = "timeline";
+    elements[timelineKey] = {
+      type: "Timeline",
+      props: { storySectionIds: body.storySections.map((section) => section.id) },
+    };
+    verifyChildren.push(timelineKey);
+  }
+
+  let chapterIndex = 0;
+  appendLivingCaseChapter(elements, rootChildren, "understand", understandChildren, chapterIndex++);
+  appendLivingCaseChapter(elements, rootChildren, "discover", discoverChildren, chapterIndex++);
+  appendLivingCaseChapter(elements, rootChildren, "act", actChildren, chapterIndex++);
+  appendLivingCaseChapter(elements, rootChildren, "verify", verifyChildren, chapterIndex++);
 
   return treeShell(projection, "report-root", elements, rootChildren);
 }

@@ -8,6 +8,8 @@ import type { HiveUiTree } from "@hiveforyou/shared/hive-ui-tree";
 
 import { hiveUiReportCatalog } from "./hive-ui-catalog";
 import { hiveUiReportComponentMap } from "./hive-ui-report-components";
+import { HiveUiReportEvidenceProvider } from "./hive-ui-report-evidence-context";
+import { LivingCaseChapterNav } from "./living-case-chapter-nav";
 import { HiveUiReportProjectionProvider } from "./hive-ui-report-projection-context";
 
 const HiveUiReportRenderer = createRenderer(hiveUiReportCatalog, hiveUiReportComponentMap);
@@ -27,32 +29,53 @@ export function hiveUiTreeToSpec(tree: HiveUiTree): Spec {
   };
 }
 
+function treeUsesLivingCaseChapters(tree: HiveUiTree): boolean {
+  return Object.values(tree.elements).some((element) => element.type === "LivingCaseChapter");
+}
+
 export function HiveUiRenderer({
   projection,
   tree,
+  studyRunId,
+  presentation = "living-case",
 }: {
   projection: CanonicalStudyReportProjection;
   tree: HiveUiTree;
+  studyRunId: string;
+  presentation?: "living-case" | "legacy";
 }) {
   const spec = hiveUiTreeToSpec(tree);
   const audienceClass =
     projection.audience === "pro"
       ? "hive-inverted-report--pro"
       : "hive-inverted-report--customer";
+  const livingCase =
+    presentation === "living-case" &&
+    projection.audience === "customer" &&
+    treeUsesLivingCaseChapters(tree);
+
+  const reportBody = (
+    <article className="hive-inverted-report__article">
+      {livingCase ? <LivingCaseChapterNav tree={tree} /> : null}
+      <div className="hive-inverted-report__body">
+        <HiveUiReportRenderer spec={spec} />
+      </div>
+    </article>
+  );
+
   return (
     <HiveUiReportProjectionProvider projection={projection}>
-      <div
-        className={`hive-inverted-report ${audienceClass}`}
-        data-testid="hive-inverted-report"
-        data-audience={projection.audience}
-        data-narrative-source={tree.narrativeSource}
-      >
-        <article className="hive-inverted-report__article">
-          <div className="hive-inverted-report__body">
-            <HiveUiReportRenderer spec={spec} />
-          </div>
-        </article>
-      </div>
+      <HiveUiReportEvidenceProvider studyRunId={studyRunId}>
+        <div
+          className={`hive-inverted-report ${audienceClass} ${livingCase ? "hive-inverted-report--living-case" : ""}`}
+          data-testid="hive-inverted-report"
+          data-audience={projection.audience}
+          data-narrative-source={tree.narrativeSource}
+          data-presentation={livingCase ? "living-case" : "inverted"}
+        >
+          {reportBody}
+        </div>
+      </HiveUiReportEvidenceProvider>
     </HiveUiReportProjectionProvider>
   );
 }

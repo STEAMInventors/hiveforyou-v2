@@ -1,0 +1,14 @@
+{
+  "version": "0.1.0",
+  "insightChecks": [
+    {
+      "id": "synthetic.missing_name",
+      "primitive": "missing",
+      "inputs": ["document.title", "entity.name"],
+      "unknownOutcome": "no_public_finding",
+      "questionTemplate": "Is the entity name present?",
+      "templateSlots": [],
+      "preconditionPolicy": { "allOperandsTypedAndBound": true }
+    }
+  ]
+}

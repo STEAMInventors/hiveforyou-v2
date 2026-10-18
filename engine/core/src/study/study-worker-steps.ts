@@ -40,6 +40,10 @@ import {
   type ObservedReaderIdentitySummary,
   type ReaderPreflightSnapshot,
 } from "./reader-engine-identity";
+import { computeProposalPackContentSha256 } from "@hiveforyou/domain-pack/pack-driven-reader";
+
+import { isDeclarativeStudyPackResolverEnabled } from "./declarative-pack-activation.js";
+import { resolveStudyDeclarativePackBinding } from "./resolve-study-declarative-pack.js";
 import { consolidateVerifiedReaderFacts } from "./consolidate-verified-reader-facts";
 import { voiceProposalForProjection } from "./extract-voice-proposal";
 import { loadStudySourceDocumentBytes } from "./load-study-source-bytes";
@@ -137,19 +141,49 @@ async function ensureStudyContext(
       ? storedContext
       : null;
 
+  let declarativeBinding: ReturnType<typeof resolveStudyDeclarativePackBinding> | null = null;
+  if (processingMode === "pack_driven_v1" && isDeclarativeStudyPackResolverEnabled()) {
+    try {
+      declarativeBinding = resolveStudyDeclarativePackBinding({
+        domainId: resolvedPack.domainId,
+        existingBinding: existingContext?.processingPolicy.declarativePackBinding,
+      });
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Declarative study pack binding failed.";
+      await failWorkerRun(deps, run, "MISSING_DOMAIN_PACK", message);
+    }
+  }
+
+  const declarativeProposalPackSha256 = declarativeBinding
+    ? computeProposalPackContentSha256(
+        declarativeBinding.selection.compiledProposalPack,
+      ).toLowerCase()
+    : undefined;
   const packDrivenIntent =
-    processingMode === "pack_driven_v1" ? buildPackDrivenReaderIntentFingerprint() : null;
+    processingMode === "pack_driven_v1"
+      ? buildPackDrivenReaderIntentFingerprint({
+          proposalPackContentSha256: declarativeProposalPackSha256,
+        })
+      : null;
   const readerPreflight =
     processingMode === "pack_driven_v1"
       ? ((await deps.resolveReaderPreflight?.()) ?? undefined)
       : undefined;
+
+  const resolvedPackForRun = declarativeBinding
+    ? {
+        ...resolvedPack,
+        domainPackVersion: declarativeBinding.binding.domainPackVersion,
+      }
+    : resolvedPack;
 
   let context =
     existingContext ??
     freezeCanonicalStudyContext({
       request,
       studyRunId: run.studyRunId,
-      resolvedPack,
+      resolvedPack: resolvedPackForRun,
       idempotencyKey: run.idempotencyKey,
       providerId:
         processingMode === "pack_driven_v1"
@@ -164,6 +198,7 @@ async function ensureStudyContext(
       readerCompilerVersion: packDrivenIntent?.readerCompilerVersion,
       readerPreflight,
       customerContext: deps.customerContext ?? undefined,
+      declarativePackBinding: declarativeBinding?.binding,
     });
 
   if (

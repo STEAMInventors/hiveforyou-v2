@@ -1,0 +1,131 @@
+{
+  "schemaVersion": "hive.domain-pack.declarative-compiled/0.2.1",
+  "status": "compiled_from_declarative",
+  "manifest": {
+    "id": "synthetic-declarative",
+    "version": "0.1.0",
+    "name": "Synthetic Declarative Qualification Pack"
+  },
+  "documentTypes": [
+    {
+      "id": "generic_notice",
+      "label": "Generic notice",
+      "checklist": [
+        "document",
+        "entity"
+      ],
+      "checklistPolicy": "look_for_all_listed; never_invent_if_absent; extract_other_pack_records_if_found",
+      "orderingDate": "document.date"
+    }
+  ],
+  "recordTypes": [
+    {
+      "id": "document",
+      "repeatable": false,
+      "identity": {
+        "scope": "case",
+        "keyFields": [],
+        "versionAxis": "document.orderingDate",
+        "crossDocumentMerge": "version"
+      },
+      "fields": [
+        {
+          "id": "document.title",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "entity",
+      "repeatable": false,
+      "identity": {
+        "scope": "case",
+        "keyFields": [],
+        "versionAxis": "document.orderingDate",
+        "crossDocumentMerge": "version"
+      },
+      "fields": [
+        {
+          "id": "entity.name",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        }
+      ]
+    }
+  ],
+  "readingNotes": {
+    "global": "Read one document at a time.",
+    "byDocumentType": {}
+  },
+  "constructs": {},
+  "relationshipRules": {
+    "changeRequiresTemporalSuccession": true,
+    "temporalSuccessionFieldIds": [
+      "document.effective_start",
+      "document.effective_end",
+      "measurement.observed_on",
+      "document.date"
+    ],
+    "conflictWhenDifferentParties": true,
+    "unchangedRequiresLogicalSuccession": true,
+    "matchingPolicyByFieldId": {
+      "entity.name": {
+        "requiredDimensions": [
+          "construct"
+        ]
+      }
+    }
+  },
+  "seriesObservationDateFieldIds": [
+    "measurement.observed_on",
+    "measurement.reporting_period_start",
+    "measurement.reporting_period_end",
+    "document.date"
+  ],
+  "seriesOrderingDateFallback": false,
+  "requirements": {
+    "rules": []
+  },
+  "insightChecks": {
+    "enginePrimitivesRequired": [
+      "absenceOf"
+    ],
+    "checks": [
+      {
+        "id": "synthetic.missing_name",
+        "primitive": "absenceOf",
+        "present": {
+          "record": "document",
+          "field": "document.title"
+        },
+        "absent": {
+          "record": "entity",
+          "field": "entity.name"
+        },
+        "question": "Is the entity name present?"
+      }
+    ]
+  },
+  "vocabulary": {
+    "note": "Compiled from declarative vocabulary.json; abbreviations applied at reader prompt compile time."
+  },
+  "plainExplainers": {
+    "version": "0.1.0",
+    "explainers": []
+  },
+  "referenceTables": {
+    "version": "0.1.0",
+    "tables": []
+  }
+}

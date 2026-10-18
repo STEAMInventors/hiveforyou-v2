@@ -1,0 +1,4285 @@
+{
+  "version": "0.2.1",
+  "factTypes": [
+    {
+      "id": "document.title",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "sourceDocumentId"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "document",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "document.subtype",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted",
+          "classified"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "sourceDocumentId"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "document",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "document.date",
+      "valueKind": "date",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "sourceDocumentId"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "document",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "document.effective_start",
+      "valueKind": "date",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "sourceDocumentId"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "document",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "document.effective_end",
+      "valueKind": "date",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "sourceDocumentId"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "document",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "document.author_role",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted",
+          "classified"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "sourceDocumentId"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "document",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "document.reference",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "sourceDocumentId"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "document",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "document.amendment_scope",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "sourceDocumentId"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "document",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "student.name",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "personName"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "document",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "student.birth_date",
+      "valueKind": "date",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "personName"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "document",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "student.grade",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "personName"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "document",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "student.school",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "personName"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "document",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "student.district",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "personName"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "document",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "student.identifier",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "personName"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "document",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "referral.date",
+      "valueKind": "date",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "sourceDocumentId",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "document",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "referral.source",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "sourceDocumentId",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "document",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "referral.concern",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "sourceDocumentId",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "document",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "referral.requested_area",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "sourceDocumentId",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "document",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "consent.action",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "sourceDocumentId",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "document",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "consent.decision",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "sourceDocumentId",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "document",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "consent.date",
+      "valueKind": "date",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "sourceDocumentId",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "document",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "consent.scope",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "sourceDocumentId",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "document",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "consent.signer_role",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "sourceDocumentId",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "document",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "evaluation_plan.area",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "sourceDocumentId",
+          "area",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "document",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "evaluation_plan.selected",
+      "valueKind": "boolean",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted",
+          "classified"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "sourceDocumentId",
+          "area",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "document",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "evaluation_plan.date",
+      "valueKind": "date",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "sourceDocumentId",
+          "area",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "document",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "assessment.area",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "sourceDocumentId",
+          "area",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "observation",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "assessment.instrument",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "sourceDocumentId",
+          "area",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "observation",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "assessment.observation",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "sourceDocumentId",
+          "area",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "observation",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "assessment.result",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "sourceDocumentId",
+          "area",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "observation",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "assessment.finding",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "sourceDocumentId",
+          "area",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "observation",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "assessment.identified_need",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "explicit_affirmation",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "sourceDocumentId",
+          "area",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "observation",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {
+        "explicitNeedAssertionRequired": true,
+        "assessedAreaAloneInsufficient": true
+      }
+    },
+    {
+      "id": "assessment.not_identified_need",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "explicit_denial",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "sourceDocumentId",
+          "area",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "observation",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {
+        "explicitNegativeFindingRequired": true,
+        "missingIsNotNegative": true
+      }
+    },
+    {
+      "id": "assessment.recommendation",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "sourceDocumentId",
+          "area",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "observation",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "assessment.date",
+      "valueKind": "date",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "sourceDocumentId",
+          "area",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "observation",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "measurement.task",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "subjectId",
+          "scoreType",
+          "task",
+          "observedOn",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "observation",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "measurement.score_type",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted",
+          "classified"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "subjectId",
+          "scoreType",
+          "task",
+          "observedOn",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "observation",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "measurement.instrument",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "subjectId",
+          "scoreType",
+          "task",
+          "observedOn",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "observation",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "measurement.administration",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "subjectId",
+          "scoreType",
+          "task",
+          "observedOn",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "observation",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "measurement.value",
+      "valueKind": "number",
+      "allowedUnits": [
+        "words_correct_per_minute",
+        "percent",
+        "standard_score",
+        "scaled_score",
+        "count",
+        "minutes",
+        "other_declared"
+      ],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "subjectId",
+          "scoreType",
+          "task",
+          "observedOn",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "observation",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "measurement.unit",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "subjectId",
+          "scoreType",
+          "task",
+          "observedOn",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "observation",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "measurement.observed_on",
+      "valueKind": "date",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "subjectId",
+          "scoreType",
+          "task",
+          "observedOn",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "observation",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "measurement.context",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted",
+          "classified"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "subjectId",
+          "scoreType",
+          "task",
+          "observedOn",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "observation",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "measurement.reporting_period_start",
+      "valueKind": "date",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "subjectId",
+          "scoreType",
+          "task",
+          "observedOn",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "observation",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "measurement.reporting_period_end",
+      "valueKind": "date",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "subjectId",
+          "scoreType",
+          "task",
+          "observedOn",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "observation",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "eligibility.decision",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "sourceDocumentId",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "document",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "eligibility.category",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "sourceDocumentId",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "document",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "eligibility.basis",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "sourceDocumentId",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "document",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "eligibility.determination_date",
+      "valueKind": "date",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "sourceDocumentId",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "document",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "present_level.area",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "planDocumentId",
+          "area",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "effective",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "present_level.statement",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "planDocumentId",
+          "area",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "effective",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "present_level.educational_impact",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "planDocumentId",
+          "area",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "effective",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "present_level.assessment_reference",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "planDocumentId",
+          "area",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "effective",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "goal.area",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "planDocumentId",
+          "goalIdentifierOrAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "effective",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "goal.statement",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "planDocumentId",
+          "goalIdentifierOrAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "effective",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "goal.condition",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "planDocumentId",
+          "goalIdentifierOrAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "effective",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "goal.baseline_value",
+      "valueKind": "number",
+      "allowedUnits": [
+        "words_correct_per_minute",
+        "percent",
+        "score",
+        "count",
+        "minutes",
+        "other_declared"
+      ],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "planDocumentId",
+          "goalIdentifierOrAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "effective",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "goal.baseline_unit",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "planDocumentId",
+          "goalIdentifierOrAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "effective",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "goal.target_value",
+      "valueKind": "number",
+      "allowedUnits": [
+        "words_correct_per_minute",
+        "percent",
+        "score",
+        "count",
+        "minutes",
+        "other_declared"
+      ],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "planDocumentId",
+          "goalIdentifierOrAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "effective",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "goal.target_unit",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "planDocumentId",
+          "goalIdentifierOrAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "effective",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "goal.accuracy_criterion",
+      "valueKind": "number",
+      "allowedUnits": [
+        "percent"
+      ],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "planDocumentId",
+          "goalIdentifierOrAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "effective",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "goal.mastery_criterion",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "planDocumentId",
+          "goalIdentifierOrAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "effective",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "goal.measurement_method",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "planDocumentId",
+          "goalIdentifierOrAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "effective",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "goal.measure_task",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "planDocumentId",
+          "goalIdentifierOrAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "effective",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "goal.measure_instrument",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "planDocumentId",
+          "goalIdentifierOrAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "effective",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "goal.measure_administration",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "planDocumentId",
+          "goalIdentifierOrAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "effective",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "goal.start_date",
+      "valueKind": "date",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "planDocumentId",
+          "goalIdentifierOrAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "effective",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "goal.target_date",
+      "valueKind": "date",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "planDocumentId",
+          "goalIdentifierOrAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "effective",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "goal.reporting_frequency",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "planDocumentId",
+          "goalIdentifierOrAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "effective",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "goal.goal_identifier",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "planDocumentId",
+          "goalIdentifierOrAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "effective",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "objective.statement",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "planDocumentId",
+          "goalReference",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "document",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "objective.criterion",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "planDocumentId",
+          "goalReference",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "document",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "objective.target_date",
+      "valueKind": "date",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "planDocumentId",
+          "goalReference",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "document",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "service.type",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "planDocumentId",
+          "serviceType",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "effective",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "service.category",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted",
+          "classified"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "planDocumentId",
+          "serviceType",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "effective",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "service.minutes_per_week",
+      "valueKind": "number",
+      "allowedUnits": [
+        "minutes_per_week"
+      ],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "planDocumentId",
+          "serviceType",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "effective",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "service.minutes_per_session",
+      "valueKind": "number",
+      "allowedUnits": [
+        "minutes_per_session"
+      ],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "planDocumentId",
+          "serviceType",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "effective",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "service.sessions_per_week",
+      "valueKind": "number",
+      "allowedUnits": [
+        "sessions_per_week"
+      ],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "planDocumentId",
+          "serviceType",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "effective",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "service.frequency_text",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "planDocumentId",
+          "serviceType",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "effective",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "service.duration_text",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "planDocumentId",
+          "serviceType",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "effective",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "service.location",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "planDocumentId",
+          "serviceType",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "effective",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "service.provider_role",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "planDocumentId",
+          "serviceType",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "effective",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "service.start_date",
+      "valueKind": "date",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "planDocumentId",
+          "serviceType",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "effective",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "service.end_date",
+      "valueKind": "date",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "planDocumentId",
+          "serviceType",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "effective",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "accommodation.description",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "planDocumentId",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "effective",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "accommodation.conditions",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "planDocumentId",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "effective",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "accommodation.context",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted",
+          "classified"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "planDocumentId",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "effective",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "accommodation.start_date",
+      "valueKind": "date",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "planDocumentId",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "effective",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "accommodation.end_date",
+      "valueKind": "date",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "planDocumentId",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "effective",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "modification.description",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "planDocumentId",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "document",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "modification.context",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "planDocumentId",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "document",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "placement.setting",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "planDocumentId",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "effective",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "placement.extent",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "planDocumentId",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "effective",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "placement.reason",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "planDocumentId",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "effective",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "placement.start_date",
+      "valueKind": "date",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "planDocumentId",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "effective",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "participation.assessment_type",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "planDocumentId",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "document",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "participation.accommodation",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "planDocumentId",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "document",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "participation.alternate_assessment",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "planDocumentId",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "document",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "participation.nonparticipation_explanation",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "planDocumentId",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "document",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "progress.goal_reference",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "sourceDocumentId",
+          "goalReference",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "observation",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "progress.observation",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "sourceDocumentId",
+          "goalReference",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "observation",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "progress.status",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "sourceDocumentId",
+          "goalReference",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "observation",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "progress.report_date",
+      "valueKind": "date",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "sourceDocumentId",
+          "goalReference",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "observation",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "progress.period_start",
+      "valueKind": "date",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "sourceDocumentId",
+          "goalReference",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "observation",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "progress.period_end",
+      "valueKind": "date",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "sourceDocumentId",
+          "goalReference",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "observation",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "meeting.date",
+      "valueKind": "date",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "sourceDocumentId",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "document",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "meeting.purpose",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted",
+          "classified"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "sourceDocumentId",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "document",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "meeting.participant_role",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "sourceDocumentId",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "document",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "meeting.participant_name",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "sourceDocumentId",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "document",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "notice.date",
+      "valueKind": "date",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "sourceDocumentId",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "document",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "notice.action",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "sourceDocumentId",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "document",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "notice.reason",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "sourceDocumentId",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "document",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "notice.options_considered",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "sourceDocumentId",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "document",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "notice.evaluation_basis",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "sourceDocumentId",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "document",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "behavior.concern",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "sourceDocumentId",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "document",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "behavior.functional_hypothesis",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "sourceDocumentId",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "document",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "behavior.intervention",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "sourceDocumentId",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "document",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "behavior.baseline",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "sourceDocumentId",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "document",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "behavior.monitoring",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "sourceDocumentId",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "document",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "transition.postsecondary_goal",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "planDocumentId",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "document",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "transition.service",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "planDocumentId",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "document",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "transition.assessment",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "planDocumentId",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "document",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "transition.student_input",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "planDocumentId",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "document",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "extended_school_year.decision",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "planDocumentId",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "document",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "extended_school_year.reason",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "planDocumentId",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "document",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "extended_school_year.services",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "planDocumentId",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "document",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "implementation.service_reference",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "sourceDocumentId",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "document",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "implementation.reported_delivery",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "sourceDocumentId",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "document",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "implementation.period",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "sourceDocumentId",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "document",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "referral.observation",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "sourceDocumentId",
+          "subjectId",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId",
+          "sourceDocumentId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "document",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {
+        "observationIsNotAutomaticallyIdentifiedNeed": true
+      }
+    },
+    {
+      "id": "referral.planned_parent_input",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "sourceDocumentId",
+          "subjectId",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId",
+          "sourceDocumentId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "document",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "referral.next_step",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "sourceDocumentId",
+          "subjectId",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId",
+          "sourceDocumentId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "document",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "evaluation_plan.information_available",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "sourceDocumentId",
+          "subjectId",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId",
+          "sourceDocumentId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "document",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "evaluation_plan.information_to_gather",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "sourceDocumentId",
+          "subjectId",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId",
+          "sourceDocumentId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "document",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "evaluation_plan.consent_required",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "sourceDocumentId",
+          "subjectId",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId",
+          "sourceDocumentId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "document",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {
+        "statementOfRequiredConsentNotEvidenceConsentWasGiven": true
+      }
+    },
+    {
+      "id": "document.lineage_reference",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "sourceDocumentId",
+          "subjectId",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId",
+          "sourceDocumentId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "document",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {
+        "requiresExplicitReferencedDocumentOrResolvableCitation": true,
+        "doNotInventSourceDocumentId": true
+      }
+    },
+    {
+      "id": "document.lineage_reference_role",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "sourceDocumentId",
+          "subjectId",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId",
+          "sourceDocumentId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "document",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    },
+    {
+      "id": "eligibility.evidence_reference",
+      "valueKind": "text",
+      "allowedUnits": [],
+      "assertionSemantics": "assertion_neutral",
+      "evidencePolicy": {
+        "allowedProvenance": [
+          "quoted"
+        ],
+        "quoteAndPageRequiredForQuoted": true,
+        "classifiedIsNotVerifiedQuote": true
+      },
+      "identity": {
+        "keys": [
+          "sourceDocumentId",
+          "subjectId",
+          "occurrenceAnchor"
+        ],
+        "scope": [
+          "caseId",
+          "sourceDocumentId"
+        ],
+        "onAmbiguity": "keep_separate",
+        "occurrenceAnchor": "page_and_quote_span_or_explicit_row_locator"
+      },
+      "temporal": {
+        "role": "document",
+        "neverAssumeDocumentDateEqualsObservationDate": true
+      },
+      "multiplicity": "multiple",
+      "semanticGuard": {}
+    }
+  ],
+  "derivedFactPolicies": [
+    {
+      "output": "service.minutes_per_week",
+      "primitive": "ratePerWeek",
+      "operands": [
+        "service.minutes_per_session",
+        "service.sessions_per_week"
+      ],
+      "guard": "same_service_line_and_compatible_period",
+      "retainOperandEvidence": true
+    }
+  ],
+  "factTypeMappingPolicy": {
+    "modelEmitsObservedPackFactTypeId": "required",
+    "legacyCanonicalConstructBridge": "domain_neutral_mapping_by_typed_construct_parts_and_context",
+    "unmappedLegacyFacts": "unresolved_diagnostic_not_silent_drop",
+    "legacyGoldenIdentifiers": "evaluation_only_not_runtime_prompt",
+    "crossDomainMappings": "no_case_specific_literals"
+  }
+}

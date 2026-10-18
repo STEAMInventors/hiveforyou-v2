@@ -1,0 +1,237 @@
+{
+  "version": "0.2.1",
+  "relationships": [
+    {
+      "id": "restates",
+      "from": [
+        "present_level.statement",
+        "measurement.value",
+        "goal.baseline_value"
+      ],
+      "to": [
+        "measurement.value",
+        "assessment.result"
+      ],
+      "primitive": "matches",
+      "require": [
+        "same_subject",
+        "compatible_measure",
+        "same_observation",
+        "traceable_evidence",
+        "same_value_and_unit",
+        "distinct_source_assertions",
+        "preserve_original_sources"
+      ],
+      "onUncertain": "possiblySame"
+    },
+    {
+      "id": "baseline_for",
+      "from": [
+        "measurement.value",
+        "goal.baseline_value"
+      ],
+      "to": [
+        "goal.statement"
+      ],
+      "primitive": "matches",
+      "require": [
+        "same_subject",
+        "compatible_measure",
+        "plan_scope",
+        "explicit_or_supported_link",
+        "baseline_role_not_postbaseline_progress",
+        "distinct_goal_and_measurement_identity",
+        "no_value_only_match"
+      ],
+      "onUncertain": "unresolved"
+    },
+    {
+      "id": "addresses",
+      "from": [
+        "goal.statement",
+        "service.type"
+      ],
+      "to": [
+        "assessment.identified_need",
+        "present_level.area"
+      ],
+      "primitive": "matches",
+      "require": [
+        "same_subject",
+        "compatible_area",
+        "supported_link"
+      ],
+      "onUncertain": "unresolved"
+    },
+    {
+      "id": "reports_progress_on",
+      "from": [
+        "progress.observation",
+        "measurement.value"
+      ],
+      "to": [
+        "goal.statement"
+      ],
+      "primitive": "matches",
+      "require": [
+        "same_subject",
+        "goal_reference_or_verified_match",
+        "compatible_measure"
+      ],
+      "onUncertain": "unresolved"
+    },
+    {
+      "id": "amends",
+      "from": [
+        "document.reference"
+      ],
+      "to": [
+        "document.title"
+      ],
+      "primitive": "compose",
+      "require": [
+        "explicit_target",
+        "scoped_change",
+        "effective_dates_when_available"
+      ],
+      "onUncertain": "unresolved"
+    },
+    {
+      "id": "supersedes",
+      "from": [
+        "document.reference"
+      ],
+      "to": [
+        "document.title"
+      ],
+      "primitive": "compose",
+      "require": [
+        "explicit_or_supported_lineage",
+        "nonoverlapping_or_scoped_effective_period"
+      ],
+      "onUncertain": "unresolved"
+    },
+    {
+      "id": "supports",
+      "from": [
+        "assessment.finding",
+        "assessment.result"
+      ],
+      "to": [
+        "eligibility.basis",
+        "present_level.statement"
+      ],
+      "primitive": "matches",
+      "require": [
+        "same_subject",
+        "source_relationship"
+      ],
+      "onUncertain": "unresolved"
+    },
+    {
+      "id": "refers_to_document",
+      "from": [
+        "document.lineage_reference",
+        "document.reference"
+      ],
+      "to": [
+        "document.title"
+      ],
+      "primitive": "identity",
+      "require": [
+        "explicit_reference_or_sufficient_document_identity",
+        "resolved_document_scope",
+        "traceable_evidence"
+      ],
+      "onUncertain": "unresolved"
+    },
+    {
+      "id": "implements_eligibility",
+      "from": [
+        "document.lineage_reference",
+        "document.reference"
+      ],
+      "to": [
+        "eligibility.decision",
+        "eligibility.category"
+      ],
+      "primitive": "matches",
+      "require": [
+        "same_subject",
+        "explicit_or_supported_lineage",
+        "compatible_effective_time",
+        "traceable_evidence"
+      ],
+      "onUncertain": "unresolved"
+    },
+    {
+      "id": "conflicts_with",
+      "from": [
+        "measurement.value",
+        "service.minutes_per_week",
+        "eligibility.decision"
+      ],
+      "to": [
+        "measurement.value",
+        "service.minutes_per_week",
+        "eligibility.decision"
+      ],
+      "primitive": "conflict",
+      "require": [
+        "same_resolved_subject",
+        "same_compatible_measure_or_property",
+        "overlapping_effective_or_observation_period",
+        "incompatible_values",
+        "both_sided_evidence"
+      ],
+      "onUncertain": "unresolved"
+    },
+    {
+      "id": "changed_from",
+      "from": [
+        "goal.statement",
+        "service.minutes_per_week",
+        "accommodation.description",
+        "eligibility.category"
+      ],
+      "to": [
+        "goal.statement",
+        "service.minutes_per_week",
+        "accommodation.description",
+        "eligibility.category"
+      ],
+      "primitive": "change",
+      "require": [
+        "same_resolved_identity",
+        "ordered_distinct_effective_periods",
+        "comparable_properties",
+        "both_sided_evidence"
+      ],
+      "onUncertain": "unresolved"
+    },
+    {
+      "id": "has_service",
+      "from": [
+        "document.title"
+      ],
+      "to": [
+        "service.type"
+      ],
+      "primitive": "matches",
+      "require": [
+        "same_source_document",
+        "resolved_service_occurrence",
+        "traceable_evidence"
+      ],
+      "onUncertain": "unresolved"
+    }
+  ],
+  "sameNumericValueNeverEnough": true,
+  "preserveIndependentOccurrences": true,
+  "relationshipSemantics": {
+    "conflicts_with": "only_same_subject_and_overlapping_periods_with_incompatible_assertions",
+    "changed_from": "only_ordered_distinct_periods_and_identity_resolved",
+    "unknownTemporalOrIdentity": "unresolved_not_conflict",
+    "restates": "relationship_only_does_not_delete_source_occurrences"
+  }
+}

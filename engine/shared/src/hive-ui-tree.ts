@@ -24,8 +24,21 @@ export const HIVE_UI_PRO_SECTION_KEYS = [
 
 export type HiveUiProSectionKey = (typeof HIVE_UI_PRO_SECTION_KEYS)[number];
 
+export const HIVE_UI_LIVING_CASE_CHAPTER_KEYS = [
+  "understand",
+  "discover",
+  "act",
+  "verify",
+] as const;
+
+export type HiveUiLivingCaseChapterKey = (typeof HIVE_UI_LIVING_CASE_CHAPTER_KEYS)[number];
+
 export const HIVE_UI_COMPONENT_TYPES = [
   "ReportRoot",
+  "LivingCaseChapter",
+  "ReportHeader",
+  "BriefInsights",
+  "ExpandableFacts",
   "StorySection",
   "FactRow",
   "ChangePair",
@@ -69,8 +82,22 @@ const claimRefSchema = z
 
 const proSectionKeySchema = z.enum(HIVE_UI_PRO_SECTION_KEYS);
 
+const livingCaseChapterSchema = z.enum(HIVE_UI_LIVING_CASE_CHAPTER_KEYS);
+
 export const hiveUiComponentPropsSchemas = {
   ReportRoot: z.object({}).strict(),
+  LivingCaseChapter: z.object({ chapter: livingCaseChapterSchema }).strict(),
+  ReportHeader: z.object({}).strict(),
+  BriefInsights: z
+    .object({
+      claimRefs: z.array(claimRefSchema).min(1).max(8),
+    })
+    .strict(),
+  ExpandableFacts: z
+    .object({
+      toggleClaimRef: claimRefSchema.optional(),
+    })
+    .strict(),
   StorySection: z.object({ sectionId: z.string().min(1) }).strict(),
   FactRow: z.object({ claimRef: claimRefSchema }).strict(),
   ChangePair: z.object({ relationId: z.string().min(1) }).strict(),

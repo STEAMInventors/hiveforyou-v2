@@ -1,0 +1,13 @@
+{
+  "version": "0.1.0",
+  "documentTypes": [
+    {
+      "id": "generic_notice",
+      "label": "Generic notice",
+      "checklist": [
+        { "factTypeId": "document.title", "mode": "extract_if_observed", "repeatable": false },
+        { "factTypeId": "entity.name", "mode": "extract_if_observed", "repeatable": false }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,2368 @@
+{
+  "schemaVersion": "hive.domain-pack.declarative-compiled/0.2.1",
+  "status": "compiled_from_declarative",
+  "manifest": {
+    "id": "iep",
+    "version": "0.2.1-draft",
+    "name": "Special Education / IEP"
+  },
+  "documentTypes": [
+    {
+      "id": "referral",
+      "label": "Referral for special education evaluation",
+      "discoverLabels": [
+        "referral",
+        "request for evaluation"
+      ],
+      "checklist": [
+        "document",
+        "student",
+        "referral"
+      ],
+      "checklistPolicy": "look_for_all_listed; never_invent_if_absent; extract_other_pack_records_if_found",
+      "orderingDate": "document.date"
+    },
+    {
+      "id": "evaluation_plan",
+      "label": "Special education evaluation plan",
+      "discoverLabels": [
+        "evaluation plan",
+        "areas requested"
+      ],
+      "checklist": [
+        "document",
+        "student",
+        "evaluation_plan"
+      ],
+      "checklistPolicy": "look_for_all_listed; never_invent_if_absent; extract_other_pack_records_if_found",
+      "orderingDate": "document.date"
+    },
+    {
+      "id": "parent_consent",
+      "label": "Parent evaluation/service consent",
+      "discoverLabels": [
+        "parent consent"
+      ],
+      "checklist": [
+        "document",
+        "student",
+        "consent"
+      ],
+      "checklistPolicy": "look_for_all_listed; never_invent_if_absent; extract_other_pack_records_if_found",
+      "orderingDate": "document.date"
+    },
+    {
+      "id": "academic_evaluation",
+      "label": "Academic evaluation report",
+      "discoverLabels": [
+        "academic evaluation",
+        "achievement"
+      ],
+      "checklist": [
+        "document",
+        "student",
+        "assessment",
+        "measurement"
+      ],
+      "checklistPolicy": "look_for_all_listed; never_invent_if_absent; extract_other_pack_records_if_found",
+      "orderingDate": "document.date"
+    },
+    {
+      "id": "psychoeducational_evaluation",
+      "label": "Psychoeducational evaluation report",
+      "discoverLabels": [
+        "psychoeducational",
+        "psychological assessment"
+      ],
+      "checklist": [
+        "document",
+        "student",
+        "assessment",
+        "measurement"
+      ],
+      "checklistPolicy": "look_for_all_listed; never_invent_if_absent; extract_other_pack_records_if_found",
+      "orderingDate": "document.date"
+    },
+    {
+      "id": "speech_language_evaluation",
+      "label": "Speech-language evaluation report",
+      "discoverLabels": [
+        "speech-language evaluation",
+        "speech evaluation"
+      ],
+      "checklist": [
+        "document",
+        "student",
+        "assessment",
+        "measurement"
+      ],
+      "checklistPolicy": "look_for_all_listed; never_invent_if_absent; extract_other_pack_records_if_found",
+      "orderingDate": "document.date"
+    },
+    {
+      "id": "specialist_evaluation",
+      "label": "Specialist evaluation report",
+      "discoverLabels": [],
+      "checklist": [
+        "document",
+        "student",
+        "assessment",
+        "measurement"
+      ],
+      "checklistPolicy": "look_for_all_listed; never_invent_if_absent; extract_other_pack_records_if_found",
+      "orderingDate": "document.date"
+    },
+    {
+      "id": "eligibility",
+      "label": "Eligibility determination",
+      "discoverLabels": [
+        "eligibility determination"
+      ],
+      "checklist": [
+        "document",
+        "student",
+        "eligibility",
+        "assessment"
+      ],
+      "checklistPolicy": "look_for_all_listed; never_invent_if_absent; extract_other_pack_records_if_found",
+      "orderingDate": "document.date"
+    },
+    {
+      "id": "iep_initial",
+      "label": "Initial individualized education program",
+      "discoverLabels": [],
+      "checklist": [
+        "document",
+        "student",
+        "eligibility",
+        "present_level",
+        "goal",
+        "objective",
+        "service",
+        "accommodation",
+        "modification",
+        "placement",
+        "participation",
+        "meeting",
+        "transition",
+        "extended_school_year"
+      ],
+      "checklistPolicy": "look_for_all_listed; never_invent_if_absent; extract_other_pack_records_if_found",
+      "orderingDate": "document.date"
+    },
+    {
+      "id": "iep_annual",
+      "label": "Annual individualized education program",
+      "discoverLabels": [],
+      "checklist": [
+        "document",
+        "student",
+        "eligibility",
+        "present_level",
+        "goal",
+        "objective",
+        "service",
+        "accommodation",
+        "modification",
+        "placement",
+        "participation",
+        "meeting",
+        "transition",
+        "extended_school_year"
+      ],
+      "checklistPolicy": "look_for_all_listed; never_invent_if_absent; extract_other_pack_records_if_found",
+      "orderingDate": "document.date"
+    },
+    {
+      "id": "iep_amendment",
+      "label": "IEP amendment",
+      "discoverLabels": [],
+      "checklist": [
+        "document",
+        "student",
+        "goal",
+        "objective",
+        "service",
+        "accommodation",
+        "modification",
+        "placement",
+        "participation",
+        "meeting",
+        "present_level"
+      ],
+      "checklistPolicy": "look_for_all_listed; never_invent_if_absent; extract_other_pack_records_if_found",
+      "orderingDate": "document.date"
+    },
+    {
+      "id": "iep_correction",
+      "label": "IEP correction",
+      "discoverLabels": [],
+      "checklist": [
+        "document",
+        "student",
+        "goal",
+        "service",
+        "accommodation",
+        "present_level"
+      ],
+      "checklistPolicy": "look_for_all_listed; never_invent_if_absent; extract_other_pack_records_if_found",
+      "orderingDate": "document.date"
+    },
+    {
+      "id": "progress_report",
+      "label": "IEP goal progress report",
+      "discoverLabels": [],
+      "checklist": [
+        "document",
+        "student",
+        "progress",
+        "measurement"
+      ],
+      "checklistPolicy": "look_for_all_listed; never_invent_if_absent; extract_other_pack_records_if_found",
+      "orderingDate": "document.date"
+    },
+    {
+      "id": "service_implementation_record",
+      "label": "Service delivery/implementation log",
+      "discoverLabels": [],
+      "checklist": [
+        "document",
+        "student",
+        "implementation",
+        "service"
+      ],
+      "checklistPolicy": "look_for_all_listed; never_invent_if_absent; extract_other_pack_records_if_found",
+      "orderingDate": "document.date"
+    },
+    {
+      "id": "prior_written_notice",
+      "label": "Prior written notice",
+      "discoverLabels": [],
+      "checklist": [
+        "document",
+        "student",
+        "notice"
+      ],
+      "checklistPolicy": "look_for_all_listed; never_invent_if_absent; extract_other_pack_records_if_found",
+      "orderingDate": "document.date"
+    },
+    {
+      "id": "meeting_notice",
+      "label": "Meeting notice",
+      "discoverLabels": [],
+      "checklist": [
+        "document",
+        "student",
+        "meeting"
+      ],
+      "checklistPolicy": "look_for_all_listed; never_invent_if_absent; extract_other_pack_records_if_found",
+      "orderingDate": "document.date"
+    },
+    {
+      "id": "meeting_minutes",
+      "label": "Meeting notes or minutes",
+      "discoverLabels": [],
+      "checklist": [
+        "document",
+        "student",
+        "meeting",
+        "notice"
+      ],
+      "checklistPolicy": "look_for_all_listed; never_invent_if_absent; extract_other_pack_records_if_found",
+      "orderingDate": "document.date"
+    },
+    {
+      "id": "behavior_assessment",
+      "label": "Functional behavioral assessment",
+      "discoverLabels": [],
+      "checklist": [
+        "document",
+        "student",
+        "behavior",
+        "assessment",
+        "measurement"
+      ],
+      "checklistPolicy": "look_for_all_listed; never_invent_if_absent; extract_other_pack_records_if_found",
+      "orderingDate": "document.date"
+    },
+    {
+      "id": "behavior_plan",
+      "label": "Behavior intervention plan",
+      "discoverLabels": [],
+      "checklist": [
+        "document",
+        "student",
+        "behavior",
+        "measurement"
+      ],
+      "checklistPolicy": "look_for_all_listed; never_invent_if_absent; extract_other_pack_records_if_found",
+      "orderingDate": "document.date"
+    },
+    {
+      "id": "transition_plan",
+      "label": "Transition planning record",
+      "discoverLabels": [],
+      "checklist": [
+        "document",
+        "student",
+        "transition",
+        "assessment"
+      ],
+      "checklistPolicy": "look_for_all_listed; never_invent_if_absent; extract_other_pack_records_if_found",
+      "orderingDate": "document.date"
+    },
+    {
+      "id": "placement_record",
+      "label": "Placement and participation record",
+      "discoverLabels": [],
+      "checklist": [
+        "document",
+        "student",
+        "placement",
+        "participation",
+        "service"
+      ],
+      "checklistPolicy": "look_for_all_listed; never_invent_if_absent; extract_other_pack_records_if_found",
+      "orderingDate": "document.date"
+    },
+    {
+      "id": "reevaluation_report",
+      "label": "Reevaluation report",
+      "discoverLabels": [],
+      "checklist": [
+        "document",
+        "student",
+        "assessment",
+        "measurement",
+        "eligibility"
+      ],
+      "checklistPolicy": "look_for_all_listed; never_invent_if_absent; extract_other_pack_records_if_found",
+      "orderingDate": "document.date"
+    },
+    {
+      "id": "other",
+      "label": "Other special education record",
+      "discoverLabels": [
+        "special education"
+      ],
+      "checklist": [
+        "document",
+        "student"
+      ],
+      "checklistPolicy": "look_for_all_listed; never_invent_if_absent; extract_other_pack_records_if_found",
+      "orderingDate": "document.date"
+    }
+  ],
+  "recordTypes": [
+    {
+      "id": "accommodation",
+      "repeatable": true,
+      "identity": {
+        "scope": "case",
+        "keyFields": [],
+        "versionAxis": "document.orderingDate",
+        "crossDocumentMerge": "version"
+      },
+      "fields": [
+        {
+          "id": "accommodation.conditions",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "accommodation.context",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "accommodation.description",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "accommodation.end_date",
+          "valueKind": "date",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "accommodation.start_date",
+          "valueKind": "date",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "assessment",
+      "repeatable": true,
+      "usesConstructs": [
+        "assessment"
+      ],
+      "identity": {
+        "scope": "case",
+        "keyFields": [
+          "assessment.area"
+        ],
+        "versionAxis": "document.orderingDate",
+        "crossDocumentMerge": "independent_assertions"
+      },
+      "fields": [
+        {
+          "id": "assessment.area",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "assessment.date",
+          "valueKind": "date",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "assessment.finding",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "assessment.identified_need",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "assessment.instrument",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "assessment.not_identified_need",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ],
+          "comparison": "none"
+        },
+        {
+          "id": "assessment.observation",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "assessment.recommendation",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "assessment.result",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "behavior",
+      "repeatable": true,
+      "identity": {
+        "scope": "case",
+        "keyFields": [],
+        "versionAxis": "document.orderingDate",
+        "crossDocumentMerge": "version"
+      },
+      "fields": [
+        {
+          "id": "behavior.baseline",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "behavior.concern",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "behavior.functional_hypothesis",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "behavior.intervention",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "behavior.monitoring",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "consent",
+      "repeatable": true,
+      "identity": {
+        "scope": "case",
+        "keyFields": [],
+        "versionAxis": "document.orderingDate",
+        "crossDocumentMerge": "version"
+      },
+      "fields": [
+        {
+          "id": "consent.action",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "consent.date",
+          "valueKind": "date",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "consent.decision",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "consent.scope",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "consent.signer_role",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "document",
+      "repeatable": true,
+      "identity": {
+        "scope": "case",
+        "keyFields": [],
+        "versionAxis": "document.orderingDate",
+        "crossDocumentMerge": "version"
+      },
+      "fields": [
+        {
+          "id": "document.amendment_scope",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "document.author_role",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "document.date",
+          "valueKind": "date",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "document.effective_end",
+          "valueKind": "date",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "document.effective_start",
+          "valueKind": "date",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "document.lineage_reference",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "document.lineage_reference_role",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "document.reference",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "document.subtype",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "document.title",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "eligibility",
+      "repeatable": true,
+      "identity": {
+        "scope": "case",
+        "keyFields": [],
+        "versionAxis": "document.orderingDate",
+        "crossDocumentMerge": "version"
+      },
+      "fields": [
+        {
+          "id": "eligibility.basis",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "eligibility.category",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "eligibility.decision",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "eligibility.determination_date",
+          "valueKind": "date",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "eligibility.evidence_reference",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "evaluation_plan",
+      "repeatable": true,
+      "usesConstructs": [
+        "evaluation_plan"
+      ],
+      "identity": {
+        "scope": "case",
+        "keyFields": [
+          "evaluation_plan.area"
+        ],
+        "versionAxis": "document.orderingDate",
+        "crossDocumentMerge": "version"
+      },
+      "fields": [
+        {
+          "id": "evaluation_plan.area",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "evaluation_plan.consent_required",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "evaluation_plan.date",
+          "valueKind": "date",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "evaluation_plan.information_available",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "evaluation_plan.information_to_gather",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "evaluation_plan.selected",
+          "valueKind": "boolean",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "extended_school_year",
+      "repeatable": true,
+      "identity": {
+        "scope": "case",
+        "keyFields": [],
+        "versionAxis": "document.orderingDate",
+        "crossDocumentMerge": "version"
+      },
+      "fields": [
+        {
+          "id": "extended_school_year.decision",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "extended_school_year.reason",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "extended_school_year.services",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "goal",
+      "repeatable": true,
+      "usesConstructs": [
+        "goal"
+      ],
+      "identity": {
+        "scope": "case",
+        "keyFields": [],
+        "versionAxis": "document.orderingDate",
+        "crossDocumentMerge": "version"
+      },
+      "fields": [
+        {
+          "id": "goal.accuracy_criterion",
+          "valueKind": "number",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "goal.area",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "goal.baseline_unit",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "goal.baseline_value",
+          "valueKind": "number",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ],
+          "comparison": "value"
+        },
+        {
+          "id": "goal.condition",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "goal.goal_identifier",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "goal.mastery_criterion",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "goal.measure_administration",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "goal.measure_instrument",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "goal.measure_task",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "goal.measurement_method",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "goal.reporting_frequency",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "goal.start_date",
+          "valueKind": "date",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "goal.statement",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "goal.target_date",
+          "valueKind": "date",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "goal.target_unit",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "goal.target_value",
+          "valueKind": "number",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ],
+          "comparison": "value"
+        }
+      ]
+    },
+    {
+      "id": "implementation",
+      "repeatable": true,
+      "identity": {
+        "scope": "case",
+        "keyFields": [],
+        "versionAxis": "document.orderingDate",
+        "crossDocumentMerge": "version"
+      },
+      "fields": [
+        {
+          "id": "implementation.period",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "implementation.reported_delivery",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "implementation.service_reference",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "measurement",
+      "repeatable": true,
+      "usesConstructs": [
+        "measurement"
+      ],
+      "identity": {
+        "scope": "case",
+        "keyFields": [
+          "measurement.observed_on",
+          "measurement.score_type",
+          "measurement.task"
+        ],
+        "versionAxis": "document.orderingDate",
+        "crossDocumentMerge": "independent_assertions"
+      },
+      "fields": [
+        {
+          "id": "measurement.administration",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "measurement.context",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "measurement.instrument",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "measurement.observed_on",
+          "valueKind": "date",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "measurement.reporting_period_end",
+          "valueKind": "date",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "measurement.reporting_period_start",
+          "valueKind": "date",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "measurement.score_type",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "measurement.task",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "measurement.unit",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "measurement.value",
+          "valueKind": "number",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ],
+          "comparison": "value"
+        }
+      ]
+    },
+    {
+      "id": "meeting",
+      "repeatable": true,
+      "identity": {
+        "scope": "case",
+        "keyFields": [],
+        "versionAxis": "document.orderingDate",
+        "crossDocumentMerge": "version"
+      },
+      "fields": [
+        {
+          "id": "meeting.date",
+          "valueKind": "date",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "meeting.participant_name",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "meeting.participant_role",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "meeting.purpose",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "modification",
+      "repeatable": true,
+      "identity": {
+        "scope": "case",
+        "keyFields": [],
+        "versionAxis": "document.orderingDate",
+        "crossDocumentMerge": "version"
+      },
+      "fields": [
+        {
+          "id": "modification.context",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "modification.description",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "notice",
+      "repeatable": true,
+      "identity": {
+        "scope": "case",
+        "keyFields": [],
+        "versionAxis": "document.orderingDate",
+        "crossDocumentMerge": "version"
+      },
+      "fields": [
+        {
+          "id": "notice.action",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "notice.date",
+          "valueKind": "date",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "notice.evaluation_basis",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "notice.options_considered",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "notice.reason",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "objective",
+      "repeatable": true,
+      "usesConstructs": [
+        "objective"
+      ],
+      "identity": {
+        "scope": "case",
+        "keyFields": [],
+        "versionAxis": "document.orderingDate",
+        "crossDocumentMerge": "version"
+      },
+      "fields": [
+        {
+          "id": "objective.criterion",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "objective.statement",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "objective.target_date",
+          "valueKind": "date",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "participation",
+      "repeatable": true,
+      "identity": {
+        "scope": "case",
+        "keyFields": [],
+        "versionAxis": "document.orderingDate",
+        "crossDocumentMerge": "version"
+      },
+      "fields": [
+        {
+          "id": "participation.accommodation",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "participation.alternate_assessment",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "participation.assessment_type",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "participation.nonparticipation_explanation",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "placement",
+      "repeatable": true,
+      "identity": {
+        "scope": "case",
+        "keyFields": [],
+        "versionAxis": "document.orderingDate",
+        "crossDocumentMerge": "version"
+      },
+      "fields": [
+        {
+          "id": "placement.extent",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "placement.reason",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "placement.setting",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "placement.start_date",
+          "valueKind": "date",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "present_level",
+      "repeatable": true,
+      "usesConstructs": [
+        "present_level"
+      ],
+      "identity": {
+        "scope": "case",
+        "keyFields": [
+          "present_level.area"
+        ],
+        "versionAxis": "document.orderingDate",
+        "crossDocumentMerge": "version"
+      },
+      "fields": [
+        {
+          "id": "present_level.area",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "present_level.assessment_reference",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "present_level.educational_impact",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "present_level.statement",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "progress",
+      "repeatable": true,
+      "identity": {
+        "scope": "case",
+        "keyFields": [
+          "progress.goal_reference"
+        ],
+        "versionAxis": "document.orderingDate",
+        "crossDocumentMerge": "version"
+      },
+      "fields": [
+        {
+          "id": "progress.goal_reference",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "progress.observation",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "progress.period_end",
+          "valueKind": "date",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "progress.period_start",
+          "valueKind": "date",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "progress.report_date",
+          "valueKind": "date",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "progress.status",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "referral",
+      "repeatable": true,
+      "identity": {
+        "scope": "case",
+        "keyFields": [],
+        "versionAxis": "document.orderingDate",
+        "crossDocumentMerge": "version"
+      },
+      "fields": [
+        {
+          "id": "referral.concern",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "referral.date",
+          "valueKind": "date",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "referral.next_step",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "referral.observation",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "referral.planned_parent_input",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "referral.requested_area",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "referral.source",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "service",
+      "repeatable": true,
+      "identity": {
+        "scope": "case",
+        "keyFields": [],
+        "versionAxis": "document.orderingDate",
+        "crossDocumentMerge": "version"
+      },
+      "fields": [
+        {
+          "id": "service.category",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "service.duration_text",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "service.end_date",
+          "valueKind": "date",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "service.frequency_text",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "service.location",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "service.minutes_per_session",
+          "valueKind": "number",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "service.minutes_per_week",
+          "valueKind": "number",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "service.provider_role",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "service.sessions_per_week",
+          "valueKind": "number",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "service.start_date",
+          "valueKind": "date",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "service.type",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "student",
+      "repeatable": true,
+      "identity": {
+        "scope": "case",
+        "keyFields": [],
+        "versionAxis": "document.orderingDate",
+        "crossDocumentMerge": "version"
+      },
+      "fields": [
+        {
+          "id": "student.birth_date",
+          "valueKind": "date",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "student.district",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "student.grade",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "student.identifier",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "student.name",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "student.school",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "transition",
+      "repeatable": true,
+      "identity": {
+        "scope": "case",
+        "keyFields": [],
+        "versionAxis": "document.orderingDate",
+        "crossDocumentMerge": "version"
+      },
+      "fields": [
+        {
+          "id": "transition.assessment",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "transition.postsecondary_goal",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "transition.service",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        },
+        {
+          "id": "transition.student_input",
+          "valueKind": "text",
+          "source": [
+            "quoted"
+          ],
+          "modality": [
+            "observed"
+          ]
+        }
+      ]
+    }
+  ],
+  "readingNotes": {
+    "global": "Read each document separately, with its own page evidence.\nExtract every observable applicable checklist fact, regardless of user intent.\nNever turn assessed areas into identified needs without explicit support.\nPreserve negative findings; do not infer missing information from silence alone.\nKeep observed measurements distinct from targets, baselines and planned services.\nDo not invent dates, people, document IDs or repeated-row identity.\nNever use the case manifest as evidence for the current-document extraction.\nAn observed concern or assessed area does not itself establish an identified need.\nCapture referral observations, future parent-input plans, and next steps separately from documented parent input.\nCapture evaluation-plan information available and information to gather as separate repeated source rows.\nLink document references as evidence-backed proposals; never fabricate target document identities.\nGoal baseline is a plan value, not a second post-baseline progress measurement; restated sources remain separate.\nDo not infer a conflict without overlapping time and same resolved property; unknown timing stays unresolved.",
+    "byDocumentType": {
+      "iep_initial": "Read every goal/service/accommodation row and effective date, including repeated entries.",
+      "iep_annual": "Capture prior-plan references and preserve effective periods.",
+      "iep_amendment": "Extract target plan and exactly which lines changed; do not replace unrelated items.",
+      "progress_report": "Extract each actual dated result and goal reference; do not infer improvement without compatible series.",
+      "academic_evaluation": "Separate assessed area, finding, explicit need and recommendation.",
+      "psychoeducational_evaluation": "Functional cognitive observations are not automatically identified special-education needs.",
+      "speech_language_evaluation": "Explicit negative findings remain negative; no diagnosis must not be rewritten as a need.",
+      "referral": "Read narrative details and parent input planning when explicitly present; distinguish planned from received input.",
+      "evaluation_plan": "Extract each information-available and information-to-gather row separately and keep consent-required text distinct from actual consent."
+    }
+  },
+  "constructs": {
+    "evaluation_plan": {
+      "requiredFields": [
+        "area"
+      ],
+      "comparedIfBothPresent": [
+        "area"
+      ]
+    },
+    "assessment": {
+      "requiredFields": [
+        "area"
+      ],
+      "comparedIfBothPresent": [
+        "area",
+        "instrument"
+      ]
+    },
+    "measurement": {
+      "requiredFields": [
+        "task",
+        "score_type",
+        "value",
+        "unit",
+        "observed_on"
+      ],
+      "comparedIfBothPresent": [
+        "task",
+        "score_type",
+        "instrument",
+        "context"
+      ],
+      "seriesRestatementPolicy": {
+        "eventIdentityFieldIds": [
+          "measurement.observed_on"
+        ],
+        "allowExplicitRestatementCorroboration": true
+      }
+    },
+    "present_level": {
+      "requiredFields": [
+        "area",
+        "statement"
+      ],
+      "comparedIfBothPresent": [
+        "area"
+      ]
+    },
+    "goal": {
+      "requiredFields": [
+        "area",
+        "statement",
+        "baseline_value"
+      ],
+      "comparedIfBothPresent": [
+        "area"
+      ]
+    },
+    "objective": {
+      "requiredFields": [
+        "statement"
+      ],
+      "comparedIfBothPresent": []
+    }
+  },
+  "relationshipRules": {
+    "changeRequiresTemporalSuccession": true,
+    "temporalSuccessionFieldIds": [
+      "document.effective_start",
+      "document.effective_end",
+      "measurement.observed_on",
+      "document.date"
+    ],
+    "conflictWhenDifferentParties": true,
+    "unchangedRequiresLogicalSuccession": true,
+    "matchingPolicyByFieldId": {
+      "present_level.statement": {
+        "requiredDimensions": [
+          "construct",
+          "temporal",
+          "unit"
+        ]
+      },
+      "measurement.value": {
+        "requiredDimensions": [
+          "construct",
+          "context",
+          "temporal",
+          "unit"
+        ]
+      },
+      "goal.baseline_value": {
+        "requiredDimensions": [
+          "construct",
+          "context",
+          "temporal",
+          "unit"
+        ]
+      },
+      "assessment.result": {
+        "requiredDimensions": [
+          "construct",
+          "temporal",
+          "unit"
+        ]
+      },
+      "goal.statement": {
+        "requiredDimensions": [
+          "construct",
+          "context",
+          "temporal",
+          "unit"
+        ]
+      },
+      "service.type": {
+        "requiredDimensions": [
+          "construct",
+          "context"
+        ]
+      },
+      "assessment.identified_need": {
+        "requiredDimensions": [
+          "construct",
+          "context"
+        ]
+      },
+      "present_level.area": {
+        "requiredDimensions": [
+          "construct",
+          "context"
+        ]
+      },
+      "progress.observation": {
+        "requiredDimensions": [
+          "construct",
+          "unit"
+        ]
+      },
+      "assessment.finding": {
+        "requiredDimensions": [
+          "construct"
+        ]
+      },
+      "eligibility.basis": {
+        "requiredDimensions": [
+          "construct"
+        ]
+      },
+      "document.lineage_reference": {
+        "requiredDimensions": [
+          "construct"
+        ]
+      },
+      "document.reference": {
+        "requiredDimensions": [
+          "construct"
+        ]
+      },
+      "eligibility.decision": {
+        "requiredDimensions": [
+          "construct"
+        ]
+      },
+      "eligibility.category": {
+        "requiredDimensions": [
+          "construct"
+        ]
+      }
+    }
+  },
+  "seriesObservationDateFieldIds": [
+    "measurement.observed_on",
+    "measurement.reporting_period_start",
+    "measurement.reporting_period_end",
+    "document.date"
+  ],
+  "seriesOrderingDateFallback": false,
+  "requirements": {
+    "rules": []
+  },
+  "insightChecks": {
+    "enginePrimitivesRequired": [
+      "absenceOf",
+      "series"
+    ],
+    "checks": [
+      {
+        "id": "iep.need_without_goal",
+        "primitive": "absenceOf",
+        "present": {
+          "record": "assessment",
+          "field": "assessment.identified_need"
+        },
+        "absent": {
+          "record": "goal",
+          "field": "goal.statement"
+        },
+        "question": "What goal, if any, addresses the need described in the evaluation?"
+      },
+      {
+        "id": "iep.goal_without_present_level",
+        "primitive": "absenceOf",
+        "present": {
+          "record": "goal",
+          "field": "goal.area"
+        },
+        "absent": {
+          "record": "present_level",
+          "field": "present_level.area"
+        },
+        "question": "Where is the present-level description supporting this goal?"
+      },
+      {
+        "id": "iep.progress_against_target",
+        "primitive": "series",
+        "question": "How do the documented progress results compare with the goal target?"
+      },
+      {
+        "id": "iep.accommodation_alignment",
+        "primitive": "absenceOf",
+        "present": {
+          "record": "accommodation",
+          "field": "accommodation.description"
+        },
+        "absent": {
+          "record": "participation",
+          "field": "participation.accommodation"
+        },
+        "question": "How is this accommodation reflected in the assessment participation section?"
+      },
+      {
+        "id": "iep.goal_measurement_details",
+        "primitive": "absenceOf",
+        "present": {
+          "record": "goal",
+          "field": "goal.statement"
+        },
+        "absent": {
+          "record": "goal",
+          "field": "goal.measurement_method"
+        },
+        "question": "How will progress toward this goal be measured?"
+      },
+      {
+        "id": "iep.referral_parent_input_documentation",
+        "primitive": "absenceOf",
+        "present": {
+          "record": "referral",
+          "field": "referral.planned_parent_input"
+        },
+        "absent": {
+          "record": "referral",
+          "field": "referral.concern"
+        },
+        "question": "Do the supplied referral records include the parent input referenced in the referral?"
+      }
+    ]
+  },
+  "vocabulary": {
+    "note": "Compiled from declarative vocabulary.json; abbreviations applied at reader prompt compile time."
+  },
+  "plainExplainers": {
+    "version": "0.2.1",
+    "explainers": [
+      {
+        "term": "IEP",
+        "customer": "A written plan describing a student’s special education goals and supports.",
+        "pro": "Individualized Education Program"
+      },
+      {
+        "term": "WCPM",
+        "customer": "Words read correctly in one minute.",
+        "pro": "Words correct per minute"
+      },
+      {
+        "term": "present levels",
+        "customer": "What the school records say the student can do now and how needs affect learning.",
+        "pro": "Present levels of academic achievement and functional performance"
+      },
+      {
+        "term": "goal baseline",
+        "customer": "The starting measurement stated for a goal.",
+        "pro": "Baseline measurement supporting an annual goal"
+      },
+      {
+        "term": "evaluation finding",
+        "customer": "What an evaluator reported after assessing an area.",
+        "pro": "Assessment conclusion, distinct from an explicit educational need"
+      }
+    ]
+  },
+  "referenceTables": {
+    "version": "0.2.1",
+    "references": [
+      {
+        "id": "idea_part300",
+        "authority": "34 CFR Part 300",
+        "jurisdiction": "US federal",
+        "role": "reference_only",
+        "url": "https://www.ecfr.gov/current/title-34/subtitle-B/chapter-III/part-300",
+        "requiresVersionAndEffectiveDateBeforeUseInChecks": true
+      }
+    ],
+    "thresholds": [],
+    "noAssumedThreeYearFindingWithoutDatesAndExceptionReview": true
+  }
+}

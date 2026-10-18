@@ -26,6 +26,8 @@ export * from "./intake-study-context";
 export * from "./discover-structure-fingerprint";
 export * from "./load-proposal-domain-pack";
 export * from "./consolidate-verified-reader-facts";
+export * from "./declarative-pack-activation";
+export * from "./resolve-study-declarative-pack";
 export {
   STUDY_RAW_EXTRACTION_ARTIFACT_SCHEMA_VERSION,
   buildStudyRawExtractionValidationResult,
@@ -76,6 +78,13 @@ export {
   type ProposalPackIdentity,
   type ProposalPackSnapshotManifestEntry,
 } from "./resolve-proposal-pack-identity.js";
+export {
+  PinnedProposalDomainPackError,
+  resolvePinnedProposalDomainPackFromStudyContext,
+  resolveStructuralPackForCanonicalStudy,
+  resolveStudyReaderProposalPackBindingFromContext,
+  type ResolvedPinnedProposalDomainPack,
+} from "./resolve-pinned-proposal-domain-pack.js";
 export {
   assertReaderDocumentExtractionAttemptManifestObjectKey,
   assertReaderDocumentExtractionEnvelopeObjectKey,

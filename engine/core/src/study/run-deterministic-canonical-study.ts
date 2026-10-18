@@ -37,10 +37,10 @@ import {
   CANONICAL_STUDY_DEBUG_PACK_APPROVAL,
   PackNotAvailableError,
   proposalPackSnapshotPathForHash,
-  resolveDebugCanonicalStudyDomainPack,
   type PackResolutionDiagnostics,
   type ResolvedDebugCanonicalStudyDomainPack,
 } from "./resolve-approved-proposal-domain-pack.js";
+import { resolveStructuralPackForCanonicalStudy } from "./resolve-pinned-proposal-domain-pack.js";
 import type { SourceDocumentRepository } from "../persistence/source-document-repository.js";
 import type { StudyArtifactRepository } from "./study-artifact-repository.js";
 import type { StudyContextRepository } from "./repositories.js";
@@ -371,7 +371,8 @@ export async function runDeterministicCanonicalStudy(input: {
   const envelopePackMetadata = assertReaderEnvelopesSharePackMetadata(
     loaded.envelopesBySourceDocumentId.values(),
   );
-  const structuralPack = resolveDebugCanonicalStudyDomainPack({
+  const structuralPack = resolveStructuralPackForCanonicalStudy({
+    context,
     envelopePackId: envelopePackMetadata.packId,
     envelopePackVersion: envelopePackMetadata.packVersion,
     envelopePackContentSha256: envelopePackMetadata.packContentSha256,

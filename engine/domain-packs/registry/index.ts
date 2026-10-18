@@ -79,6 +79,20 @@ export {
   STANDARD_RELATIONSHIP_KINDS,
 } from "@hiveforyou/domain-pack";
 
+export {
+  compileDeclarativePackToProposal,
+  computeDeclarativePackContentDigest,
+  DeclarativePackResolutionError,
+  DECLARATIVE_PACK_CONTRACT_VERSION,
+  listDeclarativePackRegistrations,
+  resolveLatestEligibleDeclarativePack,
+  resolveLatestEligibleDeclarativePackFromEnv,
+  resolveDeclarativePackByContentDigest,
+  defaultDeclarativePackRepoRoot,
+  validateDeclarativePackStructure,
+} from "./declarative/index.js";
+export type { ResolvedDeclarativePackSelection } from "./declarative/index.js";
+
 export type {
   AudienceRoleResolutionInput,
   CanonicalStudyPackSnapshot,

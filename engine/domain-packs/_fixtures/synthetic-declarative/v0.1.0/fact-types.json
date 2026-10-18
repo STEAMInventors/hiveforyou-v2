@@ -1,0 +1,19 @@
+{
+  "version": "0.1.0",
+  "factTypes": [
+    {
+      "id": "document.title",
+      "valueKind": "text",
+      "evidencePolicy": { "allowedProvenance": ["quoted"] },
+      "identity": { "keys": ["sourceDocumentId"], "scope": ["caseId"], "onAmbiguity": "keep_separate" },
+      "multiplicity": "single"
+    },
+    {
+      "id": "entity.name",
+      "valueKind": "text",
+      "evidencePolicy": { "allowedProvenance": ["quoted"] },
+      "identity": { "keys": ["sourceDocumentId"], "scope": ["caseId"], "onAmbiguity": "keep_separate" },
+      "multiplicity": "single"
+    }
+  ]
+}

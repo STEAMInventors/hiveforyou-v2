@@ -3,7 +3,7 @@ import { randomUUID } from "node:crypto";
 import {
   buildObservedReaderIdentitySummary,
   loadAgenticReaderQualificationPromptMetadata,
-  resolveStudyReaderProposalPackBinding,
+  resolveStudyReaderProposalPackBindingFromContext,
 } from "@hiveforyou/core/study";
 import type { CanonicalStudyContext } from "@hiveforyou/shared/canonical-study";
 import {
@@ -118,9 +118,8 @@ export async function runProductionPackDrivenReader(
     requirePersistedDiscover: true,
   });
 
-  const proposalPack = resolveStudyReaderProposalPackBinding({
-    domainId: input.context.domainId,
-    proposalPackContentSha256: input.context.processingPolicy.proposalPackContentSha256,
+  const proposalPack = resolveStudyReaderProposalPackBindingFromContext({
+    context: input.context,
     env,
   });
 

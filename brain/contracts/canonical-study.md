@@ -84,6 +84,8 @@ Not one model call. **N domain runs → deterministic merge → one `case-intell
 
 Per-domain fingerprint. Completed domain run → reuse. Case-level merge produces one new intelligence version when all domain runs succeed.
 
+**Product UX:** Case workspace **Generate / Regenerate Study** must call the same idempotency path (`buildIdempotencyKeyFromRequest` / completed-run lookup)—not a separate client-side comparison. See [case-workspace-journey.md](../product/case-workspace-journey.md).
+
 
 
 ## Engine configuration

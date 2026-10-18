@@ -1,0 +1,4660 @@
+{
+  "version": "0.2.1",
+  "documentTypes": [
+    {
+      "id": "referral",
+      "label": "Referral for special education evaluation",
+      "family": "evaluation",
+      "subtypes": [],
+      "recognitionHints": [
+        "referral",
+        "request for evaluation"
+      ],
+      "dateRoles": [
+        "document_date",
+        "event_date",
+        "effective_period",
+        "observation_date"
+      ],
+      "authorityRole": "classify_from_evidence_not_document_type_alone",
+      "lineageReferences": [],
+      "checklist": [
+        {
+          "factTypeId": "document.title",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.subtype",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.effective_start",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.effective_end",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.author_role",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.reference",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.amendment_scope",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.name",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.birth_date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.grade",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.school",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.district",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.identifier",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "referral.date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "referral.source",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "referral.concern",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "referral.requested_area",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "referral.observation",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "referral.planned_parent_input",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "referral.next_step",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        }
+      ],
+      "allowAdditionalPackFacts": true,
+      "checklistSemantics": {
+        "completeForDeclaredKnownFactTypes": true,
+        "notRequiredUnlessConditionalRequirementActive": true,
+        "allowAdditionalPackFactsMeansCatalogExtensionNotChecklistCompleteness": true
+      },
+      "rowRoleDistinctions": [
+        "requested_area",
+        "observed_concern",
+        "planned_parent_input",
+        "next_step"
+      ]
+    },
+    {
+      "id": "evaluation_plan",
+      "label": "Special education evaluation plan",
+      "family": "evaluation",
+      "subtypes": [],
+      "recognitionHints": [
+        "evaluation plan",
+        "areas requested"
+      ],
+      "dateRoles": [
+        "document_date",
+        "event_date",
+        "effective_period",
+        "observation_date"
+      ],
+      "authorityRole": "classify_from_evidence_not_document_type_alone",
+      "lineageReferences": [],
+      "checklist": [
+        {
+          "factTypeId": "document.title",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.subtype",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.effective_start",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.effective_end",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.author_role",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.reference",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.amendment_scope",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.name",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.birth_date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.grade",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.school",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.district",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.identifier",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "evaluation_plan.area",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "evaluation_plan.selected",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "evaluation_plan.date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "evaluation_plan.information_available",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "evaluation_plan.information_to_gather",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "evaluation_plan.consent_required",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        }
+      ],
+      "allowAdditionalPackFacts": true,
+      "checklistSemantics": {
+        "completeForDeclaredKnownFactTypes": true,
+        "notRequiredUnlessConditionalRequirementActive": true,
+        "allowAdditionalPackFactsMeansCatalogExtensionNotChecklistCompleteness": true
+      },
+      "checklistRowIdentity": "document_scoped_row_or_quote_span_plus_area_and_row_role"
+    },
+    {
+      "id": "parent_consent",
+      "label": "Parent evaluation/service consent",
+      "family": "evaluation",
+      "subtypes": [
+        "initial_evaluation",
+        "reevaluation",
+        "initial_services",
+        "other"
+      ],
+      "recognitionHints": [
+        "parent consent"
+      ],
+      "dateRoles": [
+        "document_date",
+        "event_date",
+        "effective_period",
+        "observation_date"
+      ],
+      "authorityRole": "classify_from_evidence_not_document_type_alone",
+      "lineageReferences": [
+        "evaluation_plan"
+      ],
+      "checklist": [
+        {
+          "factTypeId": "document.title",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.subtype",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.effective_start",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.effective_end",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.author_role",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.reference",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.amendment_scope",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.name",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.birth_date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.grade",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.school",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.district",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.identifier",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "consent.action",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "consent.decision",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "consent.date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "consent.scope",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "consent.signer_role",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.lineage_reference",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.lineage_reference_role",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        }
+      ],
+      "allowAdditionalPackFacts": true,
+      "checklistSemantics": {
+        "completeForDeclaredKnownFactTypes": true,
+        "notRequiredUnlessConditionalRequirementActive": true,
+        "allowAdditionalPackFactsMeansCatalogExtensionNotChecklistCompleteness": true
+      }
+    },
+    {
+      "id": "academic_evaluation",
+      "label": "Academic evaluation report",
+      "family": "evaluation",
+      "subtypes": [],
+      "recognitionHints": [
+        "academic evaluation",
+        "achievement"
+      ],
+      "dateRoles": [
+        "document_date",
+        "event_date",
+        "effective_period",
+        "observation_date"
+      ],
+      "authorityRole": "classify_from_evidence_not_document_type_alone",
+      "lineageReferences": [],
+      "checklist": [
+        {
+          "factTypeId": "document.title",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.subtype",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.effective_start",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.effective_end",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.author_role",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.reference",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.amendment_scope",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.name",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.birth_date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.grade",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.school",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.district",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.identifier",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "assessment.area",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "assessment.instrument",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "assessment.observation",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "assessment.result",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "assessment.finding",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "assessment.identified_need",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "assessment.not_identified_need",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "assessment.recommendation",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "assessment.date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "measurement.task",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "measurement.score_type",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "measurement.instrument",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "measurement.administration",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "measurement.value",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "measurement.unit",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "measurement.observed_on",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "measurement.context",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "measurement.reporting_period_start",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "measurement.reporting_period_end",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        }
+      ],
+      "allowAdditionalPackFacts": true,
+      "checklistSemantics": {
+        "completeForDeclaredKnownFactTypes": true,
+        "notRequiredUnlessConditionalRequirementActive": true,
+        "allowAdditionalPackFactsMeansCatalogExtensionNotChecklistCompleteness": true
+      }
+    },
+    {
+      "id": "psychoeducational_evaluation",
+      "label": "Psychoeducational evaluation report",
+      "family": "evaluation",
+      "subtypes": [],
+      "recognitionHints": [
+        "psychoeducational",
+        "psychological assessment"
+      ],
+      "dateRoles": [
+        "document_date",
+        "event_date",
+        "effective_period",
+        "observation_date"
+      ],
+      "authorityRole": "classify_from_evidence_not_document_type_alone",
+      "lineageReferences": [],
+      "checklist": [
+        {
+          "factTypeId": "document.title",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.subtype",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.effective_start",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.effective_end",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.author_role",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.reference",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.amendment_scope",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.name",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.birth_date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.grade",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.school",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.district",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.identifier",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "assessment.area",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "assessment.instrument",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "assessment.observation",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "assessment.result",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "assessment.finding",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "assessment.identified_need",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "assessment.not_identified_need",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "assessment.recommendation",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "assessment.date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "measurement.task",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "measurement.score_type",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "measurement.instrument",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "measurement.administration",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "measurement.value",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "measurement.unit",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "measurement.observed_on",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "measurement.context",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "measurement.reporting_period_start",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "measurement.reporting_period_end",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        }
+      ],
+      "allowAdditionalPackFacts": true,
+      "checklistSemantics": {
+        "completeForDeclaredKnownFactTypes": true,
+        "notRequiredUnlessConditionalRequirementActive": true,
+        "allowAdditionalPackFactsMeansCatalogExtensionNotChecklistCompleteness": true
+      }
+    },
+    {
+      "id": "speech_language_evaluation",
+      "label": "Speech-language evaluation report",
+      "family": "evaluation",
+      "subtypes": [],
+      "recognitionHints": [
+        "speech-language evaluation",
+        "speech evaluation"
+      ],
+      "dateRoles": [
+        "document_date",
+        "event_date",
+        "effective_period",
+        "observation_date"
+      ],
+      "authorityRole": "classify_from_evidence_not_document_type_alone",
+      "lineageReferences": [],
+      "checklist": [
+        {
+          "factTypeId": "document.title",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.subtype",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.effective_start",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.effective_end",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.author_role",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.reference",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.amendment_scope",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.name",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.birth_date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.grade",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.school",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.district",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.identifier",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "assessment.area",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "assessment.instrument",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "assessment.observation",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "assessment.result",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "assessment.finding",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "assessment.identified_need",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "assessment.not_identified_need",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "assessment.recommendation",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "assessment.date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "measurement.task",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "measurement.score_type",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "measurement.instrument",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "measurement.administration",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "measurement.value",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "measurement.unit",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "measurement.observed_on",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "measurement.context",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "measurement.reporting_period_start",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "measurement.reporting_period_end",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        }
+      ],
+      "allowAdditionalPackFacts": true,
+      "checklistSemantics": {
+        "completeForDeclaredKnownFactTypes": true,
+        "notRequiredUnlessConditionalRequirementActive": true,
+        "allowAdditionalPackFactsMeansCatalogExtensionNotChecklistCompleteness": true
+      }
+    },
+    {
+      "id": "specialist_evaluation",
+      "label": "Specialist evaluation report",
+      "family": "evaluation",
+      "subtypes": [
+        "occupational_therapy",
+        "physical_therapy",
+        "functional_behavior",
+        "assistive_technology",
+        "other"
+      ],
+      "recognitionHints": [],
+      "dateRoles": [
+        "document_date",
+        "event_date",
+        "effective_period",
+        "observation_date"
+      ],
+      "authorityRole": "classify_from_evidence_not_document_type_alone",
+      "lineageReferences": [],
+      "checklist": [
+        {
+          "factTypeId": "document.title",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.subtype",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.effective_start",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.effective_end",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.author_role",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.reference",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.amendment_scope",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.name",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.birth_date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.grade",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.school",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.district",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.identifier",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "assessment.area",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "assessment.instrument",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "assessment.observation",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "assessment.result",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "assessment.finding",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "assessment.identified_need",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "assessment.not_identified_need",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "assessment.recommendation",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "assessment.date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "measurement.task",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "measurement.score_type",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "measurement.instrument",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "measurement.administration",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "measurement.value",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "measurement.unit",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "measurement.observed_on",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "measurement.context",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "measurement.reporting_period_start",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "measurement.reporting_period_end",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        }
+      ],
+      "allowAdditionalPackFacts": true,
+      "checklistSemantics": {
+        "completeForDeclaredKnownFactTypes": true,
+        "notRequiredUnlessConditionalRequirementActive": true,
+        "allowAdditionalPackFactsMeansCatalogExtensionNotChecklistCompleteness": true
+      }
+    },
+    {
+      "id": "eligibility",
+      "label": "Eligibility determination",
+      "family": "decision",
+      "subtypes": [],
+      "recognitionHints": [
+        "eligibility determination"
+      ],
+      "dateRoles": [
+        "document_date",
+        "event_date",
+        "effective_period",
+        "observation_date"
+      ],
+      "authorityRole": "classify_from_evidence_not_document_type_alone",
+      "lineageReferences": [],
+      "checklist": [
+        {
+          "factTypeId": "document.title",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.subtype",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.effective_start",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.effective_end",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.author_role",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.reference",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.amendment_scope",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.name",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.birth_date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.grade",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.school",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.district",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.identifier",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "eligibility.decision",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "eligibility.category",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "eligibility.basis",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "eligibility.determination_date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "assessment.area",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "assessment.instrument",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "assessment.observation",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "assessment.result",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "assessment.finding",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "assessment.identified_need",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "assessment.not_identified_need",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "assessment.recommendation",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "assessment.date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.lineage_reference",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.lineage_reference_role",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "eligibility.evidence_reference",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        }
+      ],
+      "allowAdditionalPackFacts": true,
+      "checklistSemantics": {
+        "completeForDeclaredKnownFactTypes": true,
+        "notRequiredUnlessConditionalRequirementActive": true,
+        "allowAdditionalPackFactsMeansCatalogExtensionNotChecklistCompleteness": true
+      }
+    },
+    {
+      "id": "iep_initial",
+      "label": "Initial individualized education program",
+      "family": "plan",
+      "subtypes": [
+        "initial"
+      ],
+      "recognitionHints": [],
+      "dateRoles": [
+        "document_date",
+        "event_date",
+        "effective_period",
+        "observation_date"
+      ],
+      "authorityRole": "classify_from_evidence_not_document_type_alone",
+      "lineageReferences": [
+        "evaluation",
+        "eligibility"
+      ],
+      "checklist": [
+        {
+          "factTypeId": "document.title",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.subtype",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.effective_start",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.effective_end",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.author_role",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.reference",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.amendment_scope",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.name",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.birth_date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.grade",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.school",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.district",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.identifier",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "eligibility.decision",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "eligibility.category",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "eligibility.basis",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "eligibility.determination_date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "present_level.area",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "present_level.statement",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "present_level.educational_impact",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "present_level.assessment_reference",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "goal.area",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "goal.statement",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "goal.condition",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "goal.baseline_value",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "goal.baseline_unit",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "goal.target_value",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "goal.target_unit",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "goal.accuracy_criterion",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "goal.mastery_criterion",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "goal.measurement_method",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "goal.measure_task",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "goal.measure_instrument",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "goal.measure_administration",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "goal.start_date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "goal.target_date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "goal.reporting_frequency",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "goal.goal_identifier",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "objective.statement",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "objective.criterion",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "objective.target_date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "service.type",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "service.category",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "service.minutes_per_week",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "service.minutes_per_session",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "service.sessions_per_week",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "service.frequency_text",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "service.duration_text",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "service.location",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "service.provider_role",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "service.start_date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "service.end_date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "accommodation.description",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "accommodation.conditions",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "accommodation.context",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "accommodation.start_date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "accommodation.end_date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "modification.description",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "modification.context",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "placement.setting",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "placement.extent",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "placement.reason",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "placement.start_date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "participation.assessment_type",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "participation.accommodation",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "participation.alternate_assessment",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "participation.nonparticipation_explanation",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "meeting.date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "meeting.purpose",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "meeting.participant_role",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "meeting.participant_name",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "transition.postsecondary_goal",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "transition.service",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "transition.assessment",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "transition.student_input",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "extended_school_year.decision",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "extended_school_year.reason",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "extended_school_year.services",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.lineage_reference",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.lineage_reference_role",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        }
+      ],
+      "allowAdditionalPackFacts": true,
+      "checklistSemantics": {
+        "completeForDeclaredKnownFactTypes": true,
+        "notRequiredUnlessConditionalRequirementActive": true,
+        "allowAdditionalPackFactsMeansCatalogExtensionNotChecklistCompleteness": true
+      }
+    },
+    {
+      "id": "iep_annual",
+      "label": "Annual individualized education program",
+      "family": "plan",
+      "subtypes": [
+        "annual"
+      ],
+      "recognitionHints": [],
+      "dateRoles": [
+        "document_date",
+        "event_date",
+        "effective_period",
+        "observation_date"
+      ],
+      "authorityRole": "classify_from_evidence_not_document_type_alone",
+      "lineageReferences": [
+        "prior_iep",
+        "evaluation",
+        "eligibility"
+      ],
+      "checklist": [
+        {
+          "factTypeId": "document.title",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.subtype",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.effective_start",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.effective_end",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.author_role",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.reference",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.amendment_scope",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.name",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.birth_date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.grade",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.school",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.district",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.identifier",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "eligibility.decision",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "eligibility.category",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "eligibility.basis",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "eligibility.determination_date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "present_level.area",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "present_level.statement",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "present_level.educational_impact",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "present_level.assessment_reference",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "goal.area",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "goal.statement",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "goal.condition",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "goal.baseline_value",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "goal.baseline_unit",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "goal.target_value",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "goal.target_unit",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "goal.accuracy_criterion",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "goal.mastery_criterion",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "goal.measurement_method",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "goal.measure_task",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "goal.measure_instrument",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "goal.measure_administration",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "goal.start_date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "goal.target_date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "goal.reporting_frequency",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "goal.goal_identifier",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "objective.statement",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "objective.criterion",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "objective.target_date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "service.type",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "service.category",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "service.minutes_per_week",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "service.minutes_per_session",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "service.sessions_per_week",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "service.frequency_text",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "service.duration_text",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "service.location",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "service.provider_role",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "service.start_date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "service.end_date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "accommodation.description",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "accommodation.conditions",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "accommodation.context",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "accommodation.start_date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "accommodation.end_date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "modification.description",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "modification.context",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "placement.setting",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "placement.extent",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "placement.reason",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "placement.start_date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "participation.assessment_type",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "participation.accommodation",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "participation.alternate_assessment",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "participation.nonparticipation_explanation",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "meeting.date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "meeting.purpose",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "meeting.participant_role",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "meeting.participant_name",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "transition.postsecondary_goal",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "transition.service",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "transition.assessment",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "transition.student_input",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "extended_school_year.decision",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "extended_school_year.reason",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "extended_school_year.services",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.lineage_reference",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.lineage_reference_role",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        }
+      ],
+      "allowAdditionalPackFacts": true,
+      "checklistSemantics": {
+        "completeForDeclaredKnownFactTypes": true,
+        "notRequiredUnlessConditionalRequirementActive": true,
+        "allowAdditionalPackFactsMeansCatalogExtensionNotChecklistCompleteness": true
+      }
+    },
+    {
+      "id": "iep_amendment",
+      "label": "IEP amendment",
+      "family": "plan",
+      "subtypes": [],
+      "recognitionHints": [],
+      "dateRoles": [
+        "document_date",
+        "event_date",
+        "effective_period",
+        "observation_date"
+      ],
+      "authorityRole": "classify_from_evidence_not_document_type_alone",
+      "lineageReferences": [
+        "target_iep",
+        "scope_of_change"
+      ],
+      "checklist": [
+        {
+          "factTypeId": "document.title",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.subtype",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.effective_start",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.effective_end",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.author_role",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.reference",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.amendment_scope",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.name",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.birth_date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.grade",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.school",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.district",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.identifier",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "goal.area",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "goal.statement",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "goal.condition",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "goal.baseline_value",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "goal.baseline_unit",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "goal.target_value",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "goal.target_unit",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "goal.accuracy_criterion",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "goal.mastery_criterion",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "goal.measurement_method",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "goal.measure_task",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "goal.measure_instrument",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "goal.measure_administration",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "goal.start_date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "goal.target_date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "goal.reporting_frequency",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "goal.goal_identifier",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "objective.statement",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "objective.criterion",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "objective.target_date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "service.type",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "service.category",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "service.minutes_per_week",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "service.minutes_per_session",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "service.sessions_per_week",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "service.frequency_text",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "service.duration_text",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "service.location",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "service.provider_role",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "service.start_date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "service.end_date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "accommodation.description",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "accommodation.conditions",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "accommodation.context",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "accommodation.start_date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "accommodation.end_date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "modification.description",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "modification.context",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "placement.setting",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "placement.extent",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "placement.reason",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "placement.start_date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "participation.assessment_type",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "participation.accommodation",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "participation.alternate_assessment",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "participation.nonparticipation_explanation",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "meeting.date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "meeting.purpose",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "meeting.participant_role",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "meeting.participant_name",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.lineage_reference",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.lineage_reference_role",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "present_level.assessment_reference",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        }
+      ],
+      "allowAdditionalPackFacts": true,
+      "checklistSemantics": {
+        "completeForDeclaredKnownFactTypes": true,
+        "notRequiredUnlessConditionalRequirementActive": true,
+        "allowAdditionalPackFactsMeansCatalogExtensionNotChecklistCompleteness": true
+      }
+    },
+    {
+      "id": "iep_correction",
+      "label": "IEP correction",
+      "family": "plan",
+      "subtypes": [],
+      "recognitionHints": [],
+      "dateRoles": [
+        "document_date",
+        "event_date",
+        "effective_period",
+        "observation_date"
+      ],
+      "authorityRole": "classify_from_evidence_not_document_type_alone",
+      "lineageReferences": [
+        "target_iep",
+        "corrected_fields"
+      ],
+      "checklist": [
+        {
+          "factTypeId": "document.title",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.subtype",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.effective_start",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.effective_end",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.author_role",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.reference",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.amendment_scope",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.name",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.birth_date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.grade",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.school",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.district",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.identifier",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "goal.area",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "goal.statement",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "goal.condition",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "goal.baseline_value",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "goal.baseline_unit",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "goal.target_value",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "goal.target_unit",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "goal.accuracy_criterion",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "goal.mastery_criterion",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "goal.measurement_method",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "goal.measure_task",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "goal.measure_instrument",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "goal.measure_administration",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "goal.start_date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "goal.target_date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "goal.reporting_frequency",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "goal.goal_identifier",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "service.type",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "service.category",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "service.minutes_per_week",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "service.minutes_per_session",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "service.sessions_per_week",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "service.frequency_text",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "service.duration_text",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "service.location",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "service.provider_role",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "service.start_date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "service.end_date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "accommodation.description",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "accommodation.conditions",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "accommodation.context",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "accommodation.start_date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "accommodation.end_date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "present_level.area",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "present_level.statement",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "present_level.educational_impact",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "present_level.assessment_reference",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.lineage_reference",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.lineage_reference_role",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        }
+      ],
+      "allowAdditionalPackFacts": true,
+      "checklistSemantics": {
+        "completeForDeclaredKnownFactTypes": true,
+        "notRequiredUnlessConditionalRequirementActive": true,
+        "allowAdditionalPackFactsMeansCatalogExtensionNotChecklistCompleteness": true
+      }
+    },
+    {
+      "id": "progress_report",
+      "label": "IEP goal progress report",
+      "family": "progress",
+      "subtypes": [],
+      "recognitionHints": [],
+      "dateRoles": [
+        "document_date",
+        "event_date",
+        "effective_period",
+        "observation_date"
+      ],
+      "authorityRole": "classify_from_evidence_not_document_type_alone",
+      "lineageReferences": [
+        "goal_id",
+        "iep_reference"
+      ],
+      "checklist": [
+        {
+          "factTypeId": "document.title",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.subtype",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.effective_start",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.effective_end",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.author_role",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.reference",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.amendment_scope",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.name",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.birth_date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.grade",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.school",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.district",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.identifier",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "progress.goal_reference",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "progress.observation",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "progress.status",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "progress.report_date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "progress.period_start",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "progress.period_end",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "measurement.task",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "measurement.score_type",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "measurement.instrument",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "measurement.administration",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "measurement.value",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "measurement.unit",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "measurement.observed_on",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "measurement.context",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "measurement.reporting_period_start",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "measurement.reporting_period_end",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        }
+      ],
+      "allowAdditionalPackFacts": true,
+      "checklistSemantics": {
+        "completeForDeclaredKnownFactTypes": true,
+        "notRequiredUnlessConditionalRequirementActive": true,
+        "allowAdditionalPackFactsMeansCatalogExtensionNotChecklistCompleteness": true
+      }
+    },
+    {
+      "id": "service_implementation_record",
+      "label": "Service delivery/implementation log",
+      "family": "progress",
+      "subtypes": [],
+      "recognitionHints": [],
+      "dateRoles": [
+        "document_date",
+        "event_date",
+        "effective_period",
+        "observation_date"
+      ],
+      "authorityRole": "classify_from_evidence_not_document_type_alone",
+      "lineageReferences": [
+        "service_line",
+        "iep_reference"
+      ],
+      "checklist": [
+        {
+          "factTypeId": "document.title",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.subtype",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.effective_start",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.effective_end",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.author_role",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.reference",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.amendment_scope",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.name",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.birth_date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.grade",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.school",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.district",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.identifier",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "implementation.service_reference",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "implementation.reported_delivery",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "implementation.period",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "service.type",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "service.category",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "service.minutes_per_week",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "service.minutes_per_session",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "service.sessions_per_week",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "service.frequency_text",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "service.duration_text",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "service.location",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "service.provider_role",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "service.start_date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "service.end_date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        }
+      ],
+      "allowAdditionalPackFacts": true,
+      "checklistSemantics": {
+        "completeForDeclaredKnownFactTypes": true,
+        "notRequiredUnlessConditionalRequirementActive": true,
+        "allowAdditionalPackFactsMeansCatalogExtensionNotChecklistCompleteness": true
+      }
+    },
+    {
+      "id": "prior_written_notice",
+      "label": "Prior written notice",
+      "family": "notice",
+      "subtypes": [],
+      "recognitionHints": [],
+      "dateRoles": [
+        "document_date",
+        "event_date",
+        "effective_period",
+        "observation_date"
+      ],
+      "authorityRole": "classify_from_evidence_not_document_type_alone",
+      "lineageReferences": [
+        "proposed_or_refused_action",
+        "iep_reference"
+      ],
+      "checklist": [
+        {
+          "factTypeId": "document.title",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.subtype",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.effective_start",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.effective_end",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.author_role",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.reference",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.amendment_scope",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.name",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.birth_date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.grade",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.school",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.district",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.identifier",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "notice.date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "notice.action",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "notice.reason",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "notice.options_considered",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "notice.evaluation_basis",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.lineage_reference",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.lineage_reference_role",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        }
+      ],
+      "allowAdditionalPackFacts": true,
+      "checklistSemantics": {
+        "completeForDeclaredKnownFactTypes": true,
+        "notRequiredUnlessConditionalRequirementActive": true,
+        "allowAdditionalPackFactsMeansCatalogExtensionNotChecklistCompleteness": true
+      }
+    },
+    {
+      "id": "meeting_notice",
+      "label": "Meeting notice",
+      "family": "meeting",
+      "subtypes": [],
+      "recognitionHints": [],
+      "dateRoles": [
+        "document_date",
+        "event_date",
+        "effective_period",
+        "observation_date"
+      ],
+      "authorityRole": "classify_from_evidence_not_document_type_alone",
+      "lineageReferences": [
+        "meeting_type"
+      ],
+      "checklist": [
+        {
+          "factTypeId": "document.title",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.subtype",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.effective_start",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.effective_end",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.author_role",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.reference",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.amendment_scope",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.name",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.birth_date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.grade",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.school",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.district",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.identifier",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "meeting.date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "meeting.purpose",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "meeting.participant_role",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "meeting.participant_name",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        }
+      ],
+      "allowAdditionalPackFacts": true,
+      "checklistSemantics": {
+        "completeForDeclaredKnownFactTypes": true,
+        "notRequiredUnlessConditionalRequirementActive": true,
+        "allowAdditionalPackFactsMeansCatalogExtensionNotChecklistCompleteness": true
+      }
+    },
+    {
+      "id": "meeting_minutes",
+      "label": "Meeting notes or minutes",
+      "family": "meeting",
+      "subtypes": [],
+      "recognitionHints": [],
+      "dateRoles": [
+        "document_date",
+        "event_date",
+        "effective_period",
+        "observation_date"
+      ],
+      "authorityRole": "classify_from_evidence_not_document_type_alone",
+      "lineageReferences": [
+        "meeting_date",
+        "iep_reference"
+      ],
+      "checklist": [
+        {
+          "factTypeId": "document.title",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.subtype",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.effective_start",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.effective_end",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.author_role",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.reference",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.amendment_scope",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.name",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.birth_date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.grade",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.school",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.district",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.identifier",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "meeting.date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "meeting.purpose",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "meeting.participant_role",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "meeting.participant_name",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "notice.date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "notice.action",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "notice.reason",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "notice.options_considered",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "notice.evaluation_basis",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        }
+      ],
+      "allowAdditionalPackFacts": true,
+      "checklistSemantics": {
+        "completeForDeclaredKnownFactTypes": true,
+        "notRequiredUnlessConditionalRequirementActive": true,
+        "allowAdditionalPackFactsMeansCatalogExtensionNotChecklistCompleteness": true
+      }
+    },
+    {
+      "id": "behavior_assessment",
+      "label": "Functional behavioral assessment",
+      "family": "evaluation",
+      "subtypes": [],
+      "recognitionHints": [],
+      "dateRoles": [
+        "document_date",
+        "event_date",
+        "effective_period",
+        "observation_date"
+      ],
+      "authorityRole": "classify_from_evidence_not_document_type_alone",
+      "lineageReferences": [
+        "behavior_plan"
+      ],
+      "checklist": [
+        {
+          "factTypeId": "document.title",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.subtype",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.effective_start",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.effective_end",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.author_role",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.reference",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.amendment_scope",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.name",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.birth_date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.grade",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.school",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.district",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.identifier",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "behavior.concern",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "behavior.functional_hypothesis",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "behavior.intervention",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "behavior.baseline",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "behavior.monitoring",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "assessment.area",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "assessment.instrument",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "assessment.observation",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "assessment.result",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "assessment.finding",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "assessment.identified_need",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "assessment.not_identified_need",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "assessment.recommendation",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "assessment.date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "measurement.task",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "measurement.score_type",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "measurement.instrument",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "measurement.administration",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "measurement.value",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "measurement.unit",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "measurement.observed_on",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "measurement.context",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "measurement.reporting_period_start",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "measurement.reporting_period_end",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        }
+      ],
+      "allowAdditionalPackFacts": true,
+      "checklistSemantics": {
+        "completeForDeclaredKnownFactTypes": true,
+        "notRequiredUnlessConditionalRequirementActive": true,
+        "allowAdditionalPackFactsMeansCatalogExtensionNotChecklistCompleteness": true
+      }
+    },
+    {
+      "id": "behavior_plan",
+      "label": "Behavior intervention plan",
+      "family": "plan",
+      "subtypes": [],
+      "recognitionHints": [],
+      "dateRoles": [
+        "document_date",
+        "event_date",
+        "effective_period",
+        "observation_date"
+      ],
+      "authorityRole": "classify_from_evidence_not_document_type_alone",
+      "lineageReferences": [
+        "target_plan"
+      ],
+      "checklist": [
+        {
+          "factTypeId": "document.title",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.subtype",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.effective_start",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.effective_end",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.author_role",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.reference",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.amendment_scope",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.name",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.birth_date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.grade",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.school",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.district",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.identifier",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "behavior.concern",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "behavior.functional_hypothesis",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "behavior.intervention",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "behavior.baseline",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "behavior.monitoring",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "measurement.task",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "measurement.score_type",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "measurement.instrument",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "measurement.administration",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "measurement.value",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "measurement.unit",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "measurement.observed_on",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "measurement.context",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "measurement.reporting_period_start",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "measurement.reporting_period_end",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        }
+      ],
+      "allowAdditionalPackFacts": true,
+      "checklistSemantics": {
+        "completeForDeclaredKnownFactTypes": true,
+        "notRequiredUnlessConditionalRequirementActive": true,
+        "allowAdditionalPackFactsMeansCatalogExtensionNotChecklistCompleteness": true
+      }
+    },
+    {
+      "id": "transition_plan",
+      "label": "Transition planning record",
+      "family": "plan",
+      "subtypes": [],
+      "recognitionHints": [],
+      "dateRoles": [
+        "document_date",
+        "event_date",
+        "effective_period",
+        "observation_date"
+      ],
+      "authorityRole": "classify_from_evidence_not_document_type_alone",
+      "lineageReferences": [
+        "iep_reference"
+      ],
+      "checklist": [
+        {
+          "factTypeId": "document.title",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.subtype",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.effective_start",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.effective_end",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.author_role",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.reference",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.amendment_scope",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.name",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.birth_date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.grade",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.school",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.district",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.identifier",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "transition.postsecondary_goal",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "transition.service",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "transition.assessment",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "transition.student_input",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "assessment.area",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "assessment.instrument",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "assessment.observation",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "assessment.result",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "assessment.finding",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "assessment.identified_need",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "assessment.not_identified_need",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "assessment.recommendation",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "assessment.date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        }
+      ],
+      "allowAdditionalPackFacts": true,
+      "checklistSemantics": {
+        "completeForDeclaredKnownFactTypes": true,
+        "notRequiredUnlessConditionalRequirementActive": true,
+        "allowAdditionalPackFactsMeansCatalogExtensionNotChecklistCompleteness": true
+      }
+    },
+    {
+      "id": "placement_record",
+      "label": "Placement and participation record",
+      "family": "plan",
+      "subtypes": [],
+      "recognitionHints": [],
+      "dateRoles": [
+        "document_date",
+        "event_date",
+        "effective_period",
+        "observation_date"
+      ],
+      "authorityRole": "classify_from_evidence_not_document_type_alone",
+      "lineageReferences": [
+        "iep_reference"
+      ],
+      "checklist": [
+        {
+          "factTypeId": "document.title",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.subtype",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.effective_start",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.effective_end",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.author_role",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.reference",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.amendment_scope",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.name",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.birth_date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.grade",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.school",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.district",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.identifier",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "placement.setting",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "placement.extent",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "placement.reason",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "placement.start_date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "participation.assessment_type",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "participation.accommodation",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "participation.alternate_assessment",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "participation.nonparticipation_explanation",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "service.type",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "service.category",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "service.minutes_per_week",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "service.minutes_per_session",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "service.sessions_per_week",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "service.frequency_text",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "service.duration_text",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "service.location",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "service.provider_role",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "service.start_date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "service.end_date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        }
+      ],
+      "allowAdditionalPackFacts": true,
+      "checklistSemantics": {
+        "completeForDeclaredKnownFactTypes": true,
+        "notRequiredUnlessConditionalRequirementActive": true,
+        "allowAdditionalPackFactsMeansCatalogExtensionNotChecklistCompleteness": true
+      }
+    },
+    {
+      "id": "reevaluation_report",
+      "label": "Reevaluation report",
+      "family": "evaluation",
+      "subtypes": [],
+      "recognitionHints": [],
+      "dateRoles": [
+        "document_date",
+        "event_date",
+        "effective_period",
+        "observation_date"
+      ],
+      "authorityRole": "classify_from_evidence_not_document_type_alone",
+      "lineageReferences": [
+        "prior_evaluation"
+      ],
+      "checklist": [
+        {
+          "factTypeId": "document.title",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.subtype",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.effective_start",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.effective_end",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.author_role",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.reference",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.amendment_scope",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.name",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.birth_date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.grade",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.school",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.district",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.identifier",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "assessment.area",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "assessment.instrument",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "assessment.observation",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "assessment.result",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "assessment.finding",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "assessment.identified_need",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "assessment.not_identified_need",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "assessment.recommendation",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "assessment.date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "measurement.task",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "measurement.score_type",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "measurement.instrument",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "measurement.administration",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "measurement.value",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "measurement.unit",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "measurement.observed_on",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "measurement.context",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "measurement.reporting_period_start",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "measurement.reporting_period_end",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "eligibility.decision",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "eligibility.category",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "eligibility.basis",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "eligibility.determination_date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.lineage_reference",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.lineage_reference_role",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        }
+      ],
+      "allowAdditionalPackFacts": true,
+      "checklistSemantics": {
+        "completeForDeclaredKnownFactTypes": true,
+        "notRequiredUnlessConditionalRequirementActive": true,
+        "allowAdditionalPackFactsMeansCatalogExtensionNotChecklistCompleteness": true
+      }
+    },
+    {
+      "id": "other",
+      "label": "Other special education record",
+      "family": "other",
+      "subtypes": [],
+      "recognitionHints": [
+        "special education"
+      ],
+      "dateRoles": [
+        "document_date",
+        "event_date",
+        "effective_period",
+        "observation_date"
+      ],
+      "authorityRole": "classify_from_evidence_not_document_type_alone",
+      "lineageReferences": [],
+      "checklist": [
+        {
+          "factTypeId": "document.title",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.subtype",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.effective_start",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.effective_end",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.author_role",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.reference",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "document.amendment_scope",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.name",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.birth_date",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.grade",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.school",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.district",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        },
+        {
+          "factTypeId": "student.identifier",
+          "mode": "extract_if_observed",
+          "repeatable": true
+        }
+      ],
+      "allowAdditionalPackFacts": true,
+      "checklistSemantics": {
+        "completeForDeclaredKnownFactTypes": true,
+        "notRequiredUnlessConditionalRequirementActive": true,
+        "allowAdditionalPackFactsMeansCatalogExtensionNotChecklistCompleteness": true
+      }
+    }
+  ],
+  "classificationPolicy": {
+    "doNotUseDefaultDatesAsEvidence": true,
+    "onUnknown": "unclassified_with_review",
+    "documentSubtypeFromEvidence": true,
+    "classificationEvidenceRequiredWhenObservable": true
+  },
+  "checklistPolicy": {
+    "notMentionedDoesNotMeanMissing": true,
+    "factsDefinedOnce": true,
+    "checklistScope": "per_document",
+    "extractAllObservableApplicableFields": true,
+    "additionalFactsAreNotProofOfCoverage": true,
+    "knownObservedFieldsMustHaveChecklistEntries": true
+  }
+}

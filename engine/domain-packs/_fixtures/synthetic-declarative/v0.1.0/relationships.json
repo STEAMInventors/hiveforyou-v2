@@ -1,0 +1,13 @@
+{
+  "version": "0.1.0",
+  "relationships": [
+    {
+      "id": "restates",
+      "from": ["entity.name"],
+      "to": ["entity.name"],
+      "primitive": "matches",
+      "require": ["same_subject"],
+      "onUncertain": "possiblySame"
+    }
+  ]
+}

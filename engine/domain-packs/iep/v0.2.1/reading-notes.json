@@ -1,0 +1,47 @@
+{
+  "version": "0.2.1",
+  "global": [
+    "Read each document separately, with its own page evidence.",
+    "Extract every observable applicable checklist fact, regardless of user intent.",
+    "Never turn assessed areas into identified needs without explicit support.",
+    "Preserve negative findings; do not infer missing information from silence alone.",
+    "Keep observed measurements distinct from targets, baselines and planned services.",
+    "Do not invent dates, people, document IDs or repeated-row identity.",
+    "Never use the case manifest as evidence for the current-document extraction.",
+    "An observed concern or assessed area does not itself establish an identified need.",
+    "Capture referral observations, future parent-input plans, and next steps separately from documented parent input.",
+    "Capture evaluation-plan information available and information to gather as separate repeated source rows.",
+    "Link document references as evidence-backed proposals; never fabricate target document identities.",
+    "Goal baseline is a plan value, not a second post-baseline progress measurement; restated sources remain separate.",
+    "Do not infer a conflict without overlapping time and same resolved property; unknown timing stays unresolved."
+  ],
+  "documentSpecific": {
+    "iep_initial": [
+      "Read every goal/service/accommodation row and effective date, including repeated entries."
+    ],
+    "iep_annual": [
+      "Capture prior-plan references and preserve effective periods."
+    ],
+    "iep_amendment": [
+      "Extract target plan and exactly which lines changed; do not replace unrelated items."
+    ],
+    "progress_report": [
+      "Extract each actual dated result and goal reference; do not infer improvement without compatible series."
+    ],
+    "academic_evaluation": [
+      "Separate assessed area, finding, explicit need and recommendation."
+    ],
+    "psychoeducational_evaluation": [
+      "Functional cognitive observations are not automatically identified special-education needs."
+    ],
+    "speech_language_evaluation": [
+      "Explicit negative findings remain negative; no diagnosis must not be rewritten as a need."
+    ],
+    "referral": [
+      "Read narrative details and parent input planning when explicitly present; distinguish planned from received input."
+    ],
+    "evaluation_plan": [
+      "Extract each information-available and information-to-gather row separately and keep consent-required text distinct from actual consent."
+    ]
+  }
+}

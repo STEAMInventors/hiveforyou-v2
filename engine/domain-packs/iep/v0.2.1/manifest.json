@@ -1,0 +1,32 @@
+{
+  "id": "iep",
+  "name": "Special Education / IEP",
+  "packVersion": "0.2.1-draft",
+  "contractVersion": "domain-pack-declarative/0.2",
+  "status": "review_only_not_registered",
+  "schemaSections": [
+    "audience",
+    "document-types",
+    "fact-types",
+    "requirements",
+    "insight-checks",
+    "plain-explainers",
+    "reading-notes",
+    "vocabulary",
+    "reference-tables"
+  ],
+  "additionalDefinitions": [
+    "relationships"
+  ],
+  "runtimeCompatibility": "NOT_COMPATIBLE_WITH_EXISTING_DOMAINPACK_TYPES_UNTIL_GENERIC_ADAPTER_APPROVED",
+  "safety": {
+    "packContainsNoExecutableCallbacks": true,
+    "modelProposesCodeValidates": true,
+    "noChipNoClaim": true,
+    "noValidatedClaimNoNarrative": true,
+    "oneDocumentPerExtractionCall": true,
+    "noDomainBranchesInCore": true
+  },
+  "basedOn": "v0.2 baseline plus L001 audit review",
+  "audit": "L001 static-coverage corrections only; runtime and semantic behavior untested"
+}

@@ -54,6 +54,10 @@ const FORBIDDEN_PROP_KEYS = new Set([
 ]);
 
 const CUSTOMER_ONLY: HiveUiComponentType[] = [
+  "LivingCaseChapter",
+  "ReportHeader",
+  "BriefInsights",
+  "ExpandableFacts",
   "StorySection",
   "Timeline",
   "ChangePair",
@@ -85,8 +89,23 @@ const PRO_SECTION_CHILD_TYPES: Record<HiveUiProSectionKey, HiveUiComponentType[]
   measurement_series: ["MeasurementCard"],
 };
 
+const LIVING_CASE_CHAPTER_CHILDREN: HiveUiComponentType[] = [
+  "ReportHeader",
+  "BriefInsights",
+  "ExpandableFacts",
+  "StorySection",
+  "ChangesSection",
+  "SupportsSection",
+  "OpenQuestions",
+  "Timeline",
+];
+
 const ALLOWED_CHILDREN: Partial<Record<HiveUiComponentType, HiveUiComponentType[]>> = {
   ReportRoot: [
+    "LivingCaseChapter",
+    "ReportHeader",
+    "BriefInsights",
+    "ExpandableFacts",
     "StorySection",
     "ChangesSection",
     "SupportsSection",
@@ -94,6 +113,8 @@ const ALLOWED_CHILDREN: Partial<Record<HiveUiComponentType, HiveUiComponentType[
     "Timeline",
     "ProSection",
   ],
+  LivingCaseChapter: LIVING_CASE_CHAPTER_CHILDREN,
+  ExpandableFacts: ["FactRow", "EvidenceChip"],
   StorySection: ["FactRow", "EvidenceChip"],
   ChangesSection: ["ChangePair"],
   SupportsSection: ["SupportPair"],
@@ -503,6 +524,33 @@ function validateElementSemantics(
         throw new HiveUiTreeValidationError(
           `Element ${elementKey} references unknown export table index ${props.tableIndex}`,
         );
+      }
+      break;
+    }
+    case "LivingCaseChapter":
+    case "ReportHeader":
+      break;
+    case "BriefInsights": {
+      if (projection.audience !== "customer") {
+        throw new HiveUiTreeValidationError(`BriefInsights requires customer projection`);
+      }
+      const props = element.props as { claimRefs: { fieldKey: string }[] };
+      for (const claimRef of props.claimRefs) {
+        assertClaimRefExists(chipIndex, claimRef);
+        assertFactClaimInProjection(projection, claimRef, elementKey);
+        assertEvidenceForFactRow(projection, claimRef, elementKey);
+      }
+      break;
+    }
+    case "ExpandableFacts": {
+      if (projection.audience !== "customer") {
+        throw new HiveUiTreeValidationError(`ExpandableFacts requires customer projection`);
+      }
+      const props = element.props as { toggleClaimRef?: { fieldKey: string } };
+      if (props.toggleClaimRef) {
+        assertClaimRefExists(chipIndex, props.toggleClaimRef);
+        assertFactClaimInProjection(projection, props.toggleClaimRef, elementKey);
+        assertEvidenceForFactRow(projection, props.toggleClaimRef, elementKey);
       }
       break;
     }

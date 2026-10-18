@@ -15,17 +15,13 @@ import {
   buildHiveReportPreviewHref,
 } from "@/lib/intake/study-completion-navigation";
 
-import { CanonicalStudyCustomerReportView } from "./CanonicalStudyCustomerReportView";
-import { CanonicalStudyProReportView } from "./CanonicalStudyProReportView";
 import { HiveCustomerShell } from "./HiveCustomerShell";
 
-type ReportLayoutMode = "deterministic" | "writer";
-
-type CanonicalStudyReportPreviewPayload = CanonicalStudyReportProjection & {
+type CanonicalStudyReportPayload = CanonicalStudyReportProjection & {
   hiveUiTree?: HiveUiTree | null;
 };
 
-type WriterUiTreePreviewPayload = {
+type WriterUiTreePayload = {
   layout: "writer" | "deterministic_fallback";
   hiveUiTree: HiveUiTree | null;
   fallbackReason: {
@@ -94,37 +90,6 @@ function AudienceToggle({
   );
 }
 
-function LayoutToggle({
-  layoutMode,
-  onChange,
-}: {
-  layoutMode: ReportLayoutMode;
-  onChange: (mode: ReportLayoutMode) => void;
-}) {
-  return (
-    <div className="hir-reports-seg" role="tablist" aria-label="Report layout source">
-      <button
-        type="button"
-        role="tab"
-        aria-selected={layoutMode === "writer"}
-        className="hir-reports-seg__option"
-        onClick={() => onChange("writer")}
-      >
-        Report layout
-      </button>
-      <button
-        type="button"
-        role="tab"
-        aria-selected={layoutMode === "deterministic"}
-        className="hir-reports-seg__option"
-        onClick={() => onChange("deterministic")}
-      >
-        Code-built layout
-      </button>
-    </div>
-  );
-}
-
 function InternalPreviewBanner({
   projection,
 }: {
@@ -144,75 +109,11 @@ function InternalPreviewBanner({
         Pack approval: {projection.packApprovalLabel}. Customer/Pro reports permitted:{" "}
         {projection.customerProReportsPermitted ? "yes" : "no"}.
       </p>
-      <p className="mt-1 font-medium">Layout comparison is internal-only. Writer output is never published here.</p>
     </div>
   );
 }
 
-function WriterFallbackBanner({ message }: { message: string }) {
-  return (
-    <div
-      className="mb-4 rounded-xl border border-sky-300 bg-sky-50 px-4 py-3 text-sm text-sky-950"
-      role="status"
-      data-testid="writer-layout-fallback-banner"
-    >
-      <p className="font-semibold">Showing code-built layout (Writer fallback)</p>
-      <p className="mt-1">{message}</p>
-    </div>
-  );
-}
-
-function WriterStatusPanel({
-  writerPreview,
-  generation,
-}: {
-  writerPreview: WriterUiTreePreviewPayload | null;
-  generation: HiveWriterShadowDiagnostic | null;
-}) {
-  const status = generation?.status ?? writerPreview?.shadowStatus ?? "—";
-  const validation = generation?.validation ?? writerPreview?.validation;
-  const inflight = isWriterInFlight(status);
-  return (
-    <div
-      className={`hir-writer-status mb-6 ${inflight ? "hir-writer-status--inflight" : ""}`}
-      data-testid="writer-layout-status"
-    >
-      <p className="font-semibold text-[var(--hir-text)]">Report generation</p>
-      {isWriterInFlight(status) ? (
-        <p className="mt-1 text-customerHive-on-surface-muted" data-testid="writer-layout-inflight">
-          {status === "queued" ? "Queued for the worker." : "Worker is generating the Writer layout."}
-        </p>
-      ) : null}
-      <p className="mt-1 text-customerHive-on-surface-muted">
-        Shadow status: <span className="font-mono">{status}</span>
-        {writerPreview?.idempotencyKey ? (
-          <>
-            {" "}
-            · idempotency{" "}
-            <span className="font-mono text-xs">{writerPreview.idempotencyKey.slice(0, 12)}…</span>
-          </>
-        ) : null}
-      </p>
-      {validation ? (
-        <p className="mt-1 text-customerHive-on-surface-muted">
-          Validation: {validation.ok ? "ok" : "failed"}
-          {!validation.ok && validation.errorCodes.length > 0 ? (
-            <> ({validation.errorCodes.join(", ")})</>
-          ) : null}
-          {validation.message ? <> — {validation.message}</> : null}
-        </p>
-      ) : null}
-      {generation?.observability.modelIdentifier ? (
-        <p className="mt-1 font-mono text-xs text-customerHive-on-surface-muted">
-          model={generation.observability.modelIdentifier} ·{" "}
-          {generation.observability.durationMs}ms
-        </p>
-      ) : null}
-    </div>
-  );
-}
-
-export function CanonicalStudyReportPreviewExperience({
+export function CanonicalStudyLivingCaseExperience({
   caseId,
   studyRunId,
   initialAudience,
@@ -222,10 +123,9 @@ export function CanonicalStudyReportPreviewExperience({
   initialAudience: CanonicalStudyReportAudience;
 }) {
   const [audience, setAudience] = useState<CanonicalStudyReportAudience>(initialAudience);
-  const [layoutMode, setLayoutMode] = useState<ReportLayoutMode>("writer");
-  const [projection, setProjection] = useState<CanonicalStudyReportPreviewPayload | null>(null);
+  const [projection, setProjection] = useState<CanonicalStudyReportPayload | null>(null);
   const [deterministicHiveUiTree, setDeterministicHiveUiTree] = useState<HiveUiTree | null>(null);
-  const [writerPreview, setWriterPreview] = useState<WriterUiTreePreviewPayload | null>(null);
+  const [writerPreview, setWriterPreview] = useState<WriterUiTreePayload | null>(null);
   const [writerPreviewLoading, setWriterPreviewLoading] = useState(false);
   const [generation, setGeneration] = useState<HiveWriterShadowDiagnostic | null>(null);
   const [generating, setGenerating] = useState(false);
@@ -258,14 +158,14 @@ export function CanonicalStudyReportPreviewExperience({
       const response = await fetch(
         `/api/case/${encodeURIComponent(caseId)}/canonical-report?studyRunId=${encodeURIComponent(studyRunId)}&audience=${encodeURIComponent(audience)}`,
       );
-      const payload = (await response.json()) as CanonicalStudyReportPreviewPayload & {
+      const payload = (await response.json()) as CanonicalStudyReportPayload & {
         error?: string;
         message?: string;
       };
       if (!response.ok) {
         setProjection(null);
         setDeterministicHiveUiTree(null);
-        setError(payload.message ?? payload.error ?? "Could not load report preview.");
+        setError(payload.message ?? payload.error ?? "Could not load report.");
         return;
       }
       setProjection(payload);
@@ -273,7 +173,7 @@ export function CanonicalStudyReportPreviewExperience({
     } catch {
       setProjection(null);
       setDeterministicHiveUiTree(null);
-      setError("Network error while loading report preview.");
+      setError("Network error while loading report.");
     } finally {
       setLoading(false);
     }
@@ -288,7 +188,7 @@ export function CanonicalStudyReportPreviewExperience({
       const response = await fetch(
         `/api/case/${encodeURIComponent(caseId)}/hive-writer-shadow/ui-tree?studyRunId=${encodeURIComponent(studyRunId)}&audience=${encodeURIComponent(audience)}`,
       );
-      const payload = (await response.json()) as WriterUiTreePreviewPayload & {
+      const payload = (await response.json()) as WriterUiTreePayload & {
         error?: string;
         message?: string;
       };
@@ -340,7 +240,7 @@ export function CanonicalStudyReportPreviewExperience({
     [audience, caseId, studyRunId],
   );
 
-  const generateWriterLayout = useCallback(async () => {
+  const generateCanonicalReport = useCallback(async () => {
     if (!studyRunId.trim() || generating || generatingRef.current) {
       return;
     }
@@ -349,7 +249,6 @@ export function CanonicalStudyReportPreviewExperience({
     requestSerial.current = serial;
     setGenerating(true);
     setError(null);
-    setWriterPreview(null);
     try {
       const response = await fetch(
         `/api/case/${encodeURIComponent(caseId)}/hive-writer-shadow/run`,
@@ -367,11 +266,10 @@ export function CanonicalStudyReportPreviewExperience({
         return;
       }
       if (!response.ok) {
-        setError(payload.message ?? payload.error ?? "Writer generation failed.");
+        setError(payload.message ?? payload.error ?? "Report generation failed.");
         return;
       }
       setGeneration(payload);
-      setLayoutMode("writer");
       let terminal = payload;
       if (isWriterInFlight(payload.status)) {
         const polled = await pollWriterStatus(serial, payload.writerRunId);
@@ -379,7 +277,7 @@ export function CanonicalStudyReportPreviewExperience({
           return;
         }
         if (!polled) {
-          setError("Writer layout is still queued. Try again shortly.");
+          setError("Report generation is still running. Refresh shortly.");
           return;
         }
         terminal = polled;
@@ -394,9 +292,12 @@ export function CanonicalStudyReportPreviewExperience({
       ) {
         await loadWriterPreview();
       }
+      if (terminal.status === "rejected" || terminal.status === "failed") {
+        setError(terminal.validation.message ?? "Report generation did not succeed. You can try again.");
+      }
     } catch {
       if (requestSerial.current === serial) {
-        setError("Network error while generating Writer layout.");
+        setError("Network error while generating report.");
       }
     } finally {
       generatingRef.current = false;
@@ -410,21 +311,17 @@ export function CanonicalStudyReportPreviewExperience({
   );
 
   const activeTree = useMemo(() => {
-    if (layoutMode === "deterministic") {
-      return deterministicHiveUiTree;
-    }
     if (writerPreview?.layout === "writer" && writerPreview.hiveUiTree) {
       return writerPreview.hiveUiTree;
     }
     return deterministicHiveUiTree;
-  }, [deterministicHiveUiTree, layoutMode, writerPreview]);
+  }, [deterministicHiveUiTree, writerPreview]);
 
-  const showWriterFallback =
-    layoutMode === "writer" &&
-    writerPreview != null &&
-    writerPreview.layout === "deterministic_fallback" &&
-    writerPreview.fallbackReason?.code !== "WRITER_IN_FLIGHT" &&
-    !isWriterInFlight(generation?.status ?? "");
+  const writerRunId = generation?.writerRunId ?? null;
+  const inflight = isWriterInFlight(generation?.status ?? writerPreview?.shadowStatus ?? "");
+
+  const generateLabel =
+    audience === "pro" ? "Generate Pro report" : "Generate Canonical Report";
 
   return (
     <HiveCustomerShell
@@ -437,30 +334,15 @@ export function CanonicalStudyReportPreviewExperience({
       }}
     >
       <div className="mx-auto w-full max-w-[1160px] px-4 py-8 md:px-8 md:py-10">
-        <header className="mb-8 flex flex-col gap-6">
-          <div className="flex flex-col gap-2">
-            <h1
-              className="m-0 font-[family-name:var(--font-outfit)] text-[1.75rem] font-semibold leading-tight tracking-[-0.02em] text-customerHive-on-surface md:text-[2rem]"
-              style={{ fontFamily: "var(--font-outfit), system-ui, sans-serif" }}
-            >
-              Reports come from your study
-            </h1>
-            <p className="m-0 max-w-[640px] text-base leading-relaxed text-customerHive-on-surface-variant">
-              Each report is composed from your accepted Canonical Study. Opening a report never
-              changes it; generating creates a new Writer run with its own layout.
-            </p>
-          </div>
+        <header className="mb-6 flex flex-col gap-4">
           <div className="flex flex-wrap items-center gap-3">
             <AudienceToggle audience={audience} caseId={caseId} studyRunId={studyRunId} />
-            {projection && projection.presentationMode !== "approved" ? (
-              <LayoutToggle layoutMode={layoutMode} onChange={setLayoutMode} />
-            ) : null}
             <button
               type="button"
               className="hir-btn-primary"
               disabled={generating || !studyRunId.trim()}
-              onClick={() => void generateWriterLayout()}
-              data-testid="generate-writer-layout"
+              onClick={() => void generateCanonicalReport()}
+              data-testid="generate-canonical-report"
             >
               {generating
                 ? generation?.status === "queued"
@@ -468,52 +350,76 @@ export function CanonicalStudyReportPreviewExperience({
                   : generation?.status === "processing"
                     ? "Report processing…"
                     : "Generating report…"
-                : audience === "pro"
-                  ? "Generate Pro report"
-                  : "Generate Customer report"}
+                : generateLabel}
             </button>
             <Link href={jsonHref} className="hir-btn-secondary">
               Canonical JSON
             </Link>
           </div>
-          <p className="m-0 font-mono text-xs text-customerHive-on-surface-muted">
-            studyRunId={studyRunId || "—"}
-          </p>
+          {writerRunId ? (
+            <p className="m-0 font-mono text-xs text-customerHive-on-surface-muted">
+              studyRunId={studyRunId} · writerRunId={writerRunId}
+            </p>
+          ) : (
+            <p className="m-0 font-mono text-xs text-customerHive-on-surface-muted">
+              studyRunId={studyRunId || "—"}
+            </p>
+          )}
         </header>
 
         {loading ? (
-          <p className="text-sm text-customerHive-on-surface-muted">Loading report preview…</p>
+          <p className="text-sm text-customerHive-on-surface-muted" role="status">
+            Loading report…
+          </p>
         ) : null}
-        {writerPreviewLoading && layoutMode === "writer" ? (
-          <p className="mb-2 text-sm text-customerHive-on-surface-muted">Loading Writer layout…</p>
+        {writerPreviewLoading && !activeTree ? (
+          <p className="mb-2 text-sm text-customerHive-on-surface-muted" role="status">
+            Loading saved report layout…
+          </p>
+        ) : null}
+        {inflight ? (
+          <p className="mb-4 text-sm text-customerHive-on-surface-muted" data-testid="writer-layout-inflight">
+            Report generation in progress…
+          </p>
         ) : null}
         {error ? (
-          <p className="text-sm text-red-700" role="alert">
+          <p className="mb-4 text-sm text-red-700" role="alert">
             {error}
           </p>
         ) : null}
         {projection ? (
           <>
             <InternalPreviewBanner projection={projection} />
-            {layoutMode === "writer" &&
-            (writerPreviewLoading ||
-              generation ||
-              (writerPreview && writerPreview.shadowStatus !== "missing")) ? (
-              <WriterStatusPanel writerPreview={writerPreview} generation={generation} />
-            ) : null}
-            {showWriterFallback && writerPreview?.fallbackReason ? (
-              <WriterFallbackBanner message={writerPreview.fallbackReason.message} />
-            ) : null}
             {activeTree ? (
-              <HiveUiRenderer projection={projection} tree={activeTree} />
-            ) : projection.audience === "customer" ? (
-              <CanonicalStudyCustomerReportView body={projection.body} />
-            ) : (
-              <CanonicalStudyProReportView
-                body={projection.body}
+              <HiveUiRenderer
+                projection={projection}
+                tree={activeTree}
                 studyRunId={studyRunId}
-                exportPermitted={projection.presentationMode === "approved"}
+                presentation={audience === "customer" ? "living-case" : "legacy"}
               />
+            ) : (
+              <div
+                className="rounded-2xl border border-[var(--hir-border)] bg-white px-6 py-10 md:px-10"
+                data-testid="living-case-empty"
+              >
+                <h2 className="m-0 font-[family-name:var(--font-outfit)] text-2xl font-semibold text-customerHive-on-surface">
+                  {audience === "pro"
+                    ? "No Pro report for this study yet"
+                    : "No Canonical Report for this study yet"}
+                </h2>
+                <p className="mt-2 max-w-xl text-base text-customerHive-on-surface-variant">
+                  Generate a report when you are ready. Refreshing this page will not start a new
+                  run unless you choose Generate again.
+                </p>
+                <button
+                  type="button"
+                  className="hir-btn-primary mt-6"
+                  disabled={generating || !studyRunId.trim()}
+                  onClick={() => void generateCanonicalReport()}
+                >
+                  {generateLabel}
+                </button>
+              </div>
             )}
           </>
         ) : null}
@@ -521,3 +427,6 @@ export function CanonicalStudyReportPreviewExperience({
     </HiveCustomerShell>
   );
 }
+
+/** @deprecated Use CanonicalStudyLivingCaseExperience */
+export const CanonicalStudyReportPreviewExperience = CanonicalStudyLivingCaseExperience;

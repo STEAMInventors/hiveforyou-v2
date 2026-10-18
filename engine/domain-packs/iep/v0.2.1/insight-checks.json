@@ -1,0 +1,302 @@
+{
+  "version": "0.2.1",
+  "insightChecks": [
+    {
+      "id": "iep.need_without_goal",
+      "primitive": "missing",
+      "inputs": [
+        "assessment.identified_need",
+        "goal.statement"
+      ],
+      "preconditions": [
+        "explicit_need",
+        "resolved_subject",
+        "applicable_plan",
+        "sufficient_goal_coverage"
+      ],
+      "unknownOutcome": "no_public_finding",
+      "failedParserOutcome": "diagnostic_only",
+      "requireBothSidedEvidence": false,
+      "absenceRequiresCoverage": true,
+      "questionTemplate": "What goal, if any, addresses the need described in the evaluation?",
+      "templateSlots": [],
+      "isLegalVerdict": false,
+      "preconditionPolicy": {
+        "allOperandsTypedAndBound": true,
+        "unknownMeansNoPublicFinding": true,
+        "unresolvedTemporalOrIdentityMeansNoPublicFinding": true,
+        "neverTreatParserFailureAsMissingFact": true
+      }
+    },
+    {
+      "id": "iep.goal_without_present_level",
+      "primitive": "missing",
+      "inputs": [
+        "goal.area",
+        "present_level.area"
+      ],
+      "preconditions": [
+        "resolved_plan",
+        "compatible_area",
+        "complete_plan_page_review",
+        "linked_present_level_and_goal_scopes_reviewed"
+      ],
+      "unknownOutcome": "no_public_finding",
+      "failedParserOutcome": "diagnostic_only",
+      "requireBothSidedEvidence": false,
+      "absenceRequiresCoverage": true,
+      "questionTemplate": "Where is the present-level description supporting this goal?",
+      "templateSlots": [],
+      "isLegalVerdict": false,
+      "preconditionPolicy": {
+        "allOperandsTypedAndBound": true,
+        "unknownMeansNoPublicFinding": true,
+        "unresolvedTemporalOrIdentityMeansNoPublicFinding": true,
+        "neverTreatParserFailureAsMissingFact": true
+      }
+    },
+    {
+      "id": "iep.progress_against_target",
+      "primitive": "series",
+      "inputs": [
+        "measurement.value",
+        "measurement.observed_on",
+        "goal.target_value"
+      ],
+      "preconditions": [
+        "post_baseline_measurement",
+        "same_measure_task_unit",
+        "valid_time_order"
+      ],
+      "unknownOutcome": "no_public_finding",
+      "failedParserOutcome": "diagnostic_only",
+      "requireBothSidedEvidence": false,
+      "absenceRequiresCoverage": false,
+      "questionTemplate": "How do the documented progress results compare with the goal target?",
+      "templateSlots": [],
+      "isLegalVerdict": false,
+      "preconditionPolicy": {
+        "allOperandsTypedAndBound": true,
+        "unknownMeansNoPublicFinding": true,
+        "unresolvedTemporalOrIdentityMeansNoPublicFinding": true,
+        "neverTreatParserFailureAsMissingFact": true
+      }
+    },
+    {
+      "id": "iep.reevaluation_timing",
+      "primitive": "ageOnDate",
+      "inputs": [
+        "assessment.date",
+        "document.date"
+      ],
+      "preconditions": [
+        "comparison_end_date",
+        "applicable_jurisdiction_rule",
+        "relevant_reevaluation_start",
+        "verified_comparison_end_as_of",
+        "exceptions_and_agreements_checked"
+      ],
+      "unknownOutcome": "no_public_finding",
+      "failedParserOutcome": "diagnostic_only",
+      "requireBothSidedEvidence": false,
+      "absenceRequiresCoverage": false,
+      "questionTemplate": "What is the status of the next reevaluation?",
+      "templateSlots": [],
+      "isLegalVerdict": false,
+      "preconditionPolicy": {
+        "allOperandsTypedAndBound": true,
+        "unknownMeansNoPublicFinding": true,
+        "unresolvedTemporalOrIdentityMeansNoPublicFinding": true,
+        "neverTreatParserFailureAsMissingFact": true
+      },
+      "requiresSourcedReferenceRule": true
+    },
+    {
+      "id": "iep.service_frequency_interpretation",
+      "primitive": "ratePerWeek",
+      "inputs": [
+        "service.frequency_text"
+      ],
+      "preconditions": [
+        "verified_quantity_and_period",
+        "supported_unit_normalization"
+      ],
+      "unknownOutcome": "no_public_finding",
+      "failedParserOutcome": "diagnostic_only",
+      "requireBothSidedEvidence": false,
+      "absenceRequiresCoverage": false,
+      "questionTemplate": "How is the service frequency specified?",
+      "templateSlots": [],
+      "isLegalVerdict": false,
+      "preconditionPolicy": {
+        "allOperandsTypedAndBound": true,
+        "unknownMeansNoPublicFinding": true,
+        "unresolvedTemporalOrIdentityMeansNoPublicFinding": true,
+        "neverTreatParserFailureAsMissingFact": true
+      }
+    },
+    {
+      "id": "iep.accommodation_alignment",
+      "primitive": "missing",
+      "inputs": [
+        "accommodation.description",
+        "participation.accommodation"
+      ],
+      "preconditions": [
+        "compatible_assessment_context",
+        "covered_both_sections"
+      ],
+      "unknownOutcome": "no_public_finding",
+      "failedParserOutcome": "diagnostic_only",
+      "requireBothSidedEvidence": false,
+      "absenceRequiresCoverage": true,
+      "questionTemplate": "How is this accommodation reflected in the assessment participation section?",
+      "templateSlots": [],
+      "isLegalVerdict": false,
+      "preconditionPolicy": {
+        "allOperandsTypedAndBound": true,
+        "unknownMeansNoPublicFinding": true,
+        "unresolvedTemporalOrIdentityMeansNoPublicFinding": true,
+        "neverTreatParserFailureAsMissingFact": true
+      }
+    },
+    {
+      "id": "iep.goal_measurement_details",
+      "primitive": "missing",
+      "inputs": [
+        "goal.statement",
+        "goal.measurement_method"
+      ],
+      "preconditions": [
+        "goal_identity_resolved",
+        "complete_goal_section_review"
+      ],
+      "unknownOutcome": "no_public_finding",
+      "failedParserOutcome": "diagnostic_only",
+      "requireBothSidedEvidence": false,
+      "absenceRequiresCoverage": true,
+      "questionTemplate": "How will progress toward this goal be measured?",
+      "templateSlots": [],
+      "isLegalVerdict": false,
+      "preconditionPolicy": {
+        "allOperandsTypedAndBound": true,
+        "unknownMeansNoPublicFinding": true,
+        "unresolvedTemporalOrIdentityMeansNoPublicFinding": true,
+        "neverTreatParserFailureAsMissingFact": true
+      }
+    },
+    {
+      "id": "iep.reported_progress_coverage",
+      "primitive": "periodCoverage",
+      "inputs": [
+        "goal.statement",
+        "progress.report_date"
+      ],
+      "preconditions": [
+        "reporting_expectation_applicable",
+        "relevant_period_defined",
+        "available_records_scope_reviewed"
+      ],
+      "unknownOutcome": "no_public_finding",
+      "failedParserOutcome": "diagnostic_only",
+      "requireBothSidedEvidence": false,
+      "absenceRequiresCoverage": true,
+      "questionTemplate": "Do the supplied records include progress reports for the expected period?",
+      "templateSlots": [],
+      "isLegalVerdict": false,
+      "preconditionPolicy": {
+        "allOperandsTypedAndBound": true,
+        "unknownMeansNoPublicFinding": true,
+        "unresolvedTemporalOrIdentityMeansNoPublicFinding": true,
+        "neverTreatParserFailureAsMissingFact": true
+      }
+    },
+    {
+      "id": "iep.service_change",
+      "primitive": "change",
+      "inputs": [
+        "service.type",
+        "service.minutes_per_week"
+      ],
+      "preconditions": [
+        "matched_service_identity",
+        "distinct_effective_periods",
+        "compatible_units"
+      ],
+      "unknownOutcome": "no_public_finding",
+      "failedParserOutcome": "diagnostic_only",
+      "requireBothSidedEvidence": true,
+      "absenceRequiresCoverage": false,
+      "questionTemplate": "The documented service schedule changed; what explains the change?",
+      "templateSlots": [],
+      "isLegalVerdict": false,
+      "preconditionPolicy": {
+        "allOperandsTypedAndBound": true,
+        "unknownMeansNoPublicFinding": true,
+        "unresolvedTemporalOrIdentityMeansNoPublicFinding": true,
+        "neverTreatParserFailureAsMissingFact": true
+      }
+    },
+    {
+      "id": "iep.measurement_conflict",
+      "primitive": "conflict",
+      "inputs": [
+        "measurement.value",
+        "measurement.score_type"
+      ],
+      "preconditions": [
+        "same_subject_measure_task",
+        "overlapping_observation_periods",
+        "compatible_units",
+        "distinct_incompatible_assertions"
+      ],
+      "unknownOutcome": "no_public_finding",
+      "failedParserOutcome": "diagnostic_only",
+      "requireBothSidedEvidence": true,
+      "absenceRequiresCoverage": false,
+      "questionTemplate": "Two supplied records report different results for the same measurement period; which should the team use?",
+      "templateSlots": [],
+      "isLegalVerdict": false,
+      "preconditionPolicy": {
+        "allOperandsTypedAndBound": true,
+        "unknownMeansNoPublicFinding": true,
+        "unresolvedTemporalOrIdentityMeansNoPublicFinding": true,
+        "neverTreatParserFailureAsMissingFact": true
+      }
+    },
+    {
+      "id": "iep.referral_parent_input_documentation",
+      "primitive": "missing",
+      "inputs": [
+        "referral.planned_parent_input",
+        "referral.concern"
+      ],
+      "preconditions": [
+        "explicit_parent_input_reference_or_applicable_sourced_requirement",
+        "reviewed_referral_scope",
+        "resolved_document_identity"
+      ],
+      "unknownOutcome": "no_public_finding",
+      "failedParserOutcome": "diagnostic_only",
+      "requireBothSidedEvidence": false,
+      "absenceRequiresCoverage": true,
+      "questionTemplate": "Do the supplied referral records include the parent input referenced in the referral?",
+      "templateSlots": [],
+      "isLegalVerdict": false,
+      "requiresActiveRequirementOrExplicitDocumentReference": true,
+      "preconditionPolicy": {
+        "allOperandsTypedAndBound": true,
+        "unknownMeansNoPublicFinding": true,
+        "unresolvedTemporalOrIdentityMeansNoPublicFinding": true,
+        "neverTreatParserFailureAsMissingFact": true
+      }
+    }
+  ],
+  "templatePolicy": {
+    "rejectUnboundPlaceholders": true,
+    "noVerdicts": true,
+    "unresolvedConditionsAreNotFindings": true,
+    "validateAllRequiredInputsBeforePublishing": true,
+    "noDiagnosticItemsAsCustomerQuestions": true
+  }
+}

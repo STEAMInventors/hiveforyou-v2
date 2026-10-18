@@ -18,6 +18,14 @@ UI reads **persisted validated intelligence**. Navigation and view changes do no
 
 See [frontend-backend-contract.md](../architecture/frontend-backend-contract.md).
 
+## Case workspace (target navigation)
+
+**Authoritative journey:** [case-workspace-journey.md](case-workspace-journey.md).
+
+Primary shell: **My Cases → Case → Documents → Canonical Study → Reports** (plus **Raw Extractions** as an in-workspace section, typically under Documents). Discover and Questions stay mandatory where the pipeline requires them, but as **in-workspace steps**—not separate top-level destinations. Canonical Study reuse and Regenerate use the **existing study idempotency fingerprint only** (no second UI diff). Failed study or report runs never replace the **accepted** study or accepted Customer/Pro report; history remains available.
+
+Milestones below (V2-001C Discover, V2-001D Questions) describe implemented flows that will fold into this workspace.
+
 ## V2-001A — Empty Upload (implemented)
 
 First customer screen: document intake **before Engine 1**. The UI must not imply analysis, classification, or case facts—only that the user may select files.

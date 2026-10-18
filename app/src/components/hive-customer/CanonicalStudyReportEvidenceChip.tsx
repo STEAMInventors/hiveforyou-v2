@@ -6,12 +6,16 @@ export function CanonicalStudyReportEvidenceChip({
   chip,
   onSelect,
   variant = "default",
+  citationNumber,
 }: {
   chip: EvidenceChipModel;
   onSelect?: (chip: EvidenceChipModel) => void;
   variant?: "default" | "inverted";
+  /** Numbered source citation (Living Case). */
+  citationNumber?: number;
 }) {
-  const label = `p.${chip.page}`;
+  const label =
+    citationNumber != null ? `${citationNumber}` : `p.${chip.page}`;
   const title = chip.quote;
   const snippet = `${chip.quote.slice(0, 48)}${chip.quote.length > 48 ? "…" : ""}`;
   const defaultClass =
@@ -30,7 +34,15 @@ export function CanonicalStudyReportEvidenceChip({
       >
         {variant === "inverted" ? (
           <>
-            <span className="hir-evidence-chip__page">{label}</span>
+            <span
+              className={
+                citationNumber != null
+                  ? "hir-evidence-chip__citation"
+                  : "hir-evidence-chip__page"
+              }
+            >
+              {label}
+            </span>
             <span className="truncate">{snippet}</span>
           </>
         ) : (
@@ -46,7 +58,13 @@ export function CanonicalStudyReportEvidenceChip({
     <span className={className} title={title} data-testid="hive-ui-evidence-chip">
       {variant === "inverted" ? (
         <>
-          <span className="hir-evidence-chip__page">{label}</span>
+          <span
+            className={
+              citationNumber != null ? "hir-evidence-chip__citation" : "hir-evidence-chip__page"
+            }
+          >
+            {label}
+          </span>
           <span className="truncate">{snippet}</span>
         </>
       ) : (

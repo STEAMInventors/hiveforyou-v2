@@ -203,21 +203,33 @@ const proLedgerTree: HiveUiTree = {
   },
 };
 
+const STUDY_RUN_ID = customerProjection.studyRunId;
+
 describe("HiveUiRenderer", () => {
   it("renders validated canonical references from the report projection", () => {
-    render(<HiveUiRenderer projection={customerProjection} tree={customerStoryTree} />);
+    render(
+      <HiveUiRenderer
+        projection={customerProjection}
+        tree={customerStoryTree}
+        studyRunId={STUDY_RUN_ID}
+      />,
+    );
 
     expect(screen.getByTestId("hive-inverted-report")).toHaveAttribute("data-audience", "customer");
     expect(screen.getByTestId("hive-ui-report-root")).toBeInTheDocument();
     expect(screen.getByTestId("hive-ui-section-section-1")).toBeInTheDocument();
     expect(screen.getAllByText("Read fluently").length).toBeGreaterThan(0);
-    expect(screen.getByText("p.1")).toBeInTheDocument();
-    expect(screen.getByText("p.2")).toBeInTheDocument();
+    expect(screen.getByText("1")).toBeInTheDocument();
+    expect(screen.getByText("2")).toBeInTheDocument();
   });
 
   it("renders different valid UI trees with different section structure", () => {
     const { rerender } = render(
-      <HiveUiRenderer projection={customerProjection} tree={customerStoryTree} />,
+      <HiveUiRenderer
+        projection={customerProjection}
+        tree={customerStoryTree}
+        studyRunId={STUDY_RUN_ID}
+      />,
     );
     expect(screen.getByTestId("hive-ui-section-section-1")).toBeInTheDocument();
     expect(screen.queryByTestId("hive-ui-section-changes")).not.toBeInTheDocument();
@@ -242,6 +254,7 @@ describe("HiveUiRenderer", () => {
           },
         }}
         tree={customerChangesTree}
+        studyRunId={STUDY_RUN_ID}
       />,
     );
 
@@ -250,7 +263,13 @@ describe("HiveUiRenderer", () => {
   });
 
   it("keeps source page references on every rendered customer fact", () => {
-    render(<HiveUiRenderer projection={customerProjection} tree={customerStoryTree} />);
+    render(
+      <HiveUiRenderer
+        projection={customerProjection}
+        tree={customerStoryTree}
+        studyRunId={STUDY_RUN_ID}
+      />,
+    );
     const factNodes = screen.getAllByTestId(/^hive-ui-fact-/);
     expect(factNodes.length).toBe(2);
     for (const factNode of factNodes) {
@@ -259,7 +278,9 @@ describe("HiveUiRenderer", () => {
   });
 
   it("renders pro Writer trees with pro section containers distinct from customer story sections", () => {
-    render(<HiveUiRenderer projection={proProjection} tree={proLedgerTree} />);
+    render(
+      <HiveUiRenderer projection={proProjection} tree={proLedgerTree} studyRunId={STUDY_RUN_ID} />,
+    );
     expect(screen.getByTestId("hive-inverted-report")).toHaveAttribute("data-audience", "pro");
     expect(screen.getByTestId("hive-ui-pro-section-entity_ledger")).toBeInTheDocument();
     expect(screen.queryByTestId("hive-ui-section-section-1")).not.toBeInTheDocument();

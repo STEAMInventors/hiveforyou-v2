@@ -6,10 +6,15 @@ import type {
   CanonicalStudyReportClaimRef,
   CanonicalStudyReportFactLine,
 } from "@hiveforyou/shared/canonical-study-report-projection";
-import type { HiveUiProSectionKey } from "@hiveforyou/shared/hive-ui-tree";
+import type {
+  HiveUiLivingCaseChapterKey,
+  HiveUiProSectionKey,
+} from "@hiveforyou/shared/hive-ui-tree";
 
 import { CanonicalStudyReportEvidenceChip } from "@/components/hive-customer/CanonicalStudyReportEvidenceChip";
 
+import { LIVING_CASE_CHAPTER_LABELS } from "./living-case-chapter-labels";
+import { useOptionalHiveUiReportEvidence } from "./hive-ui-report-evidence-context";
 import { useHiveUiReportProjection } from "./hive-ui-report-projection-context";
 import {
   resolveChangeByRelationId,
@@ -40,30 +45,60 @@ function assertionLabel(kind: CanonicalStudyReportFactLine["assertionKind"]): st
   }
 }
 
+function LivingCaseEvidenceRow({
+  fact,
+}: {
+  fact: CanonicalStudyReportFactLine;
+}) {
+  const evidenceContext = useOptionalHiveUiReportEvidence();
+  if (fact.evidence.length === 0) {
+    return null;
+  }
+  return (
+    <div className="hir-evidence-row">
+      {fact.evidence.map((chip, index) => {
+        const citationNumber = evidenceContext?.citationNumberForChip(chip);
+        return (
+          <CanonicalStudyReportEvidenceChip
+            key={`${chip.claimRef.fieldKey}-${index}`}
+            chip={chip}
+            variant="inverted"
+            citationNumber={citationNumber}
+            onSelect={evidenceContext ? () => evidenceContext.openEvidence(chip) : undefined}
+          />
+        );
+      })}
+    </div>
+  );
+}
+
 function FactLinePresentation({
   fact,
   as: Tag = "li",
+  variant = "card",
 }: {
   fact: CanonicalStudyReportFactLine;
   as?: "li" | "div";
+  variant?: "card" | "narrative";
 }) {
+  if (variant === "narrative") {
+    return (
+      <Tag
+        className="hir-narrative-block"
+        data-testid={`hive-ui-fact-${fact.claimRef.fieldKey}`}
+      >
+        <p className="hir-narrative-text">{fact.displayText}</p>
+        <LivingCaseEvidenceRow fact={fact} />
+      </Tag>
+    );
+  }
   return (
     <Tag className="hir-card hir-card--flat" data-testid={`hive-ui-fact-${fact.claimRef.fieldKey}`}>
       <p className="hir-fact-meta">
         {fact.recordTypeId}.{fact.fieldId} · {assertionLabel(fact.assertionKind)}
       </p>
       <p className="hir-fact-text">{fact.displayText}</p>
-      {fact.evidence.length > 0 ? (
-        <div className="hir-evidence-row">
-          {fact.evidence.map((chip, index) => (
-            <CanonicalStudyReportEvidenceChip
-              key={`${chip.claimRef.fieldKey}-${index}`}
-              chip={chip}
-              variant="inverted"
-            />
-          ))}
-        </div>
-      ) : null}
+      <LivingCaseEvidenceRow fact={fact} />
     </Tag>
   );
 }
@@ -86,10 +121,130 @@ const PRO_SECTION_TITLES: Record<HiveUiProSectionKey, string> = {
   measurement_series: "Measurement series",
 };
 
+const CHAPTER_ACCENT: Record<HiveUiLivingCaseChapterKey, string> = {
+  understand: "hir-chapter--understand",
+  discover: "hir-chapter--discover",
+  act: "hir-chapter--act",
+  verify: "hir-chapter--verify",
+};
+
 export const hiveUiReportComponentMap = {
   ReportRoot: ({ children }: { children?: ReactNode }) => (
     <div data-testid="hive-ui-report-root">{children}</div>
   ),
+  LivingCaseChapter: ({
+    element,
+    children,
+  }: {
+    element: { props: { chapter: HiveUiLivingCaseChapterKey } };
+    children?: ReactNode;
+  }) => {
+    const chapter = element.props.chapter;
+    return (
+      <section
+        id={`living-case-chapter-${chapter}`}
+        className={`hir-living-chapter ${CHAPTER_ACCENT[chapter]}`}
+        data-testid={`living-case-chapter-${chapter}`}
+        aria-labelledby={`living-case-chapter-heading-${chapter}`}
+      >
+        <h2
+          id={`living-case-chapter-heading-${chapter}`}
+          className="hir-living-chapter__title"
+        >
+          {LIVING_CASE_CHAPTER_LABELS[chapter]}
+        </h2>
+        <div className="hir-living-chapter__body">{children}</div>
+      </section>
+    );
+  },
+  ReportHeader: () => {
+    const projection = useHiveUiReportProjection();
+    if (projection.audience !== "customer") {
+      return null;
+    }
+    const sections = projection.body.storySections;
+    const docCount = new Set(sections.map((section) => section.sourceDocumentId)).size;
+    const headline =
+      sections[0]?.title?.trim() ||
+      (docCount > 0 ? "Your case report" : "Case report");
+    return (
+      <header className="hir-living-header" data-testid="living-case-report-header">
+        <div className="hir-living-header__marks" aria-hidden="true">
+          <span />
+          <span />
+          <span />
+          <span />
+        </div>
+        <h1 className="hir-living-header__title">{headline}</h1>
+        <p className="hir-living-header__meta">
+          Customer report · Written from {docCount || "—"} document{docCount === 1 ? "" : "s"}
+        </p>
+      </header>
+    );
+  },
+  BriefInsights: ({
+    element,
+  }: {
+    element: { props: { claimRefs: CanonicalStudyReportClaimRef[] } };
+  }) => {
+    const projection = useHiveUiReportProjection();
+    const facts = element.props.claimRefs
+      .map((claimRef) => resolveFactLineByClaimRef(projection, claimRef))
+      .filter((fact): fact is CanonicalStudyReportFactLine => fact != null);
+    if (facts.length === 0) {
+      return null;
+    }
+    const dots = ["hir-brief-dot--a", "hir-brief-dot--b", "hir-brief-dot--c"];
+    return (
+      <section className="hir-brief" data-testid="living-case-brief">
+        <p className="hir-brief__label">In brief</p>
+        <ul className="hir-brief__list">
+          {facts.map((fact, index) => (
+            <li key={fact.claimRef.fieldKey} className="hir-brief__item">
+              <span className={`hir-brief-dot ${dots[index % dots.length]}`} aria-hidden="true" />
+              <div className="hir-brief__content">
+                <p className="hir-brief__text">{fact.displayText}</p>
+                <LivingCaseEvidenceRow fact={fact} />
+              </div>
+            </li>
+          ))}
+        </ul>
+      </section>
+    );
+  },
+  ExpandableFacts: ({
+    element,
+    children,
+  }: {
+    element: { props: { toggleClaimRef?: CanonicalStudyReportClaimRef } };
+    children?: ReactNode;
+  }) => {
+    const projection = useHiveUiReportProjection();
+    const [open, setOpen] = useState(false);
+    const toggleFact = element.props.toggleClaimRef
+      ? resolveFactLineByClaimRef(projection, element.props.toggleClaimRef)
+      : null;
+    const toggleLabel = toggleFact?.displayText?.slice(0, 64) ?? "More detail";
+    return (
+      <div className="hir-expandable" data-testid="living-case-expandable">
+        {toggleFact ? (
+          <div className="hir-narrative-block">
+            <p className="hir-narrative-text">{toggleFact.displayText}</p>
+            <LivingCaseEvidenceRow fact={toggleFact} />
+          </div>
+        ) : null}
+        <button
+          type="button"
+          className="hir-expandable__toggle"
+          aria-expanded={open}
+          onClick={() => setOpen((value) => !value)}
+        >
+          {open ? "Hide supporting detail" : toggleLabel}
+        </button>
+        {open ? <div className="hir-expandable__panel">{children}</div> : null}
+      </div>
+    );
+  },
   StorySection: ({
     element,
     children,
@@ -105,21 +260,22 @@ export const hiveUiReportComponentMap = {
     const isImportant = element.props.sectionId === "__important_facts__";
     return (
       <section
+        className="hir-story-section"
         data-testid={`hive-ui-section-${element.props.sectionId}`}
         aria-labelledby={`hive-ui-section-heading-${element.props.sectionId}`}
       >
-        <h2
+        <h3
           id={`hive-ui-section-heading-${element.props.sectionId}`}
-          className={isImportant ? "hir-section-title" : "hir-section-title"}
+          className={isImportant ? "hir-section-title" : "hir-section-title hir-section-title--story"}
         >
           {section.title}
-        </h2>
+        </h3>
         {section.facts.length === 0 ? (
           <p className="text-sm text-[var(--hir-text-muted)]">
             No verified quoted facts for this document in the canonical study.
           </p>
         ) : (
-          <ul className="m-0 flex list-none flex-col gap-3 p-0">{children}</ul>
+          <ul className="hir-story-section__facts">{children}</ul>
         )}
       </section>
     );
@@ -141,7 +297,7 @@ export const hiveUiReportComponentMap = {
         </tr>
       );
     }
-    return <FactLinePresentation fact={fact} />;
+    return <FactLinePresentation fact={fact} variant="narrative" />;
   },
   ChangesSection: ({ children }: { children?: ReactNode }) => (
     <section data-testid="hive-ui-section-changes">
@@ -196,16 +352,33 @@ export const hiveUiReportComponentMap = {
       return null;
     }
     return (
-      <section data-testid="hive-ui-section-open-questions">
-        <h2 className="hir-section-title">Open questions</h2>
-        <ul className="m-0 flex list-none flex-col gap-3 p-0">
-          {questions.map((question) => (
-            <li key={question.id} className="hir-callout hir-callout--question">
-              <p className="m-0 font-semibold">{question.title}</p>
-              <p className="mb-0 mt-1">{question.detail}</p>
+      <section
+        className="hir-meeting-questions"
+        data-testid="hive-ui-section-open-questions"
+      >
+        <h3 className="hir-section-title hir-section-title--story">Questions worth asking</h3>
+        <p className="hir-meeting-questions__lead">
+          You might bring these to your next meeting.
+        </p>
+        <ol className="hir-meeting-questions__list">
+          {questions.map((question, index) => (
+            <li key={question.id} className="hir-meeting-questions__item">
+              <span className="hir-meeting-questions__index">{index + 1}</span>
+              <div>
+                <p className="hir-meeting-questions__title">{question.title}</p>
+                {question.detail ? (
+                  <p className="hir-meeting-questions__detail">{question.detail}</p>
+                ) : null}
+              </div>
             </li>
           ))}
-        </ul>
+        </ol>
+        <p
+          className="hir-meeting-questions__note"
+          data-testid="living-case-save-questions-unavailable"
+        >
+          Saving your own questions for meeting prep is not available in this release yet.
+        </p>
       </section>
     );
   },
@@ -220,7 +393,16 @@ export const hiveUiReportComponentMap = {
     if (!chip || fact?.assertionKind === "classified") {
       return null;
     }
-    return <CanonicalStudyReportEvidenceChip chip={chip} variant="inverted" />;
+    const evidenceContext = useOptionalHiveUiReportEvidence();
+    const citationNumber = evidenceContext?.citationNumberForChip(chip);
+    return (
+      <CanonicalStudyReportEvidenceChip
+        chip={chip}
+        variant="inverted"
+        citationNumber={citationNumber}
+        onSelect={evidenceContext ? () => evidenceContext.openEvidence(chip) : undefined}
+      />
+    );
   },
   MeasurementCard: ({ element }: { element: { props: { seriesId: string } } }) => {
     const projection = useHiveUiReportProjection();
@@ -245,15 +427,53 @@ export const hiveUiReportComponentMap = {
     if (sections.length === 0) {
       return null;
     }
+    const [expandedId, setExpandedId] = useState<string | null>(null);
     return (
-      <section aria-label="Document timeline" data-testid="hive-ui-section-timeline">
-        <h2 className="hir-section-title hir-section-title--group">Timeline</h2>
-        <ol className="hir-timeline">
-          {sections.map((section) => (
-            <li key={section.id} className="hir-timeline__item">
-              {section.orderingDate ?? section.title}
-            </li>
-          ))}
+      <section
+        className="hir-timeline-section"
+        aria-label="Document timeline"
+        data-testid="hive-ui-section-timeline"
+      >
+        <h3 className="hir-section-title hir-section-title--story">Connected timeline</h3>
+        <ol className="hir-timeline-connected">
+          {sections.map((section, index) => {
+            const expanded = expandedId === section.id;
+            return (
+              <li key={section.id} className="hir-timeline-connected__item">
+                <button
+                  type="button"
+                  className="hir-timeline-connected__trigger"
+                  aria-expanded={expanded}
+                  onClick={() => setExpandedId(expanded ? null : section.id)}
+                >
+                  <span className="hir-timeline-connected__index">{index + 1}</span>
+                  <span className="hir-timeline-connected__label">
+                    <span className="hir-timeline-connected__date">
+                      {section.orderingDate ?? "Date not listed"}
+                    </span>
+                    <span className="hir-timeline-connected__title">{section.title}</span>
+                  </span>
+                </button>
+                {expanded ? (
+                  <div className="hir-timeline-connected__detail">
+                    <p className="hir-timeline-connected__meta">
+                      {section.documentTypeId ?? "Document"} · {section.sourceDocumentId}
+                    </p>
+                    <ul className="hir-story-section__facts">
+                      {section.facts.map((fact) => (
+                        <FactLinePresentation
+                          key={fact.claimRef.fieldKey}
+                          fact={fact}
+                          variant="narrative"
+                          as="li"
+                        />
+                      ))}
+                    </ul>
+                  </div>
+                ) : null}
+              </li>
+            );
+          })}
         </ol>
       </section>
     );

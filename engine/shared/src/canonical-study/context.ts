@@ -38,6 +38,14 @@ export type StudyProcessingPolicy = {
   proposalPackContentSha256?: string;
   /** Domain-agnostic Reader prompt compiler version when processingMode is pack_driven_v1. */
   readerCompilerVersion?: string;
+  /** Immutable declarative pack binding when HIVE_DECLARATIVE_STUDY_PACK_RESOLVER is enabled. */
+  declarativePackBinding?: {
+    domainPackId: string;
+    domainPackVersion: string;
+    packContractVersion: string;
+    contentDigest: string;
+    packVersionLabel: string;
+  };
   /** Non-authoritative hive-agents /health snapshot captured at load-context. */
   readerPreflight?: ReaderPreflightSnapshot;
   /** Discover structure map material fingerprint when bound from Discover. */

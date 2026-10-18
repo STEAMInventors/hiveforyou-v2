@@ -21,11 +21,16 @@ Operational memory for HiveForYou V2 agents. **Do not read all of `brain/` recur
 - [CURRENT.md](status/CURRENT.md) — what exists in the repo today
 - [NEXT.md](status/NEXT.md) — authorized next milestone only
 
+## Plan
+
+- [HIVE-V2-MASTER-IMPLEMENTATION-PLAN.md](plan/HIVE-V2-MASTER-IMPLEMENTATION-PLAN.md) — unified implementation and status register (as of 2026-10-16). Planning synthesis only; no implementation authorization. **UI Phases 1–3:** implemented locally. **UI Phase 4:** implemented locally; final verification pending. **UI Phases 5–6:** PARKED. Reader, Writer, and other agentic work keep the statuses written in that register. Existing architecture documents in this index remain the architecture sources. Preserved statuses and unresolved conflicts are in [CURRENT.md](status/CURRENT.md).
+
 ## Product
 
 - [vision.md](product/vision.md)
 - [principles.md](product/principles.md)
 - [v2-experience.md](product/v2-experience.md)
+- [case-workspace-journey.md](product/case-workspace-journey.md) — one case workspace, breadcrumbs, idempotency reuse, accepted versions
 - [HiveForYou-brand-guide.md](HiveForYou-brand-guide.md) — logos, typography, Pro lockup
 - [monetization.md](product/monetization.md)
 

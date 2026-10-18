@@ -1,4 +1,4 @@
-import { CanonicalStudyReportPreviewExperience } from "@/components/hive-customer/CanonicalStudyReportPreviewExperience";
+import { CanonicalStudyLivingCaseExperience } from "@/components/hive-customer/CanonicalStudyLivingCaseExperience";
 
 type PageProps = {
   params: Promise<{ caseId: string }>;
@@ -13,7 +13,7 @@ export default async function HiveReportPreviewPage({ params, searchParams }: Pa
   const audience = audienceRaw === "pro" ? "pro" : "customer";
 
   return (
-    <CanonicalStudyReportPreviewExperience
+    <CanonicalStudyLivingCaseExperience
       caseId={caseId}
       studyRunId={studyRunId}
       initialAudience={audience}

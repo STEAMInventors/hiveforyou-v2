@@ -1,0 +1,19 @@
+{
+  "id": "synthetic-declarative",
+  "name": "Synthetic Declarative Qualification Pack",
+  "packVersion": "0.1.0",
+  "contractVersion": "domain-pack-declarative/0.2",
+  "status": "registered_qualification",
+  "schemaSections": [
+    "audience",
+    "document-types",
+    "fact-types",
+    "requirements",
+    "insight-checks",
+    "plain-explainers",
+    "reading-notes",
+    "vocabulary",
+    "reference-tables"
+  ],
+  "additionalDefinitions": ["relationships"]
+}

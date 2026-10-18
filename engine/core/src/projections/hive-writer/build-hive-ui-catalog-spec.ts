@@ -7,6 +7,10 @@ export type HiveUiCatalogComponentSpec = {
 
 const PROP_KEYS_BY_TYPE: Record<HiveUiComponentType, string[]> = {
   ReportRoot: [],
+  LivingCaseChapter: ["chapter"],
+  ReportHeader: [],
+  BriefInsights: ["claimRefs"],
+  ExpandableFacts: ["toggleClaimRef"],
   StorySection: ["sectionId"],
   FactRow: ["claimRef"],
   ChangePair: ["relationId"],
