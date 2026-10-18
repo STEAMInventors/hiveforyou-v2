@@ -67,7 +67,10 @@ describe("study-completion-navigation", () => {
     expect(buildMyCasesHref()).toBe("/case");
     expect(buildCaseWorkspaceHomeHref(base)).toContain("/ready");
     expect(buildCaseWorkspaceHomeHref(base)).toContain("studyRunId=study-1");
-    expect(buildCaseDocumentsHref(base)).toContain("/intake/intake-1");
+    expect(buildCaseDocumentsHref(base)).toContain("/hives/case-1/ready");
+    expect(buildCaseDocumentsHref(base)).toContain("studyRunId=study-1");
+    expect(buildCaseDocumentsHref(base)).not.toContain("documentsView=raw-extractions");
+    expect(buildCaseDocumentsHref(base)).not.toContain("/intake/");
     expect(buildCaseCanonicalStudyHref(base)).toContain("/canonical-json");
     expect(buildCaseReportsHref(base)).toContain("/report-preview");
     expect(resolveCaseWorkspaceSectionFromPathname("/hives/case-1/report-preview")).toBe("reports");
@@ -118,6 +121,22 @@ describe("study-completion-navigation", () => {
     expect(screen.getByTestId("case-workspace-section-nav").querySelector('[aria-current="page"]')).toHaveTextContent(
       "Documents",
     );
+  });
+
+  it("routes Documents section tabs to the hive document inventory, not intake", () => {
+    render(
+      createElement(CaseWorkspaceChrome, {
+        caseId: "case-1",
+        studyRunId: "study-1",
+        intakeRunId: "intake-1",
+        caseLabel: "Maya",
+        activeSection: "canonical-study",
+      }),
+    );
+
+    const documentsLink = screen.getByRole("link", { name: "Documents" });
+    expect(documentsLink.getAttribute("href")).toContain("/hives/case-1/ready");
+    expect(documentsLink.getAttribute("href")).not.toContain("/intake/");
   });
 
   it("distinguishes canonical presentation readiness from pack-driven polling", () => {

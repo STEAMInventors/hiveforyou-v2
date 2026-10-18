@@ -2,7 +2,6 @@
 
 import { isStudyProcessingDelayed, isStudyRunProcessing } from "@hiveforyou/shared/canonical-study";
 import { isIntakeProcessingDelayed, isIntakeRunProcessing } from "@hiveforyou/shared/intake";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 
@@ -36,9 +35,10 @@ import {
 } from "@/components/hive-lifecycle/stages";
 import { ACCEPTED_UPLOAD_MIME } from "@/lib/upload-constants";
 import { CaseDocumentsSubNav } from "@/components/hive-customer/CaseDocumentsSubNav";
-import { CaseWorkspaceChrome } from "@/components/hive-customer/HiveCaseWorkspaceChrome";
 import { CustomerRawExtractionsPanel } from "@/components/hive-customer/HiveCustomerDocumentRows";
+import { HiveCustomerShell } from "@/components/hive-customer/HiveCustomerShell";
 import {
+  buildCaseDocumentsSubNavHrefs,
   buildIntakeDocumentsSectionHref,
   type CaseDocumentsView,
 } from "@/lib/intake/study-completion-navigation";
@@ -583,98 +583,43 @@ export function IntakeEvidenceWorkspace({
   const domainLabel = view.purpose.domainName ?? "General";
   const processingDelayed = isIntakeProcessingDelayed(view.status, view.runStartedAt);
   const linkedStudyRunId = workspaceStudyRunId?.trim() || studyBuild?.studyRunId?.trim() || "";
-  const filesHref = buildIntakeDocumentsSectionHref({
-    intakeRunId,
-    studyRunId: linkedStudyRunId || undefined,
-    audience: workspaceAudience,
-    view: "files",
-  });
-  const rawExtractionsHref = buildIntakeDocumentsSectionHref({
-    intakeRunId,
-    studyRunId: linkedStudyRunId || undefined,
-    audience: workspaceAudience,
-    view: "raw-extractions",
-  });
+  const documentSubNavHrefs = linkedStudyRunId
+    ? buildCaseDocumentsSubNavHrefs({
+        caseId: view.caseId,
+        studyRunId: linkedStudyRunId,
+        intakeRunId,
+        audience: workspaceAudience,
+        segment: "ready",
+      })
+    : {
+        filesHref: buildIntakeDocumentsSectionHref({
+          intakeRunId,
+          studyRunId: linkedStudyRunId || undefined,
+          audience: workspaceAudience,
+          view: "files",
+        }),
+        rawExtractionsHref: buildIntakeDocumentsSectionHref({
+          intakeRunId,
+          studyRunId: linkedStudyRunId || undefined,
+          audience: workspaceAudience,
+          view: "raw-extractions",
+        }),
+      };
+  const { filesHref, rawExtractionsHref } = documentSubNavHrefs;
 
   return (
-    <div className="intake-docs" style={shellStyle} data-testid="intake-evidence-workspace">
-      <header
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          gap: 12,
-          padding: "14px 20px",
-          borderBottom: "1px solid #F1F3F4",
-        }}
-      >
-        <Link
-          href="/"
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 10,
-            textDecoration: "none",
-            color: "#0D0D0D",
-          }}
-        >
-          <svg width="28" height="28" viewBox="0 0 32 32" aria-hidden>
-            <path d="M16 2.5 27.7 9.25v13.5L16 29.5 4.3 22.75V9.25z" fill="#0D0D0D" />
-            <path
-              d="M11 13.5h10M11 18.5h6"
-              stroke="#FFFFFF"
-              strokeWidth="2"
-              strokeLinecap="round"
-            />
-          </svg>
-          <span style={{ fontWeight: 600, fontSize: 17, letterSpacing: "-0.02em" }}>
-            HiveForYou
-          </span>
-        </Link>
-        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-          <Link
-            href="#help"
-            className="ghost"
-            style={{
-              fontSize: 14,
-              textDecoration: "none",
-              padding: "9px 14px",
-              borderRadius: 999,
-            }}
-          >
-            Help
-          </Link>
-          <button
-            type="button"
-            aria-label="Account"
-            style={{
-              width: 36,
-              height: 36,
-              borderRadius: 999,
-              border: 0,
-              background: "#E8F0FE",
-              color: "#1A56C4",
-              fontFamily: geist,
-              fontSize: 13,
-              fontWeight: 600,
-              cursor: "pointer",
-            }}
-          >
-            JD
-          </button>
-        </div>
-      </header>
-
-      <CaseWorkspaceChrome
-        variant="intake"
-        caseId={view.caseId}
-        studyRunId={workspaceStudyRunId}
-        intakeRunId={intakeRunId}
-        audience={workspaceAudience}
-        caseLabel={domainLabel}
-        activeSection="documents"
-      />
-
+    <HiveCustomerShell
+      intakeRunId={intakeRunId}
+      workspace={{
+        caseId: view.caseId,
+        studyRunId: linkedStudyRunId || workspaceStudyRunId,
+        intakeRunId,
+        audience: workspaceAudience,
+        caseLabel: domainLabel,
+        activeSection: "documents",
+      }}
+    >
+      <div className="intake-docs" style={shellStyle} data-testid="intake-evidence-workspace">
       {processingDelayed ? (
         <p
           role="status"
@@ -1104,6 +1049,7 @@ export function IntakeEvidenceWorkspace({
           }}
         />
       ) : null}
-    </div>
+      </div>
+    </HiveCustomerShell>
   );
 }

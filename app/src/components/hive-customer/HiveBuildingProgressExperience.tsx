@@ -6,7 +6,7 @@ import { useCallback, useEffect, useState } from "react";
 import { fetchHiveExtractionProgress } from "@/lib/hive-customer/hive-extraction-progress-client";
 import type { HiveExtractionProgressView } from "@/lib/hive-customer/hive-extraction-progress-types";
 import {
-  buildHiveDocumentsSectionHref,
+  buildCaseDocumentsSubNavHrefs,
   buildHiveReadyHref,
   buildIntakeDocumentsSectionHref,
   type CaseDocumentsView,
@@ -68,19 +68,11 @@ export function HiveBuildingProgressExperience({
 
   const showGenericFailure = customerExtractionShowsGenericFailure(progress);
   const intakeRunId = progress?.intakeRunId ?? null;
-  const filesHref = buildHiveDocumentsSectionHref({
+  const { filesHref, rawExtractionsHref } = buildCaseDocumentsSubNavHrefs({
     caseId,
     studyRunId,
     intakeRunId,
     segment: "building",
-    view: "files",
-  });
-  const rawExtractionsHref = buildHiveDocumentsSectionHref({
-    caseId,
-    studyRunId,
-    intakeRunId,
-    segment: "building",
-    view: "raw-extractions",
   });
   const manageFilesHref = intakeRunId
     ? buildIntakeDocumentsSectionHref({ intakeRunId, studyRunId, view: "files" })

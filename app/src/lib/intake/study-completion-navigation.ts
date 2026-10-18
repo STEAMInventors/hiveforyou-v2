@@ -165,17 +165,44 @@ export function buildCaseWorkspaceHomeHref(input: CaseWorkspaceNavInput): string
   return appendWorkspaceQueryParams(path, input);
 }
 
-export function buildCaseDocumentsHref(input: CaseWorkspaceNavInput): string {
-  const intakeRunId = input.intakeRunId?.trim();
-  if (intakeRunId) {
-    const path = `/intake/${encodeURIComponent(intakeRunId)}`;
-    return appendWorkspaceQueryParams(path, input);
-  }
+export type CaseDocumentsNavOptions = {
+  /** Defaults to persisted inventory (`files`), not raw extractions. */
+  documentsView?: CaseDocumentsView;
+  /** Defaults to `ready` (building route redirects when extraction is still running). */
+  documentsSegment?: "building" | "ready";
+};
+
+export function buildCaseDocumentsSubNavHrefs(input: {
+  caseId: string;
+  studyRunId: string;
+  intakeRunId?: string | null;
+  audience?: CaseWorkspaceAudience;
+  segment: "building" | "ready";
+}): { filesHref: string; rawExtractionsHref: string } {
+  return {
+    filesHref: buildHiveDocumentsSectionHref({ ...input, view: "files" }),
+    rawExtractionsHref: buildHiveDocumentsSectionHref({ ...input, view: "raw-extractions" }),
+  };
+}
+
+export function buildCaseDocumentsHref(
+  input: CaseWorkspaceNavInput & CaseDocumentsNavOptions,
+): string {
+  const view = input.documentsView ?? "files";
   const studyRunId = input.studyRunId?.trim();
   if (studyRunId) {
-    return buildHiveReadyHref({ caseId: input.caseId, studyRunId });
+    const segment = input.documentsSegment ?? "ready";
+    return buildHiveDocumentsSectionHref({
+      caseId: input.caseId,
+      studyRunId,
+      intakeRunId: input.intakeRunId,
+      audience: input.audience,
+      segment,
+      view,
+    });
   }
-  return buildCaseWorkspaceHomeHref(input);
+  const path = `/hives/${encodeURIComponent(input.caseId)}/ready`;
+  return withCaseDocumentsView(appendWorkspaceQueryParams(path, input), view);
 }
 
 export function buildCaseCanonicalStudyHref(input: CaseWorkspaceNavInput): string {
@@ -231,9 +258,8 @@ export function isCaseWorkspaceSectionNavEnabled(
   input: CaseWorkspaceNavInput,
 ): boolean {
   const studyRunId = input.studyRunId?.trim();
-  const intakeRunId = input.intakeRunId?.trim();
   if (section === "documents") {
-    return Boolean(intakeRunId || studyRunId);
+    return Boolean(input.caseId?.trim());
   }
   return Boolean(studyRunId);
 }

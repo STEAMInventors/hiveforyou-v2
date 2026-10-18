@@ -74,6 +74,14 @@ vi.mock("@/lib/documents/commit-client", () => ({
 
 
 
+vi.mock("@/lib/hive-customer/hive-extraction-progress-client", () => ({
+
+  fetchHiveExtractionProgress: vi.fn().mockRejectedValue(new Error("not loaded")),
+
+}));
+
+
+
 import {
 
   fetchIntakeRun,

@@ -14,7 +14,7 @@ import { runDeterministicCanonicalStudyFromClient } from "@/lib/hive-customer/ru
 import { startIntakeStudy } from "@/lib/intake/intake-client";
 import {
   buildCaseReportsHref,
-  buildHiveReadyHref,
+  buildCaseDocumentsHref,
   buildMyCasesHref,
   isCanonicalStudyPresentationReady,
 } from "@/lib/intake/study-completion-navigation";
@@ -215,7 +215,12 @@ export function CanonicalStudyJsonView({
   }, [formattedJson]);
 
   const downloadHref = `/api/case/${encodeURIComponent(caseId)}/canonical-debug/download?studyRunId=${encodeURIComponent(studyRunId)}`;
-  const documentsHref = buildHiveReadyHref({ caseId, studyRunId });
+  const documentsHref = buildCaseDocumentsHref({
+    caseId,
+    studyRunId,
+    intakeRunId,
+    audience: workspaceAudience,
+  });
   const reportsHref = buildCaseReportsHref({
     caseId,
     studyRunId,

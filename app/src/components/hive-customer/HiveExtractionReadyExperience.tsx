@@ -8,9 +8,9 @@ import { fetchHiveExtractionProgress } from "@/lib/hive-customer/hive-extraction
 import type { HiveExtractionProgressView } from "@/lib/hive-customer/hive-extraction-progress-types";
 import { runDeterministicCanonicalStudyFromClient } from "@/lib/hive-customer/run-deterministic-canonical-study-client";
 import {
+  buildCaseDocumentsSubNavHrefs,
   buildHiveBuildingHref,
   buildHiveCanonicalJsonHref,
-  buildHiveDocumentsSectionHref,
   buildIntakeDocumentsSectionHref,
   type CaseDocumentsView,
 } from "@/lib/intake/study-completion-navigation";
@@ -76,21 +76,12 @@ export function HiveExtractionReadyExperience({
         view: "files",
       })
     : null;
-  const filesHref = buildHiveDocumentsSectionHref({
+  const { filesHref, rawExtractionsHref } = buildCaseDocumentsSubNavHrefs({
     caseId,
     studyRunId,
     intakeRunId,
     audience: workspaceAudience,
     segment: "ready",
-    view: "files",
-  });
-  const rawExtractionsHref = buildHiveDocumentsSectionHref({
-    caseId,
-    studyRunId,
-    intakeRunId,
-    audience: workspaceAudience,
-    segment: "ready",
-    view: "raw-extractions",
   });
 
   const docCount = progress?.readDocumentCount ?? progress?.documents.length ?? 0;
