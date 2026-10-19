@@ -1,4 +1,4 @@
-import type { DeclarativePackRaw } from "../declarative/types.js";
+import type { DeclarativeInsightCheck, DeclarativePackRaw } from "../declarative/types.js";
 import { DECLARATIVE_PACK_CONTRACT_VERSION } from "../declarative/types.js";
 import type { MappingPackCanonical } from "./types.js";
 
@@ -51,7 +51,6 @@ export function mappingPackToDeclarativeRaw(canonical: MappingPackCanonical): De
       })),
     },
     factTypes: {
-      version: canonical.concepts.version,
       factTypes: canonical.concepts.concepts.map((concept) => ({
         id: concept.id,
         valueKind: concept.valueKind,
@@ -77,7 +76,9 @@ export function mappingPackToDeclarativeRaw(canonical: MappingPackCanonical): De
       })),
     },
     requirements: { requirements: canonical.relationships.requirements ?? [] },
-    insightChecks: { insightChecks: canonical.relationships.insightChecks ?? [] },
+    insightChecks: {
+      insightChecks: (canonical.relationships.insightChecks ?? []) as DeclarativeInsightCheck[],
+    },
     readingNotes: {
       global: canonical.documents.globalReadingNotes ?? [],
       documentSpecific: canonical.documents.documentReadingNotes,
