@@ -1,4 +1,8 @@
-import type { CallModel, ModelRequest } from "@hiveforyou/shared/model/call-model";
+import type {
+  CallModel,
+  ModelFileAttachment,
+  ModelRequest,
+} from "@hiveforyou/shared/model/call-model";
 import { ModelCallError } from "@hiveforyou/shared/model/call-model";
 
 export type OpenAIResponseErrorFields = {
@@ -74,15 +78,51 @@ function logOpenAIResponseErrorDiagnostic(
   });
 }
 
+export type OpenAIAttachmentDelivery = "upload" | "inline";
+
 export type OpenAICallModelOptions = {
   apiKey: string;
   /** When set, overrides default OpenAI `/v1/files` URL (e.g. LiteLLM proxy). */
   filesUrl?: string;
   /** When set, overrides default OpenAI `/v1/responses` URL (e.g. LiteLLM proxy). */
   responsesUrl?: string;
+  /**
+   * `upload` uses `/v1/files` + `input_file.file_id` (direct OpenAI).
+   * `inline` sends `input_file.file_data` on the Responses request (LiteLLM without Files API).
+   */
+  attachmentDelivery?: OpenAIAttachmentDelivery;
   uploadFile?: typeof defaultOpenAIUploadFile;
   createResponse?: typeof defaultOpenAICreateResponse;
 };
+
+function bytesToBase64(bytes: Uint8Array): string {
+  if (typeof Buffer !== "undefined") {
+    return Buffer.from(bytes).toString("base64");
+  }
+  let binary = "";
+  for (const byte of bytes) {
+    binary += String.fromCharCode(byte);
+  }
+  return btoa(binary);
+}
+
+function normalizeAttachmentMimeType(mimeType: string | null | undefined): string {
+  const trimmed = (mimeType ?? "").split(";")[0]?.trim().toLowerCase();
+  return trimmed || "application/pdf";
+}
+
+/** Builds Responses API `input_file` with base64 data URI (no `/v1/files` upload). */
+export function buildOpenAIInlineInputFilePart(
+  attachment: ModelFileAttachment,
+): Record<string, unknown> {
+  const mime = normalizeAttachmentMimeType(attachment.mimeType);
+  const data = bytesToBase64(attachment.bytes);
+  return {
+    type: "input_file",
+    filename: attachment.filename,
+    file_data: `data:${mime};base64,${data}`,
+  };
+}
 
 export async function defaultOpenAIUploadFile(input: {
   apiKey: string;
@@ -197,6 +237,7 @@ export function extractOpenAIResponseOutputText(payload: unknown): string | null
 export function createOpenAICallModel(input: OpenAICallModelOptions): CallModel {
   const filesUrl = input.filesUrl;
   const responsesUrl = input.responsesUrl;
+  const attachmentDelivery = input.attachmentDelivery ?? "upload";
   const uploadFile =
     input.uploadFile ??
     ((params) => defaultOpenAIUploadFile({ ...params, filesUrl: params.filesUrl ?? filesUrl }));
@@ -206,21 +247,28 @@ export function createOpenAICallModel(input: OpenAICallModelOptions): CallModel 
       defaultOpenAICreateResponse({ ...params, responsesUrl: params.responsesUrl ?? responsesUrl }));
 
   return async (req: ModelRequest) => {
-    const fileIds: string[] = [];
-    for (const attachment of req.attachments ?? []) {
-      const fileId = await uploadFile({
-        apiKey: input.apiKey,
-        filesUrl,
-        filename: attachment.filename,
-        bytes: attachment.bytes,
-        mimeType: attachment.mimeType,
-      });
-      fileIds.push(fileId);
+    const attachments = req.attachments ?? [];
+    let fileParts: Array<Record<string, unknown>>;
+    if (attachmentDelivery === "inline") {
+      fileParts = attachments.map((attachment) => buildOpenAIInlineInputFilePart(attachment));
+    } else {
+      const fileIds: string[] = [];
+      for (const attachment of attachments) {
+        const fileId = await uploadFile({
+          apiKey: input.apiKey,
+          filesUrl,
+          filename: attachment.filename,
+          bytes: attachment.bytes,
+          mimeType: attachment.mimeType,
+        });
+        fileIds.push(fileId);
+      }
+      fileParts = fileIds.map((fileId) => ({ type: "input_file", file_id: fileId }));
     }
 
     const userParts: Array<Record<string, unknown>> = [
       { type: "input_text", text: req.userContent },
-      ...fileIds.map((fileId) => ({ type: "input_file", file_id: fileId })),
+      ...fileParts,
     ];
 
     const inputMessages: Array<Record<string, unknown>> = req.userOnly

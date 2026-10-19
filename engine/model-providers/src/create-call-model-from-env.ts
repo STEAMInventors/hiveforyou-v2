@@ -6,6 +6,7 @@ function resolveLiteLLMOpenAIEndpoints(source: Record<string, string | undefined
   apiKey: string;
   responsesUrl: string;
   filesUrl: string;
+  attachmentDelivery: "upload" | "inline";
 } {
   const litellmBase = source.LITELLM_BASE_URL?.trim();
   const apiKey = source.LITELLM_API_KEY?.trim() || source.OPENAI_API_KEY?.trim() || "";
@@ -15,12 +16,14 @@ function resolveLiteLLMOpenAIEndpoints(source: Record<string, string | undefined
       apiKey,
       responsesUrl: `${base}/responses`,
       filesUrl: `${base}/files`,
+      attachmentDelivery: "inline",
     };
   }
   return {
     apiKey,
     responsesUrl: "https://api.openai.com/v1/responses",
     filesUrl: "https://api.openai.com/v1/files",
+    attachmentDelivery: "upload",
   };
 }
 
@@ -82,6 +85,7 @@ export function createCallModelFromEnv(
         apiKey,
         filesUrl: endpoints.filesUrl,
         responsesUrl: endpoints.responsesUrl,
+        attachmentDelivery: endpoints.attachmentDelivery,
       }),
     };
   }

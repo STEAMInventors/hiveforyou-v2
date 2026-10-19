@@ -1,7 +1,11 @@
 import { OpenAIDiscoverEngine } from "@hiveforyou/core";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { ModelCallError } from "@hiveforyou/shared/model/call-model";
+
+import { createCallModelFromEnv } from "./create-call-model-from-env.js";
 import {
+  buildOpenAIInlineInputFilePart,
   createOpenAICallModel,
   extractOpenAIResponseErrorFields,
   extractOpenAIResponseOutputText,
@@ -196,5 +200,167 @@ describe("extractOpenAIResponseOutputText", () => {
       ],
     });
     expect(text).toBe('{"paragraphs":[]}');
+  });
+});
+
+describe("OpenAI PDF attachments", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("buildOpenAIInlineInputFilePart encodes PDF as data URI without file_id", () => {
+    const part = buildOpenAIInlineInputFilePart({
+      filename: "iep.pdf",
+      bytes: new Uint8Array([0x25, 0x50, 0x44, 0x46]),
+      mimeType: "application/pdf",
+    });
+    expect(part).toEqual({
+      type: "input_file",
+      filename: "iep.pdf",
+      file_data: "data:application/pdf;base64,JVBERg==",
+    });
+    expect(part).not.toHaveProperty("file_id");
+  });
+
+  it("inline delivery sends multiple PDFs in attachment order and skips /v1/files", async () => {
+    const uploadFile = vi.fn();
+    let capturedBody: Record<string, unknown> | undefined;
+    const createResponse = vi.fn(async (params: { body: unknown }) => {
+      capturedBody = params.body as Record<string, unknown>;
+      return { output_text: "{}" };
+    });
+
+    const callModel = createOpenAICallModel({
+      apiKey: "proxy-key",
+      responsesUrl: "https://litellm.example/v1/responses",
+      attachmentDelivery: "inline",
+      uploadFile,
+      createResponse,
+    });
+
+    await callModel({
+      model: "MODEL_HEAVY_LIFTER",
+      userContent: "study these",
+      attachments: [
+        {
+          filename: "first.pdf",
+          bytes: new Uint8Array([1]),
+          mimeType: "application/pdf",
+        },
+        {
+          filename: "second.pdf",
+          bytes: new Uint8Array([2]),
+          mimeType: "application/pdf",
+        },
+      ],
+      textFormat: { type: "json_object" },
+    });
+
+    expect(uploadFile).not.toHaveBeenCalled();
+    const input = capturedBody?.input as Array<{ role: string; content: unknown[] }>;
+    const userContent = input[0]?.content as Array<Record<string, unknown>>;
+    expect(userContent[0]).toEqual({ type: "input_text", text: "study these" });
+    expect(userContent[1]).toMatchObject({ type: "input_file", filename: "first.pdf" });
+    expect(userContent[2]).toMatchObject({ type: "input_file", filename: "second.pdf" });
+    expect(String(userContent[1]?.file_data)).toMatch(/^data:application\/pdf;base64,/);
+  });
+
+  it("upload delivery still uses file_id when attachmentDelivery is upload", async () => {
+    const uploadFile = vi.fn(async () => "file-abc");
+    let capturedBody: Record<string, unknown> | undefined;
+    const createResponse = vi.fn(async (params: { body: unknown }) => {
+      capturedBody = params.body as Record<string, unknown>;
+      return { output_text: "{}" };
+    });
+
+    const callModel = createOpenAICallModel({
+      apiKey: "sk-direct",
+      attachmentDelivery: "upload",
+      uploadFile,
+      createResponse,
+    });
+
+    await callModel({
+      model: "gpt-test",
+      userContent: "prompt",
+      attachments: [{ filename: "doc.pdf", bytes: new Uint8Array([9]), mimeType: "application/pdf" }],
+      textFormat: { type: "json_object" },
+    });
+
+    expect(uploadFile).toHaveBeenCalledOnce();
+    const input = capturedBody?.input as Array<{ content: unknown[] }>;
+    const userContent = input[0]?.content as Array<Record<string, unknown>>;
+    expect(userContent[1]).toEqual({ type: "input_file", file_id: "file-abc" });
+  });
+
+  it("surfaces LiteLLM gateway errors from Responses without attempting file upload", async () => {
+    const uploadFile = vi.fn();
+    const createResponse = vi.fn(async () => {
+      throw new ModelCallError(
+        "response_failed",
+        502,
+        "OPENAI_RESPONSE_FAILED:502 message=bad gateway",
+      );
+    });
+
+    const callModel = createOpenAICallModel({
+      apiKey: "proxy-key",
+      attachmentDelivery: "inline",
+      uploadFile,
+      createResponse,
+    });
+
+    await expect(
+      callModel({
+        model: "MODEL_HEAVY_LIFTER",
+        userContent: "study",
+        attachments: [{ filename: "doc.pdf", bytes: new Uint8Array([1]), mimeType: "application/pdf" }],
+        textFormat: { type: "json_object" },
+      }),
+    ).rejects.toThrow("OPENAI_RESPONSE_FAILED:502");
+
+    expect(uploadFile).not.toHaveBeenCalled();
+  });
+});
+
+describe("createCallModelFromEnv LiteLLM OpenAI routing", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("routes PDFs inline through the LiteLLM proxy without calling api.openai.com", async () => {
+    const fetchUrls: string[] = [];
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (url: string) => {
+        fetchUrls.push(url);
+        if (url.includes("/responses")) {
+          return {
+            ok: true,
+            status: 200,
+            json: async () => ({ output_text: '{"ok":true}' }),
+          };
+        }
+        throw new Error(`unexpected fetch: ${url}`);
+      }),
+    );
+
+    const bundle = createCallModelFromEnv({
+      MODEL_PROVIDER: "openai",
+      LITELLM_BASE_URL: "https://litellm.example/v1",
+      LITELLM_API_KEY: "litellm-key",
+      MODEL_NAME: "MODEL_HEAVY_LIFTER",
+    });
+
+    await bundle.callModel({
+      model: bundle.modelName,
+      userContent: "canonical study",
+      attachments: [{ filename: "a.pdf", bytes: new Uint8Array([0x25]), mimeType: "application/pdf" }],
+      textFormat: { type: "json_object" },
+    });
+
+    expect(fetchUrls).toEqual(["https://litellm.example/v1/responses"]);
+    expect(fetchUrls.some((url) => url.includes("api.openai.com"))).toBe(false);
+    expect(fetchUrls.some((url) => url.includes("/files"))).toBe(false);
   });
 });
