@@ -265,6 +265,11 @@ export class InMemoryDomainLearningCandidateRepository
     const row = this.rows.get(id);
     return row ? structuredClone(row) : null;
   }
+
+  /** Lists persisted candidates (in-memory adapter tests only). */
+  listAll(): DomainLearningCandidate[] {
+    return [...this.rows.values()].map((row) => structuredClone(row));
+  }
 }
 
 export function newObservationId(): string {

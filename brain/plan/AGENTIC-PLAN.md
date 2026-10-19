@@ -1,12 +1,12 @@
 # Agentic plan — Hive Reader & qualification
 
-Version: **1.3** (Canonical Study Graph amendment, 2026-10-18); prior **1.2** (ARCH-01, 2026-10-12) preserved below  
-Frozen prior version: **[AGENTIC-PLAN-v1.1.md](./AGENTIC-PLAN-v1.1.md)** — approved Agentic Plan v1.1 (historical snapshot; **do not edit**)  
-Branch: `refactor/engine-boundary`  
-Authoritative architecture (proposed): [HIVE-ARCHITECTURE-V2-PROPOSED.md](./HIVE-ARCHITECTURE-V2-PROPOSED.md) (**v1.3** for Canonical Study vNext)  
+Version: **1.4** (Finalized architectural decisions 1–3 + Domain Pack track, 2026-10-18); prior **1.3** (Canonical Study Graph, 2026-10-18) and **1.2** (ARCH-01, 2026-10-12) preserved below
+Frozen prior version: **[AGENTIC-PLAN-v1.1.md](./AGENTIC-PLAN-v1.1.md)** — approved Agentic Plan v1.1 (historical snapshot; **do not edit**)
+Branch: `refactor/engine-boundary`
+Authoritative architecture (proposed): [HIVE-ARCHITECTURE-V2-PROPOSED.md](./HIVE-ARCHITECTURE-V2-PROPOSED.md) (**v1.4** — Decisions 1–3 + Canonical Study vNext)
 Living repo layout: [REPO-MAP.md](./REPO-MAP.md) · Historical: [REPO-MAP-v1.1.md](./REPO-MAP-v1.1.md) (**do not edit**)
 
-> **v1.3 is an explicit amendment, not a silent replacement of v1.2 or v1.1.** This file layers **Canonical Study vNext** (Phases A–H) on top of ARCH-01 and the frozen v1.1 snapshot. For original approved phase structure as of v1.1, use **AGENTIC-PLAN-v1.1.md**. Ticket execution history remains in [brain/status/NEXT.md](../status/NEXT.md) (log section — **do not delete**). Implementation detail remains in [brain/status/CURRENT.md](../status/CURRENT.md).
+> **v1.4 is an explicit amendment, not a silent replacement of v1.3, v1.2, or v1.1.** This file layers **Finalized decisions 1–3**, the **Domain Pack track (DP-01 … DP-04)**, and **Canonical Study vNext** (Phases A–H) on top of ARCH-01 and the frozen v1.1 snapshot. For original approved phase structure as of v1.1, use **AGENTIC-PLAN-v1.1.md**. Ticket execution history remains in [brain/status/NEXT.md](../status/NEXT.md) (log section — **do not delete**). Implementation detail remains in [brain/status/CURRENT.md](../status/CURRENT.md).
 
 ### Version change record
 
@@ -14,7 +14,8 @@ Living repo layout: [REPO-MAP.md](./REPO-MAP.md) · Historical: [REPO-MAP-v1.1.m
 |---------|------|-------|-------------|
 | v1.1 | (frozen) | Reader/eval Phases 0–8 | Immutable snapshot [AGENTIC-PLAN-v1.1.md](./AGENTIC-PLAN-v1.1.md) |
 | v1.2 | 2026-10-12 | ARCH-01 pack-driven extraction path | **Retained** — extraction/Inspector track; not superseded for raw persistence |
-| v1.3 | 2026-10-18 | Canonical Study Graph vNext (Phases A–H) | **Proposed target** — see § Canonical Study vNext; **not production-active** |
+| v1.3 | 2026-10-18 | Canonical Study Graph vNext (Phases A–H) | **Retained** — pipeline phases; **not production-active** |
+| v1.4 | 2026-10-18 | Decisions 1–3; DP-01 … DP-04; execution contracts | **Proposed target** — **DP-01 … DP-04 and CS-vNext-E … H NOT AUTHORIZED** until [NEXT.md](../status/NEXT.md) approval |
 
 ---
 
@@ -24,7 +25,7 @@ Living repo layout: [REPO-MAP.md](./REPO-MAP.md) · Historical: [REPO-MAP-v1.1.m
 |----------|------|
 | [AGENTIC-PLAN-v1.1.md](./AGENTIC-PLAN-v1.1.md) | **Immutable** approved Agentic Plan v1.1 — baseline for T0–T3.x Reader/eval lineage |
 | [REPO-MAP-v1.1.md](./REPO-MAP-v1.1.md) | **Immutable** REPO-MAP companion from v1.1 era — historical paths only; live navigation: [brain/INDEX.md](../INDEX.md), [architecture/overview.md](../architecture/overview.md) |
-| **AGENTIC-PLAN.md (this file, v1.3)** | Living plan index: ARCH-01 + Canonical Study vNext + consolidated ticket table + pointers to NEXT/CURRENT |
+| **AGENTIC-PLAN.md (this file, v1.4)** | Living plan index: Decisions 1–3, Domain Pack track, ARCH-01, Canonical Study vNext, consolidated tickets |
 | [REPO-MAP.md](./REPO-MAP.md) | Living repo map — Phase B/C implemented modules vs Phase D–H proposed |
 | [NEXT.md](../status/NEXT.md) | Authorized scope, ticket statuses, execution log |
 | [CURRENT.md](../status/CURRENT.md) | What is implemented in the repo today |
@@ -33,12 +34,97 @@ Living repo layout: [REPO-MAP.md](./REPO-MAP.md) · Historical: [REPO-MAP-v1.1.m
 
 ---
 
+## Domain Pack track (v1.4 — DP-03A/DP-03B Reader qualification complete locally; DP-03C+ not authorized)
+
+**Architecture:** [HIVE-ARCHITECTURE-V2-PROPOSED.md](./HIVE-ARCHITECTURE-V2-PROPOSED.md) § v1.4 (Decisions 2–3) and § Domain Pack execution contracts.
+
+**Authorization:** **None** of the tickets below are authorized for implementation until explicitly approved in [NEXT.md](../status/NEXT.md). **IEP Domain Pack v0.2.x review** (specification) may continue in parallel; it does **not** authorize DP implementation.
+
+**Dependency order (mandatory):**
+
+```text
+DP-01 → DP-02 → DP-03 → DP-04 → CS-vNext-E → CS-vNext-F → CS-vNext-G → CS-vNext-H
+```
+
+**Reconciliation with existing work (no silent supersession):**
+
+| Existing item | Relationship to Domain Pack track |
+|---------------|-----------------------------------|
+| **CS-vNext B–C.1** (committed `c721369`) | Graph contracts + normalizer — **foundation**; **DP-03** adds explicit Discover/Reader/Normalizer pack compliance + raw evidence preservation gates |
+| **CS-vNext-D** (local, uncommitted) | Reasoner port + prompt — **input** to **DP-04** (observableTypes catalog, pack contract alignment, **L001 live Anthropic** qualification) |
+| **ARCH-01 … ARCH-06** | Extraction/Inspector track **parallel**; **DP-03** Reader row aligns with ARCH-01/03 goals — do not duplicate ARCH tickets without cross-reference in DP-01 audit |
+| **T3.x Reader / pack_driven** | Qualification path — audited in **DP-01**; not retired by this amendment |
+
+### Domain Pack tickets
+
+| Ticket | Scope | Status | Approval |
+|--------|-------|--------|----------|
+| **DP-01** | Audit existing IEP Pack, compilers, and **actual** stage interactions (Discover, Reader, Normalizer, Reasoner local, Validator stubs, Writer shadow, Application); identify reusable definitions, missing execution contracts, migration needs for IEP v0.2.1 | **Complete (2026-10-18)** | [DP-01-AUDIT.md](../status/DP-01-AUDIT.md) · [DP-01-QUALIFICATION.md](../status/DP-01-QUALIFICATION.md) — **DP-02 not authorized** |
+| **DP-02** | Define and qualify **minimal schema-first** four-section pack contract, compiler(s), **Generic Pack** resolution/fallback, pin + digest fail-closed rules; migration/compatibility plan from legacy surfaces (**no parallel pack authority**) | **Complete locally (2026-10-18)** — [DP-02-MIGRATION.md](../status/DP-02-MIGRATION.md); **`pnpm hive:test --stage pack`**; registry **76/76**; **not committed / not production-wired** | Await review before **DP-03** |
+| **DP-03A** | **Discover** consumes DP-02 discover stage view; compliance record; qualification CLI (`hive:test --stage discover`) — **production Discover unchanged** | **Complete locally (2026-10-18)** — [DP-03A-QUALIFICATION.md](../status/DP-03A-QUALIFICATION.md) | — |
+| **DP-03B** | **Reader** consumes DP-02 reader stage view; `hive.reader-pack-compliance/1`; qualification CLI (`hive:test --stage reader`) — **production Reader unchanged** | **Complete locally (2026-10-18)** — [DP-03B-QUALIFICATION.md](../status/DP-03B-QUALIFICATION.md) | **DP-03C** not authorized |
+| **DP-03C** | **Observation Normalizer** pack compliance (remaining **DP-03** scope) | **Not authorized** | After DP-03B review |
+| **DP-04** | Complete **Reasoner** Pack integration and qualification: **`observableTypes[]` catalog**, align `compile-canonical-reasoner-context` to DP-02 contract, **real L001 Anthropic** reasoner testing (builds on CS-vNext-D local work) | **Not authorized** | After DP-03; does not authorize commit of Phase D without separate approval |
+
+### Universal pipeline — nine implementation increments (stop after each)
+
+Each increment is **independently verifiable**. **Do not batch** increments without explicit approval. Map to tickets (no duplicate plan authority):
+
+| Inc | Implementation focus | Primary ticket(s) | Repo status (2026-10-18) |
+|-----|------------------------|-------------------|---------------------------|
+| **1** | Audit and reuse **universal graph contracts** (Decision 1) | **DP-01** (audit deliverable) + **CS-vNext-B** (contracts) | **B committed** `c721369`; Inc 1 vitest **PASS** (graph, normalizer, declarative/packs-v2); registry `registry.test.ts` **FAIL** (Medicaid generic policy — **DP-02**) |
+| **2** | Minimal **four-section Mapping Pack** + **Generic** fallback | **DP-02** | **Qualified locally (2026-10-18):** `pnpm hive:test --stage pack` **PASS**; IEP digest `5b88a3ab…`; Generic digest `c3bb8fab…` (after DP-03B generic checklist fix); stage views not wired to production |
+| **3** | **Pack-driven Discover** + compliance record | **DP-03A** | **Qualified locally (2026-10-18):** mapping-pack discover view + `hive.discover-pack-compliance/1` on qualification path; **production** still uses legacy registry snapshots |
+| **4** | **Pack-driven Reader** + golden compare | **DP-03B** + T3.x / pack_driven reuse | **Qualified locally (2026-10-18):** `pnpm hive:test --stage reader` — [DP-03B-QUALIFICATION.md](../status/DP-03B-QUALIFICATION.md); legacy golden compare unchanged |
+| **5** | **Observation Normalizer** + pack field maps | **CS-vNext-C/C.1** + **DP-03** (Normalizer) | **C/C.1 local**; evidence review **complete**; worker persistence **not wired** |
+| **6** | **Canonical Reasoner** + pack context | **CS-vNext-D** + **DP-04** | **D local, uncommitted**; L001 live Anthropic **not run** |
+| **7** | **Graph Validator** (accept / reject / unresolved) | **CS-vNext-E** | Not started |
+| **8** | **Persona Writer** from accepted graph only | **CS-vNext-F** (Writer) | Shadow Writer only; **not graph-authoritative** |
+| **9** | **Inspection UI** (graph vs Writer preview) | **CS-vNext-F** (UI) + **CS-vNext-G** | Legacy `/3` canonical JSON; **no v1.4 graph inspector** |
+
+**Replacement strategy:** new path is **isolated and explicitly selected** (processing mode / qualification CLI). Production OpenAI v4 → `/3`, legacy Reader, and ARCH-01 extraction targets **remain** until **CS-vNext-H** go/no-go.
+
+### Qualification harness — target CLI (`hive:test`)
+
+**Target interface (partial — Inc 2 `pack` + Inc 3 `discover` implemented locally 2026-10-18):**
+
+```powershell
+pnpm hive:test --stage pack
+pnpm hive:test --case L001 --stage discover
+pnpm hive:test --case L001 --stage reader --live
+pnpm hive:test --case L001 --stage normalize
+pnpm hive:test --case L001 --stage reasoner --live
+pnpm hive:test --case L001 --stage validator
+pnpm hive:test --case L001 --stage writer --live
+pnpm hive:test --case L001 --stage all --live
+```
+
+**Requirements when implemented (ticket TBD after DP-01):** cases **L001–L006**; **synthetic bankruptcy** and **synthetic unknown-domain** documents; **replay** of saved intermediate artifacts; stage or full pipeline; deterministic default (**no** `--live` → no paid model calls); reuse **`@hiveforyou/eval`** golden grading (no second grader). Implementation lives at repo root `package.json` → delegate to `engine/eval` (or thin `scripts/hive-test.ts`).
+
+**Interim Done-when commands (stages other than `pack`):** see [NEXT.md § Universal qualification gates](../status/NEXT.md#universal-qualification-gates-interim-until-hivetest).
+
+### Qualification report (every increment)
+
+Each increment closure produces a short report: ticket + SHA (when committed); exact PowerShell command; PASS/FAIL; inputs/outputs; **packId / version / digest**; applied mappings + compliance; golden comparison where applicable; missing/invented/rejected claims; provenance/temporal checks; regression tests; for `--live` runs: provider, model, tokens, latency, cost estimate; remaining defects. Persist reusable model outputs for downstream replay.
+
+### Zero new environment variables (v1.4 acceptance — mandatory)
+
+**Do not introduce** new `.env` entries, feature flags, provider-selection envs, test-only secrets, or duplicate model config for the Universal Canonical Study path.
+
+- Select **case**, **stage**, **domain**, **replay**, and **live** via **CLI flags** (and request/body fields in orchestration), not new env.
+- Use **existing** credentials: `MODEL_PROVIDER`, `MODEL_NAME`, `HIVE_ANTHROPIC_API_KEY`, hive-agents `MODEL_*`, worker `MODEL_*`, etc.
+- Missing credentials → **actionable fail-closed error**; **never** silent provider substitution.
+
+**Reconciliation debt:** local Phase D `create-canonical-reasoner-from-env.ts` references **`HIVE_CANONICAL_GRAPH_REASONER_*`** env vars — **not** acceptable for v1.4 acceptance. **DP-04** must refactor reasoner creation to **existing** `MODEL_*` / `CallModel` env + CLI `--live` / `--fixture` (or inline script args) without adding production config surface.
+
+---
+
 ## Canonical Study vNext (v1.3 — PROPOSED)
 
-**Architecture version:** [HIVE-ARCHITECTURE-V2-PROPOSED.md](./HIVE-ARCHITECTURE-V2-PROPOSED.md) **v1.3**  
-**Production:** unchanged until **Phase H** approval. OpenAI v4/v4.1 → `case-intelligence/3` remains the live path.
+**Architecture version:** [HIVE-ARCHITECTURE-V2-PROPOSED.md](./HIVE-ARCHITECTURE-V2-PROPOSED.md) **v1.4** (includes v1.3 pipeline)
+**Production:** unchanged until **CS-vNext-H** approval. OpenAI v4/v4.1 → `case-intelligence/3` remains the live path.
 
-**Immediate authorized ticket:** [NEXT.md](../status/NEXT.md) — **CS-vNext-C.1 complete locally (2026-10-18)**. Phase C evidence-integrity review **closed**. **Phase D+ implementation blocked** until explicit user approval.
+**Checkpoint / reasoner status:** [NEXT.md](../status/NEXT.md) — **CS-vNext-D implemented locally (2026-10-18), not committed, live Anthropic qualification not run**. Checkpoint **B–C.1:** `c721369`. **CS-vNext-E+** and **DP-01 … DP-04** **not authorized**.
 
 ### Phase status summary
 
@@ -48,11 +134,11 @@ Living repo layout: [REPO-MAP.md](./REPO-MAP.md) · Historical: [REPO-MAP-v1.1.m
 | **B** | Canonical Graph contracts | **Implemented locally** (uncommitted workstream); verification caveats documented | Phase C review |
 | **C** | Observation Normalizer | **Implemented locally**; **evidence-integrity review complete (2026-10-18)** | Phase D requires explicit NEXT authorization |
 | **C.1** | Generic period wire mapping (`claimValueFromWire`) | **Complete locally (2026-10-18)** | N/A |
-| **D** | Canonical Reasoner | **Not started** (port + orchestration) | Explicit NEXT authorization |
-| **E** | Graph Validator | **Not started** (accept partition + persistence) | After Phase D scaffold |
-| **F** | Production persistence, orchestration, Canonical Study UI, Writer graph adapter, entitlement | **Not started** | After Phases D–E |
-| **G** | L001 semantic qualification + non-IEP portability | **Not started** | After Phase F wiring |
-| **H** | Production activation + rollback | **Not started** | Explicit go/no-go |
+| **D** | Canonical Reasoner | **Complete locally (2026-10-18)** — **uncommitted**; L001 live Anthropic **not run** | **CS-vNext-E** / **DP-04** require explicit NEXT authorization |
+| **E** | Graph Validator | **Not started** (ticket **CS-vNext-E**; after **DP-04**) | Explicit NEXT authorization |
+| **F** | Production persistence, orchestration, Canonical Study UI, Writer graph adapter, entitlement (**CS-vNext-F**) | **Not started** | After **CS-vNext-E** + **DP-04** |
+| **G** | L001–L006 + non-IEP domain (**CS-vNext-G**) | **Not started** | After Phase F wiring |
+| **H** | Production activation + rollback (**CS-vNext-H**) | **Not started** | Explicit go/no-go |
 
 ### Phase definitions
 
@@ -61,7 +147,7 @@ Living repo layout: [REPO-MAP.md](./REPO-MAP.md) · Historical: [REPO-MAP-v1.1.m
 | Field | Value |
 |-------|--------|
 | **Dependencies** | None |
-| **Deliverables** | v1.3 amendment in `HIVE-ARCHITECTURE-V2-PROPOSED.md`; v1.3 plan in this file; `NEXT.md` tracker; `REPO-MAP.md` |
+| **Deliverables** | v1.3–v1.4 amendments in `HIVE-ARCHITECTURE-V2-PROPOSED.md`; plan in this file; `NEXT.md` tracker; `REPO-MAP.md` as needed |
 | **Acceptance criteria** | Pipeline, contracts, consolidation deltas, and production-boundary language documented; no claim of production activation |
 | **Test evidence** | Documentation review only |
 | **Status** | **Complete (2026-10-18)** |
@@ -96,19 +182,19 @@ Living repo layout: [REPO-MAP.md](./REPO-MAP.md) · Historical: [REPO-MAP-v1.1.m
 | **Dependencies** | Phase C closed; persisted observation snapshot; pack compiled graph context |
 | **Deliverables** | Reasoner implementation of `CanonicalStudyReasoner` port; prompt + strict JSON schema; fixture/replay mode; persistence slot for proposal |
 | **Acceptance criteria** | Proposals validate as `canonical-study-reasoner-proposal/1`; no persistence of accepted graph without Phase E; replay tests without live model by default |
-| **Test evidence** | TBD — unit + recorded fixture |
-| **Status** | **Blocked** (Phase C) |
-| **Approval** | Explicit NEXT authorization |
+| **Test evidence** | **2026-10-18:** `@hiveforyou/core` `canonical-reasoner` **7/7**; `@hiveforyou/domain-packs` compile reasoner context **1/1**; obs **11/11**; shared graph **6/6**. L001 live script ready (`run-l001-canonical-reasoner.mjs`); **not executed** — Anthropic env missing locally. |
+| **Status** | **Complete locally (2026-10-18)** — **uncommitted** |
+| **Approval** | **DP-04** (Reasoner pack + live L001) and **CS-vNext-E** require explicit NEXT authorization; no Phase D commit without approval |
 
-#### Phase E — Graph Validator
+#### Phase E — Graph Validator (CS-vNext-E)
 
 | Field | Value |
 |-------|--------|
-| **Dependencies** | Phase D proposal schema stable |
+| **Dependencies** | **DP-04** Reasoner pack qualification; Phase D proposal schema stable locally |
 | **Deliverables** | Deterministic validator producing `canonical-study-graph-validation/1` and `hive.canonical-study-graph/1` on success; issue codes aligned with `validator-issue-codes.ts` |
 | **Acceptance criteria** | Fail closed on broken provenance; unresolved partition preserved; accepted graph validates; no UI/report consumption of unaccepted proposals |
 | **Test evidence** | TBD — validator fixture suite |
-| **Status** | **Blocked** (Phase C) |
+| **Status** | **Blocked** (Phase D local complete; validator not started) |
 | **Approval** | Explicit NEXT authorization |
 
 #### Phase F — Production persistence, orchestration, UI, Writer adapter, entitlement
@@ -243,6 +329,14 @@ Statuses reflect repo state as of 2026-10-12. **Done** does not re-authorize dep
 | T3.7 | Reproducible Python deps + Oracle Docker for hive-agents | Done (see CURRENT) |
 | T3.8 | DSPy handoff, Reader normalization, L001 document identity, agentic qualification path | Done (see CURRENT) |
 | T3.9 | L001 Reader architecture A/B (case_wide vs parallel_document); golden v4.1 prompt; Engine 1 context; dedup + timing; golden 117-fact grade; dry-run + cost estimate | **Done** (repo P1–P6); deploy/live Anthropic **STOP until approval** |
+| **DP-01** | IEP Pack + compiler + stage interaction audit; migration needs | **Complete (2026-10-18)** — see [DP-01-AUDIT.md](../status/DP-01-AUDIT.md) |
+| **DP-02** | Four-section schema-first pack contract + Generic fallback + compilers | **Complete locally (2026-10-18)** — [DP-02-MIGRATION.md](../status/DP-02-MIGRATION.md) · [DP-02-QUALIFICATION.md](../status/DP-02-QUALIFICATION.md) |
+| **DP-03** | Discover / Reader / Normalizer explicit pack compliance | **Not authorized** |
+| **DP-04** | Reasoner pack integration + `observableTypes[]` + L001 live Anthropic | **Not authorized** |
+| **CS-vNext-E** | Graph Validator vs finalized Pack interface | **Not authorized** (Phase E) |
+| **CS-vNext-F** | Persistence, Oracle/Inngest, inspection UI, Writer, entitlements | **Not authorized** (Phase F) |
+| **CS-vNext-G** | Qualify L001–L006 + non-IEP domain | **Not authorized** (Phase G) |
+| **CS-vNext-H** | Controlled activation + rollback | **Not authorized** (Phase H) |
 
 ### T1.2 closure rule (amended)
 
@@ -323,10 +417,16 @@ Full table: [HIVE-ARCHITECTURE-V2-PROPOSED.md — Superseded or deferred provisi
 
 Dated SHA notes and ticket completion history: [NEXT.md — Log](../status/NEXT.md#log). Append new rows there; do not truncate prior entries.
 
-Every implementation ticket must cite **architecture version** (e.g. v1.3) and **phase acceptance criteria** from § Canonical Study vNext.
+Every implementation ticket must cite **architecture version** (e.g. v1.4) and acceptance criteria from § Domain Pack track and/or § Canonical Study vNext.
 
 | Date | Arch/plan version | Ticket | Status | Files changed | Tests / results | Commit SHA | Blockers | Approval |
 |------|-------------------|--------|--------|---------------|-----------------|------------|----------|----------|
+| 2026-10-18 | HIVE-ARCH v1.4 / AGENTIC-PLAN v1.4 | Decisions 1–3 reconciliation | Complete (documentation) | `brain/plan/HIVE-ARCHITECTURE-V2-PROPOSED.md`, `brain/plan/AGENTIC-PLAN.md`, `brain/status/NEXT.md` | `git diff --check`; doc consistency review | — | DP-01 … DP-04, CS-vNext-E … H | **Pending user review** |
+| 2026-10-18 | v1.4 | Universal Canonical Study plan (increments + harness + zero env) | Complete (documentation only) | `AGENTIC-PLAN.md`, `HIVE-ARCHITECTURE-V2-PROPOSED.md`, `NEXT.md`, `REPO-MAP.md` | Interim PowerShell gates; no `hive:test` on disk | — | DP-01 first impl ticket | **Stop — pending approval** |
+| 2026-10-18 | v1.4 | **DP-01** audit + Inc 1 qualification | Complete (audit) | `brain/status/DP-01-AUDIT.md`, `DP-01-QUALIFICATION.md`, `NEXT.md`, this file | shared **6/6**; obs **7/7**; registry **42/42**; `registry.test.ts` **1 fail** | — | **DP-02** | **Stop for review** |
+| 2026-10-18 | v1.4 | **DP-02** Mapping Pack + Generic fallback | Complete (local, uncommitted) | `engine/domain-packs/registry/mapping-pack/`, `engine/domain-packs/generic/v1.0.0/`, `scripts/hive-test.ts`, brain DP-02 docs | `pnpm hive:test --stage pack` **PASS**; registry **76/76**; `git diff --check` **PASS** | — | **DP-03** wiring; commit/deploy | **Stop for review** |
 | 2026-10-18 | HIVE-ARCH v1.3 / AGENTIC-PLAN v1.3 | CS-vNext Phase A | Complete (documentation) | `brain/plan/HIVE-ARCHITECTURE-V2-PROPOSED.md`, `brain/plan/AGENTIC-PLAN.md`, `brain/plan/REPO-MAP.md`, `brain/status/NEXT.md` | Doc review; shared contract tests cited in Phase B row | — (no commit per user request) | Phase C evidence closure | **Pending user approval of amendment diff** |
 | 2026-10-18 | v1.3 | CS-vNext Phase C | Evidence-integrity review complete | `brain/status/NEXT.md`, `brain/plan/AGENTIC-PLAN.md` | L001 100 facts; 98→100 after period fix; determinism verified | — | Phase D | Blocked pending approval |
 | 2026-10-18 | v1.3 | CS-vNext-C.1 | Complete (local) | `engine/core/src/study/observations/wire-fact.ts`, `wire-fact.test.ts`, normalize tests | 11/11 core obs tests; L001 100/100; digest `a31b10186d2ea457b425786e6a4c182e40eb801240570438912af014d81cf10d` | — | None | Phase D not authorized |
+| 2026-10-18 | v1.3 | CS-vNext checkpoint | Committed B–C.1 | graph contracts + observation normalizer | shared 6/6; obs 11/11 | c721369 | — | Phase D |
+| 2026-10-18 | v1.3 | CS-vNext-D | Complete (local, uncommitted) | `engine/core/src/study/canonical-reasoner/`, pack reasoner context compiler | Reasoner 7/7; pack context 1/1; L001 live skipped (Anthropic env) | — | L001 live | Phase E blocked |

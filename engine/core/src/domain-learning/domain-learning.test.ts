@@ -21,6 +21,7 @@ import { runCanonicalStudy, type StudyServiceDeps } from "../study/run-canonical
 import type { StartCanonicalStudyRequest } from "@hiveforyou/shared/canonical-study";
 
 import { createDomainLearningCandidate } from "./learning-candidate";
+import { recordAdHocIntakeLearningCandidate } from "./record-ad-hoc-intake-learning-candidate";
 import { createInMemoryDomainLearningPort } from "./index";
 import { mapEvidenceSourceClass, recordPostValidationLearning } from "./record-post-validation-learning";
 import { freezeCanonicalStudyContext } from "../study/freeze-context";
@@ -416,5 +417,27 @@ describe("domain learning foundation", () => {
     const outcome = await runCanonicalStudy(baseRequest(), deps);
     expect(outcome.run.status).toBe("FAILED");
     expect(outcome.run.errorCode).toBe("PERSISTENCE_FAILURE");
+  });
+
+  it("records ad-hoc intake learning candidates for product review", async () => {
+    const domainLearning = createInMemoryDomainLearningPort();
+    const stored = await recordAdHocIntakeLearningCandidate(domainLearning.candidates, {
+      rawIntent: "Track junk food spending",
+      ephemeralSchemaId: "schema-uuid-1",
+      intakeRunId: "run-1",
+      caseId: "case-1",
+    });
+    expect(stored).toMatchObject({
+      domainId: "generic",
+      candidateType: "ad_hoc_intake",
+      subjectKey: "schema-uuid-1",
+      status: "PROPOSED",
+      proposedLearning: {
+        source: "ad_hoc_intake",
+        rawIntent: "Track junk food spending",
+        ephemeralSchemaId: "schema-uuid-1",
+        reviewStatus: "pending_review",
+      },
+    });
   });
 });

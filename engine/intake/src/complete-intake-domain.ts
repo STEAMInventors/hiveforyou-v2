@@ -1,5 +1,17 @@
+import {
+  recordAdHocIntakeLearningCandidate,
+  type DomainLearningCandidateRepository,
+} from "@hiveforyou/core";
 import type { IntakePackExecutionResult } from "@hiveforyou/domain-pack";
+import { defaultDeclarativePackRepoRoot } from "@hiveforyou/domain-packs/declarative";
+import { resolveMappingPackForDomain } from "@hiveforyou/domain-packs/mapping-pack";
+import type { EphemeralSchemaInsert } from "@hiveforyou/shared/intake/ephemeral-schema";
+import type { StudyIntent } from "@hiveforyou/shared/intake/study-intent";
 
+import {
+  collectDocumentSamples,
+  generateEphemeralSchema,
+} from "./dynamic-schema-generator";
 import { resolveIntakeDomain } from "./domain-resolution";
 import type { JevDomainDecision } from "./jev-domain-client";
 import {
@@ -20,6 +32,8 @@ export type CompleteIntakeDomainInput = {
   filenamesBySourceId: Record<string, string>;
   normalizedBySourceId: Record<string, DocumentNormalizedExtractionRecord>;
   decideDomain?: (rawIntent: string) => Promise<JevDomainDecision>;
+  persistEphemeralSchema?: (data: EphemeralSchemaInsert) => Promise<string>;
+  domainLearningCandidates?: DomainLearningCandidateRepository;
 };
 
 export type CompleteIntakeDomainResult = {
@@ -27,22 +41,52 @@ export type CompleteIntakeDomainResult = {
   packExecution: IntakePackExecutionResult | null;
 };
 
+function resolvedSchemaIdForDomain(domainId: string): string {
+  try {
+    const resolved = resolveMappingPackForDomain({
+      domainId,
+      domainResolution: "known",
+      repoRoot: defaultDeclarativePackRepoRoot(),
+      allowPrerelease: true,
+    });
+    return `${resolved.pin.packId}_v${resolved.pin.packVersion}`;
+  } catch {
+    return `${domainId}_pack`;
+  }
+}
+
+function buildExplicitStudyIntent(input: {
+  domainId: string;
+  originalGoal: string | null;
+}): StudyIntent {
+  return {
+    schemaVersion: "hive.study-intent/1",
+    selectedDomainId: input.domainId,
+    resolvedSchemaId: resolvedSchemaIdForDomain(input.domainId),
+    schemaSource: "pinned_pack",
+    routingPath: "explicit",
+    originalGoal: input.originalGoal,
+    interpretedTask: null,
+    clarificationStatus: "not_required",
+  };
+}
+
 export async function completeIntakeDomainPack(
   input: CompleteIntakeDomainInput,
 ): Promise<CompleteIntakeDomainResult> {
   const rawIntent = input.run.rawIntent?.trim() || null;
-  const explicitDomainId = input.run.explicitDomainId?.trim() || null;
+  const selectedDomainId = input.run.selectedDomainId?.trim() || null;
 
   let jevProposal: string | null = input.run.jevDomainProposal;
   let jevConfidence: number | null = input.run.jevDomainConfidence;
 
-  if (!explicitDomainId && rawIntent && input.decideDomain) {
+  if (!selectedDomainId && rawIntent && input.decideDomain) {
     const decision = await input.decideDomain(rawIntent);
     jevProposal = decision.choice;
     jevConfidence = decision.confidence;
   }
 
-  if (!explicitDomainId && !jevProposal && rawIntent) {
+  if (!selectedDomainId && !jevProposal && rawIntent) {
     const local = decideIntakeDomainFromRawIntent(rawIntent);
     if (local && isRoutableLocalDomainChoice(local.choice)) {
       jevProposal = local.choice;
@@ -50,7 +94,7 @@ export async function completeIntakeDomainPack(
     }
   }
 
-  if (!explicitDomainId && !jevProposal) {
+  if (!selectedDomainId && !jevProposal) {
     const fromDocuments = inferIntakeDomainFromIdentities(input.identities);
     if (fromDocuments && isRoutableLocalDomainChoice(fromDocuments.choice)) {
       jevProposal = fromDocuments.choice;
@@ -60,7 +104,7 @@ export async function completeIntakeDomainPack(
 
   const resolution = resolveIntakeDomain({
     rawIntent,
-    explicitDomainId,
+    selectedDomainId,
     jevDomainProposal: jevProposal,
     jevDomainConfidence: jevConfidence,
   });
@@ -92,6 +136,54 @@ export async function completeIntakeDomainPack(
     });
   }
 
+  let studyIntent = input.run.studyIntent ?? null;
+  if (
+    resolution.resolutionSource === "EXPLICIT" &&
+    resolution.studyPath === "DOMAIN_PACK" &&
+    resolution.resolvedDomainId
+  ) {
+    studyIntent = buildExplicitStudyIntent({
+      domainId: resolution.resolvedDomainId,
+      originalGoal: input.run.rawIntent,
+    });
+  } else if (resolution.studyPath === "GENERIC_STUDY") {
+    if (!input.persistEphemeralSchema) {
+      throw new Error(
+        "persistEphemeralSchema is required when intake resolves to GENERIC_STUDY (ad-hoc dynamic schema).",
+      );
+    }
+    const documentSamples = collectDocumentSamples(
+      participatingIdentities,
+      input.normalizedBySourceId,
+    );
+    const dynamicResponse = await generateEphemeralSchema(
+      {
+        rawIntent: rawIntent ?? "",
+        documentSamples,
+      },
+      input.persistEphemeralSchema,
+    );
+    studyIntent = {
+      schemaVersion: "hive.study-intent/1",
+      selectedDomainId: null,
+      resolvedSchemaId: dynamicResponse.schemaId,
+      schemaSource: "dynamic_generation",
+      routingPath: "ad-hoc",
+      originalGoal: input.run.rawIntent,
+      interpretedTask: dynamicResponse.interpretedTask,
+      clarificationStatus: "not_required",
+    };
+    // PER SPEC: Ad-hoc telemetry is append-only. Do not trigger automatic domain pack generation here.
+    if (input.domainLearningCandidates) {
+      await recordAdHocIntakeLearningCandidate(input.domainLearningCandidates, {
+        rawIntent: studyIntent.originalGoal,
+        ephemeralSchemaId: studyIntent.resolvedSchemaId,
+        intakeRunId: input.run.id,
+        caseId: input.run.caseId,
+      });
+    }
+  }
+
   const updatedRun: IntakeRunRecord = {
     ...input.run,
     jevDomainProposal: jevProposal,
@@ -99,6 +191,7 @@ export async function completeIntakeDomainPack(
     resolvedDomainId: resolution.resolvedDomainId,
     resolutionSource: resolution.resolutionSource,
     studyPath: resolution.studyPath,
+    studyIntent,
     packExecutionJson: packExecution ? JSON.stringify(packExecution) : null,
     updatedAt: new Date().toISOString(),
   };

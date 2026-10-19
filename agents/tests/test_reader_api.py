@@ -44,7 +44,8 @@ def api_env(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("HIVE_AGENTS_SERVICE_TOKEN", "service-token-test")
     monkeypatch.setenv("HIVE_VERIFIER_TOKEN", "verifier-token-test")
     monkeypatch.setenv("HIVE_AGENTS_ALLOW_NONPERSISTENT_AUDIT", "1")
-    monkeypatch.setenv("HIVE_ANTHROPIC_API_KEY", "test-key")
+    monkeypatch.setenv("LITELLM_BASE_URL", "http://litellm.test/v1")
+    monkeypatch.setenv("LITELLM_API_KEY", "test-litellm-key")
     get_settings.cache_clear()
 
 
@@ -650,12 +651,11 @@ def test_health_exposes_reader_model_identity(
     client: TestClient,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("MODEL_PROVIDER", "anthropic")
-    monkeypatch.setenv("MODEL_NAME", "claude-opus-5-5")
+    monkeypatch.setenv("MODEL_HARVESTER", "gemini/gemini-1.5-flash")
     get_settings.cache_clear()
     response = client.get("/health")
     assert response.status_code == 200
     payload = response.json()
     assert payload["status"] == "ok"
-    assert payload["modelProvider"] == "anthropic"
-    assert payload["modelName"] == "claude-opus-5-5"
+    assert payload["modelProvider"] == "litellm"
+    assert payload["modelName"] == "gemini/gemini-1.5-flash"

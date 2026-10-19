@@ -26,6 +26,8 @@ export function callModelEnvFromServerEnv(env: ServerEnv): Record<string, string
     MODEL_MAX_OUTPUT_TOKENS:
       env.MODEL_MAX_OUTPUT_TOKENS != null ? String(env.MODEL_MAX_OUTPUT_TOKENS) : undefined,
     OPENAI_API_KEY: env.OPENAI_API_KEY,
+    LITELLM_BASE_URL: env.LITELLM_BASE_URL,
+    LITELLM_API_KEY: env.LITELLM_API_KEY,
     HIVE_ANTHROPIC_API_KEY: env.HIVE_ANTHROPIC_API_KEY,
     HIVE_ANTHROPIC_WORKSPACE_ID: env.HIVE_ANTHROPIC_WORKSPACE_ID,
     HIVE_CANONICAL_STUDY_ENGINE: env.HIVE_CANONICAL_STUDY_ENGINE,
@@ -48,7 +50,7 @@ export function callModelFromEnv(
   const hasKey =
     provider === "anthropic"
       ? Boolean(source.HIVE_ANTHROPIC_API_KEY?.trim())
-      : Boolean(source.OPENAI_API_KEY?.trim());
+      : Boolean(source.LITELLM_API_KEY?.trim() || source.OPENAI_API_KEY?.trim());
   if (!hasKey) {
     return undefined;
   }
@@ -86,7 +88,6 @@ export function canonicalStudyEngineFromServerEnv(
     {
       promptVersion,
       callModel: bundle ? callModelFromEnv(source) : undefined,
-      modelName: bundle?.modelName,
     },
   );
 }
@@ -106,7 +107,6 @@ export function discoverEngineFromServerEnv(
     {
       adaptiveV2,
       callModel: bundle ? callModelFromEnv(source) : undefined,
-      modelName: bundle?.modelName,
     },
   );
 }
@@ -124,7 +124,6 @@ export function discoverResolutionEngineFromServerEnv(
     },
     {
       callModel: bundle ? callModelFromEnv(source) : undefined,
-      modelName: bundle?.modelName,
     },
   );
 }

@@ -273,8 +273,6 @@ export async function runStudyShadowPipeline(input: {
         const { assembled } = shadowAssembleDocument(documentPages);
         const tier1 = await shadowTier1Document({
           assembled,
-          callModel: modelBundle.callModel,
-          model: modelBundle.modelName,
         });
         state = upsertShadowDocState(state, {
           ...(work ?? {

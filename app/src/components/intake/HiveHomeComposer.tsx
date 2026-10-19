@@ -15,6 +15,7 @@ import { ACCEPTED_UPLOAD_MIME } from "@/lib/upload-constants";
 const ROUTABLE_PACKS = listDomainPacksByCapability("intake.work-purpose").map((pack) => ({
   domainId: pack.id,
   label: pack.name,
+  executable: pack.executable,
 }));
 
 const DOMAIN_PLACEHOLDERS: Record<string, string> = {
@@ -65,7 +66,7 @@ function domainPillClass(domainId: string, selected: boolean): string {
 
 export type HiveComposerSubmit = {
   rawIntent: string;
-  explicitDomainId: string | null;
+  selectedDomainId: string | null;
   files: File[];
 };
 
@@ -78,20 +79,26 @@ export function HiveHomeComposer({ onSubmit, busy = false }: HiveHomeComposerPro
   const fileInputId = useId();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [rawIntent, setRawIntent] = useState("");
-  const [explicitDomainId, setExplicitDomainId] = useState<string | null>(null);
+  const [selectedDomainId, setSelectedDomainId] = useState<string | null>(null);
   const [attachments, setAttachments] = useState<File[]>([]);
 
   const addFiles = useCallback((files: File[]) => {
     setAttachments((current) => [...current, ...files]);
   }, []);
 
+  const selectedPack =
+    selectedDomainId !== null
+      ? ROUTABLE_PACKS.find((pack) => pack.domainId === selectedDomainId)
+      : null;
+  const explicitDomainReady =
+    selectedDomainId !== null && (selectedPack?.executable ?? false);
+
   const canSubmit =
-    attachments.length > 0 &&
-    (explicitDomainId !== null || isDescribedIntentReady(rawIntent));
+    attachments.length > 0 && (explicitDomainReady || isDescribedIntentReady(rawIntent));
 
   const placeholder =
-    explicitDomainId && DOMAIN_PLACEHOLDERS[explicitDomainId]
-      ? DOMAIN_PLACEHOLDERS[explicitDomainId]
+    selectedDomainId && DOMAIN_PLACEHOLDERS[selectedDomainId]
+      ? DOMAIN_PLACEHOLDERS[selectedDomainId]
       : PURPOSE_DESCRIBED_PLACEHOLDER;
 
   const handleSubmit = () => {
@@ -100,13 +107,16 @@ export function HiveHomeComposer({ onSubmit, busy = false }: HiveHomeComposerPro
     }
     onSubmit({
       rawIntent: rawIntent.trim(),
-      explicitDomainId,
+      selectedDomainId,
       files: attachments,
     });
   };
 
-  const toggleDomain = (domainId: string) => {
-    setExplicitDomainId((current) => (current === domainId ? null : domainId));
+  const toggleDomain = (domainId: string, executable: boolean) => {
+    if (!executable) {
+      return;
+    }
+    setSelectedDomainId((current) => (current === domainId ? null : domainId));
   };
 
   return (
@@ -198,7 +208,22 @@ export function HiveHomeComposer({ onSubmit, busy = false }: HiveHomeComposerPro
               </svg>
             </button>
             {ROUTABLE_PACKS.map((pack) => {
-              const selected = explicitDomainId === pack.domainId;
+              const selected = selectedDomainId === pack.domainId;
+              if (!pack.executable) {
+                return (
+                  <button
+                    key={pack.domainId}
+                    type="button"
+                    disabled
+                    title="Coming Soon"
+                    data-testid={`hive-composer-domain-${pack.domainId}`}
+                    aria-pressed={false}
+                    className={`${domainPillClass(pack.domainId, false)} cursor-not-allowed opacity-50`}
+                  >
+                    {shortDomainLabel(pack.domainId, pack.label)}
+                  </button>
+                );
+              }
               return (
                 <button
                   key={pack.domainId}
@@ -206,7 +231,7 @@ export function HiveHomeComposer({ onSubmit, busy = false }: HiveHomeComposerPro
                   data-testid={`hive-composer-domain-${pack.domainId}`}
                   aria-pressed={selected}
                   className={domainPillClass(pack.domainId, selected)}
-                  onClick={() => toggleDomain(pack.domainId)}
+                  onClick={() => toggleDomain(pack.domainId, pack.executable)}
                 >
                   {shortDomainLabel(pack.domainId, pack.label)}
                 </button>
@@ -237,14 +262,17 @@ export function HiveHomeComposer({ onSubmit, busy = false }: HiveHomeComposerPro
             type="button"
             className="min-h-10 cursor-pointer rounded-full border border-[#E3E3E3] bg-white px-4 py-2 text-sm text-[#3C4043] transition-colors hover:border-[#DADCE0] hover:bg-[#F8F9FA]"
             onClick={() => {
-              if (
-                suggestion.domainId &&
-                !ROUTABLE_PACKS.some((pack) => pack.domainId === suggestion.domainId)
-              ) {
+              if (!suggestion.domainId) {
+                setSelectedDomainId(null);
                 setRawIntent(suggestion.fill);
                 return;
               }
-              setExplicitDomainId(suggestion.domainId);
+              const pack = ROUTABLE_PACKS.find((row) => row.domainId === suggestion.domainId);
+              if (pack?.executable) {
+                setSelectedDomainId(suggestion.domainId);
+              } else {
+                setSelectedDomainId(null);
+              }
               setRawIntent(suggestion.fill);
             }}
           >

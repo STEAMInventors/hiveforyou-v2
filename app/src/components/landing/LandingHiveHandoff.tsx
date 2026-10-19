@@ -22,8 +22,8 @@ export type HiveHandoffDraft = {
 
 type LandingHiveHandoffProps = {
   fileCount: number;
-  composerExplicitDomainId: string | null;
-  explicitDomainLabel: string | null;
+  composerSelectedDomainId: string | null;
+  selectedDomainLabel: string | null;
   draftCaseId: string;
   initialDraft?: HiveHandoffDraft | null;
   onBack: () => void;
@@ -33,8 +33,8 @@ type LandingHiveHandoffProps = {
 
 export function LandingHiveHandoff({
   fileCount,
-  composerExplicitDomainId,
-  explicitDomainLabel,
+  composerSelectedDomainId,
+  selectedDomainLabel,
   draftCaseId,
   initialDraft = null,
   onBack,
@@ -98,11 +98,11 @@ export function LandingHiveHandoff({
           >
             Create Your Hive
           </button>
-          {composerExplicitDomainId ? (
+          {composerSelectedDomainId ? (
             <p className="m-0 text-center text-sm text-[#5F6368]" data-testid="landing-hive-handoff-domain">
               Domain:{" "}
               <span className="font-medium text-[#3C4043]">
-                {explicitDomainLabel ?? composerExplicitDomainId}
+                {selectedDomainLabel ?? composerSelectedDomainId}
               </span>
             </p>
           ) : null}
@@ -123,8 +123,8 @@ export function LandingHiveHandoff({
 
       <CreateYourHiveModal
         open={modalOpen}
-        domainId={composerExplicitDomainId}
-        domainLabel={explicitDomainLabel}
+        domainId={composerSelectedDomainId}
+        domainLabel={selectedDomainLabel}
         hiveName={hiveName}
         hiveDescription={hiveDescription}
         nameError={nameError}

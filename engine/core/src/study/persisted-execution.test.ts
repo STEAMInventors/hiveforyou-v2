@@ -183,11 +183,14 @@ describe("persisted canonical study execution", () => {
     expect(createCanonicalStudyEngineFromEnv(undefined).mode).toBe("unconfigured");
     expect(createCanonicalStudyEngineFromEnv("").mode).toBe("unconfigured");
     expect(createCanonicalStudyEngineFromEnv("production").mode).toBe("unconfigured");
-    expect(
-      createCanonicalStudyEngineFromEnv(undefined, {
-        callModel: async () => ({ outputText: "{}" }),
-        modelName: "gpt-test",
-      }).mode,
-    ).toBe("openai");
+    process.env.MODEL_HEAVY_LIFTER = "heavy-study-alias";
+    process.env.LITELLM_API_KEY = "test-key";
+    const live = createCanonicalStudyEngineFromEnv(undefined, {
+      promptVersion: "v4",
+      callModel: async () => ({ outputText: "{}" }),
+      modelName: "gpt-test",
+    });
+    expect(live.mode).toBe("openai");
+    expect(live.modelId).toBe("heavy-study-alias");
   });
 });

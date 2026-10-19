@@ -1,0 +1,19 @@
+{
+  "graphBody": {
+    "observables": [
+      {
+        "id": "ob-student-1",
+        "typeId": "person.student",
+        "label": "Student",
+        "identityStatus": "resolved",
+        "observationIds": ["obs-1"]
+      }
+    ],
+    "observationLinks": [{ "observationId": "obs-1", "observableId": "ob-student-1" }],
+    "relationships": [],
+    "resolutions": [],
+    "candidateConflicts": [],
+    "candidateFindings": [],
+    "unresolved": []
+  }
+}

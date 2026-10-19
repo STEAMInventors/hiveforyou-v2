@@ -6,7 +6,6 @@ import type { Party, Statement } from "../../atoms/types";
 import { validateAtoms } from "../../atoms/validate";
 import { assembleDocument } from "../../document/assembly";
 import type { DocumentPages } from "../../document/page-model";
-import type { CallModel } from "../../model/call-model";
 import { arithmeticFindings } from "../primitives/arithmetic";
 import { requirementCoverageFindings } from "../primitives/requirementCoverage";
 import { restatementFindings } from "../primitives/restatement";
@@ -32,13 +31,9 @@ export function shadowAssembleDocument(pages: DocumentPages) {
 
 export async function shadowTier1Document(input: {
   assembled: ReturnType<typeof assembleDocument>;
-  callModel: CallModel;
-  model: string;
 }): Promise<ShadowDocTier1State> {
   const tier1 = await runTier1Semantic({
     assembled: input.assembled,
-    callModel: input.callModel,
-    model: input.model,
   });
   return {
     profile: tier1.profile,

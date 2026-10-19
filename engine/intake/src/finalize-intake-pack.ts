@@ -42,6 +42,8 @@ export async function finalizeIntakeRunPack(
     ),
     normalizedBySourceId,
     decideDomain: deps.decideDomain,
+    persistEphemeralSchema: deps.persistEphemeralSchema,
+    domainLearningCandidates: deps.domainLearningCandidates,
   });
   return completed.run;
 }

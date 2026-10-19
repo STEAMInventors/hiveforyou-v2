@@ -5,6 +5,8 @@ import type {
   HiveDiscoverProposalV2,
   HiveDiscoverResolutionProposalV1,
 } from "@hiveforyou/shared/discover";
+import { createCallModelFromOpenAIClient } from "@hiveforyou/shared/llm/call-model-from-openai-client";
+import { getLLMRouter, resolveTierModelId } from "@hiveforyou/shared/llm/router";
 
 import type { ComposedDiscoverPromptInputs } from "./compose-discover-prompt-inputs";
 import { FixtureDiscoverEngine } from "./fixture-engine";
@@ -83,10 +85,26 @@ export type OpenAIEngineFactory = (input: {
 export type DiscoverEngineFactoryDeps = {
   createOpenAIEngine?: OpenAIEngineFactory;
   adaptiveV2?: boolean;
+  /** Unit tests only; production uses sorter tier gateway. */
   callModel?: CallModel;
-  /** From createCallModelFromEnv — sole authority for production model id. */
+  /** Unit tests only; production uses sorter tier model id. */
   modelName?: string;
 };
+
+function resolveDiscoverSorterTier(deps: DiscoverEngineFactoryDeps): {
+  callModel: CallModel;
+  modelName: string;
+} {
+  const modelName = resolveTierModelId("sorter");
+  if (deps.callModel) {
+    return { callModel: deps.callModel, modelName };
+  }
+  const { client } = getLLMRouter("sorter");
+  return {
+    callModel: createCallModelFromOpenAIClient(client),
+    modelName,
+  };
+}
 
 export type DiscoverResolutionEngineConfig = {
   engine: DiscoverResolutionEngine;
@@ -113,20 +131,28 @@ export function createDiscoverEngineFromEnv(
   }
 
   const reasoningEffort = env.reasoningEffort?.trim() || "medium";
-  const modelName = deps.modelName?.trim();
-  if (deps.callModel && modelName) {
+  const hasInjectedModel = Boolean(deps.callModel && deps.modelName?.trim());
+  const hasOpenAIKey = Boolean(
+    process.env.LITELLM_API_KEY?.trim() || process.env.OPENAI_API_KEY?.trim(),
+  );
+  if (hasInjectedModel || hasOpenAIKey) {
+    const sorter = resolveDiscoverSorterTier(deps);
     const factory = deps.createOpenAIEngine ?? ((input) => new OpenAIDiscoverEngine(input));
     return {
-      engine: factory({ model: modelName, reasoningEffort, callModel: deps.callModel }),
+      engine: factory({
+        model: sorter.modelName,
+        reasoningEffort,
+        callModel: sorter.callModel,
+      }),
       mode: "openai",
       providerId: "openai-discover-engine",
-      modelId: modelName,
+      modelId: sorter.modelName,
       reasoningEffort,
     };
   }
 
   if (normalized === "openai") {
-    const model = modelName || "gpt-5.6-sol";
+    const model = deps.modelName?.trim() || "gpt-5.6-sol";
     return {
       engine: new UnconfiguredDiscoverEngine(),
       mode: "openai",
@@ -155,22 +181,26 @@ export function createDiscoverResolutionEngineFromEnv(
     };
   }
 
-  const modelName = deps.modelName?.trim();
   const reasoningEffort = env.reasoningEffort?.trim() || "medium";
-  if (deps.callModel && modelName) {
+  const hasInjectedModel = Boolean(deps.callModel && deps.modelName?.trim());
+  const hasOpenAIKey = Boolean(
+    process.env.LITELLM_API_KEY?.trim() || process.env.OPENAI_API_KEY?.trim(),
+  );
+  if (hasInjectedModel || hasOpenAIKey) {
+    const sorter = resolveDiscoverSorterTier(deps);
     return {
       engine: new OpenAIDiscoverResolutionEngine({
-        model: modelName,
+        model: sorter.modelName,
         reasoningEffort,
-        callModel: deps.callModel,
+        callModel: sorter.callModel,
       }),
       providerId: "openai-discover-resolution-engine",
-      modelId: modelName,
+      modelId: sorter.modelName,
     };
   }
 
   if (normalized === "openai") {
-    const model = modelName || "gpt-5.6-sol";
+    const model = deps.modelName?.trim() || "gpt-5.6-sol";
     return {
       engine: {
         resolveDiscovery: async () => {

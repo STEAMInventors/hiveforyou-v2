@@ -6,6 +6,7 @@ import type {
   IntakeRunStatus,
   NormalizedDocumentExtraction,
 } from "@hiveforyou/shared/intake";
+import type { StudyIntent } from "@hiveforyou/shared/intake/study-intent";
 
 /** Page-level extraction. Identity is source, page, method, and source hash. */
 export type ExtractionBoundingBox = {
@@ -73,12 +74,13 @@ export type IntakeRunRecord = {
   completedAt: string | null;
   errorCode: string | null;
   rawIntent: string | null;
-  explicitDomainId: string | null;
+  selectedDomainId: string | null;
   jevDomainProposal: string | null;
   jevDomainConfidence: number | null;
   resolvedDomainId: string | null;
   resolutionSource: "EXPLICIT" | "JEV" | "UNRESOLVED" | null;
   studyPath: IntakeStudyPath | null;
+  studyIntent: StudyIntent | null;
   packExecutionJson: string | null;
   /** Monotonic counter for append-source Inngest event ids (`intake:{runId}:{n}`). */
   intakeQueueSeq: number;

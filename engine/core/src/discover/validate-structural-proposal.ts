@@ -17,10 +17,16 @@ export type StructuralProposalInput = {
   relationships: ProposedDiscoverRelationship[];
 };
 
+export type ValidateStructuralDiscoveryProposalOptions = {
+  /** Qualification override: resolve per-logical-document domain packs without legacy registry. */
+  packByDomainId?: (domainId: string) => DiscoverDomainPackSnapshot | null | undefined;
+};
+
 export function validateStructuralDiscoveryProposal(
   proposal: StructuralProposalInput,
   sources: DiscoverSourceDocumentInput[],
   pack: DiscoverDomainPackSnapshot | null,
+  options?: ValidateStructuralDiscoveryProposalOptions,
 ): HiveDiscoverValidationResult {
   const issues: HiveDiscoverValidationResult["issues"] = [];
   const sourceIds = new Set(sources.map((doc) => doc.sourceDocumentId));
@@ -66,10 +72,13 @@ export function validateStructuralDiscoveryProposal(
       });
     }
 
-    const registeredPack =
+    const docDomainId =
       "domainId" in doc && typeof doc.domainId === "string" && doc.domainId.trim()
-        ? getDiscoverPackByDomainId(doc.domainId)
-        : undefined;
+        ? doc.domainId.trim()
+        : "";
+    const registeredPack = docDomainId
+      ? (options?.packByDomainId?.(docDomainId) ?? getDiscoverPackByDomainId(docDomainId))
+      : undefined;
     const docPack =
       registeredPack !== undefined
         ? registeredPack

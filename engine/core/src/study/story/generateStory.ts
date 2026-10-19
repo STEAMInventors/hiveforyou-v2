@@ -2,6 +2,9 @@ import type { DomainPack } from "@hiveforyou/domain-pack";
 import type { Study } from "@hiveforyou/shared/pack-study";
 import type { ValidatedStoryResult } from "@hiveforyou/shared/projections";
 
+import { createCallModelFromOpenAIClient } from "@hiveforyou/shared/llm/call-model-from-openai-client";
+import { getLLMRouter } from "@hiveforyou/shared/llm/router";
+
 import type { CallModel } from "./call-model";
 import { buildSkeleton } from "./buildSkeleton";
 import { STORY_WRITER_SYSTEM_PROMPT } from "./storyPrompt";
@@ -82,11 +85,14 @@ async function callStoryModel(
       `${JSON.stringify(skeletonPayload)}\n\nYour previous answer failed these checks: ${retryErrors.join("; ")}. Fix them and return JSON only.`
     : JSON.stringify(skeletonPayload);
 
-  if (!input.callModel) {
-    throw new Error("STORY_MODEL_NO_API_KEY");
+  let callModel = input.callModel;
+  let model = input.model;
+  const routed = getLLMRouter("heavy_lifter");
+  if (!callModel) {
+    callModel = createCallModelFromOpenAIClient(routed.client);
   }
-  const model = input.model ?? DEFAULT_STORY_WRITER_MODEL;
-  const response = await input.callModel({
+  model = routed.model;
+  const response = await callModel({
     model,
     temperature: 0,
     systemPrompt: STORY_WRITER_SYSTEM_PROMPT,

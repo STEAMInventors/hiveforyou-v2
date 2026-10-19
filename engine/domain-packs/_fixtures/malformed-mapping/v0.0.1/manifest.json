@@ -1,0 +1,8 @@
+{
+  "id": "fixture-malformed",
+  "name": "Malformed Mapping Pack Fixture",
+  "packVersion": "0.0.1",
+  "contractVersion": "hive.domain-mapping-pack/1.0",
+  "status": "fixture_invalid",
+  "schemaSections": ["concepts", "documents", "relationships", "personas"]
+}

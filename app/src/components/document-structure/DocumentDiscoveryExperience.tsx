@@ -1,5 +1,9 @@
 "use client";
 
+/**
+ * @deprecated Stage 1 Intake (`HiveHomeComposer`) is the unified front door.
+ * Legacy `/processing` document discovery must not create new discover runs.
+ */
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { AnswerQuestionsCta } from "@/components/document-structure/AnswerQuestionsCta";

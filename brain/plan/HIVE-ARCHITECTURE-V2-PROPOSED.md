@@ -1,10 +1,12 @@
 # HiveForYou — Domain-Agnostic, Pack-Driven Architecture v2.0 (PROPOSED)
 
-Date: 2026-10-11 (base); **ARCH-01 amendment: 2026-10-12**; **Canonical Study Graph amendment: v1.3 — 2026-10-18**
+Date: 2026-10-11 (base); **ARCH-01 amendment: 2026-10-12**; **Canonical Study Graph: v1.3 — 2026-10-18**; **Finalized decisions 1–3: v1.4 — 2026-10-18**
 Scope: Architecture specification; IEP Domain Pack review continues in parallel.
 Branch: `refactor/engine-boundary`
-Status: **PROPOSED ONLY — not production-active.** Production today remains OpenAI **canonical-study v4/v4.1** → validated **`case-intelligence/3`**, pack-driven Reader qualification paths, and existing projections until **Phase H** activation is explicitly approved in [NEXT.md](../status/NEXT.md). ARCH-01 documentation remains valid for the extraction/Inspector track; v1.3 amends the **target** Canonical Study graph path.
+Status: **PROPOSED ONLY — not production-active.** Production today remains OpenAI **canonical-study v4/v4.1** → validated **`case-intelligence/3`**, pack-driven Reader qualification paths, and existing projections until **Phase H** activation is explicitly approved in [NEXT.md](../status/NEXT.md). ARCH-01 documentation remains valid for the extraction/Inspector track; v1.3–v1.4 describe the **approved target** Canonical Study and Domain Pack contract — **not** current runtime behavior unless explicitly labeled below.
 
+> **v1.4 — Finalized architectural decisions (2026-10-18)** records **Decision 1 (Universal Canonical Study)**, **Decision 2 (Minimal schema-first Domain Pack)**, and **Decision 3 (Explicit Pack execution contracts per stage)**. See [§ v1.4 — Finalized decisions](#v14--finalized-architectural-decisions-2026-10-18). Implementation tickets **DP-01 … DP-04** and **CS-vNext-E … H** are tracked in [AGENTIC-PLAN.md](./AGENTIC-PLAN.md); **none are authorized** until separately approved in [NEXT.md](../status/NEXT.md).
+>
 > **v1.3 — Canonical Study Graph (2026-10-18)** amends the **target** Engine 2 path: **Reader → immutable Observations → model-driven Canonical Reasoner → deterministic Graph Validator → authoritative Canonical Graph (`hive.canonical-study-graph/1`) → Writer / persona projections.** See [§ v1.3 — Canonical Study Graph architecture](#v13--canonical-study-graph-architecture-proposed-2026-10-18). **Does not** authorize runtime migration, orchestration wiring, or production cutover.
 >
 > **ARCH-01 (2026-10-12)** records the simplified **pack-driven extraction path** (Engine 1 boundaries → parallel Anthropic Reader → per-document raw persistence → temporary Extraction Inspector). Cross-document canonical consolidation and Customer/Pro reports are **explicitly deferred** on the ARCH-01 track; v1.3 **supersedes the consolidation *shape*** for the Canonical Study vNext workstream while **preserving** ARCH-01 extraction/Inspector history. See [§ ARCH-01](#arch-01--simplified-pack-driven-extraction-path-approved-2026-10-12).
@@ -13,7 +15,59 @@ Status: **PROPOSED ONLY — not production-active.** Production today remains Op
 
 **Historical sources (ARCH-01 reconciliation):** Approved Agentic Plan v1.1 and its REPO-MAP are preserved as immutable snapshots — [AGENTIC-PLAN-v1.1.md](./AGENTIC-PLAN-v1.1.md), [REPO-MAP-v1.1.md](./REPO-MAP-v1.1.md). The living plan amendment is [AGENTIC-PLAN.md](./AGENTIC-PLAN.md) (**v1.3**); ticket execution and SHA history remain in [NEXT.md](../status/NEXT.md). Completed T3.x Reader work remains historical.
 
-**Governing version for Canonical Study vNext tickets:** cite **`HIVE-ARCHITECTURE-V2-PROPOSED.md` v1.3** and phase acceptance criteria in [AGENTIC-PLAN.md](./AGENTIC-PLAN.md) § Canonical Study vNext.
+**Governing version for Canonical Study vNext and Domain Pack tickets:** cite **`HIVE-ARCHITECTURE-V2-PROPOSED.md` v1.4** (decisions + v1.3 pipeline) and acceptance criteria in [AGENTIC-PLAN.md](./AGENTIC-PLAN.md) § Canonical Study vNext and § Domain Pack track.
+
+---
+
+## v1.4 — Finalized architectural decisions (2026-10-18)
+
+These decisions are **approved target architecture**. **Production runtime** (OpenAI v4/v4.1 → `case-intelligence/3`, legacy pack surfaces, qualification Reader paths) is unchanged until **CS-vNext-H** and related tickets are explicitly authorized and activated.
+
+### Decision 1 — Universal Canonical Study
+
+Hive Core maintains **one domain-agnostic authoritative Canonical Graph** per accepted study attempt. The graph is **independent of reports** and **does not discard** conflicting or historical information; domain-specific structured views are **projections** from the accepted graph only.
+
+| Element | Role | Target mutability | Notes |
+|---------|------|-------------------|--------|
+| **Observables** | Stable identities for things-in-the-world (entity **occurrences** — who/what/when/where roles) | Proposed by Reasoner; accepted only after validation | **Separated from** factual assertions (Observations) |
+| **Observations** | Immutable, evidence-backed assertions about observables (predicate, value, role, evidence refs) | **Immutable** once in `hive.observation-snapshot/1` | Normalizer output; never silently merge distinct reader assertions |
+| **Resolutions** | Cross-document identity merge, operative choice, conflict disposition | Proposed by Reasoner; accepted / rejected / **unresolved** by Validator | Must cite observation ids; referential integrity enforced in code |
+| **Relationships** | Typed edges between observables per pack relationship definitions | Proposed → validated | Endpoints and temporal/comparison semantics from Pack §3 |
+| **Conflicts** | Explicit incompatible assertions or resolution outcomes | Retained in graph partition | Not flattened away for UI convenience |
+| **Chronology** | Ordered events / intervals with provenance | Proposed → validated | Domain timing rules from Pack §3 |
+| **Unresolved items** | Validator- or reasoner-marked gaps the graph does not force closed | **Preserved** | Fail-closed factual surfaces; no invented closure |
+| **Provenance** | Evidence refs, artifact lineage, pack pins, model pins | Append-only on accepted artifacts | **No chip → no claim** on Customer/Pro factual representation |
+
+**Runtime today (not Decision 1):** monolithic **`case-intelligence/3`** snapshot from OpenAI canonical-study v4/v4.1; local vNext modules (Phases B–D) implement contracts and reasoner **without** production graph authority or worker orchestration.
+
+### Decision 2 — Minimal schema-first Domain Pack
+
+The **approved target** pack contract has **four logical sections** (JSON Schema / Pydantic–compatible declarative data):
+
+1. **Domain Schema** — domain entities, fields, types, descriptions, allowed values.
+2. **Document Profiles** — supported document types, recognition instructions, expected extraction content per profile.
+3. **Relationships and Constraints** — domain relationships, endpoints, identity guidance, temporal and comparison semantics.
+4. **Personas** — audience-specific report requirements and entitlement identifiers.
+
+**Migration (mandatory before cutover):** IEP **v0.2.1** and legacy surfaces (`DomainPack` registry, `packs-v2` proposal YAML, `study-agents/1`, pack-driven reader proposal JSON) remain **in repo today**. Do **not** introduce a redundant parallel pack format without an explicit **migration and compatibility plan** (ticket **DP-02**). Until migration is qualified, compilers may **adapt** legacy definitions into stage-specific compiled views; that adaptation is **not** a second source of truth.
+
+**Generic Domain Pack:** a versioned **Generic** pack is **mandatory fallback only** when no compatible specialized pack exists or domain resolution is genuinely unknown. Resolution order and compatibility rules are defined in **DP-02** (not implemented).
+
+**Pack pinning and failure:** Each run pins **`packId`**, **`packVersion`**, and **content digest**. A broken, invalid, incompatible, or digest-mismatched specialized pack **must fail explicitly**. **Never** silently switch away from a pinned pack mid-run.
+
+### Decision 3 — Explicit Domain Pack execution contracts
+
+For each processing stage, the pack contract specifies what the pack **defines**, what is **supplied to the model** vs **enforced in code**, processing **responsibility**, **versioned output artifact**, **deterministic compliance checks**, and **failure / unresolved behavior** (plus a compliance record). **No domain-specific processing branches in Hive Core** — only generic orchestration, validation, and pack compilation.
+
+See [§ Domain Pack execution contracts (by stage)](#domain-pack-execution-contracts-by-stage--approved-target). Stage implementation and qualification are ticketed **DP-03** (Discover, Reader, Normalizer), **DP-04** (Reasoner + gaps), **CS-vNext-E** (Graph Validator), **CS-vNext-F** (Writer, Application entitlements).
+
+### Ticket dependency (approved sequencing — not authorization)
+
+```text
+DP-01 → DP-02 → DP-03 → DP-04 → CS-vNext-E → CS-vNext-F → CS-vNext-G → CS-vNext-H
+```
+
+**Parallel history preserved:** ARCH-01 … ARCH-06, Agentic Phases 0–8, T3.x Reader, and **CS-vNext Phases A–D** (D **implemented locally, uncommitted, live Anthropic qualification pending**) remain in plan tables; **DP-03/DP-04** reconcile pack consumption with that work rather than re-opening closed Phase B/C tickets without approval.
 
 ---
 
@@ -41,15 +95,20 @@ Engine 1 (intake, pages, structure map, source documents)
 
 Each **Canonical Study** is an **independent persisted run** (`studyRunId`, monotonic **`attemptId`** per reasoner/validation cycle). Each **Writer generation** uses a distinct **`writerRunId`**; regeneration never mutates an accepted graph or a prior accepted report artifact.
 
-### Graphlit-inspired layers (domain-neutral names)
+### Canonical Graph elements (Decision 1 — domain-neutral names)
 
-| Layer | Role | Mutability | Owner |
-|-------|------|------------|-------|
-| **Observable** | Stable identity for a thing-in-the-world (person, goal, service, document role) | Proposed by Reasoner; **accepted only after validation** | Reasoner proposes; Validator + pack rules dispose |
-| **Observation** | Source-backed assertion about an observable (predicate, value, role, evidence refs) | **Immutable** once written to `hive.observation-snapshot/1` | Normalizer (from verified Reader facts) |
-| **Resolution** | Cross-document identity merge, operative choice, conflict outcome | Proposed by Reasoner; **accepted/rejected/unresolved** by Validator | Reasoner + Validator |
+| Element | Role | Mutability | Owner |
+|---------|------|------------|-------|
+| **Observable** | Entity **occurrence** identity (person, goal, service, document role) — not the assertion | Proposed by Reasoner; **accepted only after validation** | Reasoner proposes; Validator + pack rules dispose |
+| **Observation** | Evidence-backed **factual assertion** about an observable | **Immutable** once in `hive.observation-snapshot/1` | Normalizer (from verified Reader facts) |
+| **Resolution** | Identity merge, operative choice, conflict outcome | Proposed; **accepted / rejected / unresolved** | Reasoner + Validator |
+| **Relationship** | Pack-typed link between observables | Proposed → validated | Reasoner + Validator (Pack §3) |
+| **Conflict** | Incompatible facts or unresolved opposition | **Retained** in accepted partition or unresolved | Reasoner proposes; Validator enforces evidence rules |
+| **Chronology** | Events / intervals with provenance | Proposed → validated | Reasoner + Validator |
+| **Unresolved** | Explicit non-closure (missing evidence, identity, pack rule) | **Preserved** | Validator; no silent invention |
+| **Provenance** | Evidence refs, pins, lineage | Append-only on accepted artifacts | Core persistence |
 
-Observations **never** silently merge distinct reader assertions (duplicate evidence signatures remain distinct rows). Resolutions **must** cite observation ids and satisfy referential integrity.
+Observations **never** silently merge distinct reader assertions (duplicate evidence signatures remain distinct rows). Resolutions **must** cite observation ids and satisfy referential integrity. **Reports and UI trees are not authoritative**; they consume projections from **`hive.canonical-study-graph/1`** only.
 
 ### Versioned contracts (source-level provenance)
 
@@ -66,10 +125,10 @@ Observations **never** silently merge distinct reader assertions (duplicate evid
 
 Storage path helpers (proposed layout): `@hiveforyou/shared/hive-artifact-paths` — observation snapshot, reasoner proposal, validation result, accepted graph, projection manifests.
 
-### Hive Core vs Domain Pack (v1.3)
+### Hive Core vs Domain Pack (v1.3 + Decision 2)
 
-- **Hive Core:** orchestration, observation normalization mechanics, reasoner **port**, graph validation, persistence slots, entitlement enforcement hooks, UI adapters — **no domain vocabulary branches**.
-- **Domain Pack (declarative):** predicate types, observable templates, relationship types, identity guidance, checklist/fact definitions, **persona configuration** (Customer vs Pro emphasis, report sections, Living Case nav weights) — versioned and pinned on every run (`DomainPackPin`).
+- **Hive Core:** orchestration, pack compile/load, observation normalization mechanics, reasoner **port**, graph validation, persistence slots, entitlement enforcement hooks, UI adapters — **no domain vocabulary branches** and **no `if (domain === …)` fact logic**.
+- **Domain Pack (Decision 2 — four sections):** Domain Schema; Document Profiles; Relationships and Constraints; Personas — **declarative, typed, versioned**, pinned per run (`packId`, `packVersion`, content digest). Stage-specific compiled views (Discover vocabulary, Reader extraction profile, normalizer field maps, reasoner entity/relationship catalog, validator rules, writer personas) are **projections of the same pack pin**, not alternate pack formats.
 
 ### Writer, personas, UI, entitlement
 
@@ -103,7 +162,24 @@ The following **v1.1 / ARCH-01 “Phase B consolidation” responsibilities** ar
 
 Documented in [AGENTIC-PLAN.md](./AGENTIC-PLAN.md) § Canonical Study vNext (Phases A–H). Phase-level implementation requires explicit `NEXT.md` authorization per phase.
 
-**Execution status (2026-10-18, local/uncommitted):** Phase **C** evidence-integrity review **complete** — L001 qualification artifact **100** Reader facts → **100** observations after **C.1** generic `period` wire mapping (prior **2**× `INVALID_VALUE` quarantines on Reader `periodStart`/`periodEnd` transport). Stable observation ids and snapshot `contentDigest` confirmed on repeat runs. Reader `verificationStatus: "proposed"` on accepted-facts wire rows is expected verifier metadata. `@hiveforyou/shared` typecheck failures cited in Phase B remain **pre-existing** and unrelated to graph contracts. **Phase D+ not authorized.**
+**Execution status (2026-10-18, local/uncommitted):** Phase **C** evidence-integrity review **complete** — L001 qualification artifact **100** Reader facts → **100** observations after **C.1** generic `period` wire mapping (prior **2**× `INVALID_VALUE` quarantines on Reader `periodStart`/`periodEnd` transport). Stable observation ids and snapshot `contentDigest` confirmed on repeat runs. Reader `verificationStatus: "proposed"` on accepted-facts wire rows is expected verifier metadata. `@hiveforyou/shared` typecheck failures cited in Phase B remain **pre-existing** and unrelated to graph contracts. **Checkpoint commit (B–C.1):** `c7213690756ae0c3c10d52b2ce9a54e16c37937e`. **Phase D (Canonical Reasoner)** implemented locally — **uncommitted**; production OpenAI v4 path unchanged; **Phase E+ not authorized**.
+
+### Phase D — Canonical Reasoner model strategy (approved for implementation)
+
+| Item | Choice |
+|------|--------|
+| Initial provider | **Anthropic** via shared `CallModel` using **existing** deploy env only: `MODEL_PROVIDER=anthropic`, `HIVE_ANTHROPIC_API_KEY` (and optional `HIVE_ANTHROPIC_WORKSPACE_ID`) — **no silent substitution** if credentials or provider missing |
+| Model id | **`MODEL_NAME`** (and existing max-token / reasoning envs already used by `CallModel`) — **no new reasoner-specific env vars** |
+| Live vs fixture | **CLI / harness flags** (`--live`, `--replay`, fixture path args) — default deterministic fixture in tests; **not** new feature-flag env |
+| Prompt | Generic `canonical-reasoner-v1.md` — `promptId=canonical-reasoner`, `promptVersion=1.0.0`, SHA-256 pinned in `modelPin` |
+| Structured output | Strict JSON schema (graph body only); Core injects `schemaVersion`, study pins, and `modelPin` |
+| Pack context | `compileDeclarativeCanonicalReasonerContext` → `hive.canonical-reasoner-pack-context/1`; digest pinned on request (`compiledPackContextSha256`). **Gap:** declarative v0.2 has no dedicated `observableTypes[]` catalog — endpoints derived from relationship `from`/`to` until pack contract extended (**DP-04**) |
+| Phase D validation | JSON schema + observation-id referential checks only; **not** semantic graph acceptance (Phase E) |
+| v1.4 acceptance | **Zero new environment variables** for Universal Canonical Study qualification — see [AGENTIC-PLAN.md § Zero new environment variables](./AGENTIC-PLAN.md#zero-new-environment-variables-v14-acceptance--mandatory) |
+
+### Universal qualification harness (proposed)
+
+Single stage-selectable CLI at repo root — **`pnpm hive:test --case <id> --stage <discover|reader|normalize|reasoner|validator|writer|all> [--live]`** — wrapping `@hiveforyou/eval` and existing stage scripts. **Not implemented**; interim gates documented in [NEXT.md](../status/NEXT.md#universal-qualification-gates-interim-until-hivetest).
 
 ---
 
@@ -275,13 +351,50 @@ Model calls in steps 2 and 6 (step 6 deferred). Classification is embedded in pa
 
 ---
 
-## 3. Universal Domain Pack contract — nine logical sections
+## 3. Domain Pack contract — approved target vs repo today
 
-Unchanged from v2.0 base spec. Pack compiler for Reader: `engine/domain-pack/src/pack-driven-reader/` (proposal JSON `engine/domain-packs/packs-v2/` migration target).
+### Approved target (Decision 2) — four minimal sections
 
-**Fact definition once; document checklist references it.** Field provenance: `quoted`, `derived`, `classified`.
+| § | Section | Consumed by (target) |
+|---|---------|----------------------|
+| 1 | **Domain Schema** | Normalizer field/value maps; Reasoner entity templates; Validator value shapes |
+| 2 | **Document Profiles** | Discover recognition; Reader extraction profile per identified document type |
+| 3 | **Relationships and Constraints** | Reasoner relationship proposals; Validator endpoint and temporal semantics |
+| 4 | **Personas** | Writer report structure; Application entitlement ids; projection emphasis |
 
-**Do not send golden answers or synthetic entity IDs in extraction prompts.**
+**Generic pack:** fallback only when no compatible specialized pack or unknown domain (**DP-02**). **IEP v0.2.1** migration from legacy pack shapes is **DP-01 / DP-02** scope — not silently assumed complete.
+
+### Repo today (runtime / in-flight — not Decision 2 alone)
+
+| Surface | Role today | Target disposition |
+|---------|------------|-------------------|
+| `@hiveforyou/domain-packs` registry + IEP TS pack | Discover vocabulary, study agents, projections | **DP-01** audit → **DP-02** schema-first contract + compilers |
+| `engine/domain-packs/packs-v2/` proposal YAML | Alternate declarative experiments | **No parallel authority** without migration plan (**Decision 2**) |
+| `engine/domain-pack/src/pack-driven-reader/` | Reader compile from proposal JSON | Becomes explicit **Reader** contract under **DP-03** |
+| `engine/domain-packs/registry/declarative/` | Normalizer + reasoner context compile (local) | **DP-03** / **DP-04** qualify against four-section contract |
+| `study-agents/1` export | Legacy reader prompt slice | Retained until **DP-02** maps personas/agents to §4 |
+
+**Fact definition once; document profiles reference schema fields.** Field provenance in extraction: `quoted`, `derived`, `classified`. **Do not send golden answers or synthetic entity IDs in extraction prompts.**
+
+**Historical v2.0 “nine logical sections”** remain in earlier architecture drafts; **v1.4 supersedes the target shape** with the four sections above. Nine-section prose is **not deleted** from [AGENTIC-PLAN-v1.1.md](./AGENTIC-PLAN-v1.1.md) / historical notes.
+
+---
+
+## Domain Pack execution contracts (by stage) — approved target
+
+Each row is the **contract Hive must implement** (tickets **DP-03**, **DP-04**, **CS-vNext-E/F**). **Compliance record:** per-run artifact metadata listing pack pin, stage id, schema version, pass/fail, and unresolved codes (exact storage TBD in **CS-vNext-F**).
+
+| Stage | Pack definitions requested | Model input vs code-enforced | Processing owner | Versioned output | Deterministic compliance checks | Failure / unresolved |
+|-------|---------------------------|------------------------------|------------------|------------------|-----------------------------------|---------------------|
+| **Discover** | §2 Document Profiles (recognition vocabulary, document types) | Model: recognition proposals from pages/metadata. Code: schema, pack pin, domain routing, structure map integrity | Hive Core orchestration + Discover engine | Discover artifact (existing contracts + pack compliance extension in **DP-03**) | Valid JSON; allowed types; no invented documents; pin match | Unclassified / ambiguous types retained; fail on pin/digest mismatch |
+| **Reader** | §2 profile for **identified** document type | Model: extract **source-supported** facts only. Code: pages, manifest, output schema, pin, concurrency | hive-agents / Reader service | `study-reader/1`, `hive.reader-document-extraction/1`, and/or raw extraction envelope per ARCH-01 | Parse schema; document scope; **expected-but-unobserved fields must not become invented facts** | Partial per-document failure; malformed stored with diagnostics; pin fail-closed |
+| **Observation Normalizer** | §1 Domain Schema field/value mappings | Code-only: wire fact → observation rows. Model: none | Hive Core | `hive.observation-snapshot/1` | Deterministic ids; evidence quarantine; digest stability; schema validate | Quarantine invalid provenance; never drop raw reader evidence upstream (**DP-03**) |
+| **Canonical Reasoner** | §1 entities + §3 relationships (incl. **`observableTypes[]` catalog — gap until DP-04**) | Model: graph delta proposal. Code: observation snapshot, compiled pack context, strict JSON schema, pins | Hive Core reasoner port | `canonical-study-reasoner-proposal/1` | JSON schema + observation-id refs (**Phase D local**); semantic acceptance deferred to Validator | Malformed proposal fail-closed; no accepted graph without **CS-vNext-E** |
+| **Graph Validator** | §1 value shapes + §3 relationship/constraint rules | Code-only on proposal + observations + pack rules | Hive Core | `canonical-study-graph-validation/1`, `hive.canonical-study-graph/1` | Evidence rules; referential integrity; unresolved partition; **no chip → no claim** projection gates | Reject invalid; preserve unresolved; never silent merge |
+| **Writer** | §4 Personas + accepted graph | Model: **`hive-ui-tree/1`** presentation only. Code: accepted graph, report deterministic body | Hive Core + Writer service | `hive-ui-tree/1`, `canonical-study-report/1` | UI tree refs resolve; no factual mutation | Invalid tree fail-closed; fallback deterministic views |
+| **Application** | §4 entitlement identifiers | Code-only server enforcement | App API + Core policy | HTTP 402/403 + audit log (exact contract **CS-vNext-F**) | Entitlement vs persona id; no client-side unlock truth | Fail closed; no canonical mutation on unlock |
+
+**Production today:** Discover/Reader/Normalizer/Reasoner/Validator/Writer **do not** yet emit the full compliance matrix above; OpenAI v4 study bypasses the graph pipeline entirely.
 
 ---
 
@@ -398,7 +511,7 @@ Proposed **target** Reader surface at runtime: secrets + `MODEL_*` + `READER_PAR
 
 HiveForYou keeps **three independent, versioned contracts** on the path from canonical intelligence to rendered Customer/Pro reports:
 
-1. **`hive.canonical-study/1`** — canonical facts, identities, relationships, measurements, and provenance (the validated artifact).
+1. **`hive.canonical-study-graph/1`** (target; Decision 1) — authoritative accepted graph: observables, observations (by reference/immutability), resolutions, relationships, conflicts, chronology, unresolved, provenance. **Runtime today:** validated **`case-intelligence/3`** snapshot serves a similar product role but is **not** the v1.4 graph contract.
 2. **`canonical-study-report/1`** — deterministic, validated, audience-specific **factual projections** derived from the artifact (Customer body vs Pro body).
 3. **`hive-ui-tree/1`** — component selection, layout, ordering, and presentation only. Elements reference report/artifact data **by id** (`claimRef`, `relationId`, `sectionId`, `seriesId`, etc.). Factual text, quotes, and measurements are **never** copied into UI-tree props.
 
@@ -416,7 +529,8 @@ Invariants:
 
 **Pack review (carry-forward):**
 
-- Typed schema migration from legacy `DomainPack` to packs-v2 proposal.
+- **DP-02:** Typed migration from legacy `DomainPack`, IEP v0.2.1, and `packs-v2` proposal into the **four-section schema-first** contract without a redundant parallel format.
+- **`observableTypes[]` catalog** in declarative pack for Reasoner context (**DP-04**; local compiler derives endpoints from relationship `from`/`to` until catalog exists).
 - Amendment/subtype checklist inheritance.
 - Identity keys for goals/services/people without stable ids.
 - Image/table locators beyond verbatim quotes.

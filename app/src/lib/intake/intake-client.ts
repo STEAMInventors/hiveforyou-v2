@@ -58,7 +58,7 @@ function readIntakeApiError(body: unknown, fallback: string): string {
 export async function startIntakeRun(
   caseId: string,
   sourceDocumentIds: string[],
-  purpose?: { rawIntent?: string | null; explicitDomainId?: string | null },
+  purpose?: { rawIntent?: string | null; selectedDomainId?: string | null },
   options?: { processDocuments?: boolean },
 ): Promise<StartIntakeResult> {
   const response = await fetch("/api/intake/run", {
@@ -68,7 +68,7 @@ export async function startIntakeRun(
       caseId,
       sourceDocumentIds,
       rawIntent: purpose?.rawIntent ?? null,
-      explicitDomainId: purpose?.explicitDomainId ?? null,
+      selectedDomainId: purpose?.selectedDomainId ?? null,
       processDocuments: options?.processDocuments === true,
     }),
   });

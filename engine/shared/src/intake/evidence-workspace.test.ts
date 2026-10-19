@@ -77,7 +77,7 @@ describe("toIntakeEvidenceWorkspaceView", () => {
       documents: [],
       purpose: {
         rawIntent: "IEP Prep",
-        explicitDomainId: "iep",
+        selectedDomainId: "iep",
         resolvedDomainId: "iep",
         resolutionSource: "EXPLICIT",
         displayPurpose: "IEP Prep",

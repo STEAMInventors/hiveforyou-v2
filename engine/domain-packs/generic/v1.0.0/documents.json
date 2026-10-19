@@ -1,0 +1,27 @@
+{
+  "version": "1.0.0",
+  "documentProfiles": [
+    {
+      "id": "document_unclassified",
+      "label": "Document (unclassified)",
+      "recognitionHints": [
+        "Any uploaded file without a domain-specific document profile match."
+      ],
+      "checklist": [
+        { "conceptId": "document.title", "mode": "optional" },
+        { "conceptId": "statement.text", "mode": "optional" },
+        { "conceptId": "person.name", "mode": "optional" },
+        { "conceptId": "organization.name", "mode": "optional" },
+        { "conceptId": "event.description", "mode": "optional" },
+        { "conceptId": "quantity.value", "mode": "optional" },
+        { "conceptId": "date.value", "mode": "optional" }
+      ],
+      "allowAdditionalSourceFacts": true,
+      "expectedSourceSections": []
+    }
+  ],
+  "globalReadingNotes": [
+    "Extract only facts explicitly supported by quoted or classified evidence on the page.",
+    "When document type is unknown, prefer generic concepts (person, organization, date, quantity, statement)."
+  ]
+}

@@ -1,0 +1,103 @@
+{
+  "version": "1.0.0",
+  "concepts": [
+    {
+      "id": "person.name",
+      "canonicalTypeId": "person",
+      "valueKind": "text",
+      "description": "Name of a person mentioned in source material.",
+      "evidencePolicy": { "allowedProvenance": ["quoted"] },
+      "identity": {
+        "keys": ["sourceDocumentId"],
+        "scope": ["caseId"],
+        "onAmbiguity": "keep_separate"
+      },
+      "multiplicity": "single"
+    },
+    {
+      "id": "organization.name",
+      "canonicalTypeId": "organization",
+      "valueKind": "text",
+      "description": "Name of an organization or agency.",
+      "evidencePolicy": { "allowedProvenance": ["quoted"] },
+      "identity": {
+        "keys": ["sourceDocumentId"],
+        "scope": ["caseId"],
+        "onAmbiguity": "keep_separate"
+      },
+      "multiplicity": "single"
+    },
+    {
+      "id": "document.title",
+      "canonicalTypeId": "document",
+      "valueKind": "text",
+      "description": "Title or heading identifying a document.",
+      "evidencePolicy": { "allowedProvenance": ["quoted"] },
+      "identity": {
+        "keys": ["sourceDocumentId"],
+        "scope": ["caseId"],
+        "onAmbiguity": "keep_separate"
+      },
+      "multiplicity": "single"
+    },
+    {
+      "id": "event.description",
+      "canonicalTypeId": "event",
+      "valueKind": "text",
+      "description": "Description of an event or occurrence.",
+      "evidencePolicy": { "allowedProvenance": ["quoted"] },
+      "identity": {
+        "keys": ["sourceDocumentId"],
+        "scope": ["caseId"],
+        "onAmbiguity": "keep_separate"
+      },
+      "multiplicity": "single"
+    },
+    {
+      "id": "quantity.value",
+      "canonicalTypeId": "quantity",
+      "valueKind": "number",
+      "description": "Numeric quantity with optional unit.",
+      "allowedUnits": ["unitless"],
+      "evidencePolicy": { "allowedProvenance": ["quoted"] },
+      "identity": {
+        "keys": ["sourceDocumentId"],
+        "scope": ["caseId"],
+        "onAmbiguity": "keep_separate"
+      },
+      "multiplicity": "single"
+    },
+    {
+      "id": "date.value",
+      "canonicalTypeId": "date",
+      "valueKind": "date",
+      "description": "Calendar date referenced in source material.",
+      "evidencePolicy": { "allowedProvenance": ["quoted"] },
+      "identity": {
+        "keys": ["sourceDocumentId"],
+        "scope": ["caseId"],
+        "onAmbiguity": "keep_separate"
+      },
+      "multiplicity": "single"
+    },
+    {
+      "id": "statement.text",
+      "canonicalTypeId": "statement",
+      "valueKind": "text",
+      "description": "Free-text factual statement supported by evidence.",
+      "evidencePolicy": { "allowedProvenance": ["quoted"] },
+      "identity": {
+        "keys": ["sourceDocumentId"],
+        "scope": ["caseId"],
+        "onAmbiguity": "keep_separate"
+      },
+      "multiplicity": "single"
+    }
+  ],
+  "conceptMappingPolicy": {
+    "modelEmitsObservedPackFactTypeId": "optional",
+    "legacyCanonicalConstructBridge": "domain_neutral_mapping_by_typed_construct_parts_and_context",
+    "unmappedLegacyFacts": "bridge_when_evidence_present",
+    "unexpectedSourceFacts": "preserve_via_legacy_bridge_and_allow_additional_source_facts"
+  }
+}

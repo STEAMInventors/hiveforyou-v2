@@ -1,0 +1,9 @@
+{
+  "version": "0.0.1",
+  "documentProfiles": [
+    {
+      "id": "doc",
+      "checklist": [{ "conceptId": "missing.concept" }]
+    }
+  ]
+}

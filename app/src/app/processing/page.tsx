@@ -1,30 +1,9 @@
-"use client";
+import { redirect } from "next/navigation";
 
-import { useEffect, useState } from "react";
-
-import { DocumentDiscoveryExperience } from "@/components/document-structure/DocumentDiscoveryExperience";
-import { HiveTransitionModal } from "@/components/hive/HiveTransitionModal";
-import { useStagedDocuments } from "@/lib/intake/staged-documents-context";
-import { useRouter } from "next/navigation";
-
+/**
+ * Legacy document-discovery upload path (Stage 1 Hybrid Front Door supersedes this route).
+ * Always send users back to home intake.
+ */
 export default function ProcessingPage() {
-  const router = useRouter();
-  const { documents } = useStagedDocuments();
-  const [ready, setReady] = useState(false);
-
-  useEffect(() => {
-    setReady(true);
-  }, []);
-
-  useEffect(() => {
-    if (ready && documents.length === 0) {
-      router.replace("/");
-    }
-  }, [ready, documents.length, router]);
-
-  if (!ready || documents.length === 0) {
-    return <HiveTransitionModal phase="discover" />;
-  }
-
-  return <DocumentDiscoveryExperience stagedDocuments={documents} />;
+  redirect("/");
 }

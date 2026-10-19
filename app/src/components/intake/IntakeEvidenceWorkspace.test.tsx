@@ -118,7 +118,7 @@ const workspaceView: IntakeEvidenceWorkspaceView = {
 
     rawIntent: "IEP Prep",
 
-    explicitDomainId: "iep",
+    selectedDomainId: "iep",
 
     resolvedDomainId: "iep",
 

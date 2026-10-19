@@ -1,0 +1,19 @@
+{
+  "version": "1.0.0",
+  "personas": [
+    {
+      "id": "customer",
+      "label": "Customer",
+      "objectives": ["Understand case facts from uploaded documents"],
+      "contentRequirements": ["story", "important_facts", "sources"],
+      "entitlementId": "entitlement.customer.default"
+    },
+    {
+      "id": "pro",
+      "label": "Professional",
+      "objectives": ["Review evidence-backed facts and export"],
+      "contentRequirements": ["evidence_ledger", "export"],
+      "entitlementId": "entitlement.pro.default"
+    }
+  ]
+}

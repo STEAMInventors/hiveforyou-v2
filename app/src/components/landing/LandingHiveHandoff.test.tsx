@@ -41,8 +41,8 @@ describe("LandingHiveHandoff", () => {
     render(
       <LandingHiveHandoff
         fileCount={2}
-        composerExplicitDomainId="iep"
-        explicitDomainLabel="Special Education / IEP"
+        composerSelectedDomainId="iep"
+        selectedDomainLabel="Special Education / IEP"
         draftCaseId={DRAFT_CASE_ID}
         onBack={() => undefined}
         onContinue={onContinue}
@@ -67,8 +67,8 @@ describe("LandingHiveHandoff", () => {
     render(
       <LandingHiveHandoff
         fileCount={1}
-        composerExplicitDomainId="iep"
-        explicitDomainLabel="Special Education / IEP"
+        composerSelectedDomainId="iep"
+        selectedDomainLabel="Special Education / IEP"
         draftCaseId={DRAFT_CASE_ID}
         onBack={() => undefined}
         onContinue={onContinue}
@@ -91,8 +91,8 @@ describe("LandingHiveHandoff", () => {
     render(
       <LandingHiveHandoff
         fileCount={1}
-        composerExplicitDomainId="iep"
-        explicitDomainLabel="Special Education / IEP"
+        composerSelectedDomainId="iep"
+        selectedDomainLabel="Special Education / IEP"
         draftCaseId={DRAFT_CASE_ID}
         initialDraft={{
           caseId: DRAFT_CASE_ID,
@@ -118,8 +118,8 @@ describe("LandingHiveHandoff", () => {
     render(
       <LandingHiveHandoff
         fileCount={1}
-        composerExplicitDomainId="iep"
-        explicitDomainLabel="Special Education / IEP"
+        composerSelectedDomainId="iep"
+        selectedDomainLabel="Special Education / IEP"
         draftCaseId={DRAFT_CASE_ID}
         onBack={() => undefined}
         onContinue={onContinue}

@@ -1,7 +1,28 @@
 import type { CallModel } from "@hiveforyou/shared/model/call-model";
-
 import { createAnthropicCallModel } from "./anthropic-call-model";
 import { createOpenAICallModel } from "./openai-call-model";
+
+function resolveLiteLLMOpenAIEndpoints(source: Record<string, string | undefined>): {
+  apiKey: string;
+  responsesUrl: string;
+  filesUrl: string;
+} {
+  const litellmBase = source.LITELLM_BASE_URL?.trim();
+  const apiKey = source.LITELLM_API_KEY?.trim() || source.OPENAI_API_KEY?.trim() || "";
+  if (litellmBase) {
+    const base = litellmBase.replace(/\/+$/, "");
+    return {
+      apiKey,
+      responsesUrl: `${base}/responses`,
+      filesUrl: `${base}/files`,
+    };
+  }
+  return {
+    apiKey,
+    responsesUrl: "https://api.openai.com/v1/responses",
+    filesUrl: "https://api.openai.com/v1/files",
+  };
+}
 
 export type ModelProviderId = "openai" | "anthropic";
 
@@ -45,16 +66,23 @@ export function createCallModelFromEnv(
   const maxOutputTokens = parseMaxOutputTokens(source.MODEL_MAX_OUTPUT_TOKENS);
 
   if (provider === "openai") {
-    const apiKey = source.OPENAI_API_KEY?.trim();
+    const endpoints = resolveLiteLLMOpenAIEndpoints(source);
+    const apiKey = endpoints.apiKey;
     if (!apiKey) {
-      throw new Error("OPENAI_API_KEY is required when MODEL_PROVIDER=openai");
+      throw new Error(
+        "OPENAI_API_KEY or LITELLM_API_KEY is required when MODEL_PROVIDER=openai",
+      );
     }
     const modelName = source.MODEL_NAME?.trim() || DEFAULT_OPENAI_MODEL;
     return {
       provider,
       modelName,
       maxOutputTokens,
-      callModel: createOpenAICallModel({ apiKey }),
+      callModel: createOpenAICallModel({
+        apiKey,
+        filesUrl: endpoints.filesUrl,
+        responsesUrl: endpoints.responsesUrl,
+      }),
     };
   }
 
@@ -221,7 +249,10 @@ export function tryCreateCallModelFromEnv(
   const hasKey =
     provider === "anthropic"
       ? Boolean(source.HIVE_ANTHROPIC_API_KEY?.trim())
-      : Boolean(source.OPENAI_API_KEY?.trim());
+      : Boolean(
+          source.LITELLM_API_KEY?.trim() ||
+            source.OPENAI_API_KEY?.trim(),
+        );
   if (!hasKey) {
     return undefined;
   }

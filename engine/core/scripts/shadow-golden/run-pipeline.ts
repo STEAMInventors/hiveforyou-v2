@@ -94,8 +94,6 @@ export async function runShadowGoldenPipeline(input: {
       const { assembled } = shadowAssembleDocument(doc.pages);
       tier1 = await shadowTier1Document({
         assembled,
-        callModel: input.callModel,
-        model: input.model,
       });
     } catch (error) {
       tier1Status = "failed";

@@ -104,7 +104,7 @@ function terminalView(
     studyPath: "DOMAIN_PACK",
     purpose: {
       rawIntent: "Preparing for an IEP meeting",
-      explicitDomainId: "iep",
+      selectedDomainId: "iep",
       resolvedDomainId: "iep",
       resolutionSource: "EXPLICIT",
       displayPurpose: "Preparing for an IEP meeting",
@@ -185,7 +185,7 @@ describe("UploadExperience", () => {
       studyPath: "GENERIC_STUDY",
       purpose: {
         rawIntent: "Preparing for an IEP meeting",
-        explicitDomainId: "iep",
+        selectedDomainId: "iep",
         resolvedDomainId: null,
         resolutionSource: null,
         displayPurpose: "Preparing for an IEP meeting",
@@ -383,7 +383,7 @@ describe("UploadExperience", () => {
       ["src-report.pdf"],
       {
         rawIntent: "Preparing for an IEP meeting",
-        explicitDomainId: "iep",
+        selectedDomainId: "iep",
       },
     );
     expect(runDiscoverForStagedDocuments).not.toHaveBeenCalled();

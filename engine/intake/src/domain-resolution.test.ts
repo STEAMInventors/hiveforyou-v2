@@ -9,7 +9,7 @@ describe("resolveIntakeDomain", () => {
   it("uses explicit executable domain without Jev", () => {
     const resolution = resolveIntakeDomain({
       rawIntent: "Help with IEP meeting",
-      explicitDomainId: "iep",
+      selectedDomainId: "iep",
     });
     expect(resolution.resolutionSource).toBe("EXPLICIT");
     expect(resolution.resolvedDomainId).toBe("iep");
@@ -20,7 +20,7 @@ describe("resolveIntakeDomain", () => {
   it("routes NO_MATCH to generic study", () => {
     const resolution = resolveIntakeDomain({
       rawIntent: "Organize my files",
-      explicitDomainId: null,
+      selectedDomainId: null,
       jevDomainProposal: "NO_MATCH",
       jevDomainConfidence: 0.9,
     });

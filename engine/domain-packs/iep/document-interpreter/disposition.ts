@@ -21,7 +21,7 @@ export function iepProcessingDisposition(input: {
     UNRELATED_GENERIC_IDENTITIES.has(input.genericIdentity) &&
     input.classification.family === "OTHER"
   ) {
-    return "DO_NOT_PROCESS";
+    return "NEEDS_REVIEW";
   }
   if (input.classification.family === "EXTERNAL" && input.classification.confidence < 0.75) {
     return "DO_NOT_PROCESS";

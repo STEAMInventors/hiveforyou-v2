@@ -26,7 +26,7 @@ import { useStagedDocuments } from "@/lib/intake/staged-documents-context";
 
 export type ComposerPurpose = {
   rawIntent: string;
-  explicitDomainId: string | null;
+  selectedDomainId: string | null;
 };
 
 type LandingHandoffStep =
@@ -94,7 +94,7 @@ export function UploadExperience({ showTrustMessage = true }: { showTrustMessage
     setHiveCommit(selection);
     setComposerPurpose({
       rawIntent: payload.rawIntent,
-      explicitDomainId: payload.explicitDomainId,
+      selectedDomainId: payload.selectedDomainId,
     });
     setStarted(true);
     pendingSubmitRef.current = null;
@@ -189,10 +189,10 @@ export function UploadExperience({ showTrustMessage = true }: { showTrustMessage
       {handoffStep === "hive-handoff" && !processing ? (
         <LandingHiveHandoff
           fileCount={pendingFileCount}
-          composerExplicitDomainId={pendingSubmitRef.current?.explicitDomainId ?? null}
-          explicitDomainLabel={
-            pendingSubmitRef.current?.explicitDomainId
-              ? DOMAIN_LABELS[pendingSubmitRef.current.explicitDomainId] ?? null
+          composerSelectedDomainId={pendingSubmitRef.current?.selectedDomainId ?? null}
+          selectedDomainLabel={
+            pendingSubmitRef.current?.selectedDomainId
+              ? DOMAIN_LABELS[pendingSubmitRef.current.selectedDomainId] ?? null
               : null
           }
           draftCaseId={hiveHandoffDraft?.caseId ?? onboardingHiveCaseIdRef.current}

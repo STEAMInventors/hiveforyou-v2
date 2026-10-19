@@ -1,0 +1,21 @@
+{
+  "version": "1.0.0",
+  "relationships": [
+    {
+      "id": "related_entities",
+      "from": ["person.name", "organization.name"],
+      "to": ["person.name", "organization.name", "document.title"],
+      "primitive": "identity",
+      "onUncertain": "unresolved"
+    },
+    {
+      "id": "event_precedes",
+      "from": ["event.description", "date.value"],
+      "to": ["event.description", "date.value"],
+      "primitive": "series",
+      "onUncertain": "unresolved"
+    }
+  ],
+  "insightChecks": [],
+  "requirements": []
+}

@@ -186,7 +186,7 @@ export function IntakeUnderstanding({
         purpose
           ? {
               rawIntent: purpose.rawIntent,
-              explicitDomainId: purpose.explicitDomainId,
+              selectedDomainId: purpose.selectedDomainId,
             }
           : undefined,
       );

@@ -1,3 +1,4 @@
+export * from "./ephemeral-schema";
 export * from "./customer-view";
 export * from "./document-identity";
 export * from "./evidence-workspace";

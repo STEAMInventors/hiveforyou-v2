@@ -17,7 +17,8 @@
     "rulebook:report": "tsx scripts/rulebook-report.ts",
     "pack:export": "tsx scripts/pack-export.ts",
     "golden:shadow": "pnpm --filter @hiveforyou/core golden:shadow",
-    "eval": "pnpm --filter @hiveforyou/eval eval"
+    "eval": "pnpm --filter @hiveforyou/eval eval",
+    "hive:test": "tsx scripts/hive-test.ts"
   },
   "devDependencies": {
     "@hiveforyou/domain-pack": "workspace:*",

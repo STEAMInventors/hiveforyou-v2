@@ -18,7 +18,7 @@ export type OpenIntakeRunInput = {
   caseId: string;
   sourceDocumentIds: string[];
   rawIntent?: string | null;
-  explicitDomainId?: string | null;
+  selectedDomainId?: string | null;
   /** Defaults to RUNNING (inline). Worker queue uses QUEUED. */
   initialRunStatus?: IntakeRunStatus;
 };
@@ -86,12 +86,13 @@ async function createRun(
     completedAt: null,
     errorCode: null,
     rawIntent: input.rawIntent?.trim() || null,
-    explicitDomainId: input.explicitDomainId?.trim() || null,
+    selectedDomainId: input.selectedDomainId?.trim() || null,
     jevDomainProposal: null,
     jevDomainConfidence: null,
     resolvedDomainId: null,
     resolutionSource: null,
     studyPath: null,
+    studyIntent: null,
     packExecutionJson: null,
     intakeQueueSeq: 0,
     createdAt: now,

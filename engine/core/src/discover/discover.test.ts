@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 
 import { loadBundledPromptContent } from "../prompts/load-prompt-content";
 
@@ -566,5 +566,28 @@ describe("Engine 1 discover adapter", () => {
       "Individualized Education Program",
     );
     expect(outcome.documentDiscovery?.missingDocuments).toEqual([]);
+  });
+});
+
+describe("discover sorter tier routing", () => {
+  const envSnapshot = { ...process.env };
+
+  afterEach(() => {
+    process.env = { ...envSnapshot };
+  });
+
+  it("prefers MODEL_SORTER over injected global MODEL_NAME", () => {
+    process.env.MODEL_SORTER = "sorter-alias-test";
+    process.env.LITELLM_API_KEY = "test-key";
+
+    const config = createDiscoverEngineFromEnv(
+      { reasoningEffort: "medium" },
+      {
+        callModel: async () => ({ outputText: "{}" }),
+        modelName: "gpt-5.6-sol",
+      },
+    );
+
+    expect(config.modelId).toBe("sorter-alias-test");
   });
 });

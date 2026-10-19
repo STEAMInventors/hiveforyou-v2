@@ -11,6 +11,8 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 
 import type { WorkerEnv } from "../env.js";
 import { createSupabaseHiveGateway } from "../persistence/hive-gateway.js";
+import { createSupabaseDomainLearningPort } from "../persistence/supabase-domain-learning.js";
+import { insertEphemeralSchema } from "../persistence/worker-ephemeral-schemas.js";
 import { DocumentPagesStorage } from "./document-pages-storage.js";
 import { WorkerIntakeRepository } from "../persistence/worker-intake-repository.js";
 import { WorkerSourceDocumentRepository } from "./worker-source-documents.js";
@@ -21,6 +23,7 @@ export function buildWorkerIntakeDeps(
   userId: string,
 ): { deps: IntakeExecutionDeps; documents: WorkerSourceDocumentRepository } {
   const gateway = createSupabaseHiveGateway(supabase);
+  const domainLearning = createSupabaseDomainLearningPort(gateway, gateway, userId);
   const intake = new WorkerIntakeRepository(gateway, userId);
   const documents = new WorkerSourceDocumentRepository(gateway, userId);
   const documentPagesBucket = env.HIVE_DOCUMENT_PAGES_BUCKET?.trim() || "document-pages";
@@ -91,6 +94,8 @@ export function buildWorkerIntakeDeps(
           return createCanvasPageRasterizer();
         },
       }),
+    persistEphemeralSchema: (row) => insertEphemeralSchema(gateway, row),
+    domainLearningCandidates: domainLearning.candidates,
   };
 
   void env;

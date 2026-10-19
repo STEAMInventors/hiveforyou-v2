@@ -20,6 +20,7 @@
   "dependencies": {
     "@hiveforyou/core": "workspace:*",
     "@hiveforyou/domain-pack": "workspace:*",
+    "@hiveforyou/domain-packs": "workspace:*",
     "@hiveforyou/shared": "workspace:*",
     "pdfjs-dist": "^5.6.205"
   },

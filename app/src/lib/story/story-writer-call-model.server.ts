@@ -1,16 +1,12 @@
 import "server-only";
 
 import type { CallModel } from "@hiveforyou/core";
+import { createCallModelFromOpenAIClient } from "@hiveforyou/shared/llm/call-model-from-openai-client";
+import { getLLMRouter } from "@hiveforyou/shared/llm/router";
 
-import { openAiCallModelFromEnv } from "@/lib/model/openai-call-model.server";
 import type { ServerEnv } from "@/lib/env/server-env";
 
-export function createStoryWriterCallModel(env: ServerEnv): CallModel {
-  const callModel = openAiCallModelFromEnv(env);
-  if (!callModel) {
-    return async () => {
-      throw new Error("STORY_MODEL_NO_API_KEY");
-    };
-  }
-  return callModel;
+export function createStoryWriterCallModel(_env: ServerEnv): CallModel {
+  const { client } = getLLMRouter("heavy_lifter");
+  return createCallModelFromOpenAIClient(client);
 }

@@ -51,6 +51,8 @@ export type ServerEnv = {
   MODEL_NAME?: string;
   MODEL_MAX_OUTPUT_TOKENS?: number;
   OPENAI_API_KEY?: string;
+  LITELLM_BASE_URL?: string;
+  LITELLM_API_KEY?: string;
   HIVE_ANTHROPIC_API_KEY?: string;
   HIVE_ANTHROPIC_WORKSPACE_ID?: string;
   JEV_API_KEY?: string;
@@ -128,6 +130,8 @@ export function readServerEnv(
     MODEL_NAME: source.MODEL_NAME?.trim() || undefined,
     MODEL_MAX_OUTPUT_TOKENS: parseOptionalPositiveInt(source.MODEL_MAX_OUTPUT_TOKENS),
     OPENAI_API_KEY: source.OPENAI_API_KEY?.trim() || undefined,
+    LITELLM_BASE_URL: source.LITELLM_BASE_URL?.trim() || undefined,
+    LITELLM_API_KEY: source.LITELLM_API_KEY?.trim() || undefined,
     HIVE_ANTHROPIC_API_KEY: source.HIVE_ANTHROPIC_API_KEY?.trim() || undefined,
     HIVE_ANTHROPIC_WORKSPACE_ID: source.HIVE_ANTHROPIC_WORKSPACE_ID?.trim() || undefined,
     JEV_API_KEY: source.JEV_API_KEY?.trim() || undefined,

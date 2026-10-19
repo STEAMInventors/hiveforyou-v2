@@ -14,6 +14,7 @@ import type { ExtractionLocatorCatalog } from "../provenance/serialize-extractio
 import type { ExtractionReadiness } from "@hiveforyou/shared/intake/extraction-readiness";
 import type { CanonicalStudyPromptInputs } from "../prompts/compose-canonical-study-inputs";
 import type { CallModel } from "../model/call-model";
+import { resolveTierModelId } from "@hiveforyou/shared/llm/router";
 import { OpenAICanonicalStudyEngineV3 } from "./openai-engine-v3";
 import { OpenAICanonicalStudyEngineV4 } from "./openai-engine-v4";
 
@@ -311,13 +312,12 @@ export function createCanonicalStudyEngineV3FromEnv(
   }
 
   const callModel = options?.callModel;
-  const modelName = options?.modelName?.trim();
   const reasoningEffort = env.reasoningEffort?.trim() || "medium";
   const maxOutputTokens = env.maxOutputTokens;
 
-  if (callModel && modelName) {
+  if (callModel) {
     return createLiveCanonicalStudyEngine(promptVersion, {
-      model: modelName,
+      model: resolveTierModelId("heavy_lifter"),
       reasoningEffort,
       maxOutputTokens,
       callModel,
@@ -325,7 +325,7 @@ export function createCanonicalStudyEngineV3FromEnv(
   }
 
   if (normalized === "openai") {
-    const model = modelName || "gpt-5.6-sol";
+    const model = resolveTierModelId("heavy_lifter");
     return {
       engine: new UnconfiguredProductionStudyEngineV3(),
       mode: "openai",

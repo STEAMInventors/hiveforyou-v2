@@ -76,12 +76,17 @@ function logOpenAIResponseErrorDiagnostic(
 
 export type OpenAICallModelOptions = {
   apiKey: string;
+  /** When set, overrides default OpenAI `/v1/files` URL (e.g. LiteLLM proxy). */
+  filesUrl?: string;
+  /** When set, overrides default OpenAI `/v1/responses` URL (e.g. LiteLLM proxy). */
+  responsesUrl?: string;
   uploadFile?: typeof defaultOpenAIUploadFile;
   createResponse?: typeof defaultOpenAICreateResponse;
 };
 
 export async function defaultOpenAIUploadFile(input: {
   apiKey: string;
+  filesUrl?: string;
   filename: string;
   bytes: Uint8Array;
   mimeType?: string | null;
@@ -94,7 +99,8 @@ export async function defaultOpenAIUploadFile(input: {
     new Blob([fileBytes], { type: input.mimeType || "application/octet-stream" }),
     input.filename,
   );
-  const response = await fetch("https://api.openai.com/v1/files", {
+  const filesUrl = input.filesUrl ?? "https://api.openai.com/v1/files";
+  const response = await fetch(filesUrl, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${input.apiKey}`,
@@ -117,12 +123,14 @@ export async function defaultOpenAIUploadFile(input: {
 
 export async function defaultOpenAICreateResponse(input: {
   apiKey: string;
+  responsesUrl?: string;
   model: string;
   reasoningEffort: string;
   body: unknown;
   logLabel?: string;
 }): Promise<unknown> {
-  const response = await fetch("https://api.openai.com/v1/responses", {
+  const responsesUrl = input.responsesUrl ?? "https://api.openai.com/v1/responses";
+  const response = await fetch(responsesUrl, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${input.apiKey}`,
@@ -187,14 +195,22 @@ export function extractOpenAIResponseOutputText(payload: unknown): string | null
 
 /** Host-side OpenAI adapter for {@link CallModel}. */
 export function createOpenAICallModel(input: OpenAICallModelOptions): CallModel {
-  const uploadFile = input.uploadFile ?? defaultOpenAIUploadFile;
-  const createResponse = input.createResponse ?? defaultOpenAICreateResponse;
+  const filesUrl = input.filesUrl;
+  const responsesUrl = input.responsesUrl;
+  const uploadFile =
+    input.uploadFile ??
+    ((params) => defaultOpenAIUploadFile({ ...params, filesUrl: params.filesUrl ?? filesUrl }));
+  const createResponse =
+    input.createResponse ??
+    ((params) =>
+      defaultOpenAICreateResponse({ ...params, responsesUrl: params.responsesUrl ?? responsesUrl }));
 
   return async (req: ModelRequest) => {
     const fileIds: string[] = [];
     for (const attachment of req.attachments ?? []) {
       const fileId = await uploadFile({
         apiKey: input.apiKey,
+        filesUrl,
         filename: attachment.filename,
         bytes: attachment.bytes,
         mimeType: attachment.mimeType,
@@ -233,6 +249,7 @@ export function createOpenAICallModel(input: OpenAICallModelOptions): CallModel 
 
     const responsePayload = await createResponse({
       apiKey: input.apiKey,
+      responsesUrl,
       model: req.model,
       reasoningEffort: req.reasoningEffort ?? "medium",
       body,

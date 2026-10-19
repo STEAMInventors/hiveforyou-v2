@@ -6,6 +6,9 @@ import { readStatedWorkPurpose } from "@hiveforyou/shared/canonical-study";
 
 import { loadBundledPromptContent } from "../prompts/load-prompt-content";
 
+import { createCallModelFromOpenAIClient } from "@hiveforyou/shared/llm/call-model-from-openai-client";
+import { getLLMRouter } from "@hiveforyou/shared/llm/router";
+
 import type { CallModel } from "../model/call-model";
 import { buildClientWriterPayload } from "./build-client-writer-payload";
 import {
@@ -318,22 +321,21 @@ export async function runClientWriterPass(input: ClientWriterPassInput): Promise
     return input.caseView;
   }
 
-  if (!input.callModel) {
-    return {
-      ...input.caseView,
-      clientSummary: {
-        ...input.caseView.clientSummary,
-        writtenBy: { model: "fixture", promptVersion: "client-writer/2" },
-      },
-    };
+  let callModel = input.callModel;
+  let model = input.model;
+  if (!callModel) {
+    const routed = getLLMRouter("heavy_lifter");
+    callModel = createCallModelFromOpenAIClient(routed.client);
+    model = routed.model;
+  } else {
+    model = model ?? "gpt-5.6-sol";
   }
 
   const userPayload = buildClientWriterPayload(input.caseView, pack);
   const responseSchema = CLIENT_WRITER_RESPONSE_JSON_SCHEMA;
 
   try {
-    const model = input.model ?? "gpt-5.6-sol";
-    const response = await input.callModel({
+    const response = await callModel({
       model,
       reasoningEffort: input.reasoningEffort ?? "medium",
       systemPrompt: PROMPT,

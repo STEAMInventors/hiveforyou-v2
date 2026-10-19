@@ -11,13 +11,9 @@ import { HiveHomeComposer } from "./HiveHomeComposer";
 vi.mock("@hiveforyou/domain-packs", () => ({
 
   listDomainPacksByCapability: () => [
-
-    { id: "iep", name: "Special Education / IEP" },
-
-    { id: "medicaid", name: "Medicaid" },
-
-    { id: "bankruptcy", name: "Bankruptcy" },
-
+    { id: "iep", name: "Special Education / IEP", executable: true },
+    { id: "medicaid", name: "Medicaid", executable: false },
+    { id: "bankruptcy", name: "Bankruptcy", executable: false },
   ],
 
 }));
@@ -41,7 +37,10 @@ describe("HiveHomeComposer", () => {
     render(<HiveHomeComposer onSubmit={vi.fn()} />);
 
     expect(screen.getByTestId("hive-composer-domain-iep")).toHaveTextContent("IEP");
-    expect(screen.getByTestId("hive-composer-domain-medicaid")).toBeInTheDocument();
+    const medicaidPill = screen.getByTestId("hive-composer-domain-medicaid");
+    expect(medicaidPill).toBeInTheDocument();
+    expect(medicaidPill).toBeDisabled();
+    expect(medicaidPill).toHaveAttribute("title", "Coming Soon");
   });
 
 
@@ -124,7 +123,7 @@ describe("HiveHomeComposer", () => {
 
       rawIntent: "IEP Prep",
 
-      explicitDomainId: "iep",
+      selectedDomainId: "iep",
 
     });
 

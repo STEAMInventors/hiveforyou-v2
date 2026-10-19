@@ -36,6 +36,7 @@ import {
   wrapCallModelWithMetrics,
   type ModelCallMetrics,
 } from "@hiveforyou/model-providers/env";
+import { getLLMRouter } from "@hiveforyou/shared/llm/router";
 
 const CANONICAL_STUDY_PROMPT_ID = "canonical-study-v4.1";
 
@@ -131,7 +132,6 @@ export function buildWorkerStudyDeps(
     {
       promptVersion: isV4PromptVersion(prompt.version) ? "v4" : "v3",
       callModel: studyCallModel,
-      modelName: callModelBundle?.modelName,
     },
   );
 
@@ -245,7 +245,7 @@ export function buildWorkerStudyDeps(
         caseView,
         intelligence,
         mode: storyMode,
-        model: callModelBundle?.modelName,
+        model: getLLMRouter("heavy_lifter").model,
         callModel,
         intent: (() => {
           const stated = readStatedWorkPurpose(context.answerSnapshot.userContext);

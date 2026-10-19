@@ -15,6 +15,7 @@ import type {
   IntakeRunStatus,
   NormalizedDocumentExtraction,
 } from "@hiveforyou/shared/intake";
+import type { StudyIntent } from "@hiveforyou/shared/intake/study-intent";
 
 import type { HiveGateway, HiveRow } from "./hive-gateway.js";
 
@@ -93,12 +94,14 @@ function mapRun(row: HiveRow): IntakeRunRecord {
     completedAt: nullableText(row, "completed_at"),
     errorCode: nullableText(row, "error_code"),
     rawIntent: nullableText(row, "raw_intent"),
-    explicitDomainId: nullableText(row, "explicit_domain_id"),
+    selectedDomainId: nullableText(row, "selected_domain_id"),
     jevDomainProposal: nullableText(row, "jev_domain_proposal"),
     jevDomainConfidence: nullableNumber(row, "jev_domain_confidence"),
     resolvedDomainId: nullableText(row, "resolved_domain_id"),
     resolutionSource: nullableText(row, "resolution_source") as IntakeRunRecord["resolutionSource"],
     studyPath: nullableText(row, "study_path") as IntakeRunRecord["studyPath"],
+    studyIntent:
+      row.study_intent == null ? null : (row.study_intent as StudyIntent),
     packExecutionJson:
       row.pack_execution == null ? null : JSON.stringify(row.pack_execution),
     intakeQueueSeq: Number(row.intake_queue_seq ?? 0),
@@ -190,12 +193,13 @@ export class WorkerIntakeRepository
           completed_at: record.completedAt,
           error_code: record.errorCode,
           raw_intent: record.rawIntent,
-          explicit_domain_id: record.explicitDomainId,
+          selected_domain_id: record.selectedDomainId,
           jev_domain_proposal: record.jevDomainProposal,
           jev_domain_confidence: record.jevDomainConfidence,
           resolved_domain_id: record.resolvedDomainId,
           resolution_source: record.resolutionSource,
           study_path: record.studyPath,
+          study_intent: record.studyIntent,
           pack_execution: record.packExecutionJson
             ? JSON.parse(record.packExecutionJson)
             : null,
@@ -267,12 +271,13 @@ export class WorkerIntakeRepository
           error_code: record.errorCode,
           classifier_version: record.classifierVersion,
           raw_intent: record.rawIntent,
-          explicit_domain_id: record.explicitDomainId,
+          selected_domain_id: record.selectedDomainId,
           jev_domain_proposal: record.jevDomainProposal,
           jev_domain_confidence: record.jevDomainConfidence,
           resolved_domain_id: record.resolvedDomainId,
           resolution_source: record.resolutionSource,
           study_path: record.studyPath,
+          study_intent: record.studyIntent,
           pack_execution: record.packExecutionJson
             ? JSON.parse(record.packExecutionJson)
             : null,

@@ -1,0 +1,8 @@
+{
+  "id": "generic",
+  "name": "Generic Domain Mapping Pack",
+  "packVersion": "1.0.0",
+  "contractVersion": "hive.domain-mapping-pack/1.0",
+  "status": "certified_fallback",
+  "schemaSections": ["concepts", "documents", "relationships", "personas"]
+}

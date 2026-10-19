@@ -50,14 +50,18 @@ describe("domain pack registry", () => {
     ]);
   });
 
-  it("keeps Medicaid and Bankruptcy free of invented document rules", () => {
-    for (const domainId of ["medicaid", "bankruptcy"]) {
-      const pack = requireDiscoverPack(domainId);
-      expect(pack.documentTypes).toEqual([...GENERIC_DOCUMENT_TYPES]);
-      expect(pack.catalog).toEqual([]);
-      expect(pack.missingExpectations).toEqual([]);
-      expect(pack.audienceRoles).toBeUndefined();
-    }
+  it("keeps Bankruptcy on generic discover defaults; Medicaid retains draft §2 profile", () => {
+    const bankruptcy = requireDiscoverPack("bankruptcy");
+    expect(bankruptcy.documentTypes).toEqual([...GENERIC_DOCUMENT_TYPES]);
+    expect(bankruptcy.catalog).toEqual([]);
+    expect(bankruptcy.missingExpectations).toEqual([]);
+    expect(bankruptcy.audienceRoles).toBeUndefined();
+
+    const medicaid = requireDiscoverPack("medicaid");
+    expect(medicaid.documentTypes).toEqual(["Notice of Action"]);
+    expect(medicaid.catalog).toEqual([]);
+    expect(medicaid.missingExpectations).toEqual([]);
+    // Medicaid discover profile is draft rulebook content (scaffold, not certified mapping pack).
   });
 
   it("resolves the IEP presentation label through the registry", () => {

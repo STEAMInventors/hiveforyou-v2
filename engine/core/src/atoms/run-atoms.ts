@@ -35,8 +35,6 @@ export async function runAtomsForDocument(input: {
 
   const tier1 = await runTier1Semantic({
     assembled: input.assembled,
-    callModel: input.callModel,
-    model: input.model,
   });
 
   const combinedStatements = [...tier0.statements, ...tier1.statements];

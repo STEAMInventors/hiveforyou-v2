@@ -52,8 +52,6 @@ export async function runShadowStudy(input: {
       const { assembled, tier0Statements, things } = shadowAssembleDocument(doc.pages);
       const tier1 = await shadowTier1Document({
         assembled,
-        callModel: input.callModel,
-        model: input.model,
       });
       docWorks.push({
         pages: doc.pages,

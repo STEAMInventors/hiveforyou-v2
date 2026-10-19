@@ -26,6 +26,12 @@ export {
   type PredicateResolution,
 } from "./compile-observation-normalizer.js";
 export {
+  CANONICAL_REASONER_PACK_CONTEXT_SCHEMA_VERSION,
+  compileDeclarativeCanonicalReasonerContext,
+  hashCompiledCanonicalReasonerContext,
+  type CompiledCanonicalReasonerContext,
+} from "./compile-canonical-reasoner-context.js";
+export {
   DeclarativePackResolutionError,
   resolveLatestEligibleDeclarativePack,
   resolveLatestEligibleDeclarativePackFromEnv,
@@ -33,3 +39,10 @@ export {
 } from "./resolve-latest.js";
 export type { ResolvedDeclarativePackSelection } from "./resolve-latest.js";
 export { defaultDeclarativePackRepoRoot } from "./repo-root.js";
+export {
+  MAPPING_PACK_CONTRACT_VERSION,
+  compileMappingPackStageViews,
+  resolveMappingPackForDomain,
+  resolvePinnedMappingPack,
+  MappingPackResolutionError,
+} from "../mapping-pack/index.js";

@@ -16,6 +16,7 @@ import {
 } from "./repositories";
 
 export * from "./learning-candidate";
+export * from "./record-ad-hoc-intake-learning-candidate";
 export * from "./observation-sanitize";
 export * from "./prepare-study-learning";
 export * from "./question-metadata";

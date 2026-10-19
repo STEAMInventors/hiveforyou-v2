@@ -22,7 +22,7 @@ export type IntakePurposeView = {
 
   rawIntent: string | null;
 
-  explicitDomainId: string | null;
+  selectedDomainId: string | null;
 
   resolvedDomainId: string | null;
 

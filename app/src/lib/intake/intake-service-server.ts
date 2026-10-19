@@ -33,7 +33,11 @@ import {
 } from "@/lib/persistence/supabase-repositories";
 import { emitIntakeRequestedEvent } from "@/lib/intake/emit-intake-requested";
 import { isInngestIntakePipeline } from "@/lib/intake/pipeline";
+import { insertEphemeralSchema } from "@/lib/persistence/supabase-ephemeral-schemas";
+import { createSupabaseDomainLearningPort } from "@/lib/persistence/supabase-domain-learning";
+import { createSupabaseHiveGateway } from "@/lib/persistence/hive-gateway";
 import { createAuthenticatedHiveGateway, getAuthenticatedUserId } from "@/lib/supabase/server";
+import { createAdminSupabaseClient } from "@/lib/supabase/admin";
 
 const inlineInFlight = new Map<string, Promise<IntakeRunRecord>>();
 
@@ -59,7 +63,7 @@ export type StartIntakeBody = {
   caseId?: string;
   sourceDocumentIds?: string[];
   rawIntent?: string | null;
-  explicitDomainId?: string | null;
+  selectedDomainId?: string | null;
   /** When true, document extract/classify runs immediately (legacy). Upload flow leaves this false. */
   processDocuments?: boolean;
 };
@@ -98,6 +102,9 @@ async function buildIntakeExecutionDeps(userId: string): Promise<{
   intake: SupabaseIntakeRepository;
 }> {
   const { documents, storage, intake } = await intakePersistence(userId);
+  const gateway = await createAuthenticatedHiveGateway();
+  const adminGateway = createSupabaseHiveGateway(createAdminSupabaseClient());
+  const domainLearning = createSupabaseDomainLearningPort(gateway, adminGateway, userId);
   const deps: IntakeExecutionDeps = {
     runs: intake,
     identities: intake,
@@ -150,6 +157,8 @@ async function buildIntakeExecutionDeps(userId: string): Promise<{
           return createCanvasPageRasterizer();
         },
       }),
+    persistEphemeralSchema: (row) => insertEphemeralSchema(gateway, row),
+    domainLearningCandidates: domainLearning.candidates,
   };
   return { deps, documents, intake };
 }
@@ -185,7 +194,7 @@ export async function startIntakeFromRequest(body: StartIntakeBody): Promise<Ope
     caseId,
     sourceDocumentIds,
     rawIntent: body.rawIntent ?? null,
-    explicitDomainId: body.explicitDomainId ?? null,
+    selectedDomainId: body.selectedDomainId ?? null,
     initialRunStatus: pipeline === "inngest" && processDocuments ? "QUEUED" : "RUNNING",
   });
   if (pipeline === "inngest" && processDocuments) {
@@ -215,7 +224,7 @@ export async function processIntakeRunFromRequest(
     caseId: run.caseId,
     sourceDocumentIds,
     rawIntent: run.rawIntent,
-    explicitDomainId: run.explicitDomainId,
+    selectedDomainId: run.selectedDomainId,
     initialRunStatus: run.status,
   });
 
@@ -287,7 +296,7 @@ export async function readIntakeEvidenceWorkspaceView(
     studyPath: run.studyPath ?? "GENERIC_STUDY",
     purpose: {
       rawIntent: run.rawIntent,
-      explicitDomainId: run.explicitDomainId,
+      selectedDomainId: run.selectedDomainId,
       resolvedDomainId: run.resolvedDomainId,
       resolutionSource: run.resolutionSource,
       displayPurpose,

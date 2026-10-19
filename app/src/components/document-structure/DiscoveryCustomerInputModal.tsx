@@ -1,5 +1,9 @@
 "use client";
 
+/**
+ * @deprecated Stage 1 Intake (`HiveHomeComposer`) is the unified front door.
+ * Prefer intake clarifications over legacy discover customer-input modals.
+ */
 import { DiscoveryCustomerInputContent } from "@/components/document-structure/DiscoveryCustomerInputContent";
 import type { DiscoverQuestion } from "@hiveforyou/shared/discover";
 

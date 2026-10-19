@@ -1,3 +1,6 @@
+import { createCallModelFromOpenAIClient } from "@hiveforyou/shared/llm/call-model-from-openai-client";
+import { getLLMRouter } from "@hiveforyou/shared/llm/router";
+
 import type { AssembledDocument, Block } from "../document/assembly";
 import type { CallModel } from "../model/call-model";
 import { PROMPTS } from "../prompts/generated-prompts";
@@ -232,10 +235,21 @@ function parseStatementsResponse(
 
 export async function runTier1Semantic(input: {
   assembled: AssembledDocument;
-  callModel: CallModel;
-  model: string;
+  /** Unit tests only; production uses harvester tier gateway. */
+  callModel?: CallModel;
+  model?: string;
 }): Promise<Tier1SemanticResult> {
   tier1Seq = 0;
+  let callModel: CallModel;
+  let model: string;
+  if (input.callModel) {
+    callModel = input.callModel;
+    model = input.model ?? "gpt-4o-mini";
+  } else {
+    const { model: harvesterModel, client } = getLLMRouter("harvester");
+    callModel = createCallModelFromOpenAIClient(client);
+    model = harvesterModel;
+  }
   const map: MaskPlaceholderMap = new Map();
   const maskedDocText = maskIdentifiersForModel(
     input.assembled.blocks
@@ -248,8 +262,8 @@ export async function runTier1Semantic(input: {
   let inputTokens = 0;
   let outputTokens = 0;
 
-  const profileResp = await input.callModel({
-    model: input.model,
+  const profileResp = await callModel({
+    model,
     systemPrompt: PROMPTS["atoms/tier1-profile.md"],
     userContent: maskedDocText,
     textFormat: TIER1_PROFILE_JSON_SCHEMA,
@@ -266,8 +280,8 @@ export async function runTier1Semantic(input: {
       section.map((b) => b.text).join("\n"),
       map,
     );
-    const resp = await input.callModel({
-      model: input.model,
+    const resp = await callModel({
+      model,
       systemPrompt: PROMPTS["atoms/tier1-statements.md"],
       userContent: sectionText,
       textFormat: TIER1_STATEMENTS_JSON_SCHEMA,
