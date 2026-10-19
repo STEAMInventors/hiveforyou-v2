@@ -2,9 +2,45 @@
 
 Branch: **refactor/engine-boundary**. Legacy slice scope: [NEXT-v2-slices.md](NEXT-v2-slices.md).
 
-**Current ticket:** **None** — **ARCH-02 complete locally** (2026-10-12). Local verification: **148** Agent tests passed; Worker audit-gate test passed; **five** durability scenarios passed. **Uncommitted; not deployed; production behavior unchanged.** Authoritative specs: [HIVE-ARCHITECTURE-V2-PROPOSED.md](../plan/HIVE-ARCHITECTURE-V2-PROPOSED.md), [AGENTIC-PLAN.md](../plan/AGENTIC-PLAN.md) (v1.2 amendment). Frozen v1.1 sources: [AGENTIC-PLAN-v1.1.md](../plan/AGENTIC-PLAN-v1.1.md), [REPO-MAP-v1.1.md](../plan/REPO-MAP-v1.1.md).
+## Canonical Study vNext (2026-10-18)
 
-**Parked (not authorized):** ARCH-03 … ARCH-06 implementation tickets listed in [AGENTIC-PLAN.md](../plan/AGENTIC-PLAN.md) v1.2. **Canonical Study** on the new extraction/consolidation path **deferred** (ARCH-05).
+**Architecture version:** [HIVE-ARCHITECTURE-V2-PROPOSED.md](../plan/HIVE-ARCHITECTURE-V2-PROPOSED.md) **v1.3** (PROPOSED — not production-active)  
+**Plan version:** [AGENTIC-PLAN.md](../plan/AGENTIC-PLAN.md) **v1.3**  
+**Repo map:** [REPO-MAP.md](../plan/REPO-MAP.md)
+
+**Current ticket:** **CS-vNext-C.1 — generic period observation support** (**implementation complete locally**; **no commit / no Phase D** without explicit approval).
+
+**Phase C evidence-integrity review:** **Complete (2026-10-18)** — verified against qualification `reader-accepted-facts/1` study run `621870eb-10e6-4b6d-af6a-3e2447e3d357`.
+
+| Check | Requirement | Status |
+|-------|-------------|--------|
+| L001 accounting | **100** Reader facts in artifact; **100** accepted after C.1 (was **98** + **2** `INVALID_VALUE` quarantines for unsupported `kind: "period"` wire values) | **Complete** |
+| Quarantine root cause | `reader-candidate-1b1511d73e8b` (index 71, `iep_period`) and `reader-candidate-6a641f0ddf35` (index 86, `goal_period`) — Reader transport `periodStart` / `periodEnd` not mapped in `claimValueFromWire` | **Complete → fixed in C.1** |
+| Provenance semantics | `reader-accepted-facts/1` envelope treats verifier-gated facts as verified; `verificationStatus: "proposed"` on wire facts is **expected** post-verifier acceptance metadata; duplicate reader fact ids remain separate observations when value/evidence differ | **Documented** |
+| Determinism | Stable observation ids and `contentDigest` match on repeated normalization (`a31b10186d2ea457b425786e6a4c182e40eb801240570438912af014d81cf10d` after C.1) | **Complete** |
+| Shared typecheck | Pre-existing `@hiveforyou/shared` failures (`case-intelligence/3/contract.test.ts`, `projections/check-tone.test.ts`) — **not** introduced by graph contracts or C.1 | **Documented in plan Phase B** |
+
+**Blockers:** None for C.1. **Phase D — Canonical Reasoner** remains **not authorized** until explicit user approval.
+
+### CS-vNext phase tracker (summary)
+
+| Phase | Status |
+|-------|--------|
+| A — Architecture review | **Complete (2026-10-18, documentation)** |
+| B — Graph contracts | **Implemented locally**; shared contract tests 6/6; package typecheck caveats |
+| C — Observation Normalizer | **Implemented locally**; **evidence-integrity review complete (2026-10-18)** |
+| C.1 — Generic period wire mapping | **Complete locally (2026-10-18)** |
+| D–H | **Not authorized** |
+
+Detail: [AGENTIC-PLAN.md § Canonical Study vNext](../plan/AGENTIC-PLAN.md#canonical-study-vnext-v13--proposed).
+
+---
+
+## Historical — ARCH-01 / Reader scope (retained)
+
+**Prior “current ticket” (2026-10-12):** **ARCH-02 complete locally** — **148** Agent tests passed; Worker audit-gate test passed; **five** durability scenarios passed. **Uncommitted; not deployed; production behavior unchanged.** Superseded as *active* ticket by CS-vNext Phase C above; status **not** deleted.
+
+**Parked (not authorized):** ARCH-03 … ARCH-06 implementation tickets listed in [AGENTIC-PLAN.md](../plan/AGENTIC-PLAN.md). ARCH-01 extraction track **parallel** to v1.3 graph target; ARCH-05 consolidation wording **superseded for vNext** by Phases B–F in v1.3 plan — **not** marked done.
 
 **Historical — T3.9:** Reader architecture experiment (case_wide vs parallel_document) — repo P1–P6 **Done**; **STOP** before Oracle deploy or live Anthropic unless explicitly lifted. T1.5 paused — do not extend without new authorization.
 
@@ -84,6 +120,12 @@ All six verified by **Aryya Bhattacharyya**, `draft: false`, all primary anchors
 Review packages: `engine/eval/golden/_review/<case>/` with `*-golden.v4.json`, `*-golden.evidence-index.json`, `*-golden.REVIEW.md`, `build_*_golden.py`.
 
 ## Log
+
+| Date | Arch/plan | Ticket | Status | Files | Tests / results | SHA | Blockers | Approval |
+|------|-----------|--------|--------|-------|-----------------|-----|----------|----------|
+| 2026-10-18 | v1.3 | CS-vNext Phase A | Complete (doc) | `HIVE-ARCHITECTURE-V2-PROPOSED.md`, `AGENTIC-PLAN.md`, `REPO-MAP.md`, `NEXT.md` | Phase B: 6/6 `canonical-study-graph/contract.test.ts`; shared typecheck 4 errors (legacy tests) | — | Phase C closure | Pending user review |
+| 2026-10-18 | v1.3 | CS-vNext Phase C | **Evidence-integrity review complete** | `brain/status/NEXT.md`, `brain/plan/AGENTIC-PLAN.md` | L001: 100 in → 98 accepted pre-C.1 (2× `INVALID_VALUE` period); determinism + provenance documented | — | Phase D blocked | User approval for Phase D |
+| 2026-10-18 | v1.3 | CS-vNext-C.1 | **Complete (local)** | `engine/core/src/study/observations/wire-fact.ts`, tests, L001 qualification re-run | Core obs tests **11/11**; shared graph **6/6**; pack normalizer **2/2**; L001 **100/100** accepted, **0** quarantines | — | None | Phase D not authorized |
 
 | Date | Ticket | SHA | Notes |
 |------|--------|-----|-------|

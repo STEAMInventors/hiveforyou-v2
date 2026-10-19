@@ -49,6 +49,52 @@ export function readerDocumentExtractionStudyRunManifestPath(
   return `${userId}/reader-document-extractions/${studyRunId}/manifest.json`;
 }
 
+/** Immutable observation snapshot for one study attempt (graph engine). */
+export function observationSnapshotArtifactPath(
+  userId: string,
+  studyRunId: string,
+  attemptId: string,
+): string {
+  return `${userId}/observation-snapshots/${studyRunId}/${attemptId}.json`;
+}
+
+/** Untrusted Canonical Reasoner proposal for one study attempt. */
+export function canonicalStudyReasonerProposalPath(
+  userId: string,
+  studyRunId: string,
+  attemptId: string,
+): string {
+  return `${userId}/canonical-study-reasoner/${studyRunId}/${attemptId}/proposal.json`;
+}
+
+/** Deterministic graph validation result for one study attempt. */
+export function canonicalStudyGraphValidationPath(
+  userId: string,
+  studyRunId: string,
+  attemptId: string,
+): string {
+  return `${userId}/canonical-study-reasoner/${studyRunId}/${attemptId}/validation.json`;
+}
+
+/** Authoritative accepted canonical study graph (hive.canonical-study-graph/1). */
+export function acceptedCanonicalStudyGraphPath(
+  userId: string,
+  studyRunId: string,
+  attemptId: string,
+): string {
+  return `${userId}/canonical-study-graph/${studyRunId}/${attemptId}.json`;
+}
+
+/** Read-only derived projection manifest pointing at an accepted graph digest. */
+export function canonicalStudyProjectionManifestPath(
+  userId: string,
+  studyRunId: string,
+  attemptId: string,
+  projectionKind: string,
+): string {
+  return `${userId}/canonical-study-graph/${studyRunId}/${attemptId}/projections/${projectionKind}/manifest.json`;
+}
+
 /** Deterministic canonical study foundation artifact (ARCH-05.1). */
 export function canonicalStudyFoundationArtifactPath(
   userId: string,

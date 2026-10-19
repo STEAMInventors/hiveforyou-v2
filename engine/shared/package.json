@@ -30,7 +30,8 @@
     "./hive-ui-tree": "./src/hive-ui-tree.ts",
     "./hive-writer-proposal": "./src/hive-writer-proposal.ts",
     "./canonical-study-run-manifest": "./src/canonical-study-run-manifest.ts",
-    "./model/call-model": "./src/model/call-model.ts"
+    "./model/call-model": "./src/model/call-model.ts",
+    "./canonical-study-graph": "./src/canonical-study-graph/index.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",

@@ -1,12 +1,20 @@
 # Agentic plan — Hive Reader & qualification
 
-Version: **1.2** (ARCH-01 architectural amendment, 2026-10-12)  
+Version: **1.3** (Canonical Study Graph amendment, 2026-10-18); prior **1.2** (ARCH-01, 2026-10-12) preserved below  
 Frozen prior version: **[AGENTIC-PLAN-v1.1.md](./AGENTIC-PLAN-v1.1.md)** — approved Agentic Plan v1.1 (historical snapshot; **do not edit**)  
 Branch: `refactor/engine-boundary`  
-Authoritative extraction architecture (proposed): [HIVE-ARCHITECTURE-V2-PROPOSED.md](./HIVE-ARCHITECTURE-V2-PROPOSED.md)  
-Historical repo layout (v1.1 era): [REPO-MAP-v1.1.md](./REPO-MAP-v1.1.md) (**do not edit**)
+Authoritative architecture (proposed): [HIVE-ARCHITECTURE-V2-PROPOSED.md](./HIVE-ARCHITECTURE-V2-PROPOSED.md) (**v1.3** for Canonical Study vNext)  
+Living repo layout: [REPO-MAP.md](./REPO-MAP.md) · Historical: [REPO-MAP-v1.1.md](./REPO-MAP-v1.1.md) (**do not edit**)
 
-> **ARCH-01 is an explicit amendment, not a silent replacement of v1.1.** This file (**v1.2**) layers ARCH-01 documentation scope and parked ARCH-02–ARCH-06 tickets on top of the frozen v1.1 snapshot. For original approved phase structure and ticket wording as of v1.1, use **AGENTIC-PLAN-v1.1.md**. Ticket execution history, 2026-10-08 golden-set amendments, and dated SHA log remain in [brain/status/NEXT.md](../status/NEXT.md) (log section — **do not delete**). Implementation detail for completed Reader tickets remains in [brain/status/CURRENT.md](../status/CURRENT.md).
+> **v1.3 is an explicit amendment, not a silent replacement of v1.2 or v1.1.** This file layers **Canonical Study vNext** (Phases A–H) on top of ARCH-01 and the frozen v1.1 snapshot. For original approved phase structure as of v1.1, use **AGENTIC-PLAN-v1.1.md**. Ticket execution history remains in [brain/status/NEXT.md](../status/NEXT.md) (log section — **do not delete**). Implementation detail remains in [brain/status/CURRENT.md](../status/CURRENT.md).
+
+### Version change record
+
+| Version | Date | Scope | Disposition |
+|---------|------|-------|-------------|
+| v1.1 | (frozen) | Reader/eval Phases 0–8 | Immutable snapshot [AGENTIC-PLAN-v1.1.md](./AGENTIC-PLAN-v1.1.md) |
+| v1.2 | 2026-10-12 | ARCH-01 pack-driven extraction path | **Retained** — extraction/Inspector track; not superseded for raw persistence |
+| v1.3 | 2026-10-18 | Canonical Study Graph vNext (Phases A–H) | **Proposed target** — see § Canonical Study vNext; **not production-active** |
 
 ---
 
@@ -16,11 +24,134 @@ Historical repo layout (v1.1 era): [REPO-MAP-v1.1.md](./REPO-MAP-v1.1.md) (**do 
 |----------|------|
 | [AGENTIC-PLAN-v1.1.md](./AGENTIC-PLAN-v1.1.md) | **Immutable** approved Agentic Plan v1.1 — baseline for T0–T3.x Reader/eval lineage |
 | [REPO-MAP-v1.1.md](./REPO-MAP-v1.1.md) | **Immutable** REPO-MAP companion from v1.1 era — historical paths only; live navigation: [brain/INDEX.md](../INDEX.md), [architecture/overview.md](../architecture/overview.md) |
-| **AGENTIC-PLAN.md (this file, v1.2)** | Living plan index: ARCH-01 amendment + consolidated ticket table + pointers to NEXT/CURRENT |
+| **AGENTIC-PLAN.md (this file, v1.3)** | Living plan index: ARCH-01 + Canonical Study vNext + consolidated ticket table + pointers to NEXT/CURRENT |
+| [REPO-MAP.md](./REPO-MAP.md) | Living repo map — Phase B/C implemented modules vs Phase D–H proposed |
 | [NEXT.md](../status/NEXT.md) | Authorized scope, ticket statuses, execution log |
 | [CURRENT.md](../status/CURRENT.md) | What is implemented in the repo today |
 
 **Do not** merge v1.1 prose into this file in ways that erase the v1.2 amendment. **Do not** invent a replacement for REPO-MAP-v1.1.md.
+
+---
+
+## Canonical Study vNext (v1.3 — PROPOSED)
+
+**Architecture version:** [HIVE-ARCHITECTURE-V2-PROPOSED.md](./HIVE-ARCHITECTURE-V2-PROPOSED.md) **v1.3**  
+**Production:** unchanged until **Phase H** approval. OpenAI v4/v4.1 → `case-intelligence/3` remains the live path.
+
+**Immediate authorized ticket:** [NEXT.md](../status/NEXT.md) — **CS-vNext-C.1 complete locally (2026-10-18)**. Phase C evidence-integrity review **closed**. **Phase D+ implementation blocked** until explicit user approval.
+
+### Phase status summary
+
+| Phase | Name | Status | Approval to implement next phase |
+|-------|------|--------|----------------------------------|
+| **A** | Architecture review (v1.3 amendment) | **Complete (documentation — 2026-10-18)** | N/A |
+| **B** | Canonical Graph contracts | **Implemented locally** (uncommitted workstream); verification caveats documented | Phase C review |
+| **C** | Observation Normalizer | **Implemented locally**; **evidence-integrity review complete (2026-10-18)** | Phase D requires explicit NEXT authorization |
+| **C.1** | Generic period wire mapping (`claimValueFromWire`) | **Complete locally (2026-10-18)** | N/A |
+| **D** | Canonical Reasoner | **Not started** (port + orchestration) | Explicit NEXT authorization |
+| **E** | Graph Validator | **Not started** (accept partition + persistence) | After Phase D scaffold |
+| **F** | Production persistence, orchestration, Canonical Study UI, Writer graph adapter, entitlement | **Not started** | After Phases D–E |
+| **G** | L001 semantic qualification + non-IEP portability | **Not started** | After Phase F wiring |
+| **H** | Production activation + rollback | **Not started** | Explicit go/no-go |
+
+### Phase definitions
+
+#### Phase A — Architecture review
+
+| Field | Value |
+|-------|--------|
+| **Dependencies** | None |
+| **Deliverables** | v1.3 amendment in `HIVE-ARCHITECTURE-V2-PROPOSED.md`; v1.3 plan in this file; `NEXT.md` tracker; `REPO-MAP.md` |
+| **Acceptance criteria** | Pipeline, contracts, consolidation deltas, and production-boundary language documented; no claim of production activation |
+| **Test evidence** | Documentation review only |
+| **Status** | **Complete (2026-10-18)** |
+| **Approval** | User review of amendment diff (this task) |
+
+#### Phase B — Canonical Graph contracts
+
+| Field | Value |
+|-------|--------|
+| **Dependencies** | Phase A |
+| **Deliverables** | `@hiveforyou/shared/canonical-study-graph` — types, JSON schema, `validate*`, reasoner port, artifact paths, contract tests |
+| **Acceptance criteria** | `pnpm --filter @hiveforyou/shared exec vitest run src/canonical-study-graph/contract.test.ts` passes; schemas versioned; accepted graph distinguished from projections |
+| **Test evidence** | **6/6** contract tests passed (2026-10-18, local). **`pnpm --filter @hiveforyou/shared typecheck`** fails on **pre-existing** unrelated errors: `case-intelligence/3/contract.test.ts` (`claimType` on `ProposedClaim`); `projections/check-tone.test.ts` (arity mismatch) — **not introduced by canonical-study-graph**; full package typecheck remains a Phase C/F gate |
+| **Status** | **Implemented locally**; not wired to production orchestration |
+| **Approval** | Phase C evidence review; no Phase D until closed |
+
+#### Phase C — Observation Normalizer
+
+| Field | Value |
+|-------|--------|
+| **Dependencies** | Phase B contracts; verified `reader-accepted-facts/1`; declarative pack normalizer (`@hiveforyou/domain-packs/declarative`) |
+| **Deliverables** | `engine/core/src/study/observations/` — wire parsing, quarantine records, `normalizeReaderAcceptedFacts`, unit tests + optional L001 fixture test |
+| **Acceptance criteria** | Deterministic observation ids; invalid provenance quarantined; verified-only facts accepted; snapshot validates against `hive.observation-snapshot/1`; **L001 qualification artifact: two period quarantines root-caused and cleared in C.1**; accepted-facts provenance semantics documented |
+| **Test evidence** | **2026-10-18:** L001 qualification `621870eb-10e6-4b6d-af6a-3e2447e3d357` — **100** facts in, **100** accepted after C.1 (**0** quarantines); pre-C.1 **98** + **2**× `INVALID_VALUE` for `kind: "period"`. Core observation tests **11/11**; `@hiveforyou/shared` canonical-study-graph **6/6**; declarative pack normalizer **2/2**. Shared package typecheck: pre-existing unrelated errors unchanged (Phase B). |
+| **Status** | **Implemented locally**; **evidence-integrity review complete**; **C.1 complete** |
+| **Approval** | Phase D requires explicit NEXT authorization (not granted by C closure) |
+
+#### Phase D — Canonical Reasoner
+
+| Field | Value |
+|-------|--------|
+| **Dependencies** | Phase C closed; persisted observation snapshot; pack compiled graph context |
+| **Deliverables** | Reasoner implementation of `CanonicalStudyReasoner` port; prompt + strict JSON schema; fixture/replay mode; persistence slot for proposal |
+| **Acceptance criteria** | Proposals validate as `canonical-study-reasoner-proposal/1`; no persistence of accepted graph without Phase E; replay tests without live model by default |
+| **Test evidence** | TBD — unit + recorded fixture |
+| **Status** | **Blocked** (Phase C) |
+| **Approval** | Explicit NEXT authorization |
+
+#### Phase E — Graph Validator
+
+| Field | Value |
+|-------|--------|
+| **Dependencies** | Phase D proposal schema stable |
+| **Deliverables** | Deterministic validator producing `canonical-study-graph-validation/1` and `hive.canonical-study-graph/1` on success; issue codes aligned with `validator-issue-codes.ts` |
+| **Acceptance criteria** | Fail closed on broken provenance; unresolved partition preserved; accepted graph validates; no UI/report consumption of unaccepted proposals |
+| **Test evidence** | TBD — validator fixture suite |
+| **Status** | **Blocked** (Phase C) |
+| **Approval** | Explicit NEXT authorization |
+
+#### Phase F — Production persistence, orchestration, UI, Writer adapter, entitlement
+
+| Field | Value |
+|-------|--------|
+| **Dependencies** | Phases D–E; Supabase/storage paths; worker Inngest study function |
+| **Deliverables** | End-to-end study run writing observation → proposal → validation → accepted graph; **Canonical Study inspection UI**; Writer adapter reading accepted graph only; **one `writerRunId` per generation**; server-side entitlement for designated reports |
+| **Acceptance criteria** | Idempotent study runs; immutable prior attempts; separate routes for graph inspection vs Writer preview; entitlement enforced server-side |
+| **Test evidence** | Integration tests + manual browser checklist |
+| **Status** | **Not started** |
+| **Approval** | Explicit NEXT authorization |
+
+#### Phase G — L001 semantic qualification and non-IEP portability
+
+| Field | Value |
+|-------|--------|
+| **Dependencies** | Phase F wired in qualification/staging environment |
+| **Deliverables** | L001 graph-level qualification report; second domain pack smoke (declarative pack only, no Core branches) |
+| **Acceptance criteria** | L001 gates documented; portability demonstrates same contracts with different pack pin |
+| **Test evidence** | Qualification CLI + golden comparisons (graph-level) |
+| **Status** | **Not started** |
+| **Approval** | Explicit NEXT authorization |
+
+#### Phase H — Production activation and rollback
+
+| Field | Value |
+|-------|--------|
+| **Dependencies** | Phase G sign-off; migration/flag plan |
+| **Deliverables** | Feature flag or processing mode cutover; rollback runbook; CURRENT.md update |
+| **Acceptance criteria** | Rollback restores v4/`/3` path without data loss; activation does not rewrite immutable accepted artifacts |
+| **Test evidence** | Staged activation + rollback drill |
+| **Status** | **Not started** |
+| **Approval** | Explicit go/no-go — **declares production-active** |
+
+### Supersession notes (v1.3 vs v1.2 ARCH-05)
+
+| Item | v1.2 ARCH-05 wording | v1.3 disposition |
+|------|----------------------|------------------|
+| Phase B consolidation + case intelligence | Single deferred ARCH-05 ticket | **Split** into Phases B–E (contracts → normalizer → reasoner → validator) + Phase F (persistence/UI) |
+| ARCH-05 status in v1.2 table | Parked | **Superseded for vNext tracking only** — ARCH-05 row retained for history; execute via CS-vNext phases |
+
+Historical **ARCH-02–ARCH-06** extraction tickets remain in the v1.2 table below; they are **not** marked done unless evidence exists in NEXT/CURRENT.
 
 ---
 
@@ -188,6 +319,14 @@ Full table: [HIVE-ARCHITECTURE-V2-PROPOSED.md — Superseded or deferred provisi
 
 ---
 
-## Execution log
+## Execution log (append-only)
 
 Dated SHA notes and ticket completion history: [NEXT.md — Log](../status/NEXT.md#log). Append new rows there; do not truncate prior entries.
+
+Every implementation ticket must cite **architecture version** (e.g. v1.3) and **phase acceptance criteria** from § Canonical Study vNext.
+
+| Date | Arch/plan version | Ticket | Status | Files changed | Tests / results | Commit SHA | Blockers | Approval |
+|------|-------------------|--------|--------|---------------|-----------------|------------|----------|----------|
+| 2026-10-18 | HIVE-ARCH v1.3 / AGENTIC-PLAN v1.3 | CS-vNext Phase A | Complete (documentation) | `brain/plan/HIVE-ARCHITECTURE-V2-PROPOSED.md`, `brain/plan/AGENTIC-PLAN.md`, `brain/plan/REPO-MAP.md`, `brain/status/NEXT.md` | Doc review; shared contract tests cited in Phase B row | — (no commit per user request) | Phase C evidence closure | **Pending user approval of amendment diff** |
+| 2026-10-18 | v1.3 | CS-vNext Phase C | Evidence-integrity review complete | `brain/status/NEXT.md`, `brain/plan/AGENTIC-PLAN.md` | L001 100 facts; 98→100 after period fix; determinism verified | — | Phase D | Blocked pending approval |
+| 2026-10-18 | v1.3 | CS-vNext-C.1 | Complete (local) | `engine/core/src/study/observations/wire-fact.ts`, `wire-fact.test.ts`, normalize tests | 11/11 core obs tests; L001 100/100; digest `a31b10186d2ea457b425786e6a4c182e40eb801240570438912af014d81cf10d` | — | None | Phase D not authorized |

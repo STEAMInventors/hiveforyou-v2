@@ -26,6 +26,7 @@ export * from "./intake-study-context";
 export * from "./discover-structure-fingerprint";
 export * from "./load-proposal-domain-pack";
 export * from "./consolidate-verified-reader-facts";
+export * from "./observations/index.js";
 export * from "./declarative-pack-activation";
 export * from "./resolve-study-declarative-pack";
 export {

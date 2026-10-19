@@ -21,6 +21,11 @@ export {
   declarativeRelationshipsForDiagnostics,
 } from "./compile-to-proposal.js";
 export {
+  compileDeclarativeObservationNormalizer,
+  type DeclarativeObservationNormalizerContext,
+  type PredicateResolution,
+} from "./compile-observation-normalizer.js";
+export {
   DeclarativePackResolutionError,
   resolveLatestEligibleDeclarativePack,
   resolveLatestEligibleDeclarativePackFromEnv,
