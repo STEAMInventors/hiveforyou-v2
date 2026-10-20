@@ -329,7 +329,7 @@ export type CompilePackDrivenReaderPromptResult = {
   outputJsonSchema: Record<string, unknown>;
   cacheBoundaryHints?: {
     stablePrefixEndsAfterBlock: "B";
-    variableUserBlocks: Array<"C" | "D" | "E">;
+    variableUserBlocks: Array<"C" | "D" | "E" | "F">;
   };
   blocks: {
     A_universal: string;

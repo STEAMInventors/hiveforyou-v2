@@ -11,6 +11,7 @@
     "./questions": "./src/questions.ts",
     "./canonical-study": "./src/canonical-study/index.ts",
     "./domain-learning": "./src/domain-learning/index.ts",
+    "./domain-pack-registry": "./src/domain-pack-registry/index.ts",
     "./case-customer-context": "./src/case-customer-context/index.ts",
     "./cases": "./src/cases/index.ts",
     "./projections": "./src/projections/index.ts",

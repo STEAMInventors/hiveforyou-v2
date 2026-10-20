@@ -39,7 +39,7 @@ export class SupabaseDomainPackRegistryRepository {
       {
         domain_id: domainId.trim(),
         lifecycle_status: "CERTIFIED",
-        is_active: true,
+        is_active: "true",
       },
       { limit: 2 },
     );
