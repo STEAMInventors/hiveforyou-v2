@@ -24,6 +24,7 @@ from hive_agents.pack_driven_reader.document_extraction_envelope import (
 from hive_agents.pack_driven_reader.engine1_manifest import (
     build_case_manifest,
     parse_engine1_logical_documents,
+    resolve_discover_document_type_id,
 )
 from hive_agents.pack_driven_reader.lm_extract import call_pack_driven_extraction
 from hive_agents.pack_driven_reader.map_to_candidate import pack_extraction_to_candidate_facts
@@ -151,6 +152,36 @@ def _post_extraction_processing_failure_result(
 
 def _pages_for_document(pages: list[DocumentPage], source_document_id: str) -> list[DocumentPage]:
     return [page for page in pages if page.documentId == source_document_id]
+
+
+def _discover_document_type_id_for_logical_doc(
+    *,
+    pack: Any,
+    logical_doc: Any,
+) -> str | None:
+    resolved = resolve_discover_document_type_id(pack, logical_doc.discover_document_type_label)
+    if resolved is not None:
+        return resolved
+    return resolve_discover_document_type_id(pack, logical_doc.document_type_id)
+
+
+def _classification_needs_review(
+    *,
+    parsed: Any,
+    engine1_document_type_id: str | None,
+) -> bool:
+    if parsed.needs_review:
+        return True
+    reader_type = parsed.document_type_id
+    if (
+        isinstance(engine1_document_type_id, str)
+        and engine1_document_type_id.strip()
+        and isinstance(reader_type, str)
+        and reader_type.strip()
+        and engine1_document_type_id.strip() != reader_type.strip()
+    ):
+        return True
+    return False
 
 
 def _accumulate_usage(
@@ -330,7 +361,10 @@ def _process_single_document(
                 source_document_id=source_document_id,
                 document_type_id=parsed.document_type_id,
                 engine1_document_type_id=engine1_document_type_id,
-                classification_needs_review=parsed.needs_review,
+                classification_needs_review=_classification_needs_review(
+                    parsed=parsed,
+                    engine1_document_type_id=engine1_document_type_id,
+                ),
                 parse_ok=parsed.ok,
                 parse_errors=list(parsed.errors),
                 candidate_facts=candidates,
@@ -429,8 +463,14 @@ def run_pack_driven_reader(
     pack_path = resolved_pack.path
     proposal_pack = resolved_pack.pack
     logical_docs, document_order = parse_engine1_logical_documents(engine1_reader_context_json)
-    case_manifest = build_case_manifest(logical_docs)
-    engine1_type_by_id = {doc.source_document_id: doc.document_type_id for doc in logical_docs}
+    case_manifest = build_case_manifest(logical_docs, pack=proposal_pack)
+    engine1_type_by_id = {
+        doc.source_document_id: _discover_document_type_id_for_logical_doc(
+            pack=proposal_pack,
+            logical_doc=doc,
+        )
+        for doc in logical_docs
+    }
 
     concurrency = max(1, int(getattr(settings, "reader_parallel_concurrency", 8) or 8))
     wall_started = time.perf_counter()

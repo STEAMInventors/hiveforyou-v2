@@ -1504,13 +1504,13 @@
           "id": "minutes_per_week",
           "valueKind": "quantity",
           "source": [
-            "quoted",
-            "derived"
+            "quoted"
           ],
           "modality": [
             "planned"
           ],
           "unit": "min/week",
+          "description": "Explicit weekly service total when quoted in the document (e.g. '150 minutes weekly'). Do not calculate from session rate; the engine derives this field from verified operands when not explicitly quoted.",
           "derivation": {
             "primitive": "ratePerWeek",
             "operands": [

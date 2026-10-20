@@ -86,7 +86,7 @@ def run_hive_writer(*, writer_input: dict[str, Any], lm: dspy.LM | None = None) 
     contract = load_hive_writer_anthropic_contract()
     response_format = contract.require_constrained_response_format()
 
-    active_lm = lm or create_dspy_lm(tier="heavy_lifter")
+    active_lm = lm or create_dspy_lm()
     system = _load_writer_prompt()
     user_payload = json.dumps(writer_input, separators=(",", ":"), sort_keys=True)
     messages = build_dspy_lm_messages(

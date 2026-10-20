@@ -35,9 +35,13 @@ import {
 } from "./agentic-reader-qualification";
 import { loadProposalDomainPack, verifyPackDrivenProposalPackPackaged } from "./load-proposal-domain-pack";
 import { PROPOSAL_PACK_RELATIVE_PATH } from "./resolve-hive-monorepo-root";
+import {
+  IEP_CANDIDATE_READER_PACK_CONTENT_SHA256,
+  L001_READER_PACK_CONTENT_SHA256,
+} from "./resolve-canonical-study-interpretation";
+import { DomainPackRegistryError } from "./domain-pack-registry/errors";
 
-const COMMITTED_IEP_V03_PROPOSED_PACK_CONTENT_SHA256 =
-  "c2baa0439d32496a3110f5388f6048395a9f4c8fdce79b3d0cec36ae6b9a7775";
+const COMMITTED_IEP_V03_PROPOSED_PACK_CONTENT_SHA256 = IEP_CANDIDATE_READER_PACK_CONTENT_SHA256;
 
 describe("resolveReaderMode", () => {
   it("defaults off when env unset", () => {
@@ -320,12 +324,20 @@ describe("agentic reader qualification", () => {
     mkdirSync(packDir, { recursive: true });
     copyFileSync(sourcePack, join(packDir, "iep-pack.v0.3.proposed.json"));
 
+    const seedPath = join(process.cwd(), "fixtures", "domain-pack-registry-iep-seed.json");
     const previousCwd = process.cwd();
     try {
       process.chdir(fakeTaskRoot);
-      expect(loadPackDrivenProposalPackContentSha256({})).toBe(
-        COMMITTED_IEP_V03_PROPOSED_PACK_CONTENT_SHA256,
-      );
+      expect(
+        loadPackDrivenProposalPackContentSha256(
+          {
+            HIVE_READER_MODE: "pack_driven",
+            HIVE_DOMAIN_PACK_REGISTRY_SEED_JSON: seedPath,
+          },
+          "iep",
+          "qualification",
+        ),
+      ).toBe(COMMITTED_IEP_V03_PROPOSED_PACK_CONTENT_SHA256);
     } finally {
       process.chdir(previousCwd);
       rmSync(fakeTaskRoot, { recursive: true, force: true });
@@ -344,6 +356,51 @@ describe("agentic reader qualification", () => {
 
   it("does not require packaged proposal pack when the env override is unset", () => {
     expect(() => verifyPackDrivenProposalPackPackaged({})).not.toThrow();
+  });
+
+  it("resolves DP-03B candidate digest for pack_driven qualification", () => {
+    expect(
+      loadPackDrivenProposalPackContentSha256(
+        { HIVE_READER_MODE: "pack_driven" },
+        "iep",
+        "qualification",
+      ),
+    ).toBe(IEP_CANDIDATE_READER_PACK_CONTENT_SHA256);
+  });
+
+  it("does not use qualification candidate for production study selection", () => {
+    expect(() =>
+      loadPackDrivenProposalPackContentSha256(
+        { HIVE_READER_MODE: "pack_driven" },
+        "iep",
+        "production",
+      ),
+    ).toThrow(DomainPackRegistryError);
+    try {
+      loadPackDrivenProposalPackContentSha256(
+        { HIVE_READER_MODE: "pack_driven" },
+        "iep",
+        "production",
+      );
+    } catch (error) {
+      expect(error).toMatchObject({
+        code: "DOMAIN_PACK_REGISTRY_PRODUCTION_REQUIRES_DATABASE",
+      });
+    }
+  });
+
+  it("preserves historical L001 digest via explicit pin env", () => {
+    expect(
+      loadPackDrivenProposalPackContentSha256({
+        HIVE_READER_PROPOSAL_PACK_CONTENT_SHA256: L001_READER_PACK_CONTENT_SHA256,
+      }),
+    ).toBe(L001_READER_PACK_CONTENT_SHA256);
+  });
+
+  it("fail-closes production selection when no active certified pack is registered", () => {
+    expect(() => loadPackDrivenProposalPackContentSha256({}, "iep", "production")).toThrow(
+      DomainPackRegistryError,
+    );
   });
 
   it("fail-closes on missing packaged L001 manifest path", () => {

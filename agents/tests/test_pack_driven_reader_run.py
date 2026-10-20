@@ -9,6 +9,12 @@ import pytest
 from hive_agents.api_models import StudyReaderRequest
 from hive_agents.app import execute_study_reader
 from hive_agents.pack_driven_reader.map_to_candidate import pack_extraction_to_candidate_facts
+from hive_agents.pack_driven_reader.engine1_manifest import (
+    LogicalDocumentMeta,
+    build_case_manifest,
+    resolve_discover_document_type_id,
+)
+from hive_agents.pack_driven_reader.run import _classification_needs_review
 from hive_agents.reader import DocumentPage, PageWord, ReaderRunResult
 from hive_agents.settings import get_settings
 
@@ -17,6 +23,53 @@ IEP_PROPOSAL_PACK_IDENTITY = {
     "packVersion": "0.3.0-proposed",
     "packContentSha256": "c2baa0439d32496a3110f5388f6048395a9f4c8fdce79b3d0cec36ae6b9a7775",
 }
+
+
+def test_resolve_discover_document_type_id_from_label_and_id() -> None:
+    pack = {
+        "documentTypes": [
+            {
+                "id": "iep.plan",
+                "label": "Individualized Education Program",
+                "discoverLabels": ["IEP document"],
+            },
+            {"id": "iep.referral", "label": "Referral for Special Education Evaluation"},
+        ]
+    }
+    assert resolve_discover_document_type_id(pack, "IEP document") == "iep.plan"
+    assert resolve_discover_document_type_id(pack, "iep.referral") == "iep.referral"
+    assert resolve_discover_document_type_id(pack, "Unknown") is None
+
+
+def test_build_case_manifest_includes_advisory_discover_fields() -> None:
+    pack = {
+        "documentTypes": [
+            {"id": "iep.plan", "label": "Individualized Education Program", "discoverLabels": []},
+        ]
+    }
+    manifest = build_case_manifest(
+        [
+            LogicalDocumentMeta(
+                source_document_id="doc-a",
+                document_type_id=None,
+                discover_document_type_label="Individualized Education Program",
+                filename="plan.pdf",
+                page_count=2,
+            )
+        ],
+        pack=pack,
+    )
+    assert manifest[0]["discoverDocumentTypeLabel"] == "Individualized Education Program"
+    assert manifest[0]["discoverDocumentTypeId"] == "iep.plan"
+
+
+def test_classification_needs_review_when_discover_and_reader_disagree() -> None:
+    class Parsed:
+        needs_review = False
+        document_type_id = "iep.referral"
+
+    assert _classification_needs_review(parsed=Parsed(), engine1_document_type_id="iep.plan") is True
+    assert _classification_needs_review(parsed=Parsed(), engine1_document_type_id="iep.referral") is False
 
 
 def test_pack_extraction_to_candidate_facts_skips_missing() -> None:
@@ -117,7 +170,10 @@ def test_execute_study_reader_pack_driven_branch(
         }
     )
 
-    result, audit, per_document, _document_extractions = execute_study_reader(request)
+    result, audit, per_document, _document_extractions = execute_study_reader(
+        request,
+        lm_factory=lambda: MagicMock(),
+    )
     assert result.candidate_facts == []
     assert audit.persisted is False
     assert per_document == []
@@ -163,7 +219,7 @@ def test_legacy_reader_unchanged_when_reader_mode_unset(
             ],
         }
     )
-    execute_study_reader(request)
+    execute_study_reader(request, lm_factory=lambda: MagicMock())
     assert called["legacy"] is True
     assert called["pack_driven"] is False
 
@@ -346,7 +402,10 @@ def test_trace_flush_failure_returns_envelopes_and_failed_audit(
         }
     )
 
-    _result, audit, _per_document, document_extractions = execute_study_reader(request)
+    _result, audit, _per_document, document_extractions = execute_study_reader(
+        request,
+        lm_factory=lambda: MagicMock(),
+    )
     assert audit.persisted is False
     assert audit.status == "failed"
     assert audit.error_code == "TRACE_PERSIST_FAILED"

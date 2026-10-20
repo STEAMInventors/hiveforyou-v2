@@ -15,6 +15,8 @@ export type Engine1ReaderContextLogicalDocument = {
   logicalDocumentId?: string;
   pageStart?: number;
   pageEnd?: number;
+  /** Advisory Discover classification label from structure map (not evidence). */
+  discoverDocumentTypeLabel?: string;
 };
 
 export type Engine1ReaderContext = {
@@ -48,6 +50,7 @@ function mapLogicalDocuments(input: {
     pageEnd: doc.pageEnd,
     filename: input.filenameBySourceDocumentId?.get(doc.sourceDocumentId),
     pageCount: input.pageCountBySourceDocumentId?.get(doc.sourceDocumentId),
+    discoverDocumentTypeLabel: doc.documentType?.trim() ? doc.documentType.trim() : undefined,
   }));
 }
 
@@ -92,8 +95,8 @@ export async function resolveEngine1ReaderContext(input: {
       logicalDocuments,
       notes: [
         provenance === "intake_pack_execution"
-          ? "logicalDocuments sourced from Intake pack execution (boundaries and provenance only; no document-type hints for Reader)."
-          : "logicalDocuments sourced from persisted structure map (boundaries and provenance only; no document-type hints for Reader).",
+          ? "logicalDocuments sourced from Intake pack execution (boundaries, provenance, and advisory Discover classification labels only)."
+          : "logicalDocuments sourced from persisted structure map (boundaries, provenance, and advisory Discover classification labels only).",
       ],
     };
   }

@@ -3,10 +3,7 @@ import {
   UNIVERSAL_PACK_DRIVEN_READER_INSTRUCTIONS,
 } from "./constants.js";
 import { computeProposalPackContentSha256 } from "./pack-hash.js";
-import {
-  buildPackDrivenReaderOutputJsonSchema,
-  buildUniversalPackDrivenReaderOutputJsonSchema,
-} from "./output-schema.js";
+import { buildPackDrivenReaderOutputJsonSchema } from "./output-schema.js";
 import type {
   CompilePackDrivenReaderPromptInput,
   CompilePackDrivenReaderPromptResult,
@@ -107,11 +104,7 @@ function buildRecordTypeCatalog(pack: ProposalDomainPack): string {
   return ["## Record-type and field catalog", JSON.stringify(records, null, 2)].join("\n");
 }
 
-function buildPackDefinitionBlock(
-  pack: ProposalDomainPack,
-  packHash: string,
-  outputSchema: Record<string, unknown>,
-): string {
+function buildPackDefinitionBlock(pack: ProposalDomainPack, packHash: string): string {
   const packSnapshot = {
     schemaVersion: pack.schemaVersion,
     status: pack.status,
@@ -123,6 +116,10 @@ function buildPackDefinitionBlock(
     constructs: pack.constructs,
     unclassifiedPolicy: pack.unclassifiedPolicy,
     genericUnclassifiedChecklist: pack.genericUnclassifiedChecklist ?? null,
+    genericUnclassifiedChecklistNote:
+      pack.genericUnclassifiedChecklist?.length
+        ? "Explicit generic checklist for unclassified reading."
+        : "When null, validation uses the intersection of all document-type checklists for unclassified reading — never speculative generic extraction.",
   };
 
   return [
@@ -143,25 +140,31 @@ function buildPackDefinitionBlock(
     pack.readingNotes.global,
     "",
     buildVocabularySection(pack),
-    "",
-    "## Output contract (JSON Schema — respond as this object)",
-    JSON.stringify(outputSchema, null, 2),
   ]
     .filter(Boolean)
     .join("\n");
 }
 
+function buildOutputContractBlock(outputSchema: Record<string, unknown>): string {
+  return [
+    "## Output contract (JSON Schema — respond as this object for this document only)",
+    JSON.stringify(outputSchema, null, 2),
+  ].join("\n");
+}
+
 function buildManifestBlock(manifest: CompilePackDrivenReaderPromptInput["caseManifest"]): string {
   return [
     "## Case document manifest (context only — not readable evidence)",
-    "Engine 1 documentTypeId values when present are diagnostic hints only; classify from page text.",
+    "Discover classification fields (discoverDocumentTypeLabel / discoverDocumentTypeId) are advisory hints only.",
+    "You may choose a different valid pack documentTypeId when page evidence supports it.",
     JSON.stringify(
       manifest.map((entry) => ({
         sourceDocumentId: entry.sourceDocumentId,
         filename: entry.filename ?? null,
         pageCount: entry.pageCount ?? null,
         logicalDocumentId: entry.logicalDocumentId ?? null,
-        documentTypeId: entry.documentTypeId ?? null,
+        discoverDocumentTypeLabel: entry.discoverDocumentTypeLabel ?? null,
+        discoverDocumentTypeId: entry.discoverDocumentTypeId ?? null,
       })),
       null,
       2,
@@ -175,9 +178,10 @@ function buildDocumentTaskBlock(sourceDocumentId: string): string {
     `sourceDocumentId: ${sourceDocumentId}`,
     "Steps:",
     "1. Classify: set documentTypeId to one pack catalog id, or UNKNOWN / AMBIGUOUS.",
-    "2. Extract: emit recordInstances only for checklist record types allowed for that documentTypeId.",
-    "3. Set sourceDocumentId in output to the value above.",
-    "4. For UNKNOWN or AMBIGUOUS: recordInstances must be [].",
+    "2. Checklist coverage: for each record type on that document type's checklist, emit one checklistCoverage declaration (extracted | not_found | not_applicable | unresolved).",
+    "3. Extract: emit recordInstances only for rows you can support with quotes; never invent instances for not_found or not_applicable.",
+    "4. Set sourceDocumentId in output to the value above.",
+    "5. For UNKNOWN or AMBIGUOUS: recordInstances must be [] and checklistCoverage must be [].",
   ].join("\n");
 }
 
@@ -224,20 +228,20 @@ export function compilePackDrivenReaderPrompt(
 
   const packHash = computeProposalPackContentSha256(input.pack);
 
-  const stableOutputJsonSchema = buildUniversalPackDrivenReaderOutputJsonSchema(input.pack);
   const outputJsonSchema = buildPackDrivenReaderOutputJsonSchema({
     pack: input.pack,
     sourceDocumentId: input.document.sourceDocumentId,
   });
 
   const blockA = UNIVERSAL_PACK_DRIVEN_READER_INSTRUCTIONS;
-  const blockB = buildPackDefinitionBlock(input.pack, packHash, stableOutputJsonSchema);
+  const blockB = buildPackDefinitionBlock(input.pack, packHash);
   const blockC = buildManifestBlock(input.caseManifest);
   const blockD = buildDocumentTaskBlock(input.document.sourceDocumentId);
   const blockE = buildPagesBlock(input.document);
+  const blockF = buildOutputContractBlock(outputJsonSchema);
 
   const stableSystemPrefix = `${blockA}\n\n${blockB}`;
-  const caseUserContent = `${blockC}\n\n${blockD}\n\n${blockE}`;
+  const caseUserContent = `${blockC}\n\n${blockD}\n\n${blockE}\n\n${blockF}`;
 
   assertNoExcludedKeysInPromptText(stableSystemPrefix);
   assertNoExcludedKeysInPromptText(caseUserContent);
@@ -258,13 +262,14 @@ export function compilePackDrivenReaderPrompt(
       C_caseManifest: blockC,
       D_documentTask: blockD,
       E_documentPages: blockE,
+      F_outputContract: blockF,
     },
   };
 
   if (input.emitCacheBoundaryHints) {
     result.cacheBoundaryHints = {
       stablePrefixEndsAfterBlock: "B",
-      variableUserBlocks: ["C", "D", "E"],
+      variableUserBlocks: ["C", "D", "E", "F"],
     };
   }
 

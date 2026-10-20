@@ -4,7 +4,7 @@ export type IntakeStudyPath = "DOMAIN_PACK" | "GENERIC_STUDY";
 
 export type IntakeDomainResolution = {
   rawIntent: string | null;
-  explicitDomainId: string | null;
+  selectedDomainId: string | null;
   jevDomainProposal: string | null;
   jevDomainConfidence: number | null;
   resolvedDomainId: string | null;
@@ -14,17 +14,17 @@ export type IntakeDomainResolution = {
 
 export function resolveIntakeDomain(input: {
   rawIntent: string | null;
-  explicitDomainId: string | null;
+  selectedDomainId: string | null;
   jevDomainProposal?: string | null;
   jevDomainConfidence?: number | null;
 }): IntakeDomainResolution {
-  const explicit = input.explicitDomainId?.trim() || null;
+  const explicit = input.selectedDomainId?.trim() || null;
   const rawIntent = input.rawIntent?.trim() || null;
 
   if (explicit && isDomainPackExecutable(explicit)) {
     return {
       rawIntent,
-      explicitDomainId: explicit,
+      selectedDomainId: explicit,
       jevDomainProposal: null,
       jevDomainConfidence: null,
       resolvedDomainId: explicit,
@@ -36,7 +36,7 @@ export function resolveIntakeDomain(input: {
   if (explicit && !isDomainPackExecutable(explicit)) {
     return {
       rawIntent,
-      explicitDomainId: explicit,
+      selectedDomainId: explicit,
       jevDomainProposal: null,
       jevDomainConfidence: null,
       resolvedDomainId: null,
@@ -50,7 +50,7 @@ export function resolveIntakeDomain(input: {
   if (jevChoice === "NO_MATCH" || !jevChoice) {
     return {
       rawIntent,
-      explicitDomainId: null,
+      selectedDomainId: null,
       jevDomainProposal: jevChoice,
       jevDomainConfidence: confidence,
       resolvedDomainId: null,
@@ -62,7 +62,7 @@ export function resolveIntakeDomain(input: {
   if (isDomainPackExecutable(jevChoice) && getIntakePackExecutor(jevChoice)) {
     return {
       rawIntent,
-      explicitDomainId: null,
+      selectedDomainId: null,
       jevDomainProposal: jevChoice,
       jevDomainConfidence: confidence,
       resolvedDomainId: jevChoice,
@@ -73,7 +73,7 @@ export function resolveIntakeDomain(input: {
 
   return {
     rawIntent,
-    explicitDomainId: null,
+    selectedDomainId: null,
     jevDomainProposal: jevChoice,
     jevDomainConfidence: confidence,
     resolvedDomainId: null,

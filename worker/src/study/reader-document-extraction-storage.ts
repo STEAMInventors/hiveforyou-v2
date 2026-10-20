@@ -1,10 +1,23 @@
 import { createHash } from "node:crypto";
 
 import {
+  buildPackDrivenReaderDocumentRawArtifact,
+  buildPackDrivenReaderDocumentValidatedArtifact,
+  buildPackDrivenReaderStudyManifestArtifact,
+} from "@hiveforyou/core/study";
+import type { ProposalDomainPack } from "@hiveforyou/domain-pack/pack-driven-reader";
+import {
+  packDrivenReaderDocumentRawArtifactPath,
+  packDrivenReaderDocumentValidatedArtifactPath,
+  packDrivenReaderStudyManifestArtifactPath,
   readerDocumentExtractionAttemptManifestPath,
   readerDocumentExtractionEnvelopePath,
   readerDocumentExtractionStudyRunManifestPath,
 } from "@hiveforyou/shared/hive-artifact-paths";
+import type {
+  PackDrivenReaderDocumentValidatedArtifact,
+  PackDrivenReaderStudyManifestArtifact,
+} from "@hiveforyou/shared/pack-driven-reader-artifacts";
 import {
   buildReaderDocumentExtractionAttemptManifest,
   buildReaderDocumentExtractionEnvelope,
@@ -17,6 +30,10 @@ import type { HiveGateway } from "../persistence/hive-gateway.js";
 
 function envelopeContentSha256(envelope: ReaderDocumentExtractionEnvelope): string {
   return createHash("sha256").update(JSON.stringify(envelope)).digest("hex");
+}
+
+function artifactContentSha256(value: unknown): string {
+  return createHash("sha256").update(JSON.stringify(value)).digest("hex");
 }
 
 export class ReaderDocumentExtractionStorage {
@@ -154,5 +171,126 @@ export class ReaderDocumentExtractionStorage {
     );
 
     return { attemptManifestPath, studyRunManifestPath, envelopePaths };
+  }
+}
+
+export class PackDrivenReaderArtifactStorage {
+  constructor(
+    private readonly gateway: HiveGateway,
+    private readonly bucket: string,
+  ) {}
+
+  async persistStudyReaderArtifacts(input: {
+    userId: string;
+    pack: ProposalDomainPack;
+    envelopes: ReaderDocumentExtractionEnvelope[];
+    perDocumentResults: unknown[] | null | undefined;
+    logicalDocumentIdBySourceDocumentId: Map<string, string>;
+    discoverDocumentTypeIdBySourceDocumentId?: Map<string, string | null>;
+    discoverDocumentTypeLabelBySourceDocumentId?: Map<string, string | null>;
+    promptCompilerVersion?: string | null;
+    updatedAt: string;
+  }): Promise<{
+    studyManifestPath: string;
+    documentPaths: Array<{ logicalDocumentId: string; rawPath: string; validatedPath: string }>;
+    manifest: PackDrivenReaderStudyManifestArtifact;
+  }> {
+    if (input.envelopes.length === 0) {
+      throw new Error("PACK_DRIVEN_READER_ARTIFACT_EMPTY");
+    }
+
+    const perDocumentBySource = new Map<string, Record<string, unknown>>();
+    for (const row of input.perDocumentResults ?? []) {
+      if (!row || typeof row !== "object" || Array.isArray(row)) {
+        continue;
+      }
+      const record = row as Record<string, unknown>;
+      const sourceDocumentId = record.sourceDocumentId;
+      if (typeof sourceDocumentId === "string" && sourceDocumentId.trim()) {
+        perDocumentBySource.set(sourceDocumentId.trim(), record);
+      }
+    }
+
+    const validatedByLogical = new Map<string, PackDrivenReaderDocumentValidatedArtifact>();
+    const documentPaths: Array<{ logicalDocumentId: string; rawPath: string; validatedPath: string }> =
+      [];
+
+    for (const envelope of input.envelopes) {
+      if (envelope.userId !== input.userId) {
+        throw new Error("PACK_DRIVEN_READER_ARTIFACT_OWNER_MISMATCH");
+      }
+      const logicalDocumentId =
+        input.logicalDocumentIdBySourceDocumentId.get(envelope.sourceDocumentId) ??
+        envelope.sourceDocumentId;
+      const rawArtifact = buildPackDrivenReaderDocumentRawArtifact({
+        envelope,
+        logicalDocumentId,
+        promptCompilerVersion: input.promptCompilerVersion,
+      });
+      const validatedArtifact = buildPackDrivenReaderDocumentValidatedArtifact({
+        envelope,
+        logicalDocumentId,
+        pack: input.pack,
+        perDocumentWire: perDocumentBySource.get(envelope.sourceDocumentId) ?? null,
+        discoverDocumentTypeId:
+          input.discoverDocumentTypeIdBySourceDocumentId?.get(envelope.sourceDocumentId) ?? null,
+        discoverDocumentTypeLabel:
+          input.discoverDocumentTypeLabelBySourceDocumentId?.get(envelope.sourceDocumentId) ?? null,
+        updatedAt: input.updatedAt,
+      });
+
+      const rawPath = packDrivenReaderDocumentRawArtifactPath(
+        input.userId,
+        envelope.studyRunId,
+        logicalDocumentId,
+      );
+      const validatedPath = packDrivenReaderDocumentValidatedArtifactPath(
+        input.userId,
+        envelope.studyRunId,
+        logicalDocumentId,
+      );
+
+      await this.uploadIfAbsent(rawPath, rawArtifact);
+      await this.uploadIfAbsent(validatedPath, validatedArtifact);
+
+      validatedByLogical.set(logicalDocumentId, validatedArtifact);
+      documentPaths.push({ logicalDocumentId, rawPath, validatedPath });
+    }
+
+    const manifest = buildPackDrivenReaderStudyManifestArtifact({
+      userId: input.userId,
+      attemptId: input.envelopes[0]!.attemptId,
+      envelopes: input.envelopes,
+      validatedByLogicalDocumentId: validatedByLogical,
+      logicalDocumentIdBySourceDocumentId: input.logicalDocumentIdBySourceDocumentId,
+      promptCompilerVersion: input.promptCompilerVersion,
+      createdAt: input.updatedAt,
+      complete: true,
+    });
+    const studyManifestPath = packDrivenReaderStudyManifestArtifactPath(
+      input.userId,
+      input.envelopes[0]!.studyRunId,
+    );
+    await this.uploadIfAbsent(studyManifestPath, manifest);
+
+    return { studyManifestPath, documentPaths, manifest };
+  }
+
+  private async uploadIfAbsent(objectKey: string, payload: unknown): Promise<void> {
+    const bytes = new TextEncoder().encode(JSON.stringify(payload));
+    const incomingHash = artifactContentSha256(payload);
+    try {
+      const existingBytes = await this.gateway.downloadObject(this.bucket, objectKey);
+      const existing = JSON.parse(new TextDecoder().decode(existingBytes)) as unknown;
+      if (artifactContentSha256(existing) !== incomingHash) {
+        throw new Error(`PACK_DRIVEN_READER_ARTIFACT_CONFLICT:${objectKey}`);
+      }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      if (message.startsWith("PACK_DRIVEN_READER_ARTIFACT_CONFLICT:")) {
+        throw error;
+      }
+      await this.gateway.uploadObject(this.bucket, objectKey, bytes, "application/json");
+    }
   }
 }

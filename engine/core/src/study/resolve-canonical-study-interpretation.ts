@@ -11,8 +11,13 @@ import {
 
 import { resolveInterpretationOverlayPath } from "./interpretation-overlay-catalog.js";
 
+/** Historical L001 baseline Reader proposal pack digest (pinned studies). */
 export const L001_READER_PACK_CONTENT_SHA256 =
   "c2baa0439d32496a3110f5388f6048395a9f4c8fdce79b3d0cec36ae6b9a7775" as const;
+
+/** DP-03B candidate Reader proposal pack digest (`iep@0.3.0-proposed`). */
+export const IEP_CANDIDATE_READER_PACK_CONTENT_SHA256 =
+  "b1bafe209b771a10b55cebd3bf745e476e77e1bcaf3c3cf051aa022ef719f757" as const;
 
 export type ResolvedCanonicalStudyInterpretation = {
   overlay: InterpretationOverlay;

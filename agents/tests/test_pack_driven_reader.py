@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import json
 from pathlib import Path
 
 import pytest
@@ -33,7 +34,8 @@ def test_compile_pack_driven_reader_prompt_via_node(iep_v03_pack: dict) -> None:
                 "sourceDocumentId": "doc-a",
                 "filename": "plan.pdf",
                 "pageCount": 1,
-                "documentTypeId": "iep.plan",
+                "discoverDocumentTypeId": "iep.plan",
+                "discoverDocumentTypeLabel": "iep.plan",
             }
         ],
         source_document_id="doc-a",
@@ -41,7 +43,10 @@ def test_compile_pack_driven_reader_prompt_via_node(iep_v03_pack: dict) -> None:
     )
     assert compiled.pack_document_type_count > 8
     assert compiled.pack_record_type_count > 20
-    assert "hive-pack-driven-reader/0.2.0" in compiled.prompt_version
+    assert compiled.prompt_version == "hive-pack-driven-reader/0.3.0"
+    schema_text = json.dumps(compiled.output_json_schema)
+    assert "hive.pack-driven-reader-extraction/0.3.0" in schema_text
+    assert "hive.pack-driven-reader-extraction/0.3.0" in compiled.blocks["F_outputContract"]
     assert "insightChecks" not in compiled.stable_system_prefix
     assert "Document-type catalog" in compiled.stable_system_prefix
 

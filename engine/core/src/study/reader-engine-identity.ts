@@ -2,7 +2,7 @@ import type { ReaderDocumentExtractionEnvelope } from "@hiveforyou/shared/reader
 import { PACK_DRIVEN_READER_PROMPT_VERSION } from "@hiveforyou/domain-pack/pack-driven-reader";
 
 import type { StudyEngineFingerprint } from "./fingerprint";
-import { loadPackDrivenProposalPackContentSha256 } from "./agentic-reader-qualification.js";
+import { DomainPackRegistryError } from "./domain-pack-registry/errors.js";
 
 /** Stable orchestration id for pack-driven Reader runs (not a model vendor). */
 export const PACK_DRIVEN_READER_ORCHESTRATION_ID = "pack-driven-reader" as const;
@@ -71,10 +71,13 @@ export function buildPackDrivenReaderIntentFingerprint(input?: {
   env?: Record<string, string | undefined>;
   proposalPackContentSha256?: string;
 }): StudyEngineFingerprint {
-  const env = input?.env ?? (typeof process !== "undefined" ? process.env : {});
-  const proposalSha =
-    input?.proposalPackContentSha256?.trim() ||
-    loadPackDrivenProposalPackContentSha256(env as Record<string, string | undefined>);
+  const proposalSha = input?.proposalPackContentSha256?.trim().toLowerCase();
+  if (!proposalSha) {
+    throw new DomainPackRegistryError(
+      "DOMAIN_PACK_REGISTRY_DIGEST_REQUIRED",
+      "proposalPackContentSha256 is required before building the pack-driven Reader fingerprint.",
+    );
+  }
   return {
     providerMode: READER_DELEGATED_PROVIDER_MODE,
     providerId: PACK_DRIVEN_READER_ORCHESTRATION_ID,

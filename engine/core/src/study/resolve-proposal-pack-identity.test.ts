@@ -6,7 +6,10 @@ import {
   resolveProposalPackIdentityFromContentHash,
   resolveStudyReaderProposalPackBinding,
 } from "./resolve-proposal-pack-identity.js";
-import { L001_READER_PACK_CONTENT_SHA256 } from "./resolve-canonical-study-interpretation.js";
+import {
+  IEP_CANDIDATE_READER_PACK_CONTENT_SHA256,
+  L001_READER_PACK_CONTENT_SHA256,
+} from "./resolve-canonical-study-interpretation.js";
 
 describe("resolve-proposal-pack-identity", () => {
   it("resolves IEP snapshot identity from manifest by hash", () => {
@@ -19,9 +22,10 @@ describe("resolve-proposal-pack-identity", () => {
     expect(identity.packContentSha256).toBe(L001_READER_PACK_CONTENT_SHA256);
   });
 
-  it("resolves default IEP identity when manifest has one entry", () => {
+  it("resolves DP-03B candidate digest as default IEP identity when multiple snapshots are registered", () => {
     const identity = resolveDefaultProposalPackIdentityForDomain("iep");
-    expect(identity.packContentSha256).toBe(L001_READER_PACK_CONTENT_SHA256);
+    expect(identity.packContentSha256).toBe(IEP_CANDIDATE_READER_PACK_CONTENT_SHA256);
+    expect(identity.packContentSha256).not.toBe(L001_READER_PACK_CONTENT_SHA256);
   });
 
   it("binds study context hash to manifest entry", () => {

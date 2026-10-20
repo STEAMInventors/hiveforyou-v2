@@ -2,6 +2,7 @@ export {
   PACK_DRIVEN_CLASSIFICATION_AMBIGUOUS,
   PACK_DRIVEN_CLASSIFICATION_UNKNOWN,
   PACK_DRIVEN_READER_EXTRACTION_SCHEMA_VERSION,
+  PACK_DRIVEN_READER_EXTRACTION_SCHEMA_VERSION_LEGACY,
   PACK_DRIVEN_READER_PROMPT_VERSION,
   UNCLASSIFIED_DOCUMENT_TYPE_SENTINEL,
   UNIVERSAL_PACK_DRIVEN_READER_INSTRUCTIONS,
@@ -28,6 +29,7 @@ export {
   parseAndValidatePackDrivenExtraction,
   type ParsePackDrivenExtractionResult,
 } from "./parse-extraction.js";
+export type { ChecklistCoverageDisposition, ChecklistCoverageItem } from "./types.js";
 export { validateProposalDomainPack } from "./validate-proposal-pack.js";
 export type {
   CaseDocumentManifestEntry,

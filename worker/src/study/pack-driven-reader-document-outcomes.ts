@@ -7,6 +7,7 @@ import type { ReaderDocumentExtractionStatus } from "@hiveforyou/shared/reader-d
 export type PackDrivenReaderPerDocumentWire = {
   sourceDocumentId?: unknown;
   documentTypeId?: unknown;
+  engine1DocumentTypeId?: unknown;
   classificationNeedsReview?: unknown;
   parseOk?: unknown;
   parseErrors?: unknown;
@@ -40,6 +41,17 @@ function sourceDocumentId(row: PackDrivenReaderPerDocumentWire): string | null {
 
 function isClassificationReview(row: PackDrivenReaderPerDocumentWire): boolean {
   if (row.classificationNeedsReview === true) {
+    return true;
+  }
+  const engine1Type = row.engine1DocumentTypeId;
+  const readerType = row.documentTypeId;
+  if (
+    typeof engine1Type === "string" &&
+    engine1Type.trim() &&
+    typeof readerType === "string" &&
+    readerType.trim() &&
+    engine1Type.trim() !== readerType.trim()
+  ) {
     return true;
   }
   const typeId = row.documentTypeId;
@@ -160,6 +172,7 @@ export type PackDrivenRawExtractionOutcome =
 export function evaluatePackDrivenRawExtractionOutcome(input: {
   expectedSourceDocumentIds: ReadonlyArray<string>;
   documents: ReadonlyArray<{ sourceDocumentId: string; status: ReaderDocumentExtractionStatus }>;
+  perDocumentResults?: unknown[] | null;
 }): PackDrivenRawExtractionOutcome {
   const expected = [...new Set(input.expectedSourceDocumentIds.map((id) => id.trim()).filter(Boolean))];
   const byId = new Map<string, ReaderDocumentExtractionStatus>();
@@ -170,11 +183,22 @@ export function evaluatePackDrivenRawExtractionOutcome(input: {
     }
   }
 
+  const perDocById = new Map<string, PackDrivenReaderPerDocumentWire>();
+  for (const row of input.perDocumentResults ?? []) {
+    const parsed = asRecord(row);
+    const id = parsed ? sourceDocumentId(parsed) : null;
+    if (parsed && id) {
+      perDocById.set(id, parsed);
+    }
+  }
+
   const succeededDocumentIds: string[] = [];
   const failedDocumentIds: string[] = [];
   for (const id of expected) {
     const status = byId.get(id);
-    if (status === "SUCCEEDED") {
+    const perDoc = perDocById.get(id);
+    const parseSucceeded = perDoc ? !isExecutionFailure(perDoc) : true;
+    if (status === "SUCCEEDED" && parseSucceeded) {
       succeededDocumentIds.push(id);
     } else {
       failedDocumentIds.push(id);

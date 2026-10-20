@@ -3,18 +3,20 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
 import type { CanonicalStudyRun } from "@hiveforyou/shared/canonical-study";
-import type { ProposalDomainPack } from "@hiveforyou/domain-pack";
-import {
-  PACK_DRIVEN_READER_PROMPT_VERSION,
-  computeProposalPackContentSha256,
-} from "@hiveforyou/domain-pack/pack-driven-reader";
+import { PACK_DRIVEN_READER_PROMPT_VERSION } from "@hiveforyou/domain-pack/pack-driven-reader";
 
 import { hashCanonicalJson } from "./fingerprint";
 import { hiveMonorepoRoot } from "./resolve-hive-monorepo-root.js";
 import {
-  resolveDefaultProposalPackIdentityForDomain,
-  type ProposalPackIdentity,
-} from "./resolve-proposal-pack-identity.js";
+  createDefaultDomainPackRegistryPort,
+} from "./domain-pack-registry/default-registry-port.js";
+import { DomainPackRegistryError } from "./domain-pack-registry/errors.js";
+import {
+  registryBindingToProposalPackIdentity,
+  resolveDomainPackRegistryBinding,
+} from "./domain-pack-registry/resolve-domain-pack-registry.js";
+import type { ProposalPackIdentity } from "./resolve-proposal-pack-identity.js";
+import { IEP_CANDIDATE_READER_PACK_CONTENT_SHA256 } from "./resolve-canonical-study-interpretation.js";
 
 export const AGENTIC_READER_QUALIFICATION_NAMESPACE = "agentic-reader-qualification/1" as const;
 
@@ -275,38 +277,63 @@ export function packDrivenProposalPackPath(
   return join(hiveMonorepoRoot(), "brain", "domain-packs", "iep", "iep-pack.v0.3.proposed.json");
 }
 
+export type PackDrivenProposalPackSelection = "production" | "qualification";
+
 export function loadPackDrivenProposalPackIdentity(
   domainId = "iep",
   env: Record<string, string | undefined> = process.env,
+  selection: PackDrivenProposalPackSelection = "production",
 ): ProposalPackIdentity {
-  try {
-    return resolveDefaultProposalPackIdentityForDomain(domainId, env);
-  } catch {
-    const path = packDrivenProposalPackPath(env);
-    let raw: string;
-    try {
-      raw = readFileSync(path, "utf8");
-    } catch (error) {
-      const errno = error as NodeJS.ErrnoException;
-      if (errno?.code === "ENOENT") {
-        throw new Error(`PACK_DRIVEN_PROPOSAL_PACK_MISSING:${path}`);
-      }
-      throw error;
-    }
-    const parsed = JSON.parse(raw) as ProposalDomainPack;
-    return {
-      packId: parsed.manifest.id,
-      packVersion: parsed.manifest.version,
-      packContentSha256: computeProposalPackContentSha256(parsed).toLowerCase(),
-    };
+  const registry = createDefaultDomainPackRegistryPort(env);
+  const explicitPin = env.HIVE_READER_PROPOSAL_PACK_CONTENT_SHA256?.trim().toLowerCase();
+
+  if (explicitPin) {
+    return registryBindingToProposalPackIdentity(
+      resolveDomainPackRegistryBinding({
+        domainId,
+        registry,
+        mode: "explicit_digest",
+        contentSha256: explicitPin,
+      }),
+    );
   }
+
+  if (
+    selection === "qualification" &&
+    resolveReaderMode(env) === "pack_driven"
+  ) {
+    return registryBindingToProposalPackIdentity(
+      resolveDomainPackRegistryBinding({
+        domainId,
+        registry,
+        mode: "explicit_digest",
+        contentSha256: IEP_CANDIDATE_READER_PACK_CONTENT_SHA256,
+      }),
+    );
+  }
+
+  if (selection === "production") {
+    throw new DomainPackRegistryError(
+      "DOMAIN_PACK_REGISTRY_PRODUCTION_REQUIRES_DATABASE",
+      "Production pack selection must resolve through the live Supabase domain pack registry.",
+    );
+  }
+
+  return registryBindingToProposalPackIdentity(
+    resolveDomainPackRegistryBinding({
+      domainId,
+      registry,
+      mode: "production_active_certified",
+    }),
+  );
 }
 
 export function loadPackDrivenProposalPackContentSha256(
   env: Record<string, string | undefined> = process.env,
   domainId = "iep",
+  selection: PackDrivenProposalPackSelection = "production",
 ): string {
-  return loadPackDrivenProposalPackIdentity(domainId, env).packContentSha256;
+  return loadPackDrivenProposalPackIdentity(domainId, env, selection).packContentSha256;
 }
 
 export function resolveReaderArchitectureVariant(
@@ -350,7 +377,7 @@ export function loadAgenticReaderQualificationPromptMetadata(input?: {
     return {
       promptId: "pack-driven-reader/iep-v0.3-proposed",
       promptVersion: PACK_DRIVEN_READER_PROMPT_VERSION,
-      promptSha256: loadPackDrivenProposalPackContentSha256(env),
+      promptSha256: loadPackDrivenProposalPackContentSha256(env, "iep", "qualification"),
       agentsJsonPath: base.agentsJsonPath,
       artifact: base.artifact,
     };

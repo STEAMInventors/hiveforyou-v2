@@ -20,11 +20,12 @@ def _repo_root() -> Path:
     return agent_settings.repo_root_from_module_file(agent_settings.__file__)
 
 
-def _iep_snapshot_hash() -> str:
-    manifest_path = _repo_root() / "brain" / "domain-packs" / "iep" / "snapshots" / "manifest.json"
-    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-    entry = manifest["snapshots"][0]
-    return str(entry["packContentSha256"]).lower()
+def _iep_default_snapshot_hash() -> str:
+    from hive_agents.pack_driven_reader.resolve_proposal_pack import (
+        IEP_CANDIDATE_READER_PACK_CONTENT_SHA256,
+    )
+
+    return IEP_CANDIDATE_READER_PACK_CONTENT_SHA256
 
 
 def _sample_documents() -> list[dict[str, object]]:
@@ -60,7 +61,7 @@ def test_study_reader_request_rejects_pack_id_domain_mismatch() -> None:
                 "domainId": "iep",
                 "packId": "medicaid",
                 "packVersion": "0.3.0-proposed",
-                "packContentSha256": _iep_snapshot_hash(),
+                "packContentSha256": _iep_default_snapshot_hash(),
                 "studyRunId": "33333333-3333-4333-8333-333333333333",
                 "attemptId": "55555555-5555-4555-8555-555555555555",
                 "readerMode": "pack_driven",
@@ -72,7 +73,7 @@ def test_study_reader_request_rejects_pack_id_domain_mismatch() -> None:
 def test_load_snapshot_with_requested_identity() -> None:
     from hive_agents.settings import Settings
 
-    snapshot_hash = _iep_snapshot_hash()
+    snapshot_hash = _iep_default_snapshot_hash()
     settings = Settings(domain_packs_brain_dir=_repo_root() / "brain" / "domain-packs")
     identity = ProposalPackIdentity(
         pack_id="iep",
@@ -96,7 +97,7 @@ def test_requested_identity_wrong_hash_rejected(tmp_path: Path) -> None:
     snapshots_dir = brain_root / "iep" / "snapshots"
     snapshots_dir.mkdir(parents=True)
 
-    snapshot_hash = _iep_snapshot_hash()
+    snapshot_hash = _iep_default_snapshot_hash()
     snapshot_src = repo_root / "brain" / "domain-packs" / "iep" / "snapshots" / f"{snapshot_hash}.json"
     (snapshots_dir / f"{snapshot_hash}.json").write_text(
         snapshot_src.read_text(encoding="utf-8"),
@@ -147,7 +148,7 @@ def test_requested_identity_is_not_replaced_by_manifest_default(tmp_path: Path) 
     snapshots_dir = brain_root / "iep" / "snapshots"
     snapshots_dir.mkdir(parents=True)
 
-    snapshot_hash = _iep_snapshot_hash()
+    snapshot_hash = _iep_default_snapshot_hash()
     snapshot_src = repo_root / "brain" / "domain-packs" / "iep" / "snapshots" / f"{snapshot_hash}.json"
     (snapshots_dir / f"{snapshot_hash}.json").write_text(
         snapshot_src.read_text(encoding="utf-8"),

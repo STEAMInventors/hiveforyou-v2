@@ -6,9 +6,11 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 STUDY_AGENTS_EXPORT_SCHEMA_VERSION = "study-agents/1"
 DEFAULT_DOMAIN_ID = "iep"
 
+DEFAULT_MODEL_PROVIDER = "anthropic"
+DEFAULT_MODEL_NAME = "claude-opus-5-5"
 DEFAULT_MODEL_MAX_OUTPUT_TOKENS = 16_000
-DEFAULT_MODEL_HARVESTER = "gemini/gemini-1.5-flash"
-DEFAULT_MODEL_HEAVY_LIFTER = "gpt-4o"
+
+SUPPORTED_MODEL_PROVIDERS = frozenset({"anthropic"})
 
 
 def repo_root_from_module_file(module_file: str | Path) -> Path:
@@ -36,14 +38,18 @@ class Settings(BaseSettings):
 
     agents_json: Path | None = None
 
+    model_provider: str = Field(
+        default=DEFAULT_MODEL_PROVIDER,
+        validation_alias="MODEL_PROVIDER",
+    )
+    model_name: str = Field(
+        default=DEFAULT_MODEL_NAME,
+        validation_alias="MODEL_NAME",
+    )
     model_max_output_tokens: int = Field(
         default=DEFAULT_MODEL_MAX_OUTPUT_TOKENS,
         validation_alias="MODEL_MAX_OUTPUT_TOKENS",
     )
-    litellm_base_url: str | None = Field(default=None, validation_alias="LITELLM_BASE_URL")
-    litellm_api_key: str | None = Field(default=None, validation_alias="LITELLM_API_KEY")
-    model_harvester: str | None = Field(default=None, validation_alias="MODEL_HARVESTER")
-    model_heavy_lifter: str | None = Field(default=None, validation_alias="MODEL_HEAVY_LIFTER")
     anthropic_api_key: str | None = None
     anthropic_workspace_id: str | None = None
     agents_service_token: str | None = None
@@ -218,20 +224,30 @@ class Settings(BaseSettings):
             return normalized in {"1", "true", "yes", "on"}
         return value
 
-    @field_validator(
-        "litellm_base_url",
-        "litellm_api_key",
-        "model_harvester",
-        "model_heavy_lifter",
-        mode="before",
-    )
+    @field_validator("model_provider", mode="before")
     @classmethod
-    def _strip_optional_litellm(cls, value: object) -> object:
+    def _normalize_model_provider(cls, value: object) -> object:
         if value is None:
-            return None
+            return DEFAULT_MODEL_PROVIDER
+        if isinstance(value, str):
+            normalized = value.strip().lower()
+            if not normalized:
+                return DEFAULT_MODEL_PROVIDER
+            if normalized not in SUPPORTED_MODEL_PROVIDERS:
+                raise ValueError(
+                    f'MODEL_PROVIDER must be "anthropic" (got "{value}")'
+                )
+            return normalized
+        raise ValueError("MODEL_PROVIDER must be a string")
+
+    @field_validator("model_name", mode="before")
+    @classmethod
+    def _normalize_model_name(cls, value: object) -> object:
+        if value is None:
+            return DEFAULT_MODEL_NAME
         if isinstance(value, str):
             stripped = value.strip()
-            return stripped or None
+            return stripped or DEFAULT_MODEL_NAME
         return value
 
     @field_validator("model_max_output_tokens", mode="before")
@@ -278,18 +294,16 @@ class Settings(BaseSettings):
             )
         return self.agents_service_token
 
-    def reader_model_id(self) -> str:
-        return self.model_harvester or DEFAULT_MODEL_HARVESTER
-
-    def writer_model_id(self) -> str:
-        return self.model_heavy_lifter or DEFAULT_MODEL_HEAVY_LIFTER
-
     def validate_lm_env(self) -> None:
-        """Fail clearly when LiteLLM gateway env is incomplete."""
-        if not self.litellm_base_url:
-            raise ValueError("LITELLM_BASE_URL is required for hive-agents model calls")
-        if not self.litellm_api_key:
-            raise ValueError("LITELLM_API_KEY is required when LITELLM_BASE_URL is set")
+        """Fail clearly when LM env is incomplete or unsupported."""
+        if self.model_provider not in SUPPORTED_MODEL_PROVIDERS:
+            raise ValueError(
+                f'MODEL_PROVIDER must be "anthropic" (got "{self.model_provider}")'
+            )
+        if not self.anthropic_api_key:
+            raise ValueError(
+                "HIVE_ANTHROPIC_API_KEY is required when MODEL_PROVIDER=anthropic"
+            )
 
 
 @lru_cache

@@ -43,6 +43,8 @@ import {
 import { computeProposalPackContentSha256 } from "@hiveforyou/domain-pack/pack-driven-reader";
 
 import { isDeclarativeStudyPackResolverEnabled } from "./declarative-pack-activation.js";
+import { DomainPackRegistryError } from "./domain-pack-registry/errors.js";
+import { resolveProductionDomainPackBindingForStudyStart } from "./domain-pack-registry/resolve-production-domain-pack-binding.js";
 import { resolveStudyDeclarativePackBinding } from "./resolve-study-declarative-pack.js";
 import { consolidateVerifiedReaderFacts } from "./consolidate-verified-reader-facts";
 import { voiceProposalForProjection } from "./extract-voice-proposal";
@@ -160,10 +162,56 @@ async function ensureStudyContext(
         declarativeBinding.selection.compiledProposalPack,
       ).toLowerCase()
     : undefined;
+
+  let registryVerifiedProposalPackSha256: string | undefined;
+  const envRecord =
+    typeof process !== "undefined"
+      ? (process.env as Record<string, string | undefined>)
+      : {};
+  const frozenStudyPin =
+    envRecord.HIVE_READER_PROPOSAL_PACK_CONTENT_SHA256?.trim().toLowerCase() || undefined;
+  if (
+    processingMode === "pack_driven_v1" &&
+    !declarativeBinding &&
+    !existingContext
+  ) {
+    if (!deps.domainPackRegistry) {
+      await failWorkerRun(
+        deps,
+        run,
+        "MISSING_DOMAIN_PACK",
+        "Production domain pack registry is not configured.",
+      );
+    }
+    try {
+      const verified = await resolveProductionDomainPackBindingForStudyStart({
+        domainId: resolvedPack.domainId,
+        registry: deps.domainPackRegistry!,
+        readSnapshotBytes: deps.readDomainPackSnapshotBytes,
+        frozenProposalPackContentSha256: frozenStudyPin,
+        env: envRecord,
+      });
+      registryVerifiedProposalPackSha256 = verified.verifiedContentSha256;
+    } catch (error) {
+      const message =
+        error instanceof DomainPackRegistryError
+          ? `${error.code}: ${error.message}`
+          : error instanceof Error
+            ? error.message
+            : "Domain pack registry resolution failed.";
+      await failWorkerRun(deps, run, "MISSING_DOMAIN_PACK", message);
+    }
+  }
+
+  const proposalPackContentSha256 =
+    declarativeProposalPackSha256 ??
+    existingContext?.processingPolicy.proposalPackContentSha256 ??
+    registryVerifiedProposalPackSha256;
+
   const packDrivenIntent =
     processingMode === "pack_driven_v1"
       ? buildPackDrivenReaderIntentFingerprint({
-          proposalPackContentSha256: declarativeProposalPackSha256,
+          proposalPackContentSha256,
         })
       : null;
   const readerPreflight =

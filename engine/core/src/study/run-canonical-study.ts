@@ -123,6 +123,11 @@ export type StudyServiceDeps = {
   resolveReaderPreflight?: () => Promise<
     import("@hiveforyou/shared/canonical-study").ReaderPreflightSnapshot | null
   >;
+  /** Live Supabase domain pack registry (production study starts). */
+  domainPackRegistry?: import("./domain-pack-registry/async-domain-pack-registry-port.js").AsyncDomainPackRegistryPort;
+  readDomainPackSnapshotBytes?: (
+    entry: import("@hiveforyou/shared/domain-pack-registry").DomainPackRegistryEntry,
+  ) => Promise<Uint8Array | string>;
   /** When set, runs client-writer/2 and merges copy into case-view/2 (Engine 2 pass 2). */
   clientWriterPass?: (input: {
     caseView: import("@hiveforyou/shared/projections").CaseViewV2;

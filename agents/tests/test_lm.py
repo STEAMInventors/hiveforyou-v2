@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import json
-from dataclasses import replace
 from typing import Any
 from unittest.mock import MagicMock, patch
 
@@ -22,58 +21,40 @@ from hive_agents.settings import Settings, get_settings
 
 
 @pytest.fixture(autouse=True)
-def _clear_settings_cache(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("LITELLM_BASE_URL", "http://litellm.test/v1")
-    monkeypatch.setenv("LITELLM_API_KEY", "test-litellm-key")
+def _clear_settings_cache() -> None:
     get_settings.cache_clear()
     yield
     get_settings.cache_clear()
 
 
-def test_resolve_lm_config_harvester_defaults(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.delenv("MODEL_HARVESTER", raising=False)
+def test_resolve_lm_config_anthropic_defaults(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.delenv("MODEL_PROVIDER", raising=False)
+    monkeypatch.delenv("MODEL_NAME", raising=False)
     monkeypatch.delenv("MODEL_MAX_OUTPUT_TOKENS", raising=False)
+    monkeypatch.setenv("HIVE_ANTHROPIC_API_KEY", "test-key")
 
     config = resolve_lm_config(Settings(_env_file=None))
 
-    assert config.provider == "openai"
-    assert config.model_name == "gemini/gemini-1.5-flash"
-    assert config.dspy_model == "gemini/gemini-1.5-flash"
-    assert config.litellm_base_url == "http://litellm.test/v1"
+    assert config.provider == "anthropic"
+    assert config.model_name == "claude-opus-5-5"
+    assert config.dspy_model == "anthropic/claude-opus-5-5"
     assert config.max_output_tokens == 16_000
 
 
-def test_resolve_lm_config_heavy_lifter_tier(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("MODEL_HEAVY_LIFTER", "gpt-4o")
-
-    config = resolve_lm_config(Settings(_env_file=None), tier="heavy_lifter")
-
-    assert config.model_name == "gpt-4o"
-    assert config.dspy_model == "openai/gpt-4o"
-
-
-def test_missing_litellm_base_url_fails(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.delenv("LITELLM_BASE_URL", raising=False)
+def test_missing_api_key_fails(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.delenv("HIVE_ANTHROPIC_API_KEY", raising=False)
     settings = Settings(_env_file=None)
 
-    with pytest.raises(ValueError, match="LITELLM_BASE_URL"):
-        resolve_lm_config(settings)
-
-
-def test_missing_litellm_api_key_fails(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.delenv("LITELLM_API_KEY", raising=False)
-    settings = Settings(_env_file=None)
-
-    with pytest.raises(ValueError, match="LITELLM_API_KEY"):
+    with pytest.raises(ValueError, match="HIVE_ANTHROPIC_API_KEY"):
         resolve_lm_config(settings)
 
 
 def test_optional_workspace_header_in_completion_kwargs(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    monkeypatch.setenv("HIVE_ANTHROPIC_API_KEY", "test-key")
     monkeypatch.setenv("HIVE_ANTHROPIC_WORKSPACE_ID", "ws-123")
     config = resolve_lm_config(Settings(_env_file=None))
-    config = replace(config, workspace_id="ws-123")
     messages = build_anthropic_chat_messages(
         stable_system="pack instructions",
         case_user_content="case body",
@@ -81,6 +62,14 @@ def test_optional_workspace_header_in_completion_kwargs(
     kwargs = litellm_completion_kwargs_from_messages(config=config, messages=messages)
 
     assert kwargs["extra_headers"] == {"anthropic-workspace-id": "ws-123"}
+
+
+def test_invalid_provider_fails(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("MODEL_PROVIDER", "openai")
+    monkeypatch.setenv("HIVE_ANTHROPIC_API_KEY", "test-key")
+
+    with pytest.raises(ValueError, match="MODEL_PROVIDER"):
+        resolve_lm_config(Settings(_env_file=None))
 
 
 def test_invalid_token_limit_fails(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -91,6 +80,7 @@ def test_invalid_token_limit_fails(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 def test_import_and_configure_do_not_call_provider(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("HIVE_ANTHROPIC_API_KEY", "test-key")
     calls: list[Any] = []
 
     def fake_factory(**kwargs: Any) -> MagicMock:
@@ -104,15 +94,18 @@ def test_import_and_configure_do_not_call_provider(monkeypatch: pytest.MonkeyPat
         configure_dspy_lm(lm_factory=fake_factory)
 
     assert len(calls) == 1
-    assert calls[0]["model"] == "gemini/gemini-1.5-flash"
-    assert calls[0]["api_key"] == "test-litellm-key"
-    assert calls[0]["api_base"] == "http://litellm.test/v1"
+    assert calls[0]["model"] == "anthropic/claude-opus-5-5"
+    assert calls[0]["api_key"] == "test-key"
     assert calls[0]["cache"] is False
     assert calls[0]["engine"] == "lm15"
     assert calls[0]["prompt_cache"].prefix == "stable"
 
 
-def test_create_dspy_lm_uses_litellm_gateway(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_create_dspy_lm_workspace_and_prompt_cache(monkeypatch: pytest.MonkeyPatch) -> None:
+    from dspy.clients.engines.lm15_engine import LM15Engine
+
+    monkeypatch.setenv("HIVE_ANTHROPIC_API_KEY", "test-key")
+    monkeypatch.setenv("HIVE_ANTHROPIC_WORKSPACE_ID", "ws-abc")
     captured: dict[str, Any] = {}
 
     def fake_factory(**kwargs: Any) -> MagicMock:
@@ -121,9 +114,20 @@ def test_create_dspy_lm_uses_litellm_gateway(monkeypatch: pytest.MonkeyPatch) ->
 
     create_dspy_lm(lm_factory=fake_factory)
 
-    assert captured["api_base"] == "http://litellm.test/v1"
-    assert captured["api_key"] == "test-litellm-key"
+    assert isinstance(captured["engine"], LM15Engine)
+    assert captured["engine"].config.transport is not None
+    assert "api_key" not in captured
+    assert "extra_headers" not in captured
     assert captured["prompt_cache"].mode == "auto"
+    config = resolve_lm_config(Settings(_env_file=None))
+    litellm_kwargs = litellm_completion_kwargs_from_messages(
+        config=config,
+        messages=build_anthropic_chat_messages(
+            stable_system="pack",
+            case_user_content="case",
+        ),
+    )
+    assert litellm_kwargs["extra_headers"] == {"anthropic-workspace-id": "ws-abc"}
 
 
 def test_cache_markers_on_stable_prefix_only() -> None:
@@ -140,6 +144,7 @@ def test_cache_markers_on_stable_prefix_only() -> None:
 def test_cache_markers_pass_through_litellm_payload(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    monkeypatch.setenv("HIVE_ANTHROPIC_API_KEY", "test-key")
     config = resolve_lm_config(Settings(_env_file=None))
     messages = build_anthropic_chat_messages(
         stable_system="stable",
@@ -264,7 +269,6 @@ def mock_anthropic_transport(monkeypatch: pytest.MonkeyPatch) -> dict[str, list[
     return state
 
 
-@pytest.mark.skip(reason="Reader routes through LiteLLM; native Anthropic transport tests retired")
 def test_dspy_lm_native_workspace_header_on_transport_request(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -310,7 +314,6 @@ def test_dspy_lm_native_workspace_header_on_transport_request(
     assert ("anthropic-workspace-id", "ws-routed") in wire_headers
 
 
-@pytest.mark.skip(reason="Reader routes through LiteLLM; native Anthropic transport tests retired")
 def test_dspy_lm_applies_ephemeral_cache_on_stable_system_at_provider_boundary(
     monkeypatch: pytest.MonkeyPatch,
     mock_anthropic_transport: dict[str, list[Any]],
@@ -332,7 +335,6 @@ def test_dspy_lm_applies_ephemeral_cache_on_stable_system_at_provider_boundary(
     assert all("cache_control" not in block for block in user_blocks)
 
 
-@pytest.mark.skip(reason="Reader routes through LiteLLM; native Anthropic transport tests retired")
 def test_dspy_lm_stable_cached_prefix_unchanged_when_case_user_content_changes(
     monkeypatch: pytest.MonkeyPatch,
     mock_anthropic_transport: dict[str, list[Any]],
@@ -355,7 +357,6 @@ def test_dspy_lm_stable_cached_prefix_unchanged_when_case_user_content_changes(
     ]
 
 
-@pytest.mark.skip(reason="Reader routes through LiteLLM; native Anthropic transport tests retired")
 def test_dspy_lm_cache_usage_from_execution_path(
     monkeypatch: pytest.MonkeyPatch,
     mock_anthropic_transport: dict[str, list[Any]],
@@ -369,7 +370,6 @@ def test_dspy_lm_cache_usage_from_execution_path(
     assert usage.cache_write_input_tokens == 10
 
 
-@pytest.mark.skip(reason="Reader routes through LiteLLM; native Anthropic transport tests retired")
 def test_build_anthropic_chat_messages_incompatible_with_dspy_lm_conversion(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -383,15 +383,3 @@ def test_build_anthropic_chat_messages_incompatible_with_dspy_lm_conversion(
                 case_user_content="case",
             )
         )
-
-
-def test_litellm_unavailable_raises_explicit_error(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.delenv("LITELLM_BASE_URL", raising=False)
-    with pytest.raises(ValueError, match="LITELLM_BASE_URL"):
-        resolve_lm_config(Settings(_env_file=None))
-
-
-def test_writer_resolves_heavy_lifter(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("MODEL_HEAVY_LIFTER", "gpt-heavy-writer")
-    config = resolve_lm_config(Settings(_env_file=None), tier="heavy_lifter")
-    assert config.model_name == "gpt-heavy-writer"

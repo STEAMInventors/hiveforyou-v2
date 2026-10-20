@@ -124,6 +124,7 @@ function harness(options?: {
         returnedModel: null,
         classifierVersion: null,
       })),
+    persistEphemeralSchema: async () => "test-ephemeral-schema-id",
     now: () => "2026-09-30T16:00:00.000Z",
     createId: () => `id-${++id}`,
     inFlight: new Map(),

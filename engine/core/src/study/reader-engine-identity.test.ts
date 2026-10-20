@@ -167,7 +167,7 @@ describe("reader-engine-identity", () => {
     const base = buildPackDrivenReaderIntentFingerprint({
       proposalPackContentSha256: "c".repeat(64),
     });
-    const bumped = { ...base, readerCompilerVersion: "hive-pack-driven-reader/0.3.0" };
+    const bumped = { ...base, readerCompilerVersion: "hive-pack-driven-reader/0.4.0-test" };
     const baseKey = buildIdempotencyKeyFromRequest(request, pack, base);
     const bumpedKey = buildIdempotencyKeyFromRequest(request, pack, bumped);
     expect(baseKey).not.toBe(bumpedKey);

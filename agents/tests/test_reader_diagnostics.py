@@ -207,7 +207,7 @@ def test_execute_study_reader_completed_carries_diagnostics(
     monkeypatch.setattr("hive_agents.app._require_verifier_client", lambda: MagicMock())
     monkeypatch.setattr("hive_agents.app._build_trace_session", lambda *_args, **_kwargs: FakeSession())
 
-    execute_study_reader(request)
+    execute_study_reader(request, lm_factory=lambda: MagicMock(spec=dspy.LM))
     completed = next(payload for event_type, payload in emitted if event_type == "COMPLETED")
     assert completed["candidateFactCount"] == 0
     assert completed["readerDiagnosticOutcome"] == "ZERO_CANDIDATES"
@@ -326,7 +326,7 @@ def test_trace_events_exclude_raw_document_contents(monkeypatch: pytest.MonkeyPa
     )
 
     with patch("hive_agents.app.logger") as mock_logger:
-        execute_study_reader(request)
+        execute_study_reader(request, lm_factory=lambda: MagicMock(spec=dspy.LM))
         log_args = " ".join(str(call) for call in mock_logger.warning.call_args_list)
 
     trace_blob = json.dumps(emitted)

@@ -70,6 +70,30 @@ describe("evaluatePackDrivenReaderDocumentOutcomes", () => {
     }
   });
 
+  it("needs review when Reader classification disagrees with Discover hint", () => {
+    const outcome = evaluatePackDrivenReaderDocumentOutcomes({
+      expectedSourceDocumentIds: ["doc-a"],
+      perDocumentResults: [
+        {
+          sourceDocumentId: "doc-a",
+          parseOk: true,
+          documentTypeId: "iep.referral",
+          engine1DocumentTypeId: "iep.plan",
+        },
+      ],
+    });
+    expect(outcome.kind).toBe("needs_review");
+  });
+
+  it("raw extraction treats parseOk=false as failure even when envelope status is SUCCEEDED", () => {
+    const outcome = evaluatePackDrivenRawExtractionOutcome({
+      expectedSourceDocumentIds: ["doc-a"],
+      documents: [{ sourceDocumentId: "doc-a", status: "SUCCEEDED" }],
+      perDocumentResults: [{ sourceDocumentId: "doc-a", parseOk: false, parseErrors: ["schema"] }],
+    });
+    expect(outcome.kind).toBe("failed");
+  });
+
   it("PackDrivenReaderProductionError preserves affected document ids", () => {
     const error = new PackDrivenReaderProductionError({
       errorCode: "PACK_DRIVEN_READER_DOCUMENT_FAILED",

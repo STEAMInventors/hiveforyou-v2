@@ -30,6 +30,9 @@ import type {
 import type { DocumentNormalizedExtractionRepository } from "./repositories";
 import type { DocumentPages } from "@hiveforyou/core/document/page-model";
 
+import type { DomainLearningCandidateRepository } from "@hiveforyou/core";
+import type { EphemeralSchemaInsert } from "@hiveforyou/shared/intake/ephemeral-schema";
+
 import type { JevIdentityDecision } from "./jev-client";
 
 /** Cap parallel per-document extract/classify work to limit CPU and memory spikes. */
@@ -52,6 +55,8 @@ export type IntakeExecutionDeps = {
   }) => Promise<IntakeSourceDocument[]>;
   decide: (sample: string) => Promise<JevIdentityDecision>;
   decideDomain?: (rawIntent: string) => Promise<JevDomainDecision>;
+  persistEphemeralSchema?: (data: EphemeralSchemaInsert) => Promise<string>;
+  domainLearningCandidates?: DomainLearningCandidateRepository;
   sourceMetadata?: (input: {
     userId: string;
     sourceDocumentIds: string[];

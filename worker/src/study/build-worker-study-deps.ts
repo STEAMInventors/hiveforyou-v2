@@ -15,7 +15,11 @@ import { readStatedWorkPurpose } from "@hiveforyou/shared/canonical-study";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 import type { WorkerEnv } from "../env.js";
+import { readFileSync } from "node:fs";
+
+import { resolveRegistrySnapshotFilesystemPath } from "@hiveforyou/core/study";
 import { createSupabaseHiveGateway } from "../persistence/hive-gateway.js";
+import { createSupabaseDomainPackRegistryPort } from "../persistence/supabase-domain-pack-registry.js";
 import { SupabaseCaseProjectionRepository } from "../persistence/supabase-case-projections.js";
 import { SupabaseStudyArtifactRepository } from "../persistence/supabase-study-artifacts.js";
 import { createSupabaseDomainLearningPort } from "../persistence/supabase-domain-learning.js";
@@ -154,6 +158,15 @@ export function buildWorkerStudyDeps(
     intelligenceRepo: new SupabaseCaseIntelligenceRepository(gateway, userId),
     projectionRepo: new SupabaseCaseProjectionRepository(gateway, userId),
     studyArtifactRepo: new SupabaseStudyArtifactRepository(gateway, userId),
+    domainPackRegistry: createSupabaseDomainPackRegistryPort(gateway),
+    readDomainPackSnapshotBytes: async (entry) => {
+      try {
+        const path = resolveRegistrySnapshotFilesystemPath(entry, envRecord);
+        return readFileSync(path, "utf8");
+      } catch {
+        return gateway.downloadObject(entry.snapshotStorageBucket, entry.snapshotStoragePath);
+      }
+    },
     resolveReaderPreflight: async () => {
       const host = env.HIVE_AGENTS_HOST?.trim() || "127.0.0.1";
       const port =

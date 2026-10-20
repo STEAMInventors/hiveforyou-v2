@@ -3,6 +3,7 @@ import { randomUUID } from "node:crypto";
 import {
   buildObservedReaderIdentitySummary,
   loadAgenticReaderQualificationPromptMetadata,
+  resolvePinnedProposalDomainPackFromStudyContext,
   resolveStudyReaderProposalPackBindingFromContext,
 } from "@hiveforyou/core/study";
 import type { CanonicalStudyContext } from "@hiveforyou/shared/canonical-study";
@@ -18,11 +19,18 @@ import {
 } from "./engine1-reader-context.js";
 import { loadTrustedDocumentPageBundle } from "./load-trusted-document-pages.js";
 import type { ReaderHttpClient } from "./run-agentic-reader-qualification.js";
-import { ReaderDocumentExtractionStorage } from "./reader-document-extraction-storage.js";
+import {
+  PackDrivenReaderArtifactStorage,
+  ReaderDocumentExtractionStorage,
+} from "./reader-document-extraction-storage.js";
 import {
   evaluatePackDrivenRawExtractionOutcome,
+  evaluatePackDrivenReaderDocumentOutcomes,
+  PackDrivenReaderNeedsReviewError,
   PackDrivenReaderProductionError,
 } from "./pack-driven-reader-document-outcomes.js";
+import { PACK_DRIVEN_READER_PROMPT_VERSION } from "@hiveforyou/domain-pack/pack-driven-reader";
+
 import type { HiveGateway } from "../persistence/hive-gateway.js";
 
 export type RunProductionPackDrivenReaderInput = {
@@ -49,6 +57,7 @@ export type RunProductionPackDrivenReaderResult = {
   attemptId: string;
   documentExtractionAttemptManifestPath: string;
   documentExtractionStudyRunManifestPath: string;
+  readerStudyManifestPath?: string;
   rawExtractionOutcome: "succeeded" | "partial_failure" | "failed";
   succeededDocumentIds: string[];
   failedDocumentIds: string[];
@@ -157,6 +166,52 @@ export async function runProductionPackDrivenReader(
     updatedAt: now(),
   });
 
+  const pinnedPack = resolvePinnedProposalDomainPackFromStudyContext({
+    context: input.context,
+    env,
+  });
+  const logicalDocumentIdBySourceDocumentId = new Map<string, string>(
+    engine1Context.logicalDocuments.map((doc) => [
+      doc.sourceDocumentId,
+      doc.logicalDocumentId?.trim() || doc.sourceDocumentId,
+    ]),
+  );
+  const discoverDocumentTypeIdBySourceDocumentId = new Map<string, string | null>();
+  const discoverDocumentTypeLabelBySourceDocumentId = new Map<string, string | null>();
+  for (const doc of engine1Context.logicalDocuments) {
+    discoverDocumentTypeLabelBySourceDocumentId.set(
+      doc.sourceDocumentId,
+      doc.discoverDocumentTypeLabel ?? null,
+    );
+    discoverDocumentTypeIdBySourceDocumentId.set(doc.sourceDocumentId, null);
+  }
+
+  let readerStudyManifestPath: string | undefined;
+  try {
+    const readerArtifactStorage = new PackDrivenReaderArtifactStorage(
+      input.gateway,
+      input.documentPagesBucket,
+    );
+    const readerArtifacts = await readerArtifactStorage.persistStudyReaderArtifacts({
+      userId: input.userId,
+      pack: pinnedPack.pack,
+      envelopes: validatedEnvelopes,
+      perDocumentResults: readerResponse.perDocumentResults ?? null,
+      logicalDocumentIdBySourceDocumentId,
+      discoverDocumentTypeIdBySourceDocumentId,
+      discoverDocumentTypeLabelBySourceDocumentId,
+      promptCompilerVersion: prompt.promptVersion ?? PACK_DRIVEN_READER_PROMPT_VERSION,
+      updatedAt: now(),
+    });
+    readerStudyManifestPath = readerArtifacts.studyManifestPath;
+  } catch (error) {
+    throw new PackDrivenReaderProductionError({
+      errorCode: "PACK_DRIVEN_READER_ARTIFACT_PERSISTENCE_FAILED",
+      message: error instanceof Error ? error.message : "Reader artifact persistence failed",
+      affectedDocumentIds: expectedSourceDocumentIds,
+    });
+  }
+
   if (!audit.persisted) {
     throw new PackDrivenReaderAuditNotPersistedError(audit);
   }
@@ -164,15 +219,34 @@ export async function runProductionPackDrivenReader(
     throw new Error("READER_AUDIT_CORRELATION_MISMATCH");
   }
 
+  const perDocumentResults = readerResponse.perDocumentResults ?? null;
+  const documentValidation = evaluatePackDrivenReaderDocumentOutcomes({
+    expectedSourceDocumentIds,
+    perDocumentResults,
+  });
+
   const rawOutcome = evaluatePackDrivenRawExtractionOutcome({
     expectedSourceDocumentIds,
     documents: validatedEnvelopes.map((envelope) => ({
       sourceDocumentId: envelope.sourceDocumentId,
       status: envelope.status,
     })),
+    perDocumentResults,
   });
 
   const acceptedVerifierFactCount = readerResponse.acceptedCandidateFacts?.length ?? 0;
+
+  if (documentValidation.kind === "failed") {
+    throw new PackDrivenReaderProductionError({
+      errorCode: documentValidation.code,
+      message: `Pack-driven Reader document validation failed for: ${documentValidation.affectedDocumentIds.join(", ")}`,
+      affectedDocumentIds: documentValidation.affectedDocumentIds,
+    });
+  }
+
+  if (documentValidation.kind === "needs_review") {
+    throw new PackDrivenReaderNeedsReviewError(documentValidation.affectedDocumentIds);
+  }
 
   if (rawOutcome.kind === "failed") {
     throw new PackDrivenReaderProductionError({
@@ -186,6 +260,7 @@ export async function runProductionPackDrivenReader(
     attemptId,
     documentExtractionAttemptManifestPath: persisted.attemptManifestPath,
     documentExtractionStudyRunManifestPath: persisted.studyRunManifestPath,
+    readerStudyManifestPath,
     rawExtractionOutcome: rawOutcome.kind,
     succeededDocumentIds:
       rawOutcome.kind === "succeeded" ? rawOutcome.succeededDocumentIds : rawOutcome.succeededDocumentIds,
@@ -202,4 +277,7 @@ export async function runProductionPackDrivenReader(
   };
 }
 
-export { PackDrivenReaderProductionError } from "./pack-driven-reader-document-outcomes.js";
+export {
+  PackDrivenReaderNeedsReviewError,
+  PackDrivenReaderProductionError,
+} from "./pack-driven-reader-document-outcomes.js";

@@ -85,8 +85,8 @@ def health() -> dict[str, str]:
     settings = get_settings()
     return {
         "status": "ok",
-        "modelProvider": "litellm",
-        "modelName": settings.reader_model_id(),
+        "modelProvider": settings.model_provider,
+        "modelName": settings.model_name,
     }
 
 
@@ -161,7 +161,7 @@ def _build_trace_session(
         domain_id=request.domain_id,
         domain_pack_id=pack.domainPackId,
         domain_pack_version=pack.domainPackVersion,
-        model_id=settings.reader_model_id(),
+        model_id=settings.model_name,
         source_document_ids=source_document_ids,
     )
     return ReaderTraceSession(context=context, client=client)
@@ -177,8 +177,8 @@ def _pack_driven_run_correlation(
         case_id=request.case_id,
         user_id=request.user_id,
         domain_id=request.domain_id,
-        model_provider="litellm",
-        model_id=settings.reader_model_id(),
+        model_provider=settings.model_provider,
+        model_id=settings.model_name,
     )
 
 

@@ -2,9 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Callable, Mapping, MutableMapping, Sequence
 from dataclasses import dataclass, replace
-from typing import Any, Literal, Protocol, runtime_checkable
-
-ModelTier = Literal["harvester", "heavy_lifter"]
+from typing import Any, Protocol, runtime_checkable
 
 import dspy
 from dspy.lm15 import CacheConfig
@@ -26,7 +24,6 @@ class LmConfig:
     dspy_model: str
     max_output_tokens: int
     api_key: str
-    litellm_base_url: str | None = None
     workspace_id: str | None = None
 
 
@@ -49,26 +46,16 @@ def dspy_model_id(provider: str, model_name: str) -> str:
     return f"{provider}/{model_name}"
 
 
-def resolve_lm_config(
-    settings: Settings | None = None,
-    *,
-    tier: ModelTier = "harvester",
-) -> LmConfig:
+def resolve_lm_config(settings: Settings | None = None) -> LmConfig:
     resolved = settings or get_settings()
     resolved.validate_lm_env()
-    base_url = (resolved.litellm_base_url or "").rstrip("/")
-    if tier == "heavy_lifter":
-        model_name = resolved.model_heavy_lifter or "gpt-4o"
-    else:
-        model_name = resolved.model_harvester or "gemini/gemini-1.5-flash"
     return LmConfig(
-        provider="openai",
-        model_name=model_name,
-        dspy_model=dspy_model_id("openai", model_name) if "/" not in model_name else model_name,
+        provider=resolved.model_provider,
+        model_name=resolved.model_name,
+        dspy_model=dspy_model_id(resolved.model_provider, resolved.model_name),
         max_output_tokens=resolved.model_max_output_tokens,
-        api_key=resolved.litellm_api_key or "",
-        litellm_base_url=base_url,
-        workspace_id=None,
+        api_key=resolved.anthropic_api_key or "",
+        workspace_id=resolved.anthropic_workspace_id,
     )
 
 
@@ -273,7 +260,6 @@ def _hive_lm15_engine_with_workspace(config: LmConfig) -> Any:
 def create_dspy_lm(
     settings: Settings | None = None,
     *,
-    tier: ModelTier = "harvester",
     config: LmConfig | None = None,
     lm_factory: LmFactory | None = None,
 ) -> dspy.LM:
@@ -282,7 +268,7 @@ def create_dspy_lm(
 
     Side-effect free: no provider requests and no global ``dspy.configure``.
     """
-    resolved_config = config or resolve_lm_config(settings, tier=tier)
+    resolved_config = config or resolve_lm_config(settings)
     factory: LmFactory = lm_factory or dspy.LM
 
     kwargs: dict[str, Any] = {
@@ -291,11 +277,14 @@ def create_dspy_lm(
         "cache": False,
         "prompt_cache": anthropic_prompt_cache_config(),
     }
-    if not resolved_config.litellm_base_url:
-        raise ValueError("LITELLM_BASE_URL is required for hive-agents model calls")
-    kwargs["engine"] = "lm15"
-    kwargs["api_key"] = resolved_config.api_key
-    kwargs["api_base"] = resolved_config.litellm_base_url
+    # ``extra_headers`` on ``dspy.LM`` forces LiteLLM and drops ``prompt_cache``.
+    # Workspace routing uses a native lm15 ``RouterConfig(transport=...)`` engine.
+    _assert_native_workspace_routing_supported(resolved_config)
+    if resolved_config.workspace_id:
+        kwargs["engine"] = _hive_lm15_engine_with_workspace(resolved_config)
+    else:
+        kwargs["engine"] = "lm15"
+        kwargs["api_key"] = resolved_config.api_key
 
     return factory(**kwargs)
 

@@ -2,6 +2,10 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
 import { hiveMonorepoRoot } from "./resolve-hive-monorepo-root.js";
+import {
+  IEP_CANDIDATE_READER_PACK_CONTENT_SHA256,
+  L001_READER_PACK_CONTENT_SHA256,
+} from "./resolve-canonical-study-interpretation.js";
 
 export const PROPOSAL_PACK_SNAPSHOT_MANIFEST_SCHEMA =
   "hive.domain-pack.proposal-snapshots/1" as const;
@@ -30,7 +34,7 @@ export class ReaderProposalPackBindingError extends Error {
   }
 }
 
-function domainPacksBrainDir(env: Record<string, string | undefined> = process.env): string {
+export function domainPacksBrainDir(env: Record<string, string | undefined> = process.env): string {
   const override = env.HIVE_DOMAIN_PACKS_BRAIN_DIR?.trim();
   if (override) {
     return override;
@@ -108,6 +112,35 @@ export function readProposalPackSnapshotManifest(
   return { snapshots: normalized };
 }
 
+function manifestEntryToIdentity(entry: ProposalPackSnapshotManifestEntry): ProposalPackIdentity {
+  return {
+    packId: entry.packId,
+    packVersion: entry.packVersion,
+    packContentSha256: entry.packContentSha256,
+  };
+}
+
+/** When multiple IEP snapshots are registered, bind the DP-03B candidate digest (not manifest order). */
+function resolveDefaultProposalPackFromPool(
+  domainId: string,
+  pool: ProposalPackSnapshotManifestEntry[],
+): ProposalPackIdentity {
+  if (pool.length === 1) {
+    return manifestEntryToIdentity(pool[0]!);
+  }
+  if (domainId === "iep") {
+    const candidate = pool.find(
+      (entry) => entry.packContentSha256 === IEP_CANDIDATE_READER_PACK_CONTENT_SHA256,
+    );
+    if (candidate) {
+      return manifestEntryToIdentity(candidate);
+    }
+  }
+  throw new ReaderProposalPackBindingError(
+    `Ambiguous proposal pack snapshot identity for domain ${domainId}; bind an explicit packContentSha256.`,
+  );
+}
+
 export function resolveProposalPackIdentityFromContentHash(input: {
   domainId: string;
   packContentSha256: string;
@@ -164,17 +197,7 @@ export function resolveDefaultProposalPackIdentityForDomain(
   }
   const forDomain = manifest.snapshots.filter((entry) => entry.packId === domainId.trim());
   const pool = forDomain.length > 0 ? forDomain : manifest.snapshots;
-  if (pool.length !== 1) {
-    throw new ReaderProposalPackBindingError(
-      `Ambiguous proposal pack snapshot identity for domain ${domainId}; bind an explicit packContentSha256.`,
-    );
-  }
-  const entry = pool[0]!;
-  return {
-    packId: entry.packId,
-    packVersion: entry.packVersion,
-    packContentSha256: entry.packContentSha256,
-  };
+  return resolveDefaultProposalPackFromPool(domainId.trim(), pool);
 }
 
 export function resolveStudyReaderProposalPackBinding(input: {
@@ -205,12 +228,5 @@ export function proposalPackSnapshotPathForIdentity(
     return join(override, fileName);
   }
   const packId = identity.packId.trim();
-  return join(
-    hiveMonorepoRoot(),
-    "brain",
-    "domain-packs",
-    packId,
-    "snapshots",
-    fileName,
-  );
+  return join(domainPacksBrainDir(env), packId, "snapshots", fileName);
 }

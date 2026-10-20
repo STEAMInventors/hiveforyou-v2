@@ -26,6 +26,7 @@
     "./hive-artifact-paths": "./src/hive-artifact-paths.ts",
     "./reader-accepted-facts": "./src/reader-accepted-facts.ts",
     "./reader-document-extraction": "./src/reader-document-extraction.ts",
+    "./pack-driven-reader-artifacts": "./src/pack-driven-reader-artifacts.ts",
     "./canonical-study-foundation": "./src/canonical-study-foundation.ts",
     "./canonical-study-artifact": "./src/canonical-study-artifact.ts",
     "./canonical-study-report-projection": "./src/canonical-study-report-projection.ts",

@@ -3,8 +3,7 @@ import {
   PACK_DRIVEN_CLASSIFICATION_UNKNOWN,
   PACK_DRIVEN_READER_EXTRACTION_SCHEMA_VERSION,
 } from "./constants.js";
-import type { ProposalDomainPack, SelectedRecordDefinition } from "./types.js";
-import { selectRecordDefinitions } from "./select-checklist.js";
+import type { ProposalDomainPack } from "./types.js";
 
 const EVIDENCE_SCHEMA = {
   type: "object",
@@ -22,7 +21,7 @@ const FIELD_EXTRACTION_SCHEMA = {
   additionalProperties: false,
   required: ["fieldId", "provenance", "valueKind", "value", "modality", "missingState", "evidence"],
   properties: {
-    fieldId: { type: "string" },
+    fieldId: { type: "string", minLength: 1 },
     provenance: { type: "string", enum: ["quoted", "classified"] },
     valueKind: { type: "string" },
     value: {},
@@ -47,23 +46,25 @@ const FIELD_EXTRACTION_SCHEMA = {
   },
 } as const;
 
-function buildFieldCatalog(selectedRecords: SelectedRecordDefinition[]): unknown[] {
-  return selectedRecords.map((record) => ({
-    recordTypeId: record.recordTypeId,
-    repeatable: record.repeatable,
-    identityKeyFields: record.identity?.keyFields ?? [],
-    fields: record.fields.map((f) => ({
-      fieldId: f.id,
-      valueKind: f.valueKind,
-      source: f.source,
-      modality: f.modality ?? [],
-      enum: f.enum ?? null,
-      unit: f.unit ?? null,
-      description: f.description ?? null,
-      modelMayEmit: !f.source.includes("derived"),
-    })),
-  }));
-}
+const CHECKLIST_COVERAGE_ITEM_SCHEMA = {
+  type: "object",
+  additionalProperties: false,
+  required: ["recordTypeId", "disposition"],
+  properties: {
+    recordTypeId: { type: "string", minLength: 1 },
+    disposition: {
+      type: "string",
+      enum: ["extracted", "not_found", "not_applicable", "unresolved"],
+    },
+    instanceIndexes: {
+      type: "array",
+      items: { type: "integer", minimum: 0 },
+    },
+    note: {
+      anyOf: [{ type: "null" }, { type: "string" }],
+    },
+  },
+} as const;
 
 function documentTypeIdSchema(pack: ProposalDomainPack): Record<string, unknown> {
   const packIds = pack.documentTypes.map((d) => d.id);
@@ -77,15 +78,12 @@ function buildUniversalEnvelope(input: {
   pack: ProposalDomainPack;
   sourceDocumentId?: string;
 }): Record<string, unknown> {
-  const allRecordIds = packRecordTypeIds(input.pack);
-  const selectedRecords = selectRecordDefinitions(input.pack, allRecordIds);
-
   const recordInstanceSchema = {
     type: "object",
     additionalProperties: false,
     required: ["recordTypeId", "instanceIndex", "fields"],
     properties: {
-      recordTypeId: { type: "string", enum: allRecordIds },
+      recordTypeId: { type: "string", minLength: 1 },
       instanceIndex: { type: "integer", minimum: 0 },
       recordEvidence: EVIDENCE_SCHEMA,
       fields: { type: "array", items: FIELD_EXTRACTION_SCHEMA },
@@ -102,6 +100,7 @@ function buildUniversalEnvelope(input: {
       "packVersion",
       "documentTypeId",
       "sourceDocumentId",
+      "checklistCoverage",
       "recordInstances",
     ],
     properties: {
@@ -112,25 +111,19 @@ function buildUniversalEnvelope(input: {
       sourceDocumentId: input.sourceDocumentId
         ? { type: "string", const: input.sourceDocumentId }
         : { type: "string", minLength: 1 },
+      checklistCoverage: {
+        type: "array",
+        items: CHECKLIST_COVERAGE_ITEM_SCHEMA,
+      },
       recordInstances: { type: "array", items: recordInstanceSchema },
     },
     definitions: {
       evidence: EVIDENCE_SCHEMA,
       fieldExtraction: FIELD_EXTRACTION_SCHEMA,
       recordInstance: recordInstanceSchema,
-      documentTypeCatalog: input.pack.documentTypes.map((dt) => ({
-        documentTypeId: dt.id,
-        label: dt.label ?? null,
-        checklist: dt.checklist,
-        checklistPolicy: dt.checklistPolicy ?? null,
-      })),
-      fieldCatalog: buildFieldCatalog(selectedRecords),
+      checklistCoverageItem: CHECKLIST_COVERAGE_ITEM_SCHEMA,
     },
   };
-}
-
-function packRecordTypeIds(pack: ProposalDomainPack): string[] {
-  return pack.recordTypes.map((r) => r.id);
 }
 
 /** Universal output schema for self-classifying Reader (stable system prefix). */
@@ -168,14 +161,10 @@ export function summarizeOutputSchemaStructure(schema: Record<string, unknown>):
   documentTypeIds: string[];
 } {
   const required = (schema.required as string[]) ?? [];
-  const defs = schema.definitions as {
-    fieldCatalog?: Array<{ recordTypeId: string }>;
-    documentTypeCatalog?: Array<{ documentTypeId: string }>;
-  };
   const documentTypeProp = schema.properties as { documentTypeId?: { enum?: string[] } };
   return {
     topLevelRequired: required,
-    recordTypeIds: (defs?.fieldCatalog ?? []).map((r) => r.recordTypeId),
+    recordTypeIds: [],
     documentTypeIds: (documentTypeProp?.documentTypeId?.enum ?? []).filter(
       (id) => id !== PACK_DRIVEN_CLASSIFICATION_UNKNOWN && id !== PACK_DRIVEN_CLASSIFICATION_AMBIGUOUS,
     ),

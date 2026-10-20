@@ -1,0 +1,24 @@
+[
+  {
+    "domainId": "iep",
+    "packId": "iep",
+    "packVersion": "0.3.0-proposed",
+    "contentSha256": "c2baa0439d32496a3110f5388f6048395a9f4c8fdce79b3d0cec36ae6b9a7775",
+    "snapshotStorageBucket": "domain-pack-snapshots",
+    "snapshotStoragePath": "iep/c2baa0439d32496a3110f5388f6048395a9f4c8fdce79b3d0cec36ae6b9a7775.json",
+    "lifecycleStatus": "CERTIFIED",
+    "isActive": false,
+    "activatedAt": null
+  },
+  {
+    "domainId": "iep",
+    "packId": "iep",
+    "packVersion": "0.3.0-proposed",
+    "contentSha256": "b1bafe209b771a10b55cebd3bf745e476e77e1bcaf3c3cf051aa022ef719f757",
+    "snapshotStorageBucket": "domain-pack-snapshots",
+    "snapshotStoragePath": "iep/b1bafe209b771a10b55cebd3bf745e476e77e1bcaf3c3cf051aa022ef719f757.json",
+    "lifecycleStatus": "DRAFT",
+    "isActive": false,
+    "activatedAt": null
+  }
+]

@@ -25,6 +25,7 @@ export * from "./serialize-engine2-structure-context";
 export * from "./intake-study-context";
 export * from "./discover-structure-fingerprint";
 export * from "./load-proposal-domain-pack";
+export * from "./build-pack-driven-reader-artifacts";
 export * from "./consolidate-verified-reader-facts";
 export * from "./observations/index.js";
 export * from "./canonical-reasoner/index.js";
@@ -52,6 +53,7 @@ export {
   type CanonicalStudyRulesetIdentity,
 } from "./canonical-study/index.js";
 export {
+  IEP_CANDIDATE_READER_PACK_CONTENT_SHA256,
   L001_READER_PACK_CONTENT_SHA256,
   loadCanonicalStudyInterpretationOverlay,
   resolveCanonicalStudyInterpretation,
@@ -80,6 +82,24 @@ export {
   type ProposalPackIdentity,
   type ProposalPackSnapshotManifestEntry,
 } from "./resolve-proposal-pack-identity.js";
+export {
+  DomainPackRegistryError,
+  DOMAIN_PACK_REGISTRY_ACTIVATION_PROCEDURE,
+  createAsyncDomainPackRegistryPortFromSync,
+  createDefaultDomainPackRegistryPort,
+  createInMemoryDomainPackRegistry,
+  loadDefaultDomainPackRegistrySeed,
+  loadVerifiedProposalPackSnapshotForRegistryEntry,
+  loadVerifiedProposalPackSnapshotForRegistryEntrySync,
+  resolveRegistrySnapshotFilesystemPath,
+  registryBindingToProposalPackIdentity,
+  resolveDomainPackRegistryBinding,
+  resolveProductionDomainPackBindingForStudyStart,
+  wrapAsyncDomainPackRegistryPort,
+  type AsyncDomainPackRegistryPort,
+  type DomainPackRegistryPort,
+  type VerifiedDomainPackRegistryBinding,
+} from "./domain-pack-registry/index.js";
 export {
   PinnedProposalDomainPackError,
   resolvePinnedProposalDomainPackFromStudyContext,

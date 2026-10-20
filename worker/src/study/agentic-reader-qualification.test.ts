@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
+import { copyFileSync, existsSync, mkdtempSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { TextEncoder } from "node:util";
@@ -15,6 +15,7 @@ import {
   L001_QUALIFICATION_SOURCE_SHA256,
   loadEffectiveStudyAgentsPromptMetadata,
   loadReaderExperimentPromptHashes,
+  IEP_CANDIDATE_READER_PACK_CONTENT_SHA256,
   L001_READER_PACK_CONTENT_SHA256,
   ReaderProposalPackBindingError,
   resolveAgenticReaderModelIdentity,
@@ -36,6 +37,7 @@ import { ReaderHttpInvocationError } from "./reader-qualification-pipeline-error
 import { runAgenticReaderQualification } from "./run-agentic-reader-qualification.js";
 import {
   PackDrivenReaderAuditNotPersistedError,
+  PackDrivenReaderProductionError,
   runProductionPackDrivenReader,
 } from "./run-production-pack-driven-reader.js";
 import type { CanonicalStudyContext } from "@hiveforyou/shared/canonical-study";
@@ -882,7 +884,7 @@ describe("AgenticReaderQualificationError", () => {
 });
 
 describe("pack-driven Engine 1 boundary", () => {
-  it("omits document-type hints from engine1ReaderContextJson", async () => {
+  it("includes advisory Discover labels without pack documentTypeId in engine1ReaderContextJson", async () => {
     const { resolveEngine1ReaderContext, serializeEngine1ReaderContext } = await import(
       "./engine1-reader-context.js"
     );
@@ -947,6 +949,7 @@ describe("pack-driven Engine 1 boundary", () => {
     expect(context.provenance).toBe("intake_pack_execution");
     expect(parsed.logicalDocuments[0]).not.toHaveProperty("documentType");
     expect(parsed.logicalDocuments[0]).not.toHaveProperty("documentTypeId");
+    expect(parsed.logicalDocuments[0]?.discoverDocumentTypeLabel).toBe("IEP");
   });
 
   it("ensureDiscoverForPackDrivenStudy uses Intake pack execution without OpenAI Discover", async () => {
@@ -1045,7 +1048,30 @@ describe("pack-driven Engine 1 boundary", () => {
 });
 
 describe("runProductionPackDrivenReader ARCH-03 raw extraction", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   const EIGHT = ["d1", "d2", "d3", "d4", "d5", "d6", "d7", "d8"] as const;
+  const PROPOSAL_PACK_BINDING = {
+    packId: "iep",
+    packVersion: "0.3.0-proposed",
+    packContentSha256: L001_READER_PACK_CONTENT_SHA256,
+  } as const;
+
+  function packDrivenProductionContext(): CanonicalStudyContext {
+    return {
+      caseId: "case-1",
+      studyRunId: "study-1",
+      domainId: "iep",
+      domainPackId: "hive.domain.iep",
+      domainPackVersion: "0.0.0-scaffold",
+      processingPolicy: {
+        processingMode: "pack_driven_v1",
+        proposalPackContentSha256: L001_READER_PACK_CONTENT_SHA256,
+      },
+    } as CanonicalStudyContext;
+  }
 
   function productionGateway(): HiveGateway {
     const objects = new Map<string, Uint8Array>();
@@ -1113,6 +1139,9 @@ describe("runProductionPackDrivenReader ARCH-03 raw extraction", () => {
     vi.spyOn(coreStudy, "loadAgenticReaderQualificationPromptMetadata").mockReturnValue({
       promptSha256: "abc".repeat(21).slice(0, 64),
     } as never);
+    vi.spyOn(coreStudy, "resolveStudyReaderProposalPackBindingFromContext").mockReturnValue(
+      PROPOSAL_PACK_BINDING,
+    );
 
     const readerClient = vi.fn(async (request) => ({
       schemaVersion: "study-reader/1" as const,
@@ -1126,6 +1155,14 @@ describe("runProductionPackDrivenReader ARCH-03 raw extraction", () => {
       documentExtractions: EIGHT.map((sourceDocumentId) =>
         extractionEnvelope(sourceDocumentId, request.attemptId, "SUCCEEDED"),
       ),
+      perDocumentResults: EIGHT.map((sourceDocumentId) => ({
+        sourceDocumentId,
+        documentTypeId: "iep.plan",
+        engine1DocumentTypeId: "iep.plan",
+        classificationNeedsReview: false,
+        parseOk: true,
+        parseErrors: [],
+      })),
       audit: {
         studyRunId: request.studyRunId,
         attemptId: request.attemptId,
@@ -1137,13 +1174,7 @@ describe("runProductionPackDrivenReader ARCH-03 raw extraction", () => {
     const result = await runProductionPackDrivenReader({
       gateway: productionGateway(),
       documentPagesBucket: "document-pages",
-      context: {
-        caseId: "case-1",
-        studyRunId: "study-1",
-        domainId: "iep",
-        domainPackId: "hive.domain.iep",
-        domainPackVersion: "0.0.0-scaffold",
-      },
+      context: packDrivenProductionContext(),
       userId: USER_A,
       registeredDocuments: EIGHT.map((id) => ({ id, sha256: "a".repeat(64) })),
       readerClient,
@@ -1155,7 +1186,7 @@ describe("runProductionPackDrivenReader ARCH-03 raw extraction", () => {
     expect(readerClient.mock.calls[0]?.[0]?.readerMode).toBe("pack_driven");
   });
 
-  it("returns partial failure without dropping sibling extractions", async () => {
+  it("fail-closes when any document has parse or extraction failure", async () => {
     vi.spyOn(loadPages, "loadTrustedDocumentPageBundle").mockResolvedValue(
       EIGHT.map((sourceDocumentId) => ({
         sourceDocumentId,
@@ -1178,6 +1209,9 @@ describe("runProductionPackDrivenReader ARCH-03 raw extraction", () => {
     vi.spyOn(coreStudy, "loadAgenticReaderQualificationPromptMetadata").mockReturnValue({
       promptSha256: "abc".repeat(21).slice(0, 64),
     } as never);
+    vi.spyOn(coreStudy, "resolveStudyReaderProposalPackBindingFromContext").mockReturnValue(
+      PROPOSAL_PACK_BINDING,
+    );
 
     const readerClient = vi.fn(async (request) => ({
       schemaVersion: "study-reader/1" as const,
@@ -1195,6 +1229,14 @@ describe("runProductionPackDrivenReader ARCH-03 raw extraction", () => {
           index === 4 ? "MODEL_ERROR" : "SUCCEEDED",
         ),
       ),
+      perDocumentResults: EIGHT.map((sourceDocumentId, index) => ({
+        sourceDocumentId,
+        documentTypeId: "iep.plan",
+        engine1DocumentTypeId: "iep.plan",
+        classificationNeedsReview: false,
+        parseOk: index !== 4,
+        parseErrors: index === 4 ? ["model_error"] : [],
+      })),
       audit: {
         studyRunId: request.studyRunId,
         attemptId: request.attemptId,
@@ -1203,24 +1245,16 @@ describe("runProductionPackDrivenReader ARCH-03 raw extraction", () => {
       },
     }));
 
-    const result = await runProductionPackDrivenReader({
-      gateway: productionGateway(),
-      documentPagesBucket: "document-pages",
-      context: {
-        caseId: "case-1",
-        studyRunId: "study-1",
-        domainId: "iep",
-        domainPackId: "hive.domain.iep",
-        domainPackVersion: "0.0.0-scaffold",
-      },
-      userId: USER_A,
-      registeredDocuments: EIGHT.map((id) => ({ id, sha256: "a".repeat(64) })),
-      readerClient,
-    });
-
-    expect(result.rawExtractionOutcome).toBe("partial_failure");
-    expect(result.failedDocumentIds).toEqual(["d5"]);
-    expect(result.succeededDocumentIds).toHaveLength(7);
+    await expect(
+      runProductionPackDrivenReader({
+        gateway: productionGateway(),
+        documentPagesBucket: "document-pages",
+        context: packDrivenProductionContext(),
+        userId: USER_A,
+        registeredDocuments: EIGHT.map((id) => ({ id, sha256: "a".repeat(64) })),
+        readerClient,
+      }),
+    ).rejects.toBeInstanceOf(PackDrivenReaderProductionError);
   });
 
   it("persists extractions before surfacing audit failure", async () => {
@@ -1248,6 +1282,9 @@ describe("runProductionPackDrivenReader ARCH-03 raw extraction", () => {
     vi.spyOn(coreStudy, "loadAgenticReaderQualificationPromptMetadata").mockReturnValue({
       promptSha256: "abc".repeat(21).slice(0, 64),
     } as never);
+    vi.spyOn(coreStudy, "resolveStudyReaderProposalPackBindingFromContext").mockReturnValue(
+      PROPOSAL_PACK_BINDING,
+    );
 
     const readerClient = vi.fn(async (request) => ({
       schemaVersion: "study-reader/1" as const,
@@ -1259,6 +1296,16 @@ describe("runProductionPackDrivenReader ARCH-03 raw extraction", () => {
       reasoningSteps: 0,
       toolCalls: 0,
       documentExtractions: [extractionEnvelope("doc-a", request.attemptId, "SUCCEEDED")],
+      perDocumentResults: [
+        {
+          sourceDocumentId: "doc-a",
+          documentTypeId: "iep.plan",
+          engine1DocumentTypeId: "iep.plan",
+          classificationNeedsReview: false,
+          parseOk: true,
+          parseErrors: [],
+        },
+      ],
       audit: {
         studyRunId: request.studyRunId,
         attemptId: request.attemptId,
@@ -1272,13 +1319,7 @@ describe("runProductionPackDrivenReader ARCH-03 raw extraction", () => {
       runProductionPackDrivenReader({
         gateway: productionGateway(),
         documentPagesBucket: "document-pages",
-        context: {
-          caseId: "case-1",
-          studyRunId: "study-1",
-          domainId: "iep",
-          domainPackId: "hive.domain.iep",
-          domainPackVersion: "0.0.0-scaffold",
-        },
+        context: packDrivenProductionContext(),
         userId: USER_A,
         registeredDocuments: [{ id: "doc-a", sha256: "a".repeat(64) }],
         readerClient,
@@ -1288,12 +1329,17 @@ describe("runProductionPackDrivenReader ARCH-03 raw extraction", () => {
 });
 
 describe("runProductionPackDrivenReader env handoff", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   const REQUIRED_WORKER_ENV = {
     NEXT_PUBLIC_SUPABASE_URL: "https://example.supabase.co",
     SUPABASE_SERVICE_ROLE_KEY: "service-role",
     HIVE_STORAGE_BUCKET: "case-documents",
   } as const;
-  const OTHER_SNAPSHOT_HASH = "b".repeat(64);
+  const UNREGISTERED_SNAPSHOT_HASH = "b".repeat(64);
+  const OVERRIDE_SNAPSHOT_HASH = IEP_CANDIDATE_READER_PACK_CONTENT_SHA256;
   const tempRoots: string[] = [];
   const envSnapshot = { ...process.env };
 
@@ -1322,6 +1368,21 @@ describe("runProductionPackDrivenReader env handoff", () => {
       ),
       "utf8",
     );
+    const snapshotPath = join(snapshotsDir, `${packContentSha256}.json`);
+    if (!existsSync(snapshotPath)) {
+      const repoSnapshot = join(
+        process.cwd(),
+        "..",
+        "brain",
+        "domain-packs",
+        "iep",
+        "snapshots",
+        `${packContentSha256}.json`,
+      );
+      if (existsSync(repoSnapshot)) {
+        copyFileSync(repoSnapshot, snapshotPath);
+      }
+    }
   }
 
   function tempBrainRoot(packContentSha256: string): string {
@@ -1411,6 +1472,16 @@ describe("runProductionPackDrivenReader env handoff", () => {
           parsedModelJson: { documentTypeId: "iep.plan" },
         },
       ],
+      perDocumentResults: [
+        {
+          sourceDocumentId: "doc-1",
+          documentTypeId: "iep.plan",
+          engine1DocumentTypeId: "iep.plan",
+          classificationNeedsReview: false,
+          parseOk: true,
+          parseErrors: [],
+        },
+      ],
       audit: {
         studyRunId: request.studyRunId,
         attemptId: request.attemptId,
@@ -1439,7 +1510,7 @@ describe("runProductionPackDrivenReader env handoff", () => {
     );
     expect(filteredEnv.HIVE_DOMAIN_PACKS_BRAIN_DIR).toBeUndefined();
 
-    const bindingSpy = vi.spyOn(coreStudy, "resolveStudyReaderProposalPackBinding");
+    const bindingSpy = vi.spyOn(coreStudy, "resolveStudyReaderProposalPackBindingFromContext");
     const readerClient = stubReaderPipeline();
 
     await runProductionPackDrivenReader({
@@ -1487,14 +1558,14 @@ describe("runProductionPackDrivenReader env handoff", () => {
 
   it("lets explicit input.env override container-level HIVE_DOMAIN_PACKS_BRAIN_DIR", async () => {
     const containerBrain = tempBrainRoot(L001_READER_PACK_CONTENT_SHA256);
-    const overrideBrain = tempBrainRoot(OTHER_SNAPSHOT_HASH);
+    const overrideBrain = tempBrainRoot(OVERRIDE_SNAPSHOT_HASH);
     process.env.HIVE_DOMAIN_PACKS_BRAIN_DIR = containerBrain;
 
     const readerClient = stubReaderPipeline();
     await runProductionPackDrivenReader({
       gateway: envHandoffGateway(),
       documentPagesBucket: "document-pages",
-      context: packDrivenContext(OTHER_SNAPSHOT_HASH),
+      context: packDrivenContext(OVERRIDE_SNAPSHOT_HASH),
       userId: USER_A,
       registeredDocuments: [{ id: "doc-1", sha256: "a".repeat(64) }],
       env: {
@@ -1505,7 +1576,7 @@ describe("runProductionPackDrivenReader env handoff", () => {
       attemptId: "attempt-override",
     });
 
-    expect(readerClient.mock.calls[0]?.[0]?.packContentSha256).toBe(OTHER_SNAPSHOT_HASH);
+    expect(readerClient.mock.calls[0]?.[0]?.packContentSha256).toBe(OVERRIDE_SNAPSHOT_HASH);
   });
 
   it("rejects a frozen hash that is not registered in the manifest", async () => {
@@ -1517,12 +1588,33 @@ describe("runProductionPackDrivenReader env handoff", () => {
       runProductionPackDrivenReader({
         gateway: envHandoffGateway(),
         documentPagesBucket: "document-pages",
-        context: packDrivenContext(OTHER_SNAPSHOT_HASH),
+        context: packDrivenContext(UNREGISTERED_SNAPSHOT_HASH),
         userId: USER_A,
         registeredDocuments: [{ id: "doc-1", sha256: "a".repeat(64) }],
         env: workerEnvStrings(readWorkerEnv(REQUIRED_WORKER_ENV)),
         readerClient,
         attemptId: "attempt-no-fallback",
+      }),
+    ).rejects.toThrow(ReaderProposalPackBindingError);
+
+    expect(readerClient).not.toHaveBeenCalled();
+  });
+
+  it("fail-closes before Reader HTTP when registry digest is unknown", async () => {
+    const brainRoot = tempBrainRoot(L001_READER_PACK_CONTENT_SHA256);
+    process.env.HIVE_DOMAIN_PACKS_BRAIN_DIR = brainRoot;
+
+    const readerClient = stubReaderPipeline();
+    await expect(
+      runProductionPackDrivenReader({
+        gateway: envHandoffGateway(),
+        documentPagesBucket: "document-pages",
+        context: packDrivenContext(UNREGISTERED_SNAPSHOT_HASH),
+        userId: USER_A,
+        registeredDocuments: [{ id: "doc-1", sha256: "a".repeat(64) }],
+        env: workerEnvStrings(readWorkerEnv(REQUIRED_WORKER_ENV)),
+        readerClient,
+        attemptId: "attempt-registry-unknown",
       }),
     ).rejects.toThrow(ReaderProposalPackBindingError);
 

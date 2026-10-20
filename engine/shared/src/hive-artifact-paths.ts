@@ -49,6 +49,32 @@ export function readerDocumentExtractionStudyRunManifestPath(
   return `${userId}/reader-document-extractions/${studyRunId}/manifest.json`;
 }
 
+/** Unmodified Reader model response for one logical document (DP-03B). */
+export function packDrivenReaderDocumentRawArtifactPath(
+  userId: string,
+  studyRunId: string,
+  logicalDocumentId: string,
+): string {
+  return `${userId}/reader/${studyRunId}/${logicalDocumentId}/raw.json`;
+}
+
+/** Parsed + verified Reader outcome for one logical document (DP-03B). */
+export function packDrivenReaderDocumentValidatedArtifactPath(
+  userId: string,
+  studyRunId: string,
+  logicalDocumentId: string,
+): string {
+  return `${userId}/reader/${studyRunId}/${logicalDocumentId}/validated.json`;
+}
+
+/** Study-run manifest listing all Reader document artifacts (DP-03B). */
+export function packDrivenReaderStudyManifestArtifactPath(
+  userId: string,
+  studyRunId: string,
+): string {
+  return `${userId}/reader/${studyRunId}/manifest.json`;
+}
+
 /** Immutable observation snapshot for one study attempt (graph engine). */
 export function observationSnapshotArtifactPath(
   userId: string,

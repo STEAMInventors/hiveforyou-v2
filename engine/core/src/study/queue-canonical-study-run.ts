@@ -83,11 +83,12 @@ export async function queueCanonicalStudyRun(
 
   function engineFingerprintForRequest(): ReturnType<typeof studyEngineFingerprintFromDeps> {
     if (processingMode === "pack_driven_v1") {
+      const pin =
+        typeof process !== "undefined"
+          ? process.env.HIVE_READER_PROPOSAL_PACK_CONTENT_SHA256?.trim().toLowerCase()
+          : undefined;
       return buildPackDrivenReaderIntentFingerprint({
-        env:
-          typeof process !== "undefined"
-            ? (process.env as Record<string, string | undefined>)
-            : {},
+        proposalPackContentSha256: pin,
       });
     }
     return studyEngineFingerprintFromDeps({

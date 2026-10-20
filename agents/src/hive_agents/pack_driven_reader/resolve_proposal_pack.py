@@ -19,6 +19,11 @@ from hive_agents.pack_driven_reader.compiler_bridge import (
 MANIFEST_SCHEMA = "hive.domain-pack.proposal-snapshots/1"
 SHA256_HEX = re.compile(r"^[a-f0-9]{64}$")
 
+# DP-03B candidate Reader proposal pack digest (matches engine/core resolve-canonical-study-interpretation.ts).
+IEP_CANDIDATE_READER_PACK_CONTENT_SHA256 = (
+    "b1bafe209b771a10b55cebd3bf745e476e77e1bcaf3c3cf051aa022ef719f757"
+)
+
 
 class PackNotAvailableError(RuntimeError):
     def __init__(self, message: str, *, diagnostics: dict[str, Any]) -> None:
@@ -104,6 +109,44 @@ def _read_snapshot_manifest(domain_id: str, settings: Any, repo_root: Path | Non
     return parsed
 
 
+def _identity_from_manifest_entry(entry: dict[str, Any], *, domain_id: str) -> ProposalPackIdentity:
+    pack_id = str(entry.get("packId", domain_id)).strip() or domain_id.strip()
+    pack_version = str(entry.get("packVersion", "")).strip()
+    pack_hash = str(entry.get("packContentSha256", "")).strip().lower()
+    if not pack_version or not SHA256_HEX.match(pack_hash):
+        raise PackNotAvailableError(
+            "Proposal pack snapshot manifest entry is incomplete.",
+            diagnostics={"domainId": domain_id},
+        )
+    return ProposalPackIdentity(
+        pack_id=pack_id,
+        pack_version=pack_version,
+        pack_content_sha256=pack_hash,
+    )
+
+
+def _resolve_default_proposal_pack_from_pool(
+    *,
+    domain_id: str,
+    pool: list[dict[str, Any]],
+) -> ProposalPackIdentity:
+    if len(pool) == 1:
+        return _identity_from_manifest_entry(pool[0], domain_id=domain_id)
+    if domain_id.strip() == "iep":
+        for entry in pool:
+            entry_hash = str(entry.get("packContentSha256", "")).strip().lower()
+            if entry_hash == IEP_CANDIDATE_READER_PACK_CONTENT_SHA256:
+                return _identity_from_manifest_entry(entry, domain_id=domain_id)
+    raise PackNotAvailableError(
+        "Ambiguous or missing proposal pack snapshot identity; configure pack content hash.",
+        diagnostics={
+            "domainId": domain_id,
+            "manifestEntryCount": len(pool),
+            "matchingEntryCount": len(pool),
+        },
+    )
+
+
 def resolve_proposal_pack_identity(
     *,
     domain_id: str,
@@ -165,29 +208,7 @@ def resolve_proposal_pack_identity(
         if configured_pack_version:
             version = str(configured_pack_version).strip()
             pool = [entry for entry in pool if str(entry.get("packVersion", "")).strip() == version]
-        if len(pool) != 1:
-            raise PackNotAvailableError(
-                "Ambiguous or missing proposal pack snapshot identity; configure pack content hash.",
-                diagnostics={
-                    "domainId": domain_id,
-                    "manifestEntryCount": len(entries),
-                    "matchingEntryCount": len(pool),
-                },
-            )
-        entry = pool[0]
-        pack_id = str(entry.get("packId", domain_id)).strip() or domain_id.strip()
-        pack_version = str(entry.get("packVersion", "")).strip()
-        pack_hash = str(entry.get("packContentSha256", "")).strip().lower()
-        if not pack_version or not SHA256_HEX.match(pack_hash):
-            raise PackNotAvailableError(
-                "Proposal pack snapshot manifest entry is incomplete.",
-                diagnostics={"domainId": domain_id},
-            )
-        return ProposalPackIdentity(
-            pack_id=pack_id,
-            pack_version=pack_version,
-            pack_content_sha256=pack_hash,
-        )
+        return _resolve_default_proposal_pack_from_pool(domain_id=domain_id, pool=pool)
 
     # Local development fallback: mutable proposed JSON (no snapshot registry).
     proposed_path = default_iep_v03_proposed_pack_path(_repo_root(repo_root))

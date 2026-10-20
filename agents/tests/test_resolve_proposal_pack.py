@@ -18,11 +18,12 @@ def _repo_root() -> Path:
     return agent_settings.repo_root_from_module_file(agent_settings.__file__)
 
 
-def _iep_snapshot_hash() -> str:
-    manifest_path = _repo_root() / "brain" / "domain-packs" / "iep" / "snapshots" / "manifest.json"
-    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-    entry = manifest["snapshots"][0]
-    return str(entry["packContentSha256"]).lower()
+def _iep_default_snapshot_hash() -> str:
+    from hive_agents.pack_driven_reader.resolve_proposal_pack import (
+        IEP_CANDIDATE_READER_PACK_CONTENT_SHA256,
+    )
+
+    return IEP_CANDIDATE_READER_PACK_CONTENT_SHA256
 
 
 def test_resolve_iep_snapshot_identity_from_manifest() -> None:
@@ -32,7 +33,7 @@ def test_resolve_iep_snapshot_identity_from_manifest() -> None:
     identity = resolve_proposal_pack_identity(domain_id="iep", settings=settings)
     assert identity.pack_id == "iep"
     assert identity.pack_version == "0.3.0-proposed"
-    assert identity.pack_content_sha256 == _iep_snapshot_hash()
+    assert identity.pack_content_sha256 == _iep_default_snapshot_hash()
 
 
 def test_load_iep_snapshot_by_manifest_identity() -> None:
@@ -41,7 +42,7 @@ def test_load_iep_snapshot_by_manifest_identity() -> None:
     )
     loaded = resolve_and_load_proposal_domain_pack(domain_id="iep", settings=settings)
     assert loaded.source == "snapshot"
-    assert loaded.content_sha256 == _iep_snapshot_hash()
+    assert loaded.content_sha256 == _iep_default_snapshot_hash()
     assert loaded.pack["manifest"]["id"] == "iep"
 
 
@@ -51,15 +52,8 @@ def test_hash_mismatch_is_rejected(tmp_path: Path) -> None:
     snapshots_dir = brain_root / "iep" / "snapshots"
     snapshots_dir.mkdir(parents=True)
 
-    snapshot_hash = _iep_snapshot_hash()
-    snapshot_src = (
-        repo_root
-        / "brain"
-        / "domain-packs"
-        / "iep"
-        / "snapshots"
-        / f"{snapshot_hash}.json"
-    )
+    snapshot_hash = _iep_default_snapshot_hash()
+    snapshot_src = repo_root / "brain" / "domain-packs" / "iep" / "snapshots" / f"{snapshot_hash}.json"
     snapshot_dst = snapshots_dir / f"{snapshot_hash}.json"
     snapshot_dst.write_text(snapshot_src.read_text(encoding="utf-8"), encoding="utf-8")
 
@@ -103,7 +97,7 @@ def test_missing_snapshot_file_is_rejected(tmp_path: Path) -> None:
     snapshots_dir = brain_root / "iep" / "snapshots"
     snapshots_dir.mkdir(parents=True)
 
-    snapshot_hash = _iep_snapshot_hash()
+    snapshot_hash = _iep_default_snapshot_hash()
     manifest = {
         "schemaVersion": "hive.domain-pack.proposal-snapshots/1",
         "snapshots": [

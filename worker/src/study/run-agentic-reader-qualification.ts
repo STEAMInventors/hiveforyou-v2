@@ -224,7 +224,11 @@ export async function runAgenticReaderQualification(
     const readerMode = resolveReaderMode(env);
     const proposalPack =
       readerMode === "pack_driven"
-        ? loadPackDrivenProposalPackIdentity(ensure.prompt.artifact.domainId, env)
+        ? loadPackDrivenProposalPackIdentity(
+            ensure.prompt.artifact.domainId,
+            env,
+            "qualification",
+          )
         : undefined;
 
     const request = buildStudyReaderRequestFromTrustedPages({

@@ -271,7 +271,10 @@ export type CaseDocumentManifestEntry = {
   filename?: string;
   pageCount?: number;
   logicalDocumentId?: string;
-  documentTypeId?: string | null;
+  /** Advisory Discover classification label (human/discover vocabulary). */
+  discoverDocumentTypeLabel?: string | null;
+  /** Advisory Discover classification resolved to a pack documentTypeId when unambiguous. */
+  discoverDocumentTypeId?: string | null;
 };
 
 export type PackDrivenDocumentPage = {
@@ -282,6 +285,19 @@ export type PackDrivenDocumentPage = {
 export type PackDrivenSingleDocumentInput = {
   sourceDocumentId: string;
   pages: PackDrivenDocumentPage[];
+};
+
+export type ChecklistCoverageDisposition =
+  | "extracted"
+  | "not_found"
+  | "not_applicable"
+  | "unresolved";
+
+export type ChecklistCoverageItem = {
+  recordTypeId: string;
+  disposition: ChecklistCoverageDisposition;
+  instanceIndexes?: number[];
+  note?: string | null;
 };
 
 export type CompilePackDrivenReaderPromptInput = {
@@ -321,5 +337,6 @@ export type CompilePackDrivenReaderPromptResult = {
     C_caseManifest: string;
     D_documentTask: string;
     E_documentPages: string;
+    F_outputContract: string;
   };
 };
